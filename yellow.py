@@ -1,46 +1,51 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS
 from PIL import Image
 import io
-import os
 
 app = Flask(__name__)
+
+# Enable CORS for all routes or specific routes
+CORS(app, resources={r"/process": {"origins": "https://www.theredactedunit.com"}})
+
+# Define the threshold function for black and yellow conversion
+def threshold_to_bw(p):
+    return 255 if p > 128 else 0
+
+@app.route('/')
+def home():
+    return "Welcome to the Yellow Image Processor!"
 
 @app.route('/process', methods=['POST'])
 def process_image():
     if 'image' not in request.files:
-        return 'No image uploaded', 400
+        return jsonify({'error': 'No image provided'}), 400
 
-    img_file = request.files['image']
-    print(f"📷 Received: {img_file.filename}")
+    image_file = request.files['image']
+    if not image_file:
+        return jsonify({'error': 'No file uploaded'}), 400
 
-    try:
-        img = Image.open(img_file.stream).convert("L")  # Grayscale
-        yellow = (255, 242, 0)  # Hex #FFF200
-        black = (0, 0, 0)
-        threshold = 128
+    # Open the image
+    img = Image.open(image_file)
 
-        # Create new RGB image
-        result = Image.new("RGB", img.size)
-        pixels = result.load()
+    # Convert the image to black and yellow
+    bw_img = img.point(threshold_to_bw).convert("RGB")
+    
+    # Change black pixels to yellow (FFF200)
+    pixels = bw_img.load()
+    for y in range(bw_img.height):
+        for x in range(bw_img.width):
+            if pixels[x, y] == (0, 0, 0):
+                pixels[x, y] = (255, 242, 0)  # Yellow (FFF200)
+            else:
+                pixels[x, y] = (0, 0, 0)  # Black
 
-        for y in range(img.height):
-            for x in range(img.width):
-                pixel = img.getpixel((x, y))
-                pixels[x, y] = yellow if pixel > threshold else black
+    # Save the image to a bytes buffer
+    img_byte_arr = io.BytesIO()
+    bw_img.save(img_byte_arr, format='PNG')
+    img_byte_arr.seek(0)
 
-        # Save to memory buffer
-        buffer = io.BytesIO()
-        result.save(buffer, format="PNG")
-        buffer.seek(0)
+    return send_file(img_byte_arr, mimetype='image/png', as_attachment=True, download_name='output.png')
 
-        print("✅ Successfully processed image.")
-        return send_file(buffer, mimetype='image/png')
-
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        return 'Processing error', 500
-
-if __name__ == '__main__':
-    # Use the port provided by the Render environment (or default to 5000 locally)
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host="0.0.0.0", port=port)
+if __name__ == "__main__":
+    app.run(debug=True)
