@@ -1,41 +1,39 @@
 from flask import Flask, request, jsonify, send_file
-from flask_cors import CORS
-from PIL import Image
-import io
+from flask_cors import CORS  # Import CORS
 
-# Initialize the Flask app
 app = Flask(__name__)
 
-# Apply CORS to allow requests only from the front-end domain
-CORS(app, resources={r"/process": {"origins": "https://www.theredactedunit.com"}})
+# Enable CORS for all domains, or specify a list of allowed origins
+CORS(app, origins=["https://www.theredactedunit.com"])
 
-# Endpoint to process the uploaded image
+@app.route('/')
+def index():
+    return "Welcome to Yellow API!"
+
 @app.route('/process', methods=['POST'])
 def process_image():
-    # Ensure the request contains an image file
-    if 'image' not in request.files:
-        return jsonify({"error": "No image provided"}), 400
-
-    image_file = request.files['image']
-    
     try:
-        # Open the image with Pillow
-        image = Image.open(image_file.stream)
+        # Example: process incoming data
+        data = request.json  # Assuming you're sending JSON data
+        print(f"Received data: {data}")
 
-        # Process the image (Example: convert to grayscale)
-        image = image.convert('L')
-
-        # Save the processed image to a bytes buffer
-        img_byte_arr = io.BytesIO()
-        image.save(img_byte_arr, format='PNG')
-        img_byte_arr.seek(0)
-
-        # Send the processed image back as a response
-        return send_file(img_byte_arr, mimetype='image/png')
-
+        # Here, you can add your image processing or any other logic
+        # For this example, we just return a success message
+        return jsonify({"message": "Image processed successfully."})
+    
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Run the Flask app
+@app.route('/download')
+def download_file():
+    try:
+        # Assuming you have a file to serve
+        file_path = "path/to/your/file.png"  # Adjust this path
+        return send_file(file_path, as_attachment=True)
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
+    # To run on Render, make sure to use the default port
     app.run(debug=True, host='0.0.0.0', port=5000)
