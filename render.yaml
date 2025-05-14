@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: image-processing-api
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python yellow.py"
+    envVars:
+      - key: FLASK_ENV
+        value: production
+    plan: free
