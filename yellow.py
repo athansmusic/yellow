@@ -18,7 +18,11 @@ def process_image():
         print(f"Received data: {data}")
 
         # Example logic: just return a success message for now
-        return jsonify({"message": "Image processed successfully."})
+        # Add your image processing logic here (if needed)
+        if 'key' in data:
+            return jsonify({"message": "Image processed successfully."}), 200
+        else:
+            return jsonify({"error": "Missing 'key' in request data."}), 400
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -27,7 +31,7 @@ def process_image():
 def download_file():
     try:
         # Specify file path
-        file_path = "path/to/your/file.png"  # Update path to actual file
+        file_path = "path/to/your/file.png"  # Update this path to actual file
         return send_file(file_path, as_attachment=True)
 
     except Exception as e:
