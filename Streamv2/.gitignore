@@ -1,0 +1,18 @@
+# Widget URLs carry private tokens - never commit them.
+config.local.json
+
+# Generated. Rebuild with: python build_scenes.py
+dist/
+
+# Runtime state written by the control panel.
+control/state.json
+
+# Your own video/art.
+media/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Third-party binary - download from nirsoft.net, don't vendor it
+displays/multimonitortool-x64/

@@ -1,0 +1,293 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Live Listen Stage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@300;400;500;600;700&family=Martian+Mono:wght@400;500;600;700&display=swap">
+<style>
+  /* ---------------------------------------------------------------------
+     Live Listen stage, in the [REDACTED] house style (theredactedunit.com).
+
+     Palette and type pulled from the live site: #090909 ground, #FFF200
+     accent used as a fill with black text, zero border radius anywhere,
+     Big Shoulders Display for display copy, condensed mono for labels.
+
+     Type note: the site uses NK57 Monospace Cd Eb, which is commercial
+     (Typodermic). Martian Mono is the free stand-in - same condensed,
+     heavy, technical register. Swap --font-mono if you license NK57.
+
+     Rendered TWICE as two OBS browser sources with the cameras between:
+       ?layer=back   ground, episode block, chat, follower bar, cam wells
+       [ Cam A / Cam B  - native OBS sources ]
+       ?layer=front  nameplates + tile edges, everything else transparent
+
+     A single source cannot work: the design paints a full-canvas ground,
+     which would bury the cameras.
+
+     ?preview=1 fills the camera wells so the layout reads outside OBS.
+     --------------------------------------------------------------------- */
+
+  :root {
+    --ground:     #090909;
+    --panel:      #0d0d0d;
+    --well:       #121212;
+    --edge:       #262626;
+    --edge-hot:   #3a3a3a;
+    --accent:     #FFF200;
+    --ink:        #000000;
+    --text:       #FFFFFF;
+    --muted:      rgba(255, 255, 255, .6);
+    --faint:      rgba(255, 255, 255, .34);
+
+    --font-display: "Big Shoulders Display", "Arial Narrow", sans-serif;
+    --font-mono:    "Martian Mono", "Consolas", monospace;
+  }
+
+  html, body {
+    margin: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    /* Positioned so #canvas's inset:0 resolves against this fixed box
+       rather than the viewport. */
+    position: relative;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #canvas { position: absolute; inset: 0; overflow: hidden; }
+  /* The stage ground is deliberately TRANSPARENT so you can put your own
+     background - image, video, whatever - underneath in OBS, below the
+     "Stage Back" source. The panels below keep their own fills so chat and
+     the episode block stay legible over anything.
+     ?preview=1 paints a stand-in ground so the layout reads outside OBS. */
+  body[data-layer="back"].preview #canvas {
+    background:
+      radial-gradient(140% 100% at 50% 0%, #141414 0%, #0b0b0b 55%, #060606 100%),
+      var(--ground);
+  }
+
+  #grid {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    gap: 20px;
+    padding: 24px;
+    grid-template-columns: 872px 1fr;
+    /* minmax(0,1fr), not the default auto row. Without it a busy chat grows
+       the row past the 1080 canvas instead of clipping inside its panel. */
+    grid-template-rows: minmax(0, 1fr);
+  }
+  body[data-scene="solo"] #grid { grid-template-columns: 1400px 1fr; }
+
+  #left  { min-width: 0; display: flex; flex-direction: column; gap: 16px; justify-content: center; }
+  #right { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+
+  body[data-layer="front"] #right,
+  body[data-layer="front"] #handles { visibility: hidden; }
+
+  /* ---- Camera tiles. Zero radius, so the camera fills the well exactly. -- */
+  .cam { position: relative; flex: 1; width: 100%; min-height: 0; overflow: hidden; }
+  body[data-scene="solo"] #camA { flex: 0 0 auto; aspect-ratio: 16 / 9; }
+  body[data-scene="solo"] #camB { display: none; }
+
+  /* Transparent too - the camera fills the tile, and if it is off you see your
+     own background rather than a black hole. The edge still defines the tile. */
+  body[data-layer="back"] .cam  { box-shadow: 0 0 0 1px var(--edge); }
+  body[data-layer="back"].preview .cam {
+    background: repeating-linear-gradient(135deg, #131313 0 12px, #181818 12px 24px);
+  }
+  body[data-layer="front"] .cam { box-shadow: 0 0 0 1px var(--edge-hot); }
+
+  .cam-label {
+    position: absolute; inset: 0; display: none;
+    flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  }
+  body[data-layer="back"].preview .cam-label { display: flex; }
+  .cam-label .l1 { font-family: var(--font-mono); font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--faint); }
+  .cam-label .l2 { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; color: var(--faint); }
+
+  /* Nameplate: hard-edged black slab with a yellow tick. */
+  .plate {
+    position: absolute; left: 0; bottom: 0;
+    display: none; align-items: center; gap: 12px;
+    padding: 10px 18px 10px 14px;
+    background: rgba(0, 0, 0, .88);
+    box-shadow: 0 0 0 1px var(--edge-hot);
+  }
+  body[data-layer="front"] .plate { display: flex; }
+  .plate .mark { width: 5px; height: 26px; background: var(--accent); }
+  .plate .name {
+    font-family: var(--font-display); font-size: 30px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .01em; line-height: 1;
+  }
+  .plate .role {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+    letter-spacing: .2em; text-transform: uppercase; color: var(--accent);
+  }
+  .plate .role:empty, .plate .name:empty { display: none; }
+
+  /* ---- Handle strip ---------------------------------------------------- */
+  #handles { display: flex; align-items: center; gap: 16px; }
+  #handle  { font-family: var(--font-mono); font-size: 13px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--text); }
+  #cadence { font-family: var(--font-mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+  .rule    { flex: 1; height: 1px; background: var(--edge); }
+
+  /* ---- Episode block --------------------------------------------------- */
+  #episode { flex: 0 0 auto; padding: 22px 24px 26px; background: var(--panel); box-shadow: 0 0 0 1px var(--edge); }
+  #ep-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+  /* Show name carries the bracket motif from the logo. */
+  #show-name {
+    font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+    letter-spacing: .2em; text-transform: uppercase; color: var(--text); white-space: nowrap;
+  }
+  #show-name:empty { display: none; }
+  #show-name::before { content: "["; color: var(--accent); margin-right: 3px; }
+  #show-name::after  { content: "]"; color: var(--accent); margin-left: 3px; }
+  /* Episode number is the one saturated field - yellow fill, black ink. */
+  #ep-num {
+    font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+    letter-spacing: .16em; text-transform: uppercase;
+    background: var(--accent); color: var(--ink); padding: 4px 10px; white-space: nowrap;
+  }
+  #ep-num:empty { display: none; }
+  #ep-title {
+    font-family: var(--font-display); font-size: 62px; font-weight: 600;
+    line-height: .96; letter-spacing: .005em; text-transform: uppercase;
+    color: var(--text); text-wrap: balance;
+  }
+  #ep-title:empty { display: none; }
+  #ep-blurb {
+    margin-top: 14px; font-family: var(--font-mono); font-size: 12px;
+    font-weight: 400; line-height: 1.6; letter-spacing: .02em; color: var(--muted); text-wrap: pretty;
+  }
+  #ep-blurb:empty { display: none; }
+
+  /* ---- Chat panel ------------------------------------------------------
+     The FRAME is drawn here - background, edge, header - but the messages
+     are not. #messages is an empty transparent well that your own chat
+     browser source sits inside, so your widget gets the house styling for
+     free and only has to render the lines themselves. */
+  #chat {
+    flex: 1; min-height: 0; display: flex; flex-direction: column;
+    overflow: hidden; background: var(--panel); box-shadow: 0 0 0 1px var(--edge);
+  }
+  #chat-head { flex: 0 0 auto; display: flex; align-items: center; gap: 12px; padding: 16px 20px 14px; }
+  #chat-head .lbl {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    letter-spacing: .24em; text-transform: uppercase; color: var(--muted);
+  }
+  #live-dot { width: 7px; height: 7px; background: var(--accent); animation: rk-pulse 2.4s ease-in-out infinite; }
+
+  /* The well your chat source fills. Transparent - the panel behind it
+     provides the background. */
+  #messages { flex: 1; min-height: 0; }
+
+  /* ---- Follower bar ---------------------------------------------------- */
+  #alert { flex: 0 0 auto; display: flex; align-items: center; gap: 16px; padding: 14px 20px; background: var(--panel); box-shadow: 0 0 0 1px var(--edge); }
+  #alert .bar { flex: 0 0 auto; width: 4px; align-self: stretch; background: var(--accent); }
+  #alert .lbl { font-family: var(--font-mono); font-size: 9px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: var(--faint); }
+  #alert-name { margin-top: 3px; font-family: var(--font-display); font-size: 30px; font-weight: 600; text-transform: uppercase; line-height: 1; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #alert-meta { flex: 0 0 auto; text-align: right; font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  /* The whole bar is dead weight with nothing to announce. */
+  body:not(.has-alert) #alert { visibility: hidden; }
+
+  @keyframes rk-pulse { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+  @keyframes rk-rise  { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+</style>
+
+<div id="canvas">
+  <div id="grid">
+    <div id="left">
+      <div class="cam" id="camA">
+        <div class="cam-label"><span class="l1">cam a — 16:9</span><span class="l2">host feed</span></div>
+        <div class="plate"><span class="mark"></span><span class="name" id="hostA"></span><span class="role" id="hostARole"></span></div>
+      </div>
+      <div class="cam" id="camB">
+        <div class="cam-label"><span class="l1">cam b — 16:9</span><span class="l2">co-host feed</span></div>
+        <div class="plate"><span class="mark"></span><span class="name" id="hostB"></span><span class="role" id="hostBRole"></span></div>
+      </div>
+      <div id="handles"><span id="handle"></span><span class="rule"></span><span id="cadence"></span></div>
+    </div>
+
+    <div id="right">
+      <div id="episode">
+        <div id="ep-head"><span id="show-name"></span><span class="rule"></span><span id="ep-num"></span></div>
+        <div id="ep-title"></div>
+        <div id="ep-blurb"></div>
+      </div>
+
+      <!-- Frame only. #messages stays empty on purpose - your own chat source
+           goes in that well, inside this panel's background and border. -->
+      <div id="chat">
+        <div id="chat-head">
+          <span class="lbl">stream chat</span><span class="rule"></span>
+          <span id="live-dot"></span>
+        </div>
+        <div id="messages"></div>
+      </div>
+
+      <div id="alert">
+        <span class="bar"></span>
+        <div style="min-width:0;flex:1">
+          <div class="lbl">newest follower</div>
+          <div id="alert-name"></div>
+        </div>
+        <div id="alert-meta"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  document.body.dataset.layer = params.get('layer') === 'front' ? 'front' : 'back';
+  if (params.has('preview')) document.body.classList.add('preview');
+
+  // ?scene=two|solo pins this instance to one layout, so each OBS scene can
+  // carry its own pair of stage layers and switching scenes in OBS changes the
+  // layout. Without it the layout follows shared state, which meant every
+  // browser source rendered the same layout no matter which scene was live.
+  const raw = params.get('scene');
+  const pinnedScene = (raw === 'two' || raw === 'solo') ? raw : null;
+
+  const text = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v || ''; };
+
+
+  function render(s) {
+    const scene = pinnedScene || s.scene;
+    document.body.dataset.scene = scene === 'solo' ? 'solo' : 'two';
+    document.body.classList.toggle('has-alert', Boolean(s.alertName));
+    text('hostA', s.hostA);        text('hostARole', s.hostARole);
+    text('hostB', s.hostB);        text('hostBRole', s.hostBRole);
+    text('handle', s.handle);      text('cadence', s.cadence);
+    text('show-name', s.showName);
+    text('ep-num', s.episodeNumber ? 'ep ' + s.episodeNumber : '');
+    text('ep-title', s.episodeTitle);
+    text('ep-blurb', s.episodeBlurb);
+    text('alert-name', s.alertName);
+    text('alert-meta', s.alertMeta);
+  }
+
+  function connect() {
+    const es = new EventSource('/events');
+    es.onmessage = (e) => { try { render(JSON.parse(e.data)); } catch (_) {} };
+    es.onerror = () => { es.close(); setTimeout(connect, 2000); };
+  }
+  fetch('/state').then(r => r.json()).then(render).catch(() => {});
+  connect();
+
+  /* Layout probe - build_scenes.py reads these so the native OBS cameras land
+     exactly inside the design's tiles. The design owns the geometry. */
+  window.__slots = function () {
+    const out = {};
+    for (const el of document.querySelectorAll('[id^="cam"]')) {
+      if (getComputedStyle(el).display === 'none') continue;
+      const r = el.getBoundingClientRect();
+      out[el.id] = [Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)];
+    }
+    return out;
+  };
+</script>

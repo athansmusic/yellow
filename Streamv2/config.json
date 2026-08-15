@@ -1,0 +1,110 @@
+{
+  "_readme": "Every knob for the rebuild lives here. Edit this, re-run build_scenes.py, re-import. Never hand-edit dist/*.json. Anything secret (widget URLs with tokens) goes in config.local.json, which is gitignored and deep-merged over this file.",
+
+  "collection_name": "Rebuild",
+  "canvas": { "width": 1920, "height": 1080 },
+
+  "transition": {
+    "name": "Move",
+    "duration_ms": 160,
+    "_note": "Move Transition animates any source that shares a NAME between the outgoing and incoming scene. That is why the camera is the nested scene [CAM] everywhere instead of a per-scene copy."
+  },
+
+  "devices": {
+    "camera": {
+      "_note": "Defaults to the NVIDIA Broadcast virtual cam because that is known-working on this machine. See README 'Camera chain' - you likely want the RAW device here instead, with Broadcast's background effect OFF, so the AI keying happens once in OBS.",
+      "video_device_id": "Camera (NVIDIA Broadcast):",
+      "resolution": "1920x1080",
+      "res_type": 1
+    },
+    "guest_camera": {
+      "_note": "Second person for Live Listen. Cam Link 4K per your existing setup. Swap if the co-host comes in over a different capture.",
+      "video_device_id": "Cam Link 4K:\\\\?\\usb#vid_0fd9&pid_0085&mi_00#9&1db8b501&0&0000#{65e8773d-8f56-11d0-a3b9-00a0c9223196}\\global",
+      "resolution": "1920x1080",
+      "res_type": 1
+    },
+    "mic": {
+      "_note": "Your 'Mic Main' device - the one carrying the compressor/limiter/VST chain.",
+      "device_id": "{0.0.1.00000000}.{fc9eb12f-133d-4f6d-a142-1ed399a27ec5}"
+    },
+    "desktop_audio": {
+      "device_id": "default"
+    }
+  },
+
+  "media": {
+    "countdown_video": {
+      "_note": "Point this at the Starting Soon video you make. Leave as-is until the file exists; OBS shows an empty media source, which is harmless.",
+      "path": "C:/Users/19407/Documents/Redacted/Script/Stream/media/starting-soon.mp4",
+      "loop": true
+    }
+  },
+
+  "twitch": {
+    "_note": "Read-only anonymous chat. No credentials involved - Twitch lets any client join a public channel as justinfan<n>. This cannot post or moderate. Mod deletions and timeouts are honoured, so a removed message vanishes from the stage instead of sitting frozen on screen.",
+    "enabled": false,
+    "channel": "athansmusic",
+    "max_messages": 40,
+    "use_twitch_colors": false,
+    "hide_commands": false,
+    "ignore_users": []
+  },
+
+  "overlays": {
+    "_note": "Put the real URLs in config.local.json - they carry private tokens and this file is committed. Empty string means the source is still created (so layout and Move matching are correct) but loads about:blank.",
+    "chat_url": "",
+    "alerts_url": ""
+  },
+
+  "control_panel": {
+    "_note": "Local-only episode info server. Bound to 127.0.0.1 so nothing is exposed off this machine. The overlay is a thin reference renderer - when your Claude Design version is ready, point episode_overlay_url at it and have it read the same /state and /events endpoints.",
+    "host": "127.0.0.1",
+    "port": 8722,
+    "episode_overlay_url": ""
+  },
+
+  "layouts": {
+    "_note": "Rects are x, y, width, height in 1920x1080 canvas space. Sources are fitted INSIDE the rect preserving aspect, so you can retune these freely without stretching anyone's face. Chat sits at the SAME rect in every scene on purpose - Move then holds it perfectly still while everything else animates.",
+    "chat": [48, 168, 352, 700],
+    "alerts": [0, 0, 1920, 1080],
+    "episode": [0, 0, 1920, 1080],
+    "starting_soon": {
+      "countdown": [0, 0, 1920, 1080]
+    },
+    "live": {
+      "cam": [0, 0, 1920, 1080]
+    },
+    "in_game": {
+      "game": [0, 0, 1920, 1080],
+      "cam": [1376, 664, 512, 384]
+    },
+    "live_listen": {
+      "_note": "MEASURED from overlays/livelisten.html at 1920x1080, not hand-picked. The design owns this geometry - if you change the layout CSS, re-measure rather than editing these by hand. Both tiles are 16:9 to within a rounding pixel.",
+      "two": {
+        "camA": [24, 24, 872, 492],
+        "camB": [24, 532, 872, 492]
+      },
+      "solo": {
+        "camA": [24, 130, 1400, 788]
+      }
+    }
+  },
+
+  "scene_contents": {
+    "_note": "Which shared overlays appear on which scene. The Live Listen scenes get NEITHER - the stage design renders its own chat panel and follower bar, so adding the standalone sources would double them up.",
+    "Starting Soon":    { "chat": true,  "alerts": true },
+    "Live":             { "chat": true,  "alerts": true },
+    "In Game":          { "chat": true,  "alerts": true },
+    "Live Listen":      { "chat": false, "alerts": false },
+    "Live Listen Solo": { "chat": false, "alerts": false }
+  },
+
+  "hotkeys": {
+    "_note": "F13-F17 do not exist on a normal keyboard, so nothing else can steal them. Bind Stream Deck keys to send these, or use the OBS plugin's native Scene action and ignore them entirely.",
+    "scene_starting_soon": "OBS_KEY_F13",
+    "scene_live": "OBS_KEY_F14",
+    "scene_in_game": "OBS_KEY_F15",
+    "scene_live_listen": "OBS_KEY_F16",
+    "scene_live_listen_solo": "OBS_KEY_F17"
+  }
+}

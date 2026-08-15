@@ -1,0 +1,113 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Episode Info</title>
+<link rel="stylesheet" href="/theme.css">
+<style>
+  /* Transparent - OBS composites this over the cameras. */
+  html, body {
+    margin: 0;
+    width: 1920px;
+    height: 1080px;
+    background: transparent;
+    overflow: hidden;
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #card {
+    position: absolute;
+    left: var(--pad-left);
+    bottom: var(--pad-bottom);
+    max-width: var(--max-width);
+    display: flex;
+    gap: var(--card-pad-x);
+    padding: var(--card-pad-y) var(--card-pad-x);
+    border-radius: var(--card-radius);
+    background: linear-gradient(90deg, var(--bg), var(--bg-accent));
+    border-left: var(--rule-width) solid var(--rule);
+
+    /* Hidden by default; .on drives the entrance. */
+    opacity: 0;
+    transform: translateY(var(--rise));
+    transition: opacity var(--out-duration) var(--ease),
+                transform var(--out-duration) var(--ease);
+    will-change: opacity, transform;
+  }
+  #card.on {
+    opacity: 1;
+    transform: translateY(0);
+    transition-duration: var(--in-duration);
+  }
+
+  #meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+  }
+  #episode {
+    font-size: var(--meta-size);
+    font-weight: var(--meta-weight);
+    letter-spacing: var(--meta-track);
+    text-transform: uppercase;
+    color: var(--rule);
+  }
+  #episode:empty { display: none; }
+
+  #title {
+    font-size: var(--title-size);
+    font-weight: var(--title-weight);
+    line-height: 1.1;
+    color: var(--fg);
+    /* Long titles shrink instead of wrapping off the safe area. */
+    text-wrap: balance;
+  }
+
+  #guest {
+    font-size: var(--meta-size);
+    font-weight: var(--meta-weight);
+    letter-spacing: 0.04em;
+    color: var(--fg-muted);
+  }
+  #guest:empty { display: none; }
+</style>
+
+<div id="card">
+  <div id="meta">
+    <div id="episode"></div>
+    <div id="title"></div>
+    <div id="guest"></div>
+  </div>
+</div>
+
+<script>
+  // ---- The entire contract with the control server. -----------------------
+  // GET /state gives the current values; /events pushes every change as SSE.
+  // Any replacement overlay only needs these two calls.
+  const card = document.getElementById('card');
+  const fields = {
+    episode: document.getElementById('episode'),
+    title:   document.getElementById('title'),
+    guest:   document.getElementById('guest'),
+  };
+
+  function render(state) {
+    for (const [key, el] of Object.entries(fields)) {
+      el.textContent = state[key] || '';
+    }
+    card.classList.toggle('on', Boolean(state.visible));
+  }
+
+  function connect() {
+    const es = new EventSource('/events');
+    es.onmessage = (e) => {
+      try { render(JSON.parse(e.data)); } catch (_) {}
+    };
+    // OBS keeps the page alive across a server restart; reconnect rather than
+    // sitting there with stale text on stream.
+    es.onerror = () => { es.close(); setTimeout(connect, 2000); };
+  }
+
+  fetch('/state').then(r => r.json()).then(render).catch(() => {});
+  connect();
+</script>

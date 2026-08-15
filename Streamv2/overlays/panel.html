@@ -1,0 +1,178 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Stage Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;600;700&family=Martian+Mono:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --ground: #090909; --panel: #0d0d0d; --field: #141414;
+    --edge: #262626; --edge-hot: #3a3a3a;
+    --accent: #FFF200; --ink: #000; --text: #fff;
+    --muted: rgba(255,255,255,.6); --faint: rgba(255,255,255,.34);
+    --mono: "Martian Mono", Consolas, monospace;
+    --disp: "Big Shoulders Display", "Arial Narrow", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 36px 28px 60px; background: var(--ground); color: var(--text);
+    font-family: var(--mono); font-size: 13px; display: flex; justify-content: center;
+  }
+  main { width: 100%; max-width: 620px; }
+
+  h1 {
+    font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: .2em;
+    text-transform: uppercase; margin: 0 0 4px;
+  }
+  h1::before { content: "["; color: var(--accent); margin-right: 3px; }
+  h1::after  { content: "]"; color: var(--accent); margin-left: 3px; }
+  .sub { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--faint); margin-bottom: 26px; }
+
+  fieldset { border: none; border-top: 1px solid var(--edge); margin: 0 0 22px; padding: 18px 0 0; }
+  legend {
+    padding: 0 10px 0 0; font-size: 10px; font-weight: 600; letter-spacing: .24em;
+    text-transform: uppercase; color: var(--accent);
+  }
+
+  label { display: block; margin: 0 0 14px; }
+  label span {
+    display: block; font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--faint); margin-bottom: 6px;
+  }
+  input, textarea {
+    width: 100%; padding: 10px 12px; background: var(--field); color: var(--text);
+    border: 1px solid var(--edge); border-radius: 0; font: inherit; font-size: 13px;
+  }
+  input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 62px; line-height: 1.55; }
+  .row2 { display: grid; grid-template-columns: 1fr 150px; gap: 12px; }
+
+  .scenes { display: flex; gap: 10px; margin-bottom: 4px; }
+  .scenes button {
+    flex: 1; padding: 13px; border: 1px solid var(--edge); border-radius: 0;
+    background: transparent; color: var(--muted); font: inherit; font-size: 11px;
+    font-weight: 600; letter-spacing: .18em; text-transform: uppercase; cursor: pointer;
+    transition: background .12s, color .12s, border-color .12s;
+  }
+  .scenes button:hover { border-color: var(--edge-hot); color: var(--text); }
+  .scenes button[aria-pressed="true"] { background: var(--accent); color: var(--ink); border-color: var(--accent); }
+
+  .foot { display: flex; align-items: center; gap: 14px; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--edge); }
+  #dot { width: 8px; height: 8px; background: var(--faint); flex: 0 0 auto; }
+  #dot.on { background: var(--accent); }
+  #status { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); flex: 1; }
+  .ghost {
+    padding: 9px 16px; border: 1px solid var(--edge); border-radius: 0; background: transparent;
+    color: var(--muted); font: inherit; font-size: 10px; font-weight: 600;
+    letter-spacing: .16em; text-transform: uppercase; cursor: pointer;
+  }
+  .ghost:hover { border-color: var(--edge-hot); color: var(--text); }
+  .hint { font-size: 10px; letter-spacing: .1em; color: var(--faint); margin-top: 18px; line-height: 1.7; }
+</style>
+
+<main>
+  <h1>REDACTED</h1>
+  <div class="sub">Live Listen &middot; stage control</div>
+
+  <fieldset>
+    <legend>Episode</legend>
+    <div class="row2">
+      <label><span>Show name</span><input id="showName" placeholder="REDACTED" autocomplete="off"></label>
+      <label><span>Episode no.</span><input id="episodeNumber" placeholder="041" autocomplete="off"></label>
+    </div>
+    <label><span>Title</span><input id="episodeTitle" placeholder="Episode title" autocomplete="off"></label>
+    <label><span>Blurb</span><textarea id="episodeBlurb" placeholder="One or two lines of description."></textarea></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>People</legend>
+    <div class="row2">
+      <label><span>Host — name</span><input id="hostA" placeholder="Name" autocomplete="off"></label>
+      <label><span>Role</span><input id="hostARole" placeholder="host" autocomplete="off"></label>
+    </div>
+    <div class="row2">
+      <label><span>Co-host — name</span><input id="hostB" placeholder="Name" autocomplete="off"></label>
+      <label><span>Role</span><input id="hostBRole" placeholder="co-host" autocomplete="off"></label>
+    </div>
+    <div class="row2">
+      <label><span>Handle</span><input id="handle" placeholder="@theredactedunit" autocomplete="off"></label>
+      <label><span>Right-side note</span><input id="cadence" placeholder="sound alerts are disabled…" autocomplete="off"></label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Chat &amp; alerts</legend>
+    <label><span>Newest follower</span><input id="alertName" placeholder="Leave blank to hide the bar" autocomplete="off"></label>
+    <label><span>Follower meta</span><input id="alertMeta" placeholder="followed · just now" autocomplete="off"></label>
+  </fieldset>
+
+  <div class="foot">
+    <span id="dot"></span>
+    <span id="status">connecting</span>
+    <button class="ghost" id="reset">Reset to defaults</button>
+  </div>
+
+  <p class="hint">
+    Every field updates both layouts live as you type &mdash; nothing to save.<br>
+    Leave the follower name blank and the alert bar hides itself.<br>
+    Two-shot vs solo is an <strong>OBS scene</strong>, not a setting here.<br>
+    Reset restores the show defaults, not blank fields.
+  </p>
+</main>
+
+<script>
+  const FIELDS = ['showName', 'episodeNumber', 'episodeTitle', 'episodeBlurb',
+                  'hostA', 'hostARole', 'hostB', 'hostBRole', 'handle', 'cadence',
+                  'alertName', 'alertMeta'];
+
+  // Layout is NOT controlled here. Each OBS scene carries its own stage layers
+  // pinned with ?scene=two|solo, so switching scenes in OBS switches the layout.
+  // This panel owns content only.
+  const els = {};
+  for (const id of FIELDS) els[id] = document.getElementById(id);
+  const dot = document.getElementById('dot');
+  const status = document.getElementById('status');
+
+  let echo = false;   // suppress refilling inputs from our own broadcast
+
+  function post(patch) {
+    echo = true;
+    fetch('/state', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(patch) }).catch(() => {});
+  }
+
+  for (const id of FIELDS) {
+    els[id].addEventListener('input', () => post({ [id]: els[id].value }));
+  }
+
+  document.getElementById('reset').addEventListener('click', () => {
+    // Server-side reset to the show's standing defaults; the SSE broadcast
+    // refills the inputs, so nothing is duplicated here.
+    echo = false;
+    fetch('/reset', { method: 'POST' }).catch(() => {});
+  });
+
+  function apply(s) {
+    if (!echo) {
+      for (const id of FIELDS) {
+        if (document.activeElement !== els[id]) els[id].value = s[id] || '';
+      }
+    }
+    echo = false;
+    dot.classList.add('on');
+    status.textContent = 'connected — stage is live';
+  }
+
+  function connect() {
+    const es = new EventSource('/events');
+    es.onmessage = (e) => { try { apply(JSON.parse(e.data)); } catch (_) {} };
+    es.onerror = () => {
+      es.close();
+      dot.classList.remove('on');
+      status.textContent = 'server offline — retrying';
+      setTimeout(connect, 2000);
+    };
+  }
+  fetch('/state').then(r => r.json()).then(apply).catch(() => {});
+  connect();
+</script>

@@ -1,0 +1,36 @@
+/* Every visual decision in the reference overlay is a variable in this block.
+   Change these, not the HTML. If you replace episode.html with a Claude Design
+   version, this file can go with it - the data contract is the only thing the
+   server cares about. */
+
+:root {
+  /* Palette */
+  --bg:            rgba(10, 10, 14, 0.88);
+  --bg-accent:     rgba(10, 10, 14, 0.0);
+  --fg:            #f4f4f6;
+  --fg-muted:      rgba(244, 244, 246, 0.62);
+  --rule:          #e0533f;
+
+  /* Type */
+  --font:          "Inter", "Segoe UI", system-ui, sans-serif;
+  --title-size:    52px;
+  --title-weight:  650;
+  --meta-size:     19px;
+  --meta-weight:   500;
+  --meta-track:    0.16em;
+
+  /* Placement of the lower third within the 1920x1080 canvas */
+  --pad-left:      96px;
+  --pad-bottom:    104px;
+  --card-pad-x:    40px;
+  --card-pad-y:    30px;
+  --card-radius:   4px;
+  --rule-width:    5px;
+  --max-width:     1100px;
+
+  /* Motion */
+  --in-duration:   520ms;
+  --out-duration:  340ms;
+  --ease:          cubic-bezier(0.22, 0.61, 0.36, 1);
+  --rise:          22px;
+}
