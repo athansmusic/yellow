@@ -12,6 +12,9 @@ all exercised exactly as they will be on stream.
     python simulate.py gift 5      a gift bomb of 5
     python simulate.py bits 500    a bits cheer
     python simulate.py clear       wipe the list
+    python simulate.py startup     arm the Starting Soon chat counter
+    python simulate.py chat 40     send 40 chat messages at it
+    python simulate.py endstartup  stop counting, commit the record
 
 IMPORTANT: this writes to the same credits list the stream uses. Run
 `python simulate.py clear` before you go live, or the fake names end up on
@@ -22,6 +25,7 @@ from __future__ import annotations
 
 import json
 import sys
+import time
 import urllib.error
 import urllib.request
 
@@ -85,6 +89,12 @@ DEMO = [
 ]
 
 
+def chat_line(name: str, text: str) -> str:
+    login = name.lower()
+    return (f"@display-name={name};id=sim-{login} "
+            f":{login}!{login}@{login}.tmi.twitch.tv PRIVMSG #{CHAN} :{text}")
+
+
 def post(path: str, payload: dict | None = None) -> dict:
     data = json.dumps(payload).encode() if payload is not None else b""
     req = urllib.request.Request(BASE + path, data=data, method="POST",
@@ -115,6 +125,26 @@ def main() -> int:
         if cmd == "clear":
             show(post("/credits/reset"))
             print("\n  cleared")
+            return 0
+
+        if cmd == "startup":
+            st = post("/dev/startup", {"action": "begin"})
+            print(f"counter armed - count {st['count']}, record {st['record']}")
+            return 0
+
+        if cmd == "endstartup":
+            st = post("/dev/startup", {"action": "end"})
+            print(f"counter stopped - final {st['count']}, record {st['record']}")
+            return 0
+
+        if cmd == "chat":
+            how_many = int(args[1]) if len(args) > 1 and args[1].isdigit() else 20
+            # Trickled rather than dumped, so the overlay visibly ticks up.
+            for i in range(how_many):
+                post("/dev/simulate",
+                     {"lines": [chat_line(f"chatter{i % 7}", f"spam {i}")]})
+                time.sleep(0.12)
+            print(f"sent {how_many} chat messages")
             return 0
 
         if cmd == "demo":

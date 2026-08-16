@@ -35,7 +35,7 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from obs_watch import ObsStreamWatcher
+from obs_watch import ObsLink
 from twitch_chat import TwitchChat
 
 HERE = Path(__file__).resolve().parent
@@ -214,7 +214,7 @@ def _get_simulator():
     if _simulator is None:
         _simulator = TwitchChat(
             channel="simulation",
-            on_message=lambda m: None,
+            on_message=push_message,
             on_clear_user=lambda u: None,
             on_clear_msg=lambda i: None,
             on_clear_all=lambda: None,
@@ -236,8 +236,65 @@ def simulate_line(line: str) -> None:
     _get_simulator()._handle(_NullSock(), line)
 
 
+# ---- Starting Soon chat counter ------------------------------------------
+# Counts EVERY chat message from the moment the stream starts until the
+# countdown video ends. Total messages, not unique chatters - one person
+# spamming is the point.
+RECORD_FILE = HERE / "chat_record.json"
+_startup = {"count": 0, "record": 0, "counting": False}
+
+
+def load_record() -> None:
+    if RECORD_FILE.exists():
+        try:
+            _startup["record"] = int(json.loads(
+                RECORD_FILE.read_text(encoding="utf-8")).get("record", 0))
+        except (json.JSONDecodeError, OSError, ValueError):
+            _startup["record"] = 0
+
+
+def save_record() -> None:
+    try:
+        RECORD_FILE.write_text(json.dumps({"record": _startup["record"]}, indent=2),
+                               encoding="utf-8")
+    except OSError:
+        pass
+
+
+def startup_begin() -> None:
+    with _lock:
+        _startup["count"] = 0
+        _startup["counting"] = True
+    _broadcast()
+
+
+def startup_tick() -> None:
+    with _lock:
+        if not _startup["counting"]:
+            return
+        _startup["count"] += 1
+        # Update the record live, so the overlay shows it being beaten rather
+        # than only revealing it after the fact.
+        if _startup["count"] > _startup["record"]:
+            _startup["record"] = _startup["count"]
+            save_record()
+    _broadcast()
+
+
+def startup_end() -> None:
+    with _lock:
+        if not _startup["counting"]:
+            return
+        _startup["counting"] = False
+        if _startup["count"] > _startup["record"]:
+            _startup["record"] = _startup["count"]
+        save_record()
+    _broadcast()
+
+
 def push_message(msg: dict) -> None:
     """Append a chat line and drop the oldest beyond the cap."""
+    startup_tick()
     cfg = _twitch_cfg()
     if msg["user"] in {u.lower() for u in cfg.get("ignore_users", [])}:
         return
@@ -275,6 +332,7 @@ def _broadcast() -> None:
     with _lock:
         snapshot = dict(_state)
         snapshot["credits"] = json.loads(json.dumps(_credits))
+        snapshot["startup"] = dict(_startup)
         save_state()
         dead = []
         for q in _listeners:
@@ -293,6 +351,7 @@ def update_state(patch: dict) -> dict:
                 _state[k] = patch[k]
         snapshot = dict(_state)
         snapshot["credits"] = json.loads(json.dumps(_credits))
+        snapshot["startup"] = dict(_startup)
         save_state()
         dead = []
         for q in _listeners:
@@ -338,6 +397,8 @@ class Handler(BaseHTTPRequestHandler):
             with _lock:
                 body = json.dumps(_credits).encode()
             self._send(body, "application/json")
+        elif route == "/startingsoon":
+            self._send_file(OVERLAY_DIR / "startingsoon.html", "text/html; charset=utf-8")
         elif route == "/ending":
             self._send_file(OVERLAY_DIR / "ending.html", "text/html; charset=utf-8")
         elif route == "/creditsroll":
@@ -353,6 +414,7 @@ class Handler(BaseHTTPRequestHandler):
                 # empty roll until something unrelated triggered an update.
                 payload = dict(_state)
                 payload["credits"] = _credits
+                payload["startup"] = _startup
                 body = json.dumps(payload).encode()
             self._send(body, "application/json")
         elif route == "/events":
@@ -362,6 +424,20 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         route = self.path.split("?", 1)[0].rstrip("/")
+        if route == "/dev/startup":
+            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                body = json.loads(self.rfile.read(length) or b"{}")
+            except json.JSONDecodeError:
+                body = {}
+            if body.get("action") == "end":
+                startup_end()
+            else:
+                startup_begin()
+            with _lock:
+                out = json.dumps(dict(_startup)).encode()
+            self._send(out, "application/json")
+            return
         if route == "/dev/simulate":
             # Replay a raw IRC line through the real parser. Localhost only,
             # and it writes to the same credits store the live reader does -
@@ -434,6 +510,30 @@ class Handler(BaseHTTPRequestHandler):
                     _listeners.remove(q)
 
 
+def _on_stream_start(link, starting_scene: str, starting_video: str) -> None:
+    """Going live: clear the credits, arm the counter, show the countdown."""
+    reset_credits()
+    startup_begin()
+    # Re-show the video, since it hides itself at the end of the last run.
+    link.set_item_enabled(starting_scene, starting_video, True)
+    print("  [obs] credits cleared, chat counter armed", flush=True)
+
+
+def _on_video_end(link, ended: str, starting_scene: str, starting_video: str,
+                  live_scene: str, auto_switch: bool) -> None:
+    """The countdown finished: hand over to the live scene."""
+    if ended != starting_video:
+        return                                   # some other media source
+    startup_end()
+    print(f"  [obs] {ended!r} finished - "
+          f"{_startup['count']} chats (record {_startup['record']})", flush=True)
+    if not auto_switch:
+        return
+    link.set_scene(live_scene)
+    # Hide it so the next stream starts it from the top.
+    link.set_item_enabled(starting_scene, starting_video, False)
+
+
 def main() -> int:
     cfg_path = ROOT / "config.json"
     cfg = json.loads(cfg_path.read_text(encoding="utf-8")).get("control_panel", {})
@@ -448,6 +548,7 @@ def main() -> int:
 
     load_state()
     load_credits()
+    load_record()
 
     # Chat starts empty every session - resurrecting yesterday's messages on
     # stream would be worse than an empty panel.
@@ -471,12 +572,22 @@ def main() -> int:
     obs_cfg = {k: v for k, v in _load_cfg().get("obs_watch", {}).items()
                if not k.startswith("_")}
     if obs_cfg.get("enabled"):
-        ObsStreamWatcher(
+        starting_scene = obs_cfg.get("starting_scene", "Starting Soon")
+        starting_video = obs_cfg.get("starting_video", "Start Video")
+        live_scene = obs_cfg.get("live_scene", "Live")
+        auto_switch = bool(obs_cfg.get("auto_switch_on_video_end", True))
+
+        link = ObsLink(
             host=obs_cfg.get("host", "127.0.0.1"),
             port=int(obs_cfg.get("port", 4455)),
             password=obs_cfg.get("password", ""),
-            on_stream_start=reset_credits,
-        ).start()
+            on_stream_start=lambda: _on_stream_start(link, starting_scene,
+                                                     starting_video),
+            on_video_end=lambda name: _on_video_end(
+                link, name, starting_scene, starting_video, live_scene,
+                auto_switch),
+        )
+        link.start()
 
     server = ThreadingHTTPServer((args.host, args.port), Handler)
     server.daemon_threads = True

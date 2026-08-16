@@ -1,0 +1,158 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Starting Soon Bar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;600;700&family=Martian+Mono:wght@400;500;600;700&display=swap">
+<style>
+  /* ---------------------------------------------------------------------
+     Starting Soon: thin frame plus a bottom bar showing the live chat count
+     against the all-time record.
+
+     Transparent throughout - your countdown video plays behind it. The bar
+     is the only solid element, and it sits low enough to clear a 16:9 video.
+
+     Counting runs from stream start until the countdown video ends. Every
+     message counts; one person spamming is the point.
+
+     ?preview=1  dark ground and sample numbers, for checking outside OBS
+     --------------------------------------------------------------------- */
+
+  :root {
+    --accent: #FFF200;
+    --ink:    #000000;
+    --text:   #FFFFFF;
+    --muted:  rgba(255, 255, 255, .6);
+    --faint:  rgba(255, 255, 255, .34);
+    --panel:  rgba(9, 9, 9, .88);
+    --edge:   rgba(255, 255, 255, .16);
+    --font-display: "Big Shoulders Display", "Arial Narrow", sans-serif;
+    --font-mono:    "Martian Mono", "Consolas", monospace;
+  }
+
+  html, body {
+    margin: 0; width: 1920px; height: 1080px;
+    overflow: hidden; position: relative;
+    background: transparent; color: var(--text);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+  }
+  body.preview { background: #101014; }
+
+  /* Thin frame, inset so it reads as a deliberate border. */
+  #frame {
+    position: absolute; inset: 18px;
+    border: 2px solid var(--edge);
+    pointer-events: none;
+  }
+  #frame::before, #frame::after {
+    content: ""; position: absolute; width: 46px; height: 46px;
+    border-color: var(--accent); border-style: solid;
+  }
+  #frame::before { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+  #frame::after  { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+
+  #bar {
+    position: absolute; left: 18px; right: 18px; bottom: 18px;
+    height: 96px; box-sizing: border-box;
+    display: flex; align-items: center; gap: 34px;
+    padding: 0 40px;
+    background: var(--panel);
+    border-top: 2px solid var(--edge);
+  }
+
+  .stat { display: flex; align-items: baseline; gap: 16px; }
+  .stat .k {
+    font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+    letter-spacing: .24em; text-transform: uppercase; color: var(--faint);
+    white-space: nowrap;
+  }
+  .stat .v {
+    font-family: var(--font-display); font-size: 58px; font-weight: 700;
+    line-height: 1; letter-spacing: .01em; font-variant-numeric: tabular-nums;
+  }
+  #current .v { color: var(--accent); }
+  #record .v { color: var(--text); }
+
+  .sep { width: 2px; align-self: stretch; margin: 22px 0; background: var(--edge); }
+  .spacer { flex: 1; }
+
+  #nudge {
+    font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+    letter-spacing: .2em; text-transform: uppercase; color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* Record broken - the bar itself flips to the accent so it is unmissable. */
+  body.beat #bar { background: var(--accent); border-top-color: var(--accent); }
+  body.beat .stat .k { color: rgba(0, 0, 0, .6); }
+  body.beat #current .v, body.beat #record .v { color: var(--ink); }
+  body.beat .sep { background: rgba(0, 0, 0, .25); }
+  body.beat #nudge { color: rgba(0, 0, 0, .75); }
+
+  /* A tick on each new message, so the number visibly reacts. */
+  #current .v.bump { animation: bump .28s ease; }
+  @keyframes bump {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.14); }
+    100% { transform: scale(1); }
+  }
+
+  /* Nothing to show until the counter is armed. */
+  body:not(.armed) #bar { display: none; }
+</style>
+
+<div id="frame"></div>
+
+<div id="bar">
+  <div class="stat" id="current"><span class="k">chats</span><span class="v">0</span></div>
+  <div class="sep"></div>
+  <div class="stat" id="record"><span class="k">record</span><span class="v">0</span></div>
+  <div class="spacer"></div>
+  <div id="nudge">keep chatting</div>
+</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  if (params.has('preview')) document.body.classList.add('preview');
+
+  const curEl = document.querySelector('#current .v');
+  const recEl = document.querySelector('#record .v');
+  const nudge = document.getElementById('nudge');
+  let lastCount = -1;
+
+  function render(s) {
+    const st = s.startup || {};
+    const count = Number(st.count || 0);
+    const record = Number(st.record || 0);
+
+    // In preview there is no live counter, so show something to look at.
+    const armed = st.counting || params.has('preview');
+    document.body.classList.toggle('armed', Boolean(armed));
+
+    curEl.textContent = count;
+    recEl.textContent = record;
+
+    // Beaten when this run has passed the previous best. Because the record
+    // is updated live, equality means this run IS the record.
+    const beat = count > 0 && count >= record;
+    document.body.classList.toggle('beat', beat);
+    nudge.textContent = beat ? 'new record' : 'keep chatting';
+
+    if (count !== lastCount && lastCount !== -1) {
+      curEl.classList.remove('bump');
+      void curEl.offsetWidth;            // restart the animation
+      curEl.classList.add('bump');
+    }
+    lastCount = count;
+  }
+
+  fetch('/state').then(r => r.json()).then(render).catch(() => {});
+
+  function connect() {
+    const es = new EventSource('/events');
+    es.onmessage = (e) => { try { render(JSON.parse(e.data)); } catch (_) {} };
+    es.onerror = () => { es.close(); setTimeout(connect, 2000); };
+  }
+  connect();
+</script>

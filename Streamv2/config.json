@@ -45,7 +45,13 @@
     "enabled": true,
     "host": "127.0.0.1",
     "port": 4455,
-    "password": ""
+    "password": "",
+
+    "_startup_note": "Starting Soon handoff. On stream start the credits list clears, the chat counter arms, and the countdown video is shown. When that video finishes, OBS switches to live_scene and the video hides itself again - OBS restarts a media source when it next becomes active, so hiding it is the whole reset.",
+    "starting_scene": "Starting Soon",
+    "starting_video": "Start Video",
+    "live_scene": "Live",
+    "auto_switch_on_video_end": true
   },
 
   "twitch": {

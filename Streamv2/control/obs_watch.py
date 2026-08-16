@@ -1,48 +1,133 @@
-"""Watch OBS and clear the credits list when a new stream starts.
+"""OBS link: watches for stream start and the Starting Soon video ending.
 
-Subs are per STREAM, not per month, so the list has to be emptied between
-streams. The reset fires on stream START rather than stream END, deliberately:
+Two jobs.
 
-  - The credits roll is shown ON the ending scene, which happens before you
-    stop the stream. Clearing at start gives an identical result on screen.
-  - Clearing at start is safe against an accidental stop. If OBS drops, or a
-    connection blips and you restart the output, an end-triggered reset would
-    destroy the subscriber list you had been collecting all night. There is no
-    way to get it back - Twitch will not resend those events.
+1. Stream start clears the per-stream credits list, and arms the startup chat
+   counter. It fires on stream START rather than END deliberately: the credits
+   roll is shown on the ending scene before you stop, so the on-screen result
+   is identical, but an accidental stop or a reconnect cannot destroy a
+   night's subscriber list, and Twitch will not resend those events.
 
-So: the list is emptied the moment you go live, fills during the stream, is
-shown at the end, and survives anything that happens in between.
+2. When the Starting Soon countdown video finishes, hand over to the live
+   scene and hide the video again so it re-arms for the next stream. OBS
+   restarts a media source when it becomes active, so hiding it is all the
+   reset that is needed.
 
-Read-only towards OBS - it subscribes to output events and never sends a
-command. Optional: if OBS is not running, everything else works unchanged.
+This DOES send commands to OBS - switching scene and toggling that one source.
+It touches nothing else: the scene and source names come from config, and no
+other source is ever enumerated or modified.
 """
 
 from __future__ import annotations
 
+import base64
+import hashlib
 import json
 import threading
 import time
 
 import websocket
 
-# obs-websocket eventSubscriptions bitmask: Outputs.
-EVENTSUB_OUTPUTS = 1 << 6
+# obs-websocket EventSubscription bitmask.
+SUB_OUTPUTS = 1 << 6         # StreamStateChanged
+SUB_MEDIA = 1 << 8           # MediaInputPlaybackEnded
 
 
-class ObsStreamWatcher(threading.Thread):
+class ObsLink(threading.Thread):
     daemon = True
 
-    def __init__(self, host: str, port: int, password: str, on_stream_start,
+    def __init__(self, host: str, port: int, password: str,
+                 on_stream_start, on_video_end,
                  log=lambda *a: print(*a, flush=True)):
-        super().__init__(name="obs-watch")
+        super().__init__(name="obs-link")
         self.url = f"ws://{host}:{port}"
         self.password = password or ""
         self.on_stream_start = on_stream_start
+        self.on_video_end = on_video_end
         self.log = log
         self._stop = threading.Event()
+        self._ws = None
+        self._send_lock = threading.Lock()
+        self._req_id = 0
 
     def stop(self) -> None:
         self._stop.set()
+
+    # -- outgoing ---------------------------------------------------------
+    def request(self, request_type: str, data: dict | None = None) -> bool:
+        """Fire a request. Returns False if OBS is not currently connected.
+
+        Deliberately fire-and-forget: the reply arrives on the same socket the
+        event loop is reading, and blocking here to correlate it would stall
+        event handling for no benefit.
+        """
+        ws = self._ws
+        if ws is None:
+            return False
+        with self._send_lock:
+            self._req_id += 1
+            try:
+                ws.send(json.dumps({"op": 6, "d": {
+                    "requestType": request_type,
+                    "requestId": f"link-{self._req_id}",
+                    "requestData": data or {}}}))
+                return True
+            except Exception:                          # noqa: BLE001
+                return False
+
+    def set_scene(self, name: str) -> bool:
+        return self.request("SetCurrentProgramScene", {"sceneName": name})
+
+    def set_item_enabled(self, scene: str, source: str, enabled: bool) -> None:
+        """Toggle one source in one scene, by name.
+
+        Needs the numeric scene item id, which means a lookup - and the reply
+        arrives on the event loop, not here. So this runs its own short-lived
+        connection rather than trying to correlate a response mid-stream.
+        """
+        threading.Thread(target=self._toggle_worker,
+                         args=(scene, source, enabled), daemon=True).start()
+
+    def _toggle_worker(self, scene: str, source: str, enabled: bool) -> None:
+        try:
+            ws = websocket.create_connection(self.url, timeout=8)
+            try:
+                self._identify(ws, events=0)
+                ws.send(json.dumps({"op": 6, "d": {
+                    "requestType": "GetSceneItemId", "requestId": "t1",
+                    "requestData": {"sceneName": scene, "sourceName": source}}}))
+                item_id = None
+                for _ in range(20):
+                    msg = json.loads(ws.recv())
+                    if msg.get("op") == 7 and msg["d"]["requestId"] == "t1":
+                        if msg["d"]["requestStatus"]["result"]:
+                            item_id = msg["d"]["responseData"]["sceneItemId"]
+                        break
+                if item_id is None:
+                    self.log(f"  [obs] {source!r} not found in {scene!r}")
+                    return
+                ws.send(json.dumps({"op": 6, "d": {
+                    "requestType": "SetSceneItemEnabled", "requestId": "t2",
+                    "requestData": {"sceneName": scene, "sceneItemId": item_id,
+                                    "sceneItemEnabled": enabled}}}))
+                time.sleep(0.3)
+            finally:
+                ws.close()
+        except Exception as exc:                       # noqa: BLE001
+            self.log(f"  [obs] toggle failed: {type(exc).__name__}: {exc}")
+
+    # -- connection -------------------------------------------------------
+    def _identify(self, ws, events: int) -> None:
+        hello = json.loads(ws.recv())
+        ident: dict = {"rpcVersion": 1, "eventSubscriptions": events}
+        auth = hello.get("d", {}).get("authentication")
+        if auth:
+            secret = base64.b64encode(hashlib.sha256(
+                (self.password + auth["salt"]).encode()).digest())
+            ident["authentication"] = base64.b64encode(hashlib.sha256(
+                secret + auth["challenge"].encode()).digest()).decode()
+        ws.send(json.dumps({"op": 1, "d": ident}))
+        ws.recv()                                       # Identified
 
     def run(self) -> None:
         backoff = 5
@@ -50,8 +135,10 @@ class ObsStreamWatcher(threading.Thread):
             try:
                 self._session()
                 backoff = 5
-            except Exception as exc:                  # noqa: BLE001
+            except Exception as exc:                    # noqa: BLE001
                 self.log(f"  [obs] {type(exc).__name__}: {exc}")
+            finally:
+                self._ws = None
             if self._stop.is_set():
                 break
             time.sleep(backoff)
@@ -60,38 +147,27 @@ class ObsStreamWatcher(threading.Thread):
     def _session(self) -> None:
         ws = websocket.create_connection(self.url, timeout=10)
         try:
-            hello = json.loads(ws.recv())
-            d = hello.get("d", {})
-            ident: dict = {"rpcVersion": 1,
-                           "eventSubscriptions": EVENTSUB_OUTPUTS}
-
-            auth = d.get("authentication")
-            if auth:
-                # Only needed if obs-websocket has auth enabled.
-                import base64
-                import hashlib
-                secret = base64.b64encode(hashlib.sha256(
-                    (self.password + auth["salt"]).encode()).digest())
-                ident["authentication"] = base64.b64encode(hashlib.sha256(
-                    secret + auth["challenge"].encode()).digest()).decode()
-
-            ws.send(json.dumps({"op": 1, "d": ident}))
-            ws.recv()                                  # Identified
-            self.log("  [obs] watching for stream start")
-
+            self._identify(ws, SUB_OUTPUTS | SUB_MEDIA)
+            self._ws = ws
+            self.log("  [obs] connected - watching stream state and media")
             ws.settimeout(None)
             while not self._stop.is_set():
                 msg = json.loads(ws.recv())
                 if msg.get("op") != 5:
                     continue
-                data = msg["d"]
-                if data.get("eventType") != "StreamStateChanged":
-                    continue
-                state = data.get("eventData", {}).get("outputState", "")
-                if state == "OBS_WEBSOCKET_OUTPUT_STARTED":
-                    self.log("  [obs] stream started - clearing credits")
-                    self.on_stream_start()
+                d = msg["d"]
+                kind = d.get("eventType")
+                data = d.get("eventData", {})
+
+                if kind == "StreamStateChanged":
+                    if data.get("outputState") == "OBS_WEBSOCKET_OUTPUT_STARTED":
+                        self.log("  [obs] stream started")
+                        self.on_stream_start()
+
+                elif kind == "MediaInputPlaybackEnded":
+                    self.on_video_end(data.get("inputName", ""))
         finally:
+            self._ws = None
             try:
                 ws.close()
             except Exception:
