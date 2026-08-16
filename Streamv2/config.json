@@ -50,7 +50,7 @@
 
   "twitch": {
     "_note": "Read-only anonymous chat. No credentials involved - Twitch lets any client join a public channel as justinfan<n>. This cannot post or moderate. Mod deletions and timeouts are honoured, so a removed message vanishes from the stage instead of sitting frozen on screen.",
-    "enabled": false,
+    "enabled": true,
     "channel": "athansmusic",
     "max_messages": 40,
     "use_twitch_colors": false,
