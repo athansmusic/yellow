@@ -35,6 +35,7 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+from obs_watch import ObsStreamWatcher
 from twitch_chat import TwitchChat
 
 HERE = Path(__file__).resolve().parent
@@ -66,6 +67,12 @@ DEFAULT_STATE = {
     "messages": [],             # [{name, text, badge, nameColor}] - newest last
     "alertName": "",
     "alertMeta": "",
+
+    # Ending scene copy.
+    "endTitle": "thanks for hanging out",
+    "endSubtitle": "vods go up tomorrow · discord in the panels",
+    "endCreditsLabel": "this stream",
+    "endFooter": "see you next stream",
 
     # Legacy lower-third overlay (overlays/episode.html)
     "episode": "",
@@ -156,11 +163,14 @@ def add_sub(event: dict) -> None:
         if existing is None:
             existing = {"user": event["user"], "name": event["name"],
                         "message": "", "months": 0, "gifted": 0, "kind": event["kind"],
-                        "ts": time.time()}
+                        "tier": "", "ts": time.time()}
             rows.append(existing)
         existing["name"] = event["name"] or existing["name"]
         existing["months"] = max(existing["months"], event.get("months", 0))
         existing["gifted"] += event.get("gifted", 0)
+        # msg-param-sub-plan: "Prime", "1000", "2000", "3000".
+        if event.get("tier"):
+            existing["tier"] = event["tier"]
         # Keep the first message they wrote; a later silent resub must not
         # blank out something they took the trouble to type.
         if event.get("message") and not existing["message"]:
@@ -297,6 +307,8 @@ class Handler(BaseHTTPRequestHandler):
             with _lock:
                 body = json.dumps(_credits).encode()
             self._send(body, "application/json")
+        elif route == "/ending":
+            self._send_file(OVERLAY_DIR / "ending.html", "text/html; charset=utf-8")
         elif route == "/creditsroll":
             self._send_file(OVERLAY_DIR / "credits.html", "text/html; charset=utf-8")
         elif route == "/stage":
@@ -402,6 +414,16 @@ def main() -> int:
         ).start()
     else:
         print("  Twitch chat   : disabled (see config.json -> twitch)")
+
+    obs_cfg = {k: v for k, v in _load_cfg().get("obs_watch", {}).items()
+               if not k.startswith("_")}
+    if obs_cfg.get("enabled"):
+        ObsStreamWatcher(
+            host=obs_cfg.get("host", "127.0.0.1"),
+            port=int(obs_cfg.get("port", 4455)),
+            password=obs_cfg.get("password", ""),
+            on_stream_start=reset_credits,
+        ).start()
 
     server = ThreadingHTTPServer((args.host, args.port), Handler)
     server.daemon_threads = True

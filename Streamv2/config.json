@@ -40,6 +40,14 @@
     }
   },
 
+  "obs_watch": {
+    "_note": "Clears the per-stream credits list when OBS starts streaming. Fires on stream START, not END - the roll is shown on the ending scene before you stop, so the result on screen is identical, but an accidental stop cannot destroy a night's subscriber list. Read-only towards OBS; never sends a command.",
+    "enabled": true,
+    "host": "127.0.0.1",
+    "port": 4455,
+    "password": ""
+  },
+
   "twitch": {
     "_note": "Read-only anonymous chat. No credentials involved - Twitch lets any client join a public channel as justinfan<n>. This cannot post or moderate. Mod deletions and timeouts are honoured, so a removed message vanishes from the stage instead of sitting frozen on screen.",
     "enabled": false,

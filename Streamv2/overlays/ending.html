@@ -1,0 +1,326 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Stream Ending</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+  /* ---------------------------------------------------------------------
+     Stream ending scene, from the pixel/neon handoff.
+
+     Deliberately NOT the [REDACTED] house style - this design is its own
+     thing: #1a0f26 ground, #ff4d94 accent, Silkscreen display type, rounded
+     corners. Measurements are taken from the handoff.
+
+     The background image is NOT drawn here - you own that. This overlay is
+     transparent behind everything, so your wallpaper goes in as a separate
+     OBS source UNDERNEATH this one. The vignette is kept, because it is what
+     makes the text readable over a busy wallpaper.
+
+     The camera well is a transparent hole. Your camera source sits under
+     this overlay and shows through it; the border and corner brackets are
+     drawn on top.
+
+     Subs are PER STREAM, not per month - the list is cleared when a new
+     stream starts.
+
+     ?preview=1  paints a stand-in ground and sample subs, for checking
+                 outside OBS.
+     ?speed=55   seconds for one full pass of the roll.
+     --------------------------------------------------------------------- */
+
+  :root {
+    --ground:    #1a0f26;
+    --accent:    #ff4d94;
+    --accent-2:  #ff5fa2;
+    --text:      #fff5fb;
+    --text-soft: rgba(255, 235, 246, .82);
+    --pink-pale: #ffd6e8;
+    --rule:      rgba(255, 214, 232, .5);
+    --font-px:   "Silkscreen", monospace;
+    --font-ui:   "Inter", system-ui, sans-serif;
+  }
+
+  html, body {
+    margin: 0; width: 1920px; height: 1080px;
+    overflow: hidden; position: relative;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+  }
+  body.preview { background: var(--ground); }
+
+  #stage { position: absolute; inset: 0; overflow: hidden; }
+
+  /* Kept from the design - readability over the wallpaper, not decoration. */
+  #vignette {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(120% 90% at 22% 45%,
+      rgba(26, 12, 40, .10) 0%, rgba(20, 9, 32, .55) 55%, rgba(16, 7, 26, .78) 100%);
+  }
+
+  #grid {
+    position: absolute; inset: 0;
+    display: grid;
+    grid-template-columns: 1040px 880px;
+    grid-template-rows: 1080px;
+  }
+
+  /* ---- Left column ------------------------------------------------------ */
+  #left {
+    display: flex; flex-direction: column; justify-content: center;
+    gap: 34px; padding: 0 72px; min-height: 0; overflow: hidden;
+  }
+  #status { display: flex; align-items: center; gap: 14px; }
+  #dot {
+    width: 14px; height: 14px; background: var(--accent);
+    box-shadow: 0 0 18px rgba(255, 77, 148, .9);
+    animation: softPulse 2.2s ease-in-out infinite;
+  }
+  #status span.label {
+    font-family: var(--font-px); font-size: 22px; letter-spacing: .22em;
+    color: var(--pink-pale); text-transform: uppercase;
+  }
+
+  /* Transparent well. The camera sits UNDER this overlay and shows through. */
+  #cam {
+    position: relative; width: 880px; height: 495px;
+    border-radius: 14px;
+    border: 3px solid rgba(255, 214, 232, .55);
+    box-shadow: 0 0 0 6px rgba(26, 12, 40, .35),
+                0 28px 70px rgba(12, 4, 22, .55),
+                inset 0 0 90px rgba(145, 132, 217, .18);
+    box-sizing: border-box;
+  }
+  body.preview #cam { background: rgba(18, 8, 30, .42); }
+  #cam-hint {
+    position: absolute; inset: 0; display: none;
+    flex-direction: column; align-items: center; justify-content: center;
+    gap: 12px; opacity: .5;
+  }
+  body.preview #cam-hint { display: flex; }
+  #cam-hint .a { font-family: var(--font-px); font-size: 20px; letter-spacing: .18em; color: #ffe4f1; }
+  #cam-hint .b { font-size: 15px; color: #f3d9ea; }
+
+  .corner { position: absolute; width: 26px; height: 26px; }
+  .corner.tl { top: 14px; left: 14px;  border-top: 3px solid var(--accent); border-left: 3px solid var(--accent); }
+  .corner.tr { top: 14px; right: 14px; border-top: 3px solid var(--accent); border-right: 3px solid var(--accent); }
+  .corner.bl { bottom: 14px; left: 14px;  border-bottom: 3px solid var(--accent); border-left: 3px solid var(--accent); }
+  .corner.br { bottom: 14px; right: 14px; border-bottom: 3px solid var(--accent); border-right: 3px solid var(--accent); }
+
+  #headline { display: flex; flex-direction: column; gap: 10px; }
+  #title {
+    margin: 0; font-family: var(--font-px); font-weight: 400;
+    font-size: 56px; line-height: 1.05; letter-spacing: .02em; color: #fff;
+    text-shadow: 0 4px 0 rgba(88, 26, 110, .55), 0 0 34px rgba(255, 77, 148, .45);
+  }
+  #subtitle {
+    margin: 0; font-size: 24px; line-height: 1.35;
+    color: var(--text-soft); max-width: 820px; text-wrap: pretty;
+  }
+  #title:empty, #subtitle:empty { display: none; }
+
+  /* ---- Right column ----------------------------------------------------- */
+  #right {
+    position: relative; padding: 0 72px 0 0;
+    display: flex; flex-direction: column; min-height: 0;
+  }
+  #divider {
+    position: absolute; left: 0; top: 96px; bottom: 96px; width: 2px;
+    background: linear-gradient(180deg,
+      rgba(255, 214, 232, 0) 0%, var(--rule) 18%, var(--rule) 82%, rgba(255, 214, 232, 0) 100%);
+  }
+  #subs-head { padding: 56px 0 22px 56px; display: flex; align-items: baseline; gap: 16px; }
+  #subs-head .big { font-family: var(--font-px); font-size: 26px; letter-spacing: .16em; color: #fff; }
+  #subs-head .small {
+    font-size: 16px; letter-spacing: .16em; text-transform: uppercase;
+    color: rgba(255, 214, 232, .7);
+  }
+
+  #roll-window {
+    position: relative; flex: 1 1 0; min-height: 0; overflow: hidden;
+    padding-left: 56px;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 90px, #000 calc(100% - 120px), transparent 100%);
+            mask-image: linear-gradient(180deg, transparent 0, #000 90px, #000 calc(100% - 120px), transparent 100%);
+  }
+  #roll { display: flex; flex-direction: column; gap: 22px; padding-top: 90px; will-change: transform; }
+
+  .sub {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 20px 24px;
+    border-left: 3px solid rgba(255, 77, 148, .75);
+    background: linear-gradient(90deg, rgba(30, 12, 46, .5) 0%,
+                rgba(30, 12, 46, .12) 78%, rgba(30, 12, 46, 0) 100%);
+    border-radius: 0 10px 10px 0;
+  }
+  .sub .who { display: flex; align-items: center; gap: 14px; }
+  .sub .name { font-family: var(--font-px); font-size: 27px; color: #fff; }
+  .sub .tier {
+    font-size: 13px; letter-spacing: .14em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px; color: #ffd9ea;
+    border: 1px solid rgba(255, 214, 232, .45); background: rgba(255, 77, 148, .16);
+    white-space: nowrap;
+  }
+  .sub .said {
+    margin: 0; font-size: 19px; line-height: 1.45;
+    color: rgba(255, 238, 248, .86); max-width: 660px; text-wrap: pretty;
+  }
+  .sub .said:empty { display: none; }
+
+  #footer { padding: 0 0 48px 56px; display: flex; align-items: center; gap: 12px; }
+  #footer span {
+    font-size: 17px; letter-spacing: .18em; text-transform: uppercase;
+    color: rgba(255, 222, 240, .75);
+  }
+
+  #none {
+    padding: 40px 0 0 56px; font-size: 18px; letter-spacing: .1em;
+    color: rgba(255, 222, 240, .55); display: none;
+  }
+  body.is-empty #none { display: block; }
+  body.is-empty #roll-window { display: none; }
+
+  @keyframes softPulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+</style>
+
+<div id="stage">
+  <div id="vignette"></div>
+  <div id="grid">
+
+    <div id="left">
+      <div id="status">
+        <span id="dot"></span><span class="label">Stream ending</span>
+      </div>
+
+      <div id="cam">
+        <div id="cam-hint">
+          <span class="a">CAMERA</span>
+          <span class="b">880 &times; 495 &middot; camera sits under this overlay</span>
+        </div>
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
+      </div>
+
+      <div id="headline">
+        <h1 id="title"></h1>
+        <p id="subtitle"></p>
+      </div>
+    </div>
+
+    <div id="right">
+      <div id="divider"></div>
+      <div id="subs-head">
+        <span class="big">SUBS</span><span class="small" id="credits-label"></span>
+      </div>
+      <div id="roll-window"><div id="roll"></div></div>
+      <div id="none">no subs yet this stream</div>
+      <div id="footer"><span id="footer-text"></span></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const SPEED = Number(params.get('speed') || 55);
+  const PREVIEW = params.has('preview');
+  if (PREVIEW) document.body.classList.add('preview');
+
+  const roll = document.getElementById('roll');
+  let anim = null;
+
+  const text = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v || ''; };
+  const el = (tag, cls, t) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (t) n.textContent = t;
+    return n;
+  };
+
+  /* Build the design's tier pill from what Twitch actually gives us.
+     msg-param-sub-plan is "Prime" | "1000" | "2000" | "3000". */
+  function tierLabel(s) {
+    if (s.gifted > 0) return `Gifted × ${s.gifted}`;
+    const plan = String(s.tier || '');
+    const base = plan === 'Prime' ? 'Prime'
+               : plan === '2000' ? 'Tier 2'
+               : plan === '3000' ? 'Tier 3'
+               : plan === '1000' ? 'Tier 1' : 'Sub';
+    return s.months > 1 ? `${base} · ${s.months} mo` : base;
+  }
+
+  const SAMPLE = [
+    { name: 'pixelfoxxo', tier: '1000', months: 12, gifted: 0,
+      message: 'a year already?! thanks for every late-night stream' },
+    { name: 'mossgremlin', tier: '', months: 0, gifted: 5,
+      message: '' },
+    { name: 'kettle_witch', tier: '3000', months: 0, gifted: 0,
+      message: 'you got me back into drawing. genuinely.' },
+    { name: 'hexadecimallow', tier: 'Prime', months: 0, gifted: 0,
+      message: 'prime is free and you are not, but here we are' },
+    { name: 'wren_of_nine', tier: '2000', months: 18, gifted: 0,
+      message: "see you next stream. don't forget to drink water." },
+  ];
+
+  function build(credits) {
+    let subs = (credits && credits.subs) ? credits.subs.slice() : [];
+    if (!subs.length && PREVIEW) subs = SAMPLE.slice();
+
+    document.body.classList.toggle('is-empty', subs.length === 0);
+    roll.innerHTML = '';
+    if (!subs.length) return;
+
+    // Gifters first, then longest-standing, then alphabetical.
+    subs.sort((a, b) => (b.gifted - a.gifted) || (b.months - a.months) ||
+                        String(a.name).localeCompare(String(b.name)));
+
+    // Doubled so the loop wraps seamlessly - the animation travels exactly
+    // half the height, putting the copy where the original started.
+    for (const pass of [0, 1]) {
+      for (const s of subs) {
+        const row = el('div', 'sub');
+        const who = el('div', 'who');
+        who.appendChild(el('span', 'name', s.name));
+        who.appendChild(el('span', 'tier', tierLabel(s)));
+        row.appendChild(who);
+        row.appendChild(el('p', 'said', s.message || ''));
+        roll.appendChild(row);
+      }
+    }
+    start();
+  }
+
+  function start() {
+    if (anim) anim.cancel();
+    let started = false;
+    const go = () => {
+      if (started) return;
+      started = true;
+      anim = roll.animate(
+        [{ transform: 'translateY(0)' }, { transform: 'translateY(-50%)' }],
+        { duration: SPEED * 1000, iterations: Infinity, easing: 'linear' });
+    };
+    // rAF never fires in a page that is not rendering - an OBS source on an
+    // inactive scene. The timeout guarantees the roll starts regardless.
+    requestAnimationFrame(go);
+    setTimeout(go, 250);
+  }
+
+  function render(s) {
+    text('title', s.endTitle);
+    text('subtitle', s.endSubtitle);
+    text('credits-label', s.endCreditsLabel);
+    text('footer-text', s.endFooter);
+    build(s.credits);
+  }
+
+  fetch('/state').then(r => r.json()).then(render).catch(() => {});
+
+  function connect() {
+    const es = new EventSource('/events');
+    es.onmessage = (e) => { try { render(JSON.parse(e.data)); } catch (_) {} };
+    es.onerror = () => { es.close(); setTimeout(connect, 2000); };
+  }
+  connect();
+</script>
