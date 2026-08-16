@@ -69,8 +69,8 @@ DEFAULT_STATE = {
     "alertMeta": "",
 
     # Ending scene copy.
-    "endTitle": "thanks for hanging out",
-    "endSubtitle": "vods go up tomorrow · discord in the panels",
+    "endTitle": "THANKS FOR WATCHING",
+    "endSubtitle": "make sure you say !gn",
     "endCreditsLabel": "this stream",
     "endFooter": "see you next stream",
 
@@ -205,6 +205,37 @@ def reset_credits() -> dict:
     return snapshot
 
 
+_simulator = None
+
+
+def _get_simulator():
+    """A TwitchChat used only to parse replayed lines. Never started."""
+    global _simulator
+    if _simulator is None:
+        _simulator = TwitchChat(
+            channel="simulation",
+            on_message=lambda m: None,
+            on_clear_user=lambda u: None,
+            on_clear_msg=lambda i: None,
+            on_clear_all=lambda: None,
+            on_sub=add_sub,
+            on_bits=add_bits,
+            log=lambda *a: None,
+        )
+    return _simulator
+
+
+class _NullSock:
+    """PING replies go nowhere during replay."""
+
+    def sendall(self, _data: bytes) -> None:
+        pass
+
+
+def simulate_line(line: str) -> None:
+    _get_simulator()._handle(_NullSock(), line)
+
+
 def push_message(msg: dict) -> None:
     """Append a chat line and drop the oldest beyond the cap."""
     cfg = _twitch_cfg()
@@ -317,7 +348,12 @@ class Handler(BaseHTTPRequestHandler):
             self._send_file(OVERLAY_DIR / "theme.css", "text/css; charset=utf-8")
         elif route == "/state":
             with _lock:
-                body = json.dumps(_state).encode()
+                # Credits must ride along here too, not only on the SSE
+                # broadcast - an overlay loading fresh would otherwise show an
+                # empty roll until something unrelated triggered an update.
+                payload = dict(_state)
+                payload["credits"] = _credits
+                body = json.dumps(payload).encode()
             self._send(body, "application/json")
         elif route == "/events":
             self._stream_events()
@@ -326,6 +362,23 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         route = self.path.split("?", 1)[0].rstrip("/")
+        if route == "/dev/simulate":
+            # Replay a raw IRC line through the real parser. Localhost only,
+            # and it writes to the same credits store the live reader does -
+            # so run /credits/reset afterwards before going live.
+            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                body = json.loads(self.rfile.read(length) or b"{}")
+            except json.JSONDecodeError:
+                self._send(b'{"error":"bad json"}', "application/json", 400)
+                return
+            lines = body.get("lines") or ([body["line"]] if body.get("line") else [])
+            for ln in lines:
+                simulate_line(ln)
+            with _lock:
+                out = json.dumps({"replayed": len(lines), "credits": _credits})
+            self._send(out.encode(), "application/json")
+            return
         if route == "/credits/reset":
             # Explicit only. Never automatic - a crash-restart mid-stream must
             # not silently wipe the subscriber list.
