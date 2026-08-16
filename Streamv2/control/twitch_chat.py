@@ -111,7 +111,7 @@ class TwitchChat(threading.Thread):
     daemon = True
 
     def __init__(self, channel: str, on_message, on_clear_user, on_clear_msg,
-                 on_clear_all,
+                 on_clear_all, on_sub=None, on_bits=None,
                  # flush, or nothing appears until the process exits
                  log=lambda *a: print(*a, flush=True)):
         super().__init__(name="twitch-chat")
@@ -120,6 +120,8 @@ class TwitchChat(threading.Thread):
         self.on_clear_user = on_clear_user
         self.on_clear_msg = on_clear_msg
         self.on_clear_all = on_clear_all
+        self.on_sub = on_sub or (lambda e: None)
+        self.on_bits = on_bits or (lambda e: None)
         self.log = log
         self._stop = threading.Event()
 
@@ -178,6 +180,19 @@ class TwitchChat(threading.Thread):
         if cmd == "PRIVMSG":
             prefix = m.group("prefix") or ""
             nick = prefix.split("!", 1)[0]
+            # Bits ride on a normal chat message, not USERNOTICE.
+            if tags.get("bits"):
+                try:
+                    amount = int(tags["bits"])
+                except ValueError:
+                    amount = 0
+                if amount > 0:
+                    self.on_bits({
+                        "user": nick.lower(),
+                        "name": tags.get("display-name") or nick,
+                        "bits": amount,
+                        "message": trailing,
+                    })
             self.on_message({
                 "id": tags.get("id", ""),
                 "user": nick.lower(),
@@ -201,8 +216,50 @@ class TwitchChat(threading.Thread):
             if target:
                 self.on_clear_msg(target)
 
+        elif cmd == "USERNOTICE":
+            self._usernotice(tags, trailing)
+
         elif cmd == "NOTICE" and "msg-id" in tags:
             self.log(f"  [chat] notice: {tags['msg-id']} {trailing}")
 
         elif cmd == "RECONNECT":
             raise ConnectionError("Twitch asked us to reconnect")
+
+    # -- subscriptions ----------------------------------------------------
+    SUB_KINDS = {"sub", "resub", "subgift", "submysterygift",
+                 "giftpaidupgrade", "anongiftpaidupgrade"}
+
+    def _usernotice(self, tags: dict, trailing: str) -> None:
+        """Turn a USERNOTICE into a credits entry.
+
+        Gifted subs credit the GIFTER, not the recipient - a gift bomb should
+        be one line naming who paid, not twenty naming who received.
+
+        Only resubs can carry a viewer-written message; Twitch does not offer
+        a message box on a first-time sub or a gift. `trailing` is that text
+        when present, and empty otherwise.
+        """
+        kind = tags.get("msg-id", "")
+        if kind not in self.SUB_KINDS:
+            return
+
+        def num(key: str) -> int:
+            try:
+                return int(tags.get(key, "") or 0)
+            except ValueError:
+                return 0
+
+        login = tags.get("login", "")
+        self.on_sub({
+            "kind": kind,
+            "user": login.lower(),
+            "name": tags.get("display-name") or login,
+            "message": trailing or "",
+            "months": num("msg-param-cumulative-months"),
+            "tier": tags.get("msg-param-sub-plan", ""),
+            # A mystery gift reports its size; a single gift counts as one.
+            "gifted": num("msg-param-mass-gift-count") or
+                      (1 if kind == "subgift" else 0),
+            # Twitch's own wording, handy as a fallback label.
+            "system": tags.get("system-msg", "").strip(),
+        })

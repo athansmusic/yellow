@@ -1,0 +1,211 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Credits Roll</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@300;400;500;600;700&family=Martian+Mono:wght@400;500;600;700&display=swap">
+<style>
+  /* ---------------------------------------------------------------------
+     End-screen credits roll, [REDACTED] house style.
+
+     Reads GET /credits and listens on /events. Subscribers scroll as a film
+     credit roll; bits sit underneath in a smaller secondary block.
+
+     Gifted subs credit the GIFTER, per spec - a gift bomb is one line naming
+     who paid for it, not twenty naming who received.
+
+     Query params:
+       ?speed=40      seconds for one full pass (default 45)
+       ?loop=0        run once instead of repeating
+       ?preview=1     dark ground + sample data, for checking outside OBS
+     --------------------------------------------------------------------- */
+
+  :root {
+    --ground:  #090909;
+    --edge:    #262626;
+    --accent:  #FFF200;
+    --ink:     #000000;
+    --text:    #FFFFFF;
+    --muted:   rgba(255, 255, 255, .6);
+    --faint:   rgba(255, 255, 255, .34);
+    --font-display: "Big Shoulders Display", "Arial Narrow", sans-serif;
+    --font-mono:    "Martian Mono", "Consolas", monospace;
+  }
+
+  html, body {
+    margin: 0; width: 1920px; height: 1080px;
+    overflow: hidden; position: relative;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+  }
+  body.preview { background: var(--ground); }
+
+  /* Fades top and bottom so names enter and leave rather than popping. */
+  #viewport {
+    position: absolute; inset: 0; overflow: hidden;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 86%, transparent 100%);
+            mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 86%, transparent 100%);
+  }
+
+  #roll {
+    position: absolute; left: 0; right: 0; top: 0;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 0 200px;
+    will-change: transform;
+  }
+
+  h1 {
+    font-family: var(--font-mono); font-size: 15px; font-weight: 700;
+    letter-spacing: .34em; text-transform: uppercase;
+    color: var(--text); margin: 0 0 6px;
+  }
+  h1::before { content: "["; color: var(--accent); margin-right: 5px; }
+  h1::after  { content: "]"; color: var(--accent); margin-left: 5px; }
+  .sub-head {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .28em;
+    text-transform: uppercase; color: var(--faint); margin-bottom: 64px;
+  }
+
+  .row { text-align: center; margin-bottom: 44px; max-width: 1200px; }
+  .who {
+    font-family: var(--font-display); font-size: 54px; font-weight: 600;
+    text-transform: uppercase; line-height: 1; letter-spacing: .01em;
+  }
+  .tag {
+    display: inline-block; margin-left: 14px; padding: 4px 9px;
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    letter-spacing: .16em; text-transform: uppercase;
+    background: var(--accent); color: var(--ink); vertical-align: 12px;
+  }
+  .said {
+    margin-top: 14px;
+    font-family: var(--font-mono); font-size: 15px; font-weight: 400;
+    line-height: 1.7; letter-spacing: .02em; color: var(--muted);
+    text-wrap: pretty;
+  }
+  .said::before { content: "\201C"; }
+  .said::after  { content: "\201D"; }
+
+  /* Bits: smaller secondary block, per spec. */
+  .divider {
+    width: 220px; height: 1px; background: var(--edge);
+    margin: 40px 0 56px;
+  }
+  .bits-row {
+    text-align: center; margin-bottom: 22px;
+    font-family: var(--font-display); font-size: 30px; font-weight: 500;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .bits-row .amount {
+    font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+    letter-spacing: .12em; color: var(--accent); margin-left: 12px;
+  }
+
+  #empty {
+    position: absolute; inset: 0;
+    display: none; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 13px; letter-spacing: .28em;
+    text-transform: uppercase; color: var(--faint);
+  }
+  body.is-empty #empty { display: flex; }
+  body.is-empty #viewport { display: none; }
+</style>
+
+<div id="viewport"><div id="roll"></div></div>
+<div id="empty">no subscribers recorded this stream</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const SPEED = Number(params.get('speed') || 45);      // seconds per pass
+  const LOOP = params.get('loop') !== '0';
+  if (params.has('preview')) document.body.classList.add('preview');
+
+  const roll = document.getElementById('roll');
+  let anim = null;
+
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text) n.textContent = text;
+    return n;
+  };
+
+  function label(row) {
+    if (row.gifted > 0) return `gifted ${row.gifted}`;
+    if (row.months > 1) return `${row.months} months`;
+    return '';
+  }
+
+  function build(credits) {
+    const subs = (credits.subs || []).slice();
+    const bits = (credits.bits || []).slice();
+
+    document.body.classList.toggle('is-empty', !subs.length && !bits.length);
+    roll.innerHTML = '';
+    if (!subs.length && !bits.length) return;
+
+    // Gifters first, then longest-standing, then everyone else.
+    subs.sort((a, b) => (b.gifted - a.gifted) || (b.months - a.months) ||
+                        a.name.localeCompare(b.name));
+    bits.sort((a, b) => b.bits - a.bits);
+
+    roll.appendChild(el('h1', null, 'REDACTED'));
+    roll.appendChild(el('div', 'sub-head', 'subscribers this stream'));
+
+    for (const s of subs) {
+      const row = el('div', 'row');
+      const who = el('div', 'who', s.name);
+      const tag = label(s);
+      if (tag) who.appendChild(el('span', 'tag', tag));
+      row.appendChild(who);
+      if (s.message) row.appendChild(el('div', 'said', s.message));
+      roll.appendChild(row);
+    }
+
+    if (bits.length) {
+      roll.appendChild(el('div', 'divider'));
+      roll.appendChild(el('div', 'sub-head', 'bits'));
+      for (const b of bits) {
+        const row = el('div', 'bits-row', b.name);
+        row.appendChild(el('span', 'amount', String(b.bits)));
+        roll.appendChild(row);
+      }
+    }
+    start();
+  }
+
+  function start() {
+    if (anim) anim.cancel();
+    let started = false;
+    const go = () => {
+      if (started) return;
+      started = true;
+      const height = roll.offsetHeight;
+      anim = roll.animate(
+        [{ transform: 'translateY(1080px)' },
+         { transform: `translateY(${-height}px)` }],
+        { duration: SPEED * 1000, iterations: LOOP ? Infinity : 1,
+          easing: 'linear', fill: 'forwards' });
+    };
+    // rAF gives an accurate post-layout measurement, but it never fires in a
+    // page that is not rendering - an OBS source on an inactive scene. The
+    // timeout guarantees the roll starts regardless; whichever lands first wins.
+    requestAnimationFrame(go);
+    setTimeout(go, 250);
+  }
+
+  function apply(payload) {
+    if (payload && payload.credits) build(payload.credits);
+  }
+
+  fetch('/credits').then(r => r.json()).then(build).catch(() => {});
+
+  function connect() {
+    const es = new EventSource('/events');
+    es.onmessage = (e) => { try { apply(JSON.parse(e.data)); } catch (_) {} };
+    es.onerror = () => { es.close(); setTimeout(connect, 2000); };
+  }
+  connect();
+</script>

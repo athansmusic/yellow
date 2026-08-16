@@ -120,6 +120,81 @@ def save_state() -> None:
         pass
 
 
+# ---- Credits ------------------------------------------------------------
+# Deliberately NOT part of _state. "Reset to defaults" restores the episode
+# fields, and it must never take the stream's subscriber list with it.
+CREDITS_FILE = HERE / "credits.json"
+_credits: dict = {"subs": [], "bits": []}
+
+
+def load_credits() -> None:
+    global _credits
+    if CREDITS_FILE.exists():
+        try:
+            saved = json.loads(CREDITS_FILE.read_text(encoding="utf-8"))
+            _credits = {"subs": saved.get("subs", []), "bits": saved.get("bits", [])}
+        except (json.JSONDecodeError, OSError):
+            _credits = {"subs": [], "bits": []}
+
+
+def save_credits() -> None:
+    try:
+        CREDITS_FILE.write_text(json.dumps(_credits, indent=2), encoding="utf-8")
+    except OSError:
+        pass
+
+
+def add_sub(event: dict) -> None:
+    """Record a subscription for the end-screen roll.
+
+    Deduped by user: a resub after a sub updates the same row rather than
+    listing somebody twice, and repeat gifting accumulates onto one line.
+    """
+    with _lock:
+        rows = _credits["subs"]
+        existing = next((r for r in rows if r["user"] == event["user"]), None)
+        if existing is None:
+            existing = {"user": event["user"], "name": event["name"],
+                        "message": "", "months": 0, "gifted": 0, "kind": event["kind"],
+                        "ts": time.time()}
+            rows.append(existing)
+        existing["name"] = event["name"] or existing["name"]
+        existing["months"] = max(existing["months"], event.get("months", 0))
+        existing["gifted"] += event.get("gifted", 0)
+        # Keep the first message they wrote; a later silent resub must not
+        # blank out something they took the trouble to type.
+        if event.get("message") and not existing["message"]:
+            existing["message"] = event["message"][:200]
+        if existing["gifted"]:
+            existing["kind"] = "gifter"
+        save_credits()
+    _broadcast()
+
+
+def add_bits(event: dict) -> None:
+    with _lock:
+        rows = _credits["bits"]
+        existing = next((r for r in rows if r["user"] == event["user"]), None)
+        if existing is None:
+            existing = {"user": event["user"], "name": event["name"],
+                        "bits": 0, "ts": time.time()}
+            rows.append(existing)
+        existing["name"] = event["name"] or existing["name"]
+        existing["bits"] += event.get("bits", 0)
+        save_credits()
+    _broadcast()
+
+
+def reset_credits() -> dict:
+    with _lock:
+        _credits["subs"] = []
+        _credits["bits"] = []
+        save_credits()
+        snapshot = json.loads(json.dumps(_credits))
+    _broadcast()
+    return snapshot
+
+
 def push_message(msg: dict) -> None:
     """Append a chat line and drop the oldest beyond the cap."""
     cfg = _twitch_cfg()
@@ -158,6 +233,7 @@ def drop_messages(pred) -> None:
 def _broadcast() -> None:
     with _lock:
         snapshot = dict(_state)
+        snapshot["credits"] = json.loads(json.dumps(_credits))
         save_state()
         dead = []
         for q in _listeners:
@@ -175,6 +251,7 @@ def update_state(patch: dict) -> dict:
             if k in patch:
                 _state[k] = patch[k]
         snapshot = dict(_state)
+        snapshot["credits"] = json.loads(json.dumps(_credits))
         save_state()
         dead = []
         for q in _listeners:
@@ -216,6 +293,12 @@ class Handler(BaseHTTPRequestHandler):
             self._send_file(OVERLAY_DIR / "panel.html", "text/html; charset=utf-8")
         elif route == "/overlay":
             self._send_file(OVERLAY_DIR / "episode.html", "text/html; charset=utf-8")
+        elif route == "/credits":
+            with _lock:
+                body = json.dumps(_credits).encode()
+            self._send(body, "application/json")
+        elif route == "/creditsroll":
+            self._send_file(OVERLAY_DIR / "credits.html", "text/html; charset=utf-8")
         elif route == "/stage":
             self._send_file(OVERLAY_DIR / "livelisten.html", "text/html; charset=utf-8")
         elif route == "/theme.css":
@@ -231,6 +314,11 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         route = self.path.split("?", 1)[0].rstrip("/")
+        if route == "/credits/reset":
+            # Explicit only. Never automatic - a crash-restart mid-stream must
+            # not silently wipe the subscriber list.
+            self._send(json.dumps(reset_credits()).encode(), "application/json")
+            return
         if route == "/reset":
             # Back to the show's standing defaults, not to empty.
             self._send(json.dumps(update_state(dict(DEFAULT_STATE))).encode(),
@@ -294,6 +382,7 @@ def main() -> int:
     args = ap.parse_args()
 
     load_state()
+    load_credits()
 
     # Chat starts empty every session - resurrecting yesterday's messages on
     # stream would be worse than an empty panel.
@@ -308,6 +397,8 @@ def main() -> int:
             on_clear_user=lambda user: drop_messages(lambda m: m.get("user") == user),
             on_clear_msg=lambda mid: drop_messages(lambda m: m.get("id") == mid),
             on_clear_all=lambda: drop_messages(lambda m: True),
+            on_sub=add_sub,
+            on_bits=add_bits,
         ).start()
     else:
         print("  Twitch chat   : disabled (see config.json -> twitch)")

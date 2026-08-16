@@ -16,3 +16,6 @@ __pycache__/
 
 # Third-party binary - download from nirsoft.net, don't vendor it
 displays/multimonitortool-x64/
+
+# Per-stream subscriber list, not source
+control/credits.json
