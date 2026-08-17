@@ -40,6 +40,13 @@
     }
   },
 
+  "threshold_effect": {
+    "_note": "Channel point redeem: turns the whole stream pure black and #FFF200, Photoshop-Threshold style. OBS has no global filter, so the shader lives on every scene and they toggle together. Nested scenes are included even though their parent already covers them - a hard threshold is idempotent (yellow luma 0.86 stays above the cut, black 0.0 stays below), so applying it twice looks identical to applying it once, and covering everything means no scene can be missed.",
+    "filter_name": "Threshold Yellow",
+    "seconds": 30,
+    "scenes": ["Audio", "[BG]", "Alerts on Screen", "Jamie [CAM]", "[CAM]", "Ending", "Live Listen Solo", "Live Listen Duo", "In Game", "Live", "Starting Soon"]
+  },
+
   "obs_watch": {
     "_note": "Clears the per-stream credits list when OBS starts streaming. Fires on stream START, not END - the roll is shown on the ending scene before you stop, so the result on screen is identical, but an accidental stop cannot destroy a night's subscriber list. Read-only towards OBS; never sends a command.",
     "enabled": true,

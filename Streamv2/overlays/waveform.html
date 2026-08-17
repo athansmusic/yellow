@@ -1,0 +1,176 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Audience Waveform</title>
+<style>
+  /* ---------------------------------------------------------------------
+     Audio visualiser for the Audience Mix, drawn in the [REDACTED] palette.
+
+     Reads the Windows capture device directly via getUserMedia rather than
+     going through an OBS plugin, which means the look is entirely ours.
+
+     REQUIRES OBS to be launched with --enable-media-stream, otherwise
+     browser sources cannot open an audio device at all. Add
+     --use-fake-ui-for-media-stream too, or OBS will sit waiting on a
+     permission prompt it never shows you.
+
+     Query params
+       ?device=Audience Mix   substring match on the device label
+       ?mode=bars|wave        default bars
+       ?bars=56               bar count
+       ?color=FFF200          accent
+       ?mirror=1              mirror around the centre
+       ?floor=-72             dB floor, quieter than this reads as silence
+       ?debug=1               show status text and device list
+     --------------------------------------------------------------------- */
+
+  html, body {
+    margin: 0; width: 1920px; height: 1080px;
+    overflow: hidden; background: transparent;
+    font-family: "Martian Mono", Consolas, monospace;
+  }
+  canvas { display: block; width: 1920px; height: 1080px; }
+
+  /* Only ever visible with ?debug=1 - never sits on a live stream. */
+  #status {
+    position: absolute; left: 24px; top: 24px; display: none;
+    padding: 14px 18px; background: rgba(9, 9, 9, .9);
+    color: #fff; font-size: 13px; line-height: 1.6; max-width: 900px;
+    border-left: 3px solid #FFF200; white-space: pre-wrap;
+  }
+  body.debug #status { display: block; }
+</style>
+
+<canvas id="c" width="1920" height="1080"></canvas>
+<div id="status"></div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const WANT = (params.get('device') || 'Audience Mix').toLowerCase();
+  const MODE = params.get('mode') === 'wave' ? 'wave' : 'bars';
+  const BARS = Math.max(8, Math.min(256, Number(params.get('bars') || 56)));
+  const COLOR = '#' + (params.get('color') || 'FFF200').replace('#', '');
+  const MIRROR = params.get('mirror') === '1';
+  const FLOOR = Number(params.get('floor') || -72);
+  if (params.has('debug')) document.body.classList.add('debug');
+
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  const statusEl = document.getElementById('status');
+  const W = canvas.width, H = canvas.height;
+
+  const say = (msg) => { statusEl.textContent = msg; };
+
+  let analyser = null;
+  let freqData = null;
+  let timeData = null;
+
+  async function start() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      say('No getUserMedia.\nOBS must be launched with --enable-media-stream.');
+      return;
+    }
+
+    try {
+      // Labels are hidden until permission is granted once, so open any
+      // input first, then re-enumerate to find the one we actually want.
+      const probe = await navigator.mediaDevices.getUserMedia({ audio: true });
+      probe.getTracks().forEach(t => t.stop());
+
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const inputs = devices.filter(d => d.kind === 'audioinput');
+      const match = inputs.find(d => d.label.toLowerCase().includes(WANT));
+
+      if (!match) {
+        say(`Device matching "${WANT}" not found.\n\nAvailable inputs:\n` +
+            inputs.map(d => '  ' + (d.label || '(unlabelled)')).join('\n'));
+        return;
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          deviceId: { exact: match.deviceId },
+          // All off: this is a meter, not a microphone. Processing would
+          // duck and gate exactly the peaks we want to draw.
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+        },
+      });
+
+      const audio = new AudioContext();
+      const src = audio.createMediaStreamSource(stream);
+      analyser = audio.createAnalyser();
+      analyser.fftSize = 2048;
+      analyser.smoothingTimeConstant = 0.72;
+      analyser.minDecibels = FLOOR;
+      analyser.maxDecibels = -10;
+      src.connect(analyser);
+
+      freqData = new Uint8Array(analyser.frequencyBinCount);
+      timeData = new Uint8Array(analyser.fftSize);
+
+      say(`Reading: ${match.label}\nmode ${MODE}, ${BARS} bars`);
+      requestAnimationFrame(draw);
+    } catch (err) {
+      say(`Could not open audio: ${err.name}\n\n` +
+          'OBS needs --enable-media-stream (and --use-fake-ui-for-media-stream\n' +
+          'so it does not wait on a permission prompt).');
+    }
+  }
+
+  /* Frequency bins are linear but hearing is not, so bin logarithmically -
+     otherwise everything interesting crushes into the leftmost few pixels. */
+  function logBins(data, count) {
+    const out = new Array(count);
+    const n = data.length;
+    for (let i = 0; i < count; i++) {
+      const lo = Math.floor(Math.pow(n, i / count));
+      const hi = Math.max(lo + 1, Math.floor(Math.pow(n, (i + 1) / count)));
+      let peak = 0;
+      for (let j = lo; j < hi && j < n; j++) peak = Math.max(peak, data[j]);
+      out[i] = peak / 255;
+    }
+    return out;
+  }
+
+  function drawBars() {
+    const values = logBins(freqData, BARS);
+    const gap = Math.max(2, Math.round(W / BARS * 0.22));
+    const bw = (W - gap * (BARS - 1)) / BARS;
+    ctx.fillStyle = COLOR;
+    for (let i = 0; i < BARS; i++) {
+      const v = values[i];
+      const h = Math.max(2, v * H * (MIRROR ? 0.5 : 1));
+      const x = i * (bw + gap);
+      if (MIRROR) {
+        ctx.fillRect(x, H / 2 - h, bw, h * 2);
+      } else {
+        ctx.fillRect(x, H - h, bw, h);
+      }
+    }
+  }
+
+  function drawWave() {
+    analyser.getByteTimeDomainData(timeData);
+    ctx.strokeStyle = COLOR;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    const step = W / timeData.length;
+    for (let i = 0; i < timeData.length; i++) {
+      const y = H / 2 + ((timeData[i] - 128) / 128) * (H / 2);
+      i ? ctx.lineTo(i * step, y) : ctx.moveTo(0, y);
+    }
+    ctx.stroke();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    if (analyser) {
+      if (MODE === 'wave') drawWave();
+      else { analyser.getByteFrequencyData(freqData); drawBars(); }
+    }
+    requestAnimationFrame(draw);
+  }
+
+  start();
+</script>

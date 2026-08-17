@@ -42,6 +42,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 STATE_FILE = HERE / "state.json"
 OVERLAY_DIR = ROOT / "overlays"
+ASSET_DIR = OVERLAY_DIR / "assets"
 
 DEFAULT_STATE = {
     # Which Live Listen layout the stage renders.
@@ -84,6 +85,13 @@ DEFAULT_STATE = {
 _lock = threading.Lock()
 _state: dict = dict(DEFAULT_STATE)
 _listeners: list[queue.Queue] = []
+
+# Layout rects, reported by an overlay from inside the renderer that actually
+# draws it, keyed "<layer>:<scene>". Measured, never computed: the episode
+# block's height depends on how its title wraps, so every panel below it
+# shifts. Deliberately not persisted - each load re-reports, so a stale rect
+# can never outlive a design change.
+_slots: dict = {}
 
 
 def _load_cfg() -> dict:
@@ -397,6 +405,20 @@ class Handler(BaseHTTPRequestHandler):
             with _lock:
                 body = json.dumps(_credits).encode()
             self._send(body, "application/json")
+        elif route == "/effect/threshold":
+            self._send(json.dumps(fire_threshold()).encode(), "application/json")
+        elif route == "/effect/threshold/off":
+            self._send(json.dumps(clear_threshold()).encode(), "application/json")
+        elif route == "/frameglow":
+            self._send_file(OVERLAY_DIR / "frameglow.html", "text/html; charset=utf-8")
+        elif route == "/camedge":
+            self._send_file(OVERLAY_DIR / "camedge.html", "text/html; charset=utf-8")
+        elif route == "/splitcam":
+            self._send_file(OVERLAY_DIR / "splitcam.html", "text/html; charset=utf-8")
+        elif route == "/broadcast":
+            self._send_file(OVERLAY_DIR / "broadcast.html", "text/html; charset=utf-8")
+        elif route == "/waveform":
+            self._send_file(OVERLAY_DIR / "waveform.html", "text/html; charset=utf-8")
         elif route == "/startingsoon":
             self._send_file(OVERLAY_DIR / "startingsoon.html", "text/html; charset=utf-8")
         elif route == "/ending":
@@ -417,6 +439,20 @@ class Handler(BaseHTTPRequestHandler):
                 payload["startup"] = _startup
                 body = json.dumps(payload).encode()
             self._send(body, "application/json")
+        elif route.startswith("/assets/"):
+            # Path().name strips any directory part, so a crafted URL cannot
+            # walk out of the assets folder.
+            name = Path(route[len("/assets/"):]).name
+            ctype = {
+                ".png": "image/png", ".svg": "image/svg+xml",
+                ".webp": "image/webp", ".jpg": "image/jpeg",
+                ".jpeg": "image/jpeg", ".gif": "image/gif",
+            }.get(Path(name).suffix.lower(), "application/octet-stream")
+            self._send_file(ASSET_DIR / name, ctype)
+        elif route == "/slots":
+            with _lock:
+                body = json.dumps(_slots).encode()
+            self._send(body, "application/json")
         elif route == "/events":
             self._stream_events()
         else:
@@ -424,16 +460,45 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         route = self.path.split("?", 1)[0].rstrip("/")
+        if route == "/slots":
+            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                body = json.loads(self.rfile.read(length) or b"{}")
+            except json.JSONDecodeError:
+                self._send(b'{"error":"bad json"}', "application/json", 400)
+                return
+            key, rects = body.get("key"), body.get("slots")
+            if isinstance(key, str) and isinstance(rects, dict):
+                with _lock:
+                    _slots[key] = rects
+            self._send(b'{"ok":true}', "application/json")
+            return
+        if route == "/effect/threshold":
+            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                body = json.loads(self.rfile.read(length) or b"{}")
+            except json.JSONDecodeError:
+                body = {}
+            self._send(json.dumps(fire_threshold(body.get("seconds"))).encode(),
+                       "application/json")
+            return
+        if route == "/effect/threshold/off":
+            self._send(json.dumps(clear_threshold()).encode(), "application/json")
+            return
         if route == "/dev/startup":
             length = int(self.headers.get("Content-Length") or 0)
             try:
                 body = json.loads(self.rfile.read(length) or b"{}")
             except json.JSONDecodeError:
                 body = {}
-            if body.get("action") == "end":
+            action = body.get("action")
+            if action == "end":
                 startup_end()
+            elif action == "videoend":
+                # The full handoff, scene switch included.
+                do_video_end(_obs["starting_video"])
             else:
-                startup_begin()
+                do_stream_start()
             with _lock:
                 out = json.dumps(dict(_startup)).encode()
             self._send(out, "application/json")
@@ -510,28 +575,98 @@ class Handler(BaseHTTPRequestHandler):
                     _listeners.remove(q)
 
 
-def _on_stream_start(link, starting_scene: str, starting_video: str) -> None:
+# Populated in main(). Module level so /dev/ endpoints can run exactly the
+# same handlers the live OBS events do - a simulation that skips half the
+# work proves nothing.
+_obs: dict = {"link": None, "starting_scene": "Starting Soon",
+              "starting_video": "Start Video", "live_scene": "Live",
+              "auto_switch": True}
+
+
+_effect_timer = None
+
+
+def fire_threshold(seconds: float | None = None) -> dict:
+    """Flip the whole stream to black/#FFF200 for a while, then back.
+
+    Auto-reverts on a timer. A redeem that toggles permanently means somebody
+    has to notice and undo it, and if it gets missed the stream stays wrong -
+    so the revert is unconditional and does not depend on a second request.
+    """
+    global _effect_timer
+    cfg = {k: v for k, v in _load_cfg().get("threshold_effect", {}).items()
+           if not k.startswith("_")}
+    name = cfg.get("filter_name", "Threshold Yellow")
+    scenes = cfg.get("scenes", [])
+    secs = float(seconds if seconds is not None else cfg.get("seconds", 30))
+    link = _obs["link"]
+
+    if link is None:
+        return {"ok": False, "error": "not connected to OBS"}
+
+    for scene in scenes:
+        link.set_filter_enabled(scene, name, True)
+
+    # Restart the clock if it is redeemed again mid-effect, rather than
+    # letting the first timer cut the second redeem short.
+    if _effect_timer is not None:
+        _effect_timer.cancel()
+
+    def revert():
+        for scene in scenes:
+            link.set_filter_enabled(scene, name, False)
+        print("  [fx] threshold off", flush=True)
+
+    _effect_timer = threading.Timer(secs, revert)
+    _effect_timer.daemon = True
+    _effect_timer.start()
+    print(f"  [fx] threshold ON for {secs:g}s across {len(scenes)} scenes",
+          flush=True)
+    return {"ok": True, "seconds": secs, "scenes": scenes, "filter": name}
+
+
+def clear_threshold() -> dict:
+    """Panic off - kill it immediately regardless of the timer."""
+    global _effect_timer
+    cfg = {k: v for k, v in _load_cfg().get("threshold_effect", {}).items()
+           if not k.startswith("_")}
+    link = _obs["link"]
+    if _effect_timer is not None:
+        _effect_timer.cancel()
+        _effect_timer = None
+    if link is None:
+        return {"ok": False, "error": "not connected to OBS"}
+    for scene in cfg.get("scenes", []):
+        link.set_filter_enabled(scene, cfg.get("filter_name", "Threshold Yellow"),
+                                False)
+    return {"ok": True}
+
+
+def do_stream_start() -> None:
     """Going live: clear the credits, arm the counter, show the countdown."""
     reset_credits()
     startup_begin()
-    # Re-show the video, since it hides itself at the end of the last run.
-    link.set_item_enabled(starting_scene, starting_video, True)
-    print("  [obs] credits cleared, chat counter armed", flush=True)
+    link = _obs["link"]
+    if link is not None:
+        # Re-show the video; it hides itself at the end of the last run.
+        link.set_item_enabled(_obs["starting_scene"], _obs["starting_video"], True)
+    print("  [obs] credits cleared, counter armed, countdown re-shown", flush=True)
 
 
-def _on_video_end(link, ended: str, starting_scene: str, starting_video: str,
-                  live_scene: str, auto_switch: bool) -> None:
+def do_video_end(ended: str) -> None:
     """The countdown finished: hand over to the live scene."""
-    if ended != starting_video:
+    if ended != _obs["starting_video"]:
         return                                   # some other media source
     startup_end()
-    print(f"  [obs] {ended!r} finished - "
-          f"{_startup['count']} chats (record {_startup['record']})", flush=True)
-    if not auto_switch:
+    print(f"  [obs] {ended!r} finished - {_startup['count']} chats "
+          f"(record {_startup['record']})", flush=True)
+    if not _obs["auto_switch"]:
         return
-    link.set_scene(live_scene)
-    # Hide it so the next stream starts it from the top.
-    link.set_item_enabled(starting_scene, starting_video, False)
+    link = _obs["link"]
+    if link is not None:
+        link.set_scene(_obs["live_scene"])
+        # Hide it so OBS restarts it from the top next stream.
+        link.set_item_enabled(_obs["starting_scene"], _obs["starting_video"], False)
 
 
 def main() -> int:
@@ -572,21 +707,19 @@ def main() -> int:
     obs_cfg = {k: v for k, v in _load_cfg().get("obs_watch", {}).items()
                if not k.startswith("_")}
     if obs_cfg.get("enabled"):
-        starting_scene = obs_cfg.get("starting_scene", "Starting Soon")
-        starting_video = obs_cfg.get("starting_video", "Start Video")
-        live_scene = obs_cfg.get("live_scene", "Live")
-        auto_switch = bool(obs_cfg.get("auto_switch_on_video_end", True))
+        _obs["starting_scene"] = obs_cfg.get("starting_scene", "Starting Soon")
+        _obs["starting_video"] = obs_cfg.get("starting_video", "Start Video")
+        _obs["live_scene"] = obs_cfg.get("live_scene", "Live")
+        _obs["auto_switch"] = bool(obs_cfg.get("auto_switch_on_video_end", True))
 
         link = ObsLink(
             host=obs_cfg.get("host", "127.0.0.1"),
             port=int(obs_cfg.get("port", 4455)),
             password=obs_cfg.get("password", ""),
-            on_stream_start=lambda: _on_stream_start(link, starting_scene,
-                                                     starting_video),
-            on_video_end=lambda name: _on_video_end(
-                link, name, starting_scene, starting_video, live_scene,
-                auto_switch),
+            on_stream_start=do_stream_start,
+            on_video_end=do_video_end,
         )
+        _obs["link"] = link
         link.start()
 
     server = ThreadingHTTPServer((args.host, args.port), Handler)

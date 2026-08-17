@@ -12,9 +12,12 @@ all exercised exactly as they will be on stream.
     python simulate.py gift 5      a gift bomb of 5
     python simulate.py bits 500    a bits cheer
     python simulate.py clear       wipe the list
-    python simulate.py startup     arm the Starting Soon chat counter
+    python simulate.py startup     full go-live: clears credits, arms the
+                                   counter, unhides the countdown video
     python simulate.py chat 40     send 40 chat messages at it
-    python simulate.py endstartup  stop counting, commit the record
+    python simulate.py endstartup  stop counting only, nothing in OBS
+    python simulate.py videoend    the full handoff - switches OBS to the
+                                   live scene and hides the countdown
 
 IMPORTANT: this writes to the same credits list the stream uses. Run
 `python simulate.py clear` before you go live, or the fake names end up on
@@ -129,7 +132,14 @@ def main() -> int:
 
         if cmd == "startup":
             st = post("/dev/startup", {"action": "begin"})
-            print(f"counter armed - count {st['count']}, record {st['record']}")
+            print(f"go-live simulated - count {st['count']}, record {st['record']}")
+            print("  credits cleared, counter armed, countdown video unhidden")
+            return 0
+
+        if cmd == "videoend":
+            st = post("/dev/startup", {"action": "videoend"})
+            print(f"handoff fired - final {st['count']}, record {st['record']}")
+            print("  OBS should now be on the live scene, countdown hidden")
             return 0
 
         if cmd == "endstartup":

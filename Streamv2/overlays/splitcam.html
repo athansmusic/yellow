@@ -1,0 +1,167 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Split Cams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* ---------------------------------------------------------------------
+     [REDACTED] split cams, from the black/yellow handoff.
+
+     Two OBS browser sources with the cameras between them:
+       ?layer=back    ground wash - only ever seen through the 2px seam
+       [ Athan Split / Jamie Split - native OBS, seam cut by shader ]
+       ?layer=front   scanlines, sweep, dim scrims, bottom scrim + names
+
+     The seam itself is NOT drawn here. A browser source cannot clip an OBS
+     camera, so the halves are carved by diagonal-split.shader on each camera
+     and this page never paints over the video except where it means to.
+
+     The clip-path polygons below are the design's, kept because the dim
+     scrims must follow exactly the same shapes the shader cuts.
+
+     Deliberately absent, per the handoff: episode identity, chat, waveform,
+     show mark. They were tried and cut. Do not add them back.
+     --------------------------------------------------------------------- */
+
+  :root {
+    --ground:   #060607;
+    --scrim:    #050506;
+    --accent:   #f4e409;
+    --display:  #f7f7f5;
+    --inactive: #3e3e46;
+    --disp: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --mono: "IBM Plex Mono", Consolas, monospace;
+  }
+
+  html, body {
+    margin: 0; width: 1920px; height: 1080px;
+    overflow: hidden; position: relative;
+    background: transparent; color: var(--display);
+    font-family: var(--mono);
+    -webkit-font-smoothing: antialiased;
+  }
+  #canvas { position: absolute; inset: 0; overflow: hidden; }
+
+  /* ---- Back layer: ground only ---------------------------------------- */
+  #wash {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(70% 55% at 6% 96%, rgba(150,26,26,.30) 0%, rgba(90,14,20,.10) 45%, transparent 72%),
+      radial-gradient(60% 50% at 97% 4%, rgba(96,20,44,.26) 0%, transparent 70%),
+      radial-gradient(120% 90% at 50% 50%, #0a0a0d 0%, var(--ground) 60%, #030304 100%);
+  }
+  body[data-layer="front"] #wash { display: none; }
+  /* The front layer must never paint a ground - it sits on top of the video. */
+  body[data-layer="back"]  #over { display: none; }
+
+  /* ---- Front layer ----------------------------------------------------- */
+  #over { position: absolute; inset: 0; pointer-events: none; }
+
+  /* Over the video on purpose: it unifies two differently-lit rooms. */
+  #scan {
+    position: absolute; inset: 0;
+    opacity: .35;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,.045) 0 1px, transparent 1px 3px);
+  }
+  #sweep {
+    position: absolute; left: 0; right: 0; height: 90px;
+    background: linear-gradient(180deg, transparent, rgba(244,228,9,.05), transparent);
+    animation: rk-sweep 9s linear infinite;
+  }
+
+  /* ---- Dim scrims ------------------------------------------------------
+     Same polygons the shader cuts, so a dimmed half stops exactly at the
+     seam. The quiet side is taken away rather than the loud side decorated. */
+  .half { position: absolute; inset: 0; }
+  .half.l { clip-path: polygon(0 0, calc(50% + 15px) 0, calc(50% - 15px) 100%, 0 100%); }
+  .half.r { clip-path: polygon(calc(50% + 17px) 0, 100% 0, 100% 100%, calc(50% - 13px) 100%); }
+  .half .dim {
+    position: absolute; inset: 0; background: var(--scrim);
+    opacity: 0; transition: opacity .4s ease;   /* slower than a syllable */
+  }
+  body.speaker-dim[data-active="B"] .half.l .dim { opacity: .42; }
+  body.speaker-dim[data-active="A"] .half.r .dim { opacity: .42; }
+
+  /* ---- Bottom scrim + names -------------------------------------------
+     The long transparent lead-in is what keeps this from reading as a bar. */
+  #names {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 190px 0 0; pointer-events: none;
+    background: linear-gradient(180deg, transparent 0%, rgba(3,3,4,.55) 45%, rgba(3,3,4,.92) 100%);
+  }
+  #row { display: flex; align-items: flex-end; gap: 40px; padding: 0 48px 44px; }
+  .host { display: flex; align-items: stretch; gap: 14px; flex: 1; min-width: 0; }
+  .host.b { justify-content: flex-end; }
+  .tick { flex: 0 0 4px; width: 4px; background: var(--accent); }
+  .who { display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; min-width: 0; }
+  .host.b .who { align-items: flex-end; }
+  .name {
+    font-family: var(--disp); font-weight: 700; font-size: 40px;
+    letter-spacing: .03em; line-height: .9; text-transform: uppercase;
+    color: var(--display);
+    /* Long names truncate rather than wrap - capped upstream, belt and braces. */
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .role {
+    font-weight: 500; font-size: 12px; letter-spacing: .2em;
+    text-transform: uppercase; color: var(--accent);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  /* With the dim flag off both ticks stay yellow. */
+  body.speaker-dim[data-active="A"] .host.b .tick { background: var(--inactive); }
+  body.speaker-dim[data-active="B"] .host.a .tick { background: var(--inactive); }
+  .name:empty, .role:empty { display: none; }
+
+  @keyframes rk-sweep { from { transform: translateY(-100%); } to { transform: translateY(1100%); } }
+</style>
+
+<div id="canvas">
+  <div id="wash"></div>
+  <div id="over">
+    <div class="half l"><div class="dim"></div></div>
+    <div class="half r"><div class="dim"></div></div>
+    <div id="scan"></div>
+    <div id="sweep"></div>
+    <div id="names">
+      <div id="row">
+        <div class="host a">
+          <span class="tick"></span>
+          <span class="who"><span class="name" id="hostA"></span><span class="role" id="hostARole"></span></span>
+        </div>
+        <div class="host b">
+          <span class="who"><span class="name" id="hostB"></span><span class="role" id="hostBRole"></span></span>
+          <span class="tick"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  document.body.dataset.layer = params.get('layer') === 'front' ? 'front' : 'back';
+
+  const text = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v || ''; };
+
+  function render(s) {
+    text('hostA', s.hostA);  text('hostARole', s.hostARole);
+    text('hostB', s.hostB);  text('hostBRole', s.hostBRole);
+
+    /* Default OFF. The handoff allows exactly this when mic levels aren't
+       available, and they aren't: there is one mixed capture device, not a
+       mic per host. Dimming on a guess would mute the wrong person on air.
+       Flip `speakerDim` in state once per-mic levels exist. */
+    document.body.classList.toggle('speaker-dim', s.speakerDim === true);
+    document.body.dataset.active = s.activeSpeaker === 'B' ? 'B' : 'A';
+  }
+
+  fetch('/state').then(r => r.json()).then(render).catch(() => render({}));
+
+  function connect() {
+    const es = new EventSource('/events');
+    es.onmessage = (e) => { try { render(JSON.parse(e.data)); } catch (_) {} };
+    es.onerror = () => { es.close(); setTimeout(connect, 2000); };
+  }
+  connect();
+</script>

@@ -75,6 +75,13 @@ class ObsLink(threading.Thread):
             except Exception:                          # noqa: BLE001
                 return False
 
+    def set_filter_enabled(self, source: str, filter_name: str,
+                           enabled: bool) -> bool:
+        """SetSourceFilterEnabled takes names, not ids - no lookup needed."""
+        return self.request("SetSourceFilterEnabled", {
+            "sourceName": source, "filterName": filter_name,
+            "filterEnabled": enabled})
+
     def set_scene(self, name: str) -> bool:
         return self.request("SetCurrentProgramScene", {"sceneName": name})
 

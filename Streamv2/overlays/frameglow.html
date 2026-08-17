@@ -1,0 +1,81 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Frame Glow</title>
+<style>
+  /* ---------------------------------------------------------------------
+     A yellow border around the whole canvas with a highlight travelling
+     slowly around it. Built for how Twitch actually renders a stream:
+
+     - THICKNESS. The browse grid draws roughly 320x180, a 6x downscale from
+       1920x1080. A 2px border lands on a third of a pixel and turns into
+       shimmer or disappears. 10px here survives as a readable ~1.7px line.
+
+     - CHEAP MOTION. The border itself never changes; only a soft gradient
+       sweeps along it. A chasing dash pattern is high-frequency detail
+       changing every frame, which is close to worst case for NVENC and takes
+       bitrate straight off the face. A slow low-contrast sweep costs almost
+       nothing.
+
+     ?w=10   border thickness in px
+     ?s=12   seconds per full lap
+     ?a=0.5  base border alpha (the static part)
+     --------------------------------------------------------------------- */
+  :root { --accent: #f4e409; --w: 10px; }
+
+  html, body {
+    margin: 0; width: 1920px; height: 1080px;
+    overflow: hidden; position: relative; background: transparent;
+  }
+
+  /* The constant part. */
+  #base {
+    position: absolute; inset: 0;
+    box-shadow: inset 0 0 0 var(--w) rgba(244,228,9,.5);
+  }
+
+  /* The moving part, clipped to the border ring: two masks, with the inner
+     rectangle excluded, leaves exactly the frame. The mask clips descendants,
+     which is what confines the spinner below. */
+  #ring {
+    position: absolute; inset: 0;
+    padding: var(--w); box-sizing: border-box; overflow: hidden;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite: exclude;
+  }
+
+  /* Square and oversized so the cone always covers the 1920x1080 diagonal. */
+  #spin {
+    position: absolute; left: 50%; top: 50%;
+    width: 2400px; height: 2400px; margin: -1200px 0 0 -1200px;
+    background: conic-gradient(from 0deg,
+      rgba(244,228,9,0)    0deg,
+      rgba(244,228,9,0)  250deg,
+      rgba(255,245,120,.55) 310deg,
+      rgba(255,255,200,.95) 340deg,
+      rgba(255,245,120,.55) 350deg,
+      rgba(244,228,9,0)  360deg);
+    animation: lap var(--s, 12s) linear infinite;
+  }
+
+  @keyframes lap { to { transform: rotate(360deg); } }
+</style>
+
+<div id="base"></div>
+<div id="ring"><div id="spin"></div></div>
+
+<script>
+  const p = new URLSearchParams(location.search);
+  const w = Number(p.get('w') || 10);
+  const s = Number(p.get('s') || 12);
+  const a = p.get('a');
+
+  const r = document.documentElement.style;
+  r.setProperty('--w', w + 'px');
+  r.setProperty('--s', s + 's');
+  if (a !== null) {
+    document.getElementById('base').style.boxShadow =
+      `inset 0 0 0 ${w}px rgba(244,228,9,${Number(a)})`;
+  }
+</script>

@@ -1,0 +1,544 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Broadcast Layout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* ---------------------------------------------------------------------
+     [REDACTED] broadcast layout, from the black/yellow handoff.
+
+     Rendered TWICE as two OBS browser sources with the cameras between:
+       ?layer=back    ground, textures, waveform, episode, chat, footer
+       [ cameras - native OBS sources ]
+       ?layer=front   tile edges, corner brackets, nameplates
+
+     One source cannot work: the design paints a full-bleed ground, which
+     would bury the cameras.
+
+     ?scene=two|solo  pins the layout, so each OBS scene owns its own pair
+     ?preview=1       striped camera wells + sample data, for review
+     ?ground=off      drop the opaque base so the scene's own [BG] shows
+                      through. The coloured washes stay - they are alpha.
+     ?chat=ext        keep the chat panel frame but leave the message area
+                      empty, for a real chat source placed in the slot.
+     --------------------------------------------------------------------- */
+
+  :root {
+    --ground:    #060607;
+    --panel:     #050506;
+    --rail:      #08080a;
+    --accent:    #f4e409;
+    --chip-ink:  #16160a;
+    --display:   #f7f7f5;
+    --chat:      #c9c9d0;
+    --secondary: #9a9aa2;
+    --meta:      #5c5c64;
+    --dim:       #3e3e46;
+    --edge:      #26262c;
+    --divider:   #1a1a1f;
+    --axis:      #17171c;
+    --mod:       #5ad1a5;
+    --vip:       #c98bff;
+    --disp: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --mono: "IBM Plex Mono", Consolas, monospace;
+  }
+
+  html, body {
+    margin: 0; width: 1920px; height: 1080px;
+    overflow: hidden; position: relative;
+    background: transparent; color: var(--display);
+    font-family: var(--mono);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #canvas { position: absolute; inset: 0; overflow: hidden; }
+
+  /* Three stacked texture layers, painted before content. Back layer only -
+     the front layer must stay transparent over the cameras. */
+  .tex { position: absolute; inset: 0; pointer-events: none; }
+  body[data-layer="front"] .tex { display: none; }
+
+  #wash {
+    background:
+      radial-gradient(70% 55% at 6% 96%, rgba(150,26,26,.30) 0%, rgba(90,14,20,.10) 45%, transparent 72%),
+      radial-gradient(60% 50% at 97% 4%, rgba(96,20,44,.26) 0%, transparent 70%),
+      radial-gradient(120% 90% at 50% 50%, #0a0a0d 0%, var(--ground) 60%, #030304 100%);
+  }
+  /* Only the last radial is opaque; dropping it keeps the colour but lets
+     whatever OBS draws underneath come through. */
+  body[data-ground="off"] #wash {
+    background:
+      radial-gradient(70% 55% at 6% 96%, rgba(150,26,26,.30) 0%, rgba(90,14,20,.10) 45%, transparent 72%),
+      radial-gradient(60% 50% at 97% 4%, rgba(96,20,44,.26) 0%, transparent 70%);
+  }
+  body[data-ground="off"] #scan { opacity: .18; }
+  #scan {
+    opacity: .35;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,.045) 0 1px, transparent 1px 3px);
+  }
+  #sweep {
+    height: 90px;
+    background: linear-gradient(180deg, transparent, rgba(244,228,9,.05), transparent);
+    animation: rk-sweep 9s linear infinite;
+  }
+
+  #stack {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    padding: 20px; gap: 10px; box-sizing: border-box;
+  }
+  #main {
+    flex: 1; min-height: 0;
+    display: grid; gap: 16px;
+    grid-template-columns: 792px 1fr;
+  }
+  body[data-scene="solo"] #main { grid-template-columns: 1240px 1fr; }
+
+  #left  { display: flex; flex-direction: column; gap: 10px; justify-content: center; min-height: 0; }
+  #right { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+
+  /* Front layer draws only the camera furniture. */
+  body[data-layer="front"] #right,
+  body[data-layer="front"] #wave,
+  body[data-layer="front"] #footer { visibility: hidden; }
+
+  /* ---- Camera tiles ---------------------------------------------------- */
+  /* Never flex:1 - a 16:9 capture would letterbox. The tile pins its ratio. */
+  .cam {
+    position: relative; flex: 0 0 auto;
+    width: 100%; aspect-ratio: 16 / 9; overflow: hidden;
+  }
+  body[data-scene="solo"] #cam02 { display: none; }
+
+  body[data-layer="back"].preview .cam {
+    background: repeating-linear-gradient(135deg, #101013 0 14px, #141418 14px 28px);
+  }
+  body[data-layer="front"] .cam { box-shadow: inset 0 0 0 1px var(--edge); }
+
+  .cam-label {
+    position: absolute; inset: 0; display: none;
+    flex-direction: column; align-items: center; justify-content: center; gap: 9px;
+  }
+  body[data-layer="back"].preview .cam-label { display: flex; }
+  .cam-label .a { font-size: 13px; letter-spacing: .28em; text-transform: uppercase; color: var(--meta); }
+  .cam-label .b { font-size: 11px; letter-spacing: .1em; color: var(--dim); }
+
+  /* Yellow edge + corner brackets. Applied to EVERY tile, not just an active
+     speaker - the duo view is two equal hosts, so the framing must not imply
+     one of them is the one being listened to. `.is-live` is still set by the
+     script but nothing keys off it. */
+  .live { position: absolute; inset: 0; pointer-events: none; display: none; }
+  body[data-layer="front"] .live { display: block; box-shadow: inset 0 0 0 1px rgba(244,228,9,.35), inset 0 0 60px rgba(244,228,9,.10); }
+  .live i { position: absolute; width: 26px; height: 26px; }
+  .live i.tl { top: 10px; left: 10px;  border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+  .live i.tr { top: 10px; right: 10px; border-top: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+  .live i.bl { bottom: 10px; left: 10px;  border-bottom: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+  .live i.br { bottom: 10px; right: 10px; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+
+  .plate {
+    position: absolute; left: 0; bottom: 18px;
+    display: none; background: #050506; box-shadow: 0 0 0 1px var(--edge);
+  }
+  body[data-layer="front"] .plate { display: flex; }
+  .plate .bar { width: 5px; background: var(--accent); }
+  .plate .who { display: flex; align-items: baseline; gap: 12px; padding: 7px 16px 7px 13px; }
+  .plate .name { font-family: var(--disp); font-weight: 700; font-size: 27px; letter-spacing: .03em; text-transform: uppercase; color: var(--display); }
+  .plate .role { font-weight: 500; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); }
+
+  /* ---- Waveform band --------------------------------------------------- */
+  #wave {
+    position: relative; flex: 0 0 auto; height: 86px; padding: 0 18px;
+    background: var(--panel); box-shadow: inset 0 0 0 1px var(--edge);
+    display: flex; align-items: center; justify-content: space-between; gap: 2px;
+    box-sizing: border-box;
+  }
+  #wave::before {
+    content: ""; position: absolute; left: 18px; right: 18px; top: 50%;
+    height: 1px; background: var(--axis);
+  }
+  #wave b { position: relative; flex: 1; background: var(--accent); display: block; }
+
+  /* ---- Episode block --------------------------------------------------- */
+  #episode {
+    position: relative; flex: 0 0 auto; padding: 20px 22px 22px;
+    background: var(--panel); box-shadow: inset 0 0 0 1px var(--edge); overflow: hidden;
+  }
+  #episode::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(180deg, var(--accent), rgba(244,228,9,0));
+  }
+  #ep-head { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+  #show { font-weight: 600; font-size: 13px; letter-spacing: .3em; text-transform: uppercase; color: var(--display); white-space: nowrap; animation: rk-glitch 7s steps(1, end) infinite; }
+  #chip { padding: 3px 9px; font-weight: 600; font-size: 12px; letter-spacing: .18em; text-transform: uppercase; background: var(--accent); color: var(--chip-ink); white-space: nowrap; }
+  #chip:empty, #show:empty { display: none; }
+  /* Show logo in place of the [ REDACTED ] wordmark. Hidden until it actually
+     loads, so a missing file leaves the text version rather than a gap. */
+  #logo { display: none; flex: 0 0 auto; height: 30px; width: auto; }
+  body.has-logo #logo { display: block; }
+  body.has-logo #show { display: none; }
+  #title { font-family: var(--disp); font-weight: 700; font-size: 74px; line-height: .94; letter-spacing: .01em; text-transform: uppercase; color: var(--display); text-wrap: pretty; }
+  #blurb { margin-top: 14px; font-size: 15px; line-height: 1.4; color: var(--secondary); }
+  #title:empty, #blurb:empty { display: none; }
+  .rule { flex: 1; height: 1px; background: linear-gradient(90deg, var(--edge), transparent); }
+
+  /* ---- Chat ------------------------------------------------------------ */
+  #chat { flex: 1; min-height: 0; display: flex; flex-direction: column; background: var(--panel); box-shadow: inset 0 0 0 1px var(--edge); }
+  #chat-head { flex: 0 0 auto; display: flex; align-items: center; gap: 12px; padding: 14px 18px 12px; }
+  #chat-head .lbl { font-weight: 500; font-size: 12px; letter-spacing: .26em; text-transform: uppercase; color: var(--secondary); }
+  #watching { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--meta); }
+  #watching:empty { display: none; }
+  #tally { width: 8px; height: 8px; background: var(--accent); animation: rk-pulse 2.2s ease-in-out infinite; }
+  #msgs { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 11px; padding: 0 18px 14px; overflow: hidden; }
+  /* External chat source sits in this slot - keep the box so the panel frame
+     and the follower rail below it stay put, just stop drawing messages. */
+  body[data-chat="ext"] #msgs { visibility: hidden; }
+  .msg { display: flex; gap: 10px; align-items: baseline; animation: rk-rise .45s ease both; }
+  .msg .t { font-size: 12px; letter-spacing: .06em; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .msg .badge { padding: 1px 6px; font-weight: 600; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+  .msg .body { font-size: 17px; line-height: 1.35; color: var(--chat); }
+  .msg .u { font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .msg .sep { color: var(--dim); }
+  .msg .red { color: #1a1a1f; background: var(--chat); letter-spacing: -.04em; }
+
+  /* ---- Follower rail --------------------------------------------------- */
+  #follow {
+    flex: 0 0 auto; display: flex; align-items: center; gap: 12px;
+    padding: 10px 18px; border-top: 1px solid var(--divider); background: var(--rail);
+  }
+  #follow .bar { width: 3px; align-self: stretch; background: var(--accent); }
+  #follow .lbl { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--meta); }
+  #follow-name { font-family: var(--disp); font-weight: 600; font-size: 22px; letter-spacing: .05em; text-transform: uppercase; color: var(--display); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #follow-meta { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--meta); }
+  body:not(.has-follower) #follow { visibility: hidden; }
+
+  /* ---- Footer ---------------------------------------------------------- */
+  #footer { flex: 0 0 auto; height: 26px; display: flex; align-items: center; gap: 20px; }
+  #handle { font-family: var(--disp); font-weight: 700; font-size: 22px; letter-spacing: .07em; text-transform: uppercase; color: var(--display); }
+  #tick { width: 26px; height: 1px; background: var(--accent); }
+  /* Brighter and a touch larger than the design's --meta. These two sit on the
+     bare background rather than on a panel, so whatever [BG] is playing shows
+     through behind them; --meta only has enough contrast against the flat
+     ground. The shadow holds them legible over a light frame of the video. */
+  #note, #cadence {
+    font-size: 12px; letter-spacing: .2em; text-transform: uppercase;
+    color: #b7b7c2; text-shadow: 0 1px 3px rgba(0,0,0,.9);
+  }
+  #handle { text-shadow: 0 1px 3px rgba(0,0,0,.9); }
+
+  @keyframes rk-sweep { from { transform: translateY(-100%); } to { transform: translateY(1100%); } }
+  @keyframes rk-pulse { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+  @keyframes rk-rise  { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+  @keyframes rk-wave  { 0%,100% { transform: scaleY(.14); } 50% { transform: scaleY(1); } }
+  @keyframes rk-glitch {
+    0%, 92%, 100% { transform: none; opacity: 1; }
+    93% { transform: translateX(-2px); opacity: .7; }
+    94% { transform: translateX(2px); }
+    95% { transform: translateX(-1px); opacity: .85; }
+    96% { transform: none; }
+  }
+</style>
+
+<div id="canvas">
+  <div class="tex" id="wash"></div>
+  <div class="tex" id="scan"></div>
+  <div class="tex" id="sweep"></div>
+
+  <div id="stack">
+    <div id="main">
+      <div id="left">
+        <div class="cam" id="cam01">
+          <div class="cam-label"><span class="a">cam 01 — 16:9</span><span class="b">drop host feed here</span></div>
+          <div class="live"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>
+          <div class="plate"><span class="bar"></span><span class="who"><span class="name" id="hostA"></span><span class="role" id="hostARole"></span></span></div>
+        </div>
+        <div class="cam" id="cam02">
+          <div class="cam-label"><span class="a">cam 02 — 16:9</span><span class="b">drop co-host feed here</span></div>
+          <div class="live"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>
+          <div class="plate"><span class="bar"></span><span class="who"><span class="name" id="hostB"></span><span class="role" id="hostBRole"></span></span></div>
+        </div>
+        <div id="wave"></div>
+      </div>
+
+      <div id="right">
+        <div id="episode">
+          <div id="ep-head"><img id="logo" alt=""><span id="show"></span><span class="rule"></span><span id="chip"></span></div>
+          <div id="title"></div>
+          <div id="blurb"></div>
+        </div>
+        <div id="chat">
+          <div id="chat-head">
+            <span class="lbl">stream chat</span><span class="rule"></span>
+            <span id="watching"></span><span id="tally"></span>
+          </div>
+          <div id="msgs"></div>
+          <div id="follow">
+            <span class="bar"></span><span class="lbl">new follower</span>
+            <span id="follow-name"></span><span class="rule"></span><span id="follow-meta"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="footer">
+      <span id="handle"></span><span id="tick"></span><span id="note"></span>
+      <span class="rule"></span><span id="cadence"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  document.body.dataset.layer = params.get('layer') === 'front' ? 'front' : 'back';
+  const raw = params.get('scene');
+  const pinned = (raw === 'two' || raw === 'solo') ? raw : null;
+  const PREVIEW = params.has('preview');
+  if (PREVIEW) document.body.classList.add('preview');
+  document.body.dataset.ground = params.get('ground') === 'off' ? 'off' : 'on';
+  document.body.dataset.chat = params.get('chat') === 'ext' ? 'ext' : 'int';
+
+  /* ---- Waveform -------------------------------------------------------
+     96 bars. Height is env x jitter: env fills the middle, jitter uses two
+     incommensurate frequencies so it reads as audio rather than a pattern.
+     Negative animation delays put every bar mid-cycle on first paint, so the
+     row is never flat when the source loads. */
+  const WAVE_N = 96;
+  const WAVE_BARS = [];
+
+  (function buildWave() {
+    const wave = document.getElementById('wave');
+    for (let i = 0; i < WAVE_N; i++) {
+      const env = 0.32 + 0.68 * Math.pow(Math.sin(Math.PI * i / WAVE_N), 0.45);
+      const jitter = 0.45 + 0.55 * Math.abs(Math.sin(2.399 * i) * Math.cos(0.77 * i));
+      const bar = document.createElement('b');
+      bar.style.height = Math.max(4, env * jitter * 100) + '%';
+      bar.style.opacity = (0.55 + 0.45 * env).toFixed(3);
+      const dur = 0.62 + ((7 * i) % 11) * 0.08;
+      const delay = -((13 * i) % 19) * 0.07;
+      bar.style.animation = `rk-wave ${dur.toFixed(2)}s ease-in-out ${delay.toFixed(2)}s infinite`;
+      wave.appendChild(bar);
+      WAVE_BARS.push(bar);
+    }
+  })();
+
+  /* ---- Live audio ------------------------------------------------------
+     Drives the bars from the real capture device. The CSS animation above
+     stays as the fallback and is only torn down once audio is actually
+     flowing, so a failure here degrades to moving bars rather than a dead
+     strip - on a live broadcast a frozen waveform reads as broken.
+
+     Time domain, not frequency: the design draws a centre axis, so the bars
+     mean amplitude either side of zero. A spectrum would be a different
+     picture wearing this one's clothes.
+
+     Requires OBS launched with --enable-media-stream (and
+     --use-fake-ui-for-media-stream to auto-grant). Both are on the shortcut. */
+  const AUDIO = {
+    device: params.get('mic') || 'Audience Mix',
+    gain: Number(params.get('gain')) || 2.4,   // headroom: speech rarely peaks
+    decay: 0.86,                               // rise instantly, fall smoothly
+    floor: 0.025,                              // never fully collapse
+  };
+
+  async function startAudio() {
+    if (document.body.dataset.layer !== 'back') return;   // front hides #wave
+    if (params.get('wave') === 'css') return;             // forced fallback
+    if (!navigator.mediaDevices?.getUserMedia) throw new Error('no mediaDevices');
+
+    const opts = { echoCancellation: false, noiseSuppression: false,
+                   autoGainControl: false };
+    // First open is what unlocks device labels; only then can the right one
+    // be identified by name.
+    let stream = await navigator.mediaDevices.getUserMedia({ audio: opts });
+    const want = AUDIO.device.toLowerCase();
+    const match = (await navigator.mediaDevices.enumerateDevices())
+      .find(d => d.kind === 'audioinput' && d.label.toLowerCase().includes(want));
+    if (match) {
+      stream.getTracks().forEach(t => t.stop());
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: { ...opts, deviceId: { exact: match.deviceId } } });
+    }
+
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') await ctx.resume();
+    const an = ctx.createAnalyser();
+    an.fftSize = 2048;
+    ctx.createMediaStreamSource(stream).connect(an);
+
+    const buf = new Uint8Array(an.fftSize);
+    const per = Math.floor(buf.length / WAVE_N);
+    const level = new Float32Array(WAVE_N);
+
+    // Hand the bars over: full height, driven by transform. scaleY stays on
+    // the compositor, so 96 of them per frame costs nothing.
+    for (const b of WAVE_BARS) {
+      b.style.animation = 'none';
+      b.style.height = '100%';
+      b.style.opacity = '1';
+      b.style.transformOrigin = 'center';
+      b.style.transform = `scaleY(${AUDIO.floor})`;
+    }
+
+    (function frame() {
+      an.getByteTimeDomainData(buf);
+      for (let i = 0; i < WAVE_N; i++) {
+        let peak = 0;
+        for (let j = i * per, end = j + per; j < end; j++) {
+          const d = Math.abs(buf[j] - 128);
+          if (d > peak) peak = d;
+        }
+        const v = Math.min(1, (peak / 128) * AUDIO.gain);
+        level[i] = Math.max(v, level[i] * AUDIO.decay);
+        WAVE_BARS[i].style.transform =
+          `scaleY(${Math.max(AUDIO.floor, level[i]).toFixed(3)})`;
+      }
+      requestAnimationFrame(frame);
+    })();
+
+    // Distinguish these two: falling back to the default input still produces
+    // a moving waveform, just of the wrong audio. Reporting both as "live"
+    // would make the diagnostic worthless.
+    return match
+      ? { status: 'live', detail: match.label }
+      : { status: 'live-wrong-device',
+          detail: `no input matching "${AUDIO.device}"; using system default` };
+  }
+
+  /* Report the outcome to the control server. OBS gives no way to read a
+     browser source's console, so without this there is no way to tell a
+     working waveform from the fallback animation - both move. */
+  function reportAudio(status, detail) {
+    fetch('/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        key: `audio:${document.body.dataset.layer}:${document.body.dataset.scene || 'two'}`,
+        slots: { status, detail: String(detail), at: new Date().toISOString() },
+      }) }).catch(() => {});
+  }
+
+  startAudio()
+    .then(r => { if (r) reportAudio(r.status, r.detail); })
+    .catch(e => { console.warn('[waveform] fallback:', e.message);
+                  reportAudio('fallback-animation', e.message); });
+
+  /* Drop a file at overlays/assets/show-logo.png (or pass ?logo=/assets/x.svg)
+     and it replaces the wordmark. If it 404s nothing changes - the text stays,
+     so the header can never end up empty on stream. */
+  (function loadLogo() {
+    const img = document.getElementById('logo');
+    img.onload = () => {
+      document.body.classList.add('has-logo');
+      requestAnimationFrame(reportSlots);   // header height changed
+    };
+    img.src = params.get('logo') || '/assets/show-logo.png';
+  })();
+
+  const text = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v || ''; };
+  const el = (t, c, s) => { const n = document.createElement(t); if (c) n.className = c; if (s) n.textContent = s; return n; };
+  const ROLE = { sub: 'var(--accent)', mod: 'var(--mod)', vip: 'var(--vip)' };
+
+  function renderMessages(list) {
+    const box = document.getElementById('msgs');
+    box.innerHTML = '';
+    for (const m of (list || []).slice(-10)) {
+      const row = el('div', 'msg');
+      const d = new Date((m.ts || Date.now() / 1000) * 1000);
+      row.appendChild(el('span', 't',
+        String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0')));
+      if (m.badge) {
+        const b = el('span', 'badge', m.badge);
+        const c = ROLE[m.badge] || 'var(--chat)';
+        // Outline, no fill - per the handoff.
+        b.style.boxShadow = `inset 0 0 0 1px ${c}`;
+        b.style.color = c;
+        row.appendChild(b);
+      }
+      const body = el('div', 'body');
+      const u = el('span', 'u', m.name || '');
+      u.style.color = ROLE[m.badge] || 'var(--chat)';
+      body.append(u, el('span', 'sep', ' :: '));
+      for (const p of (m.parts && m.parts.length ? m.parts : [{ t: 'text', v: m.text || '' }])) {
+        if (p.t === 'emote') {
+          const img = document.createElement('img');
+          img.src = `https://static-cdn.jtvnw.net/emoticons/v2/${p.id}/default/dark/2.0`;
+          img.style.height = '22px'; img.style.verticalAlign = '-5px';
+          body.appendChild(img);
+        } else {
+          body.appendChild(document.createTextNode(p.v));
+        }
+      }
+      row.appendChild(body);
+      box.appendChild(row);
+    }
+  }
+
+  const SAMPLE = [
+    { name: 'hollowcastle', badge: 'sub', text: 'the tape sound at 14:00 was NOT in the script' },
+    { name: 'quietriver', badge: 'mod', text: 'lore theory: the archivist is the narrator' },
+    { name: 'verrocchio', badge: 'vip', text: 'episode 41 already?? where does the time go' },
+    { name: 'bellhouse_9', badge: '', text: 'waited all week for this one' },
+    { name: 'static_ada', badge: 'sub', text: 'the cold open genuinely got me' },
+  ];
+
+  function render(s) {
+    document.body.dataset.scene = (pinned || s.scene) === 'solo' ? 'solo' : 'two';
+    text('hostA', s.hostA);   text('hostARole', s.hostARole);
+    text('hostB', s.hostB);   text('hostBRole', s.hostBRole);
+    text('show', s.showName ? `[ ${s.showName} ]` : '');
+    text('chip', s.episodeNumber ? `ep ${s.episodeNumber}` : '');
+    text('title', s.episodeTitle);
+    text('blurb', s.episodeBlurb);
+    text('handle', s.handle);
+    text('note', s.cadence);
+    text('cadence', 'new episodes thursdays');
+    text('follow-name', s.alertName);
+    text('follow-meta', s.alertMeta);
+    document.body.classList.toggle('has-follower', Boolean(s.alertName));
+
+    const active = s.activeSpeaker === 'B' ? 'cam02' : 'cam01';
+    for (const id of ['cam01', 'cam02']) {
+      document.getElementById(id).classList.toggle('is-live', s.speakerGlow !== false && id === active);
+    }
+    let msgs = s.messages || [];
+    if (!msgs.length && PREVIEW) msgs = SAMPLE;
+    renderMessages(msgs);
+    requestAnimationFrame(reportSlots);
+  }
+
+  fetch('/state').then(r => r.json()).then(render).catch(() => { if (PREVIEW) render({}); });
+
+  function connect() {
+    const es = new EventSource('/events');
+    es.onmessage = (e) => { try { render(JSON.parse(e.data)); } catch (_) {} };
+    es.onerror = () => { es.close(); setTimeout(connect, 2000); };
+  }
+  connect();
+
+  /* Layout probe - build_scenes reads these so the OBS cameras land exactly
+     inside the design's tiles. */
+  window.__slots = function () {
+    const out = {};
+    for (const id of ['cam01', 'cam02', 'msgs']) {
+      const e = document.getElementById(id);
+      if (!e || getComputedStyle(e).display === 'none') continue;
+      const r = e.getBoundingClientRect();
+      out[id] = [Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)];
+    }
+    return out;
+  };
+
+  /* Report those rects back to the control server, so OBS placement can be
+     driven by what this page actually rendered rather than by arithmetic done
+     somewhere else. The web fonts change the episode title's height, so wait
+     for them - measuring before they land reports the fallback metrics. */
+  let lastReport = '';
+  function reportSlots() {
+    const key = `${document.body.dataset.layer}:${document.body.dataset.scene || 'two'}`;
+    const payload = JSON.stringify({ key, slots: window.__slots() });
+    if (payload === lastReport) return;          // only on real change
+    lastReport = payload;
+    fetch('/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                      body: payload }).catch(() => {});
+  }
+  (document.fonts ? document.fonts.ready : Promise.resolve())
+    .then(() => requestAnimationFrame(reportSlots));
+</script>
