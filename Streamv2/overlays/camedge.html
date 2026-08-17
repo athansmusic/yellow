@@ -42,7 +42,10 @@
   document.getElementById('edge').style.borderRadius = R + 'px';
 
   /* ?accent=ff4d94 pins this source's colour; without it, the per-show
-     theme accent applies live over SSE like the big overlays. */
+     theme accent applies live over SSE like the big overlays.
+     Deliberately has NO RED VS BLUE takeover: the owner scoped the team
+     colour to the screen border only, so the camera border stays pink
+     whoever is winning. */
   const PIN = p.get('accent');
   if (PIN) document.documentElement.style.setProperty('--accent',
     '#' + PIN.replace('#', ''));

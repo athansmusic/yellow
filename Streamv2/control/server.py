@@ -37,6 +37,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from obs_watch import ObsLink
+from rvb import Teams
 from twitch_chat import TwitchChat
 
 HERE = Path(__file__).resolve().parent
@@ -88,6 +89,9 @@ DEFAULT_STATE = {
     # from the credits store; only the target lives here.
     "subGoal": "5",
 
+    # RED VS BLUE score bar visibility, driven by the peek redeem's timer.
+    "scorePeek": False,
+
     # No viewerCount field. Nothing feeds it, so it could only ever display
     # a number somebody typed - i.e. a wrong one, live on stream.
     "messages": [],             # [{name, text, badge, nameColor}] - newest last
@@ -110,6 +114,14 @@ DEFAULT_STATE = {
 _lock = threading.Lock()
 _state: dict = dict(DEFAULT_STATE)
 _listeners: list[queue.Queue] = []
+
+# RED VS BLUE. Set up in main() when config enables it; None otherwise so
+# every call site can stay a plain truthiness check.
+_teams: Teams | None = None
+
+# Draft stamps waiting to be shown, newest last. Overlays pop them off the
+# state broadcast; kept tiny because a stamp missed is not worth replaying.
+_drafts: list = []
 
 # Layout rects, reported by an overlay from inside the renderer that actually
 # draws it, keyed "<layer>:<scene>". Measured, never computed: the episode
@@ -219,6 +231,9 @@ def add_sub(event: dict) -> None:
         if existing["gifted"]:
             existing["kind"] = "gifter"
         save_credits()
+    if _teams is not None:
+        _teams.on_sub(event["user"], event.get("name", ""),
+                      int(event.get("gifted", 0)))
     _broadcast()
 
 
@@ -233,6 +248,9 @@ def add_bits(event: dict) -> None:
         existing["name"] = event["name"] or existing["name"]
         existing["bits"] += event.get("bits", 0)
         save_credits()
+    if _teams is not None:
+        _teams.on_bits(event["user"], event.get("name", ""),
+                       int(event.get("bits", 0)))
     _broadcast()
 
 
@@ -336,6 +354,12 @@ def startup_end() -> None:
 def push_message(msg: dict) -> None:
     """Append a chat line and drop the oldest beyond the cap."""
     startup_tick()
+    # RED VS BLUE sees every message - draft on first chat of the month,
+    # attendance, capped chat points. Deliberately BEFORE the ignore/command
+    # filters below: those are display rules, and the reader may see chat
+    # even where it must not draw it.
+    if _teams is not None:
+        _teams.on_chat(msg.get("user", ""), msg.get("name", ""))
     cfg = _twitch_cfg()
     if msg["user"] in {u.lower() for u in cfg.get("ignore_users", [])}:
         return
@@ -369,11 +393,35 @@ def drop_messages(pred) -> None:
     _broadcast()
 
 
+def announce_draft(user: str, name: str, team: str) -> None:
+    """Queue the on-screen draft stamp. Called by Teams on a fresh draft.
+
+    Chat announcements are NOT sent from here: this process reads Twitch
+    anonymously and holds no token, so anything that must appear in chat
+    goes out through Firebot.
+    """
+    _drafts.append({"name": name, "team": team, "ts": time.time()})
+    del _drafts[:-6]   # a stamp missed is not worth replaying
+    print(f"  [rvb] {name} drafted to {team.upper()}", flush=True)
+
+
+def _rvb_payload() -> dict:
+    """Team standings for the state broadcast, plus any pending draft
+    stamps. Safe to call without the lock - Teams has its own."""
+    if _teams is None:
+        return {"enabled": False}
+    snap = _teams.snapshot()
+    snap["drafts"] = list(_drafts)
+    return snap
+
+
 def _broadcast() -> None:
+    rvb = _rvb_payload()
     with _lock:
         snapshot = dict(_state)
         snapshot["credits"] = json.loads(json.dumps(_credits))
         snapshot["startup"] = dict(_startup)
+        snapshot["rvb"] = rvb
         save_state()
         dead = []
         for q in _listeners:
@@ -413,6 +461,7 @@ def _sync_bg_sources() -> None:
 
 
 def update_state(patch: dict) -> dict:
+    rvb = _rvb_payload()
     with _lock:
         for k in DEFAULT_STATE:
             if k in patch:
@@ -422,6 +471,7 @@ def update_state(patch: dict) -> dict:
         snapshot = dict(_state)
         snapshot["credits"] = json.loads(json.dumps(_credits))
         snapshot["startup"] = dict(_startup)
+        snapshot["rvb"] = rvb
         save_state()
         dead = []
         for q in _listeners:
@@ -479,6 +529,13 @@ class Handler(BaseHTTPRequestHandler):
             self._send_file(OVERLAY_DIR / "frameglow.html", "text/html; charset=utf-8")
         elif route == "/camedge":
             self._send_file(OVERLAY_DIR / "camedge.html", "text/html; charset=utf-8")
+        elif route == "/rvb":
+            self._send(json.dumps(_rvb_payload()).encode(), "application/json")
+        elif route == "/rvb/peek":
+            # Channel-point score peek: show the bar for a few seconds.
+            self._send(json.dumps(rvb_peek()).encode(), "application/json")
+        elif route == "/scorebar":
+            self._send_file(OVERLAY_DIR / "scorebar.html", "text/html; charset=utf-8")
         elif route == "/onscreen":
             self._send_file(OVERLAY_DIR / "onscreen.html", "text/html; charset=utf-8")
         elif route == "/subgoal":
@@ -507,6 +564,7 @@ class Handler(BaseHTTPRequestHandler):
                 payload = dict(_state)
                 payload["credits"] = _credits
                 payload["startup"] = _startup
+                payload["rvb"] = _rvb_payload()
                 body = json.dumps(payload).encode()
             self._send(body, "application/json")
         elif route.startswith("/assets/"):
@@ -602,6 +660,31 @@ class Handler(BaseHTTPRequestHandler):
             return
         if route == "/effect/threshold/off":
             self._send(json.dumps(clear_threshold()).encode(), "application/json")
+            return
+        if route == "/rvb/peek":
+            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                body = json.loads(self.rfile.read(length) or b"{}")
+            except json.JSONDecodeError:
+                body = {}
+            self._send(json.dumps(rvb_peek(body.get("seconds"))).encode(),
+                       "application/json")
+            return
+        if route == "/rvb/reset":
+            # DRAFT NIGHT. Wipes the roster and the scores - explicit only,
+            # never automatic, same discipline as /credits/reset.
+            if _teams is None:
+                self._send(b'{"error":"rvb disabled"}', "application/json", 503)
+                return
+            self._send(json.dumps(_teams.reset_month()).encode(),
+                       "application/json")
+            return
+        if route == "/rvb/attendance/reset":
+            if _teams is None:
+                self._send(b'{"error":"rvb disabled"}', "application/json", 503)
+                return
+            _teams.reset_attendance()
+            self._send(b'{"ok":true}', "application/json")
             return
         if route == "/effect/micfx":
             length = int(self.headers.get("Content-Length") or 0)
@@ -761,6 +844,32 @@ def fire_threshold(seconds: float | None = None) -> dict:
     return {"ok": True, "seconds": secs, "scenes": scenes, "filter": name}
 
 
+_peek_timer = None
+
+
+def rvb_peek(seconds: float | None = None) -> dict:
+    """Show the score bar for a few seconds, then hide it again.
+
+    Same unconditional-revert discipline as the other effects: a redeem
+    that leaves the bar up forever is a redeem somebody has to clean up.
+    """
+    global _peek_timer
+    if _teams is None:
+        return {"ok": False, "error": "rvb disabled"}
+    secs = float(seconds if seconds is not None else 6)
+    update_state({"scorePeek": True})
+    if _peek_timer is not None:
+        _peek_timer.cancel()
+
+    def hide():
+        update_state({"scorePeek": False})
+
+    _peek_timer = threading.Timer(secs, hide)
+    _peek_timer.daemon = True
+    _peek_timer.start()
+    return {"ok": True, "seconds": secs, **_teams.snapshot()}
+
+
 _micfx_timer = None
 
 
@@ -869,6 +978,16 @@ def main() -> int:
     # stream would be worse than an empty panel.
     with _lock:
         _state["messages"] = []
+
+    rvb_cfg = {k: v for k, v in _load_cfg().get("rvb", {}).items()
+               if not k.startswith("_")}
+    if rvb_cfg.get("enabled"):
+        global _teams
+        _teams = Teams(rvb_cfg, on_change=_broadcast, on_draft=announce_draft)
+        snap = _teams.snapshot()
+        print(f"  RED VS BLUE   : {snap['month']}  "
+              f"red {snap['red']} / blue {snap['blue']}  "
+              f"({snap['counts']['red']}v{snap['counts']['blue']} members)")
 
     tw = _twitch_cfg()
     if tw.get("enabled") and tw.get("channel"):

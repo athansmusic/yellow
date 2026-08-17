@@ -80,12 +80,21 @@
   r.setProperty('--s', s + 's');
   if (a !== null) r.setProperty('--base-a', (Number(a) * 100) + '%');
 
-  /* ?accent=ff4d94 pins this source's colour; without it, the per-show
-     theme accent applies live over SSE like the big overlays. */
+  /* Colour precedence, highest first:
+       1. RED VS BLUE leader  - the screen border IS the scoreboard
+       2. ?accent=ff4d94      - a pinned colour for this source
+       3. the show theme      - everything else
+     Neutral until first blood: with the score tied, nobody has taken the
+     broadcast, so the border stays on its normal colour and the first
+     point of the night becomes a visible moment.
+     ?rvb=off opts a source out entirely (the cam border does this). */
   const PIN = p.get('accent');
+  const RVB_ON = p.get('rvb') !== 'off';
   if (PIN) r.setProperty('--accent', '#' + PIN.replace('#', ''));
   function applyTheme(st) {
-    if (PIN) return;
+    const lead = RVB_ON ? ((st.rvb || {}).leadColor || null) : null;
+    if (lead) { r.setProperty('--accent', lead); return; }
+    if (PIN) { r.setProperty('--accent', '#' + PIN.replace('#', '')); return; }
     const t = (st.themes || {})[st.show] || {};
     if (t.accent) r.setProperty('--accent', t.accent);
     else r.removeProperty('--accent');
