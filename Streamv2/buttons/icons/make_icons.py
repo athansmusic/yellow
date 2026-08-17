@@ -114,6 +114,33 @@ def ending():
     return im
 
 
+def lamp(colour, text, on=True):
+    def make():
+        im, d = canvas()
+        cx, cy, r = S // 2, 110, 46
+        if on:
+            d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=colour)
+            # glow ticks radiating, like light coming off it
+            for dx, dy in [(-1, 0), (1, 0), (0, -1),
+                           (-1, -1), (1, -1), (-1, 1), (1, 1)]:
+                x0 = cx + dx * (r + 14)
+                y0 = cy + dy * (r + 14)
+                x1 = cx + dx * (r + 30)
+                y1 = cy + dy * (r + 30)
+                d.line([(x0, y0), (x1, y1)], fill=colour, width=6)
+        else:
+            d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=EDGE, width=6)
+        # the stand
+        d.rectangle([cx - 5, cy + r + 4, cx + 5, cy + r + 44],
+                    fill=colour if on else EDGE)
+        label(d, text)
+        return im
+    return make
+
+
+PINK = (255, 45, 138, 255)
+RED = (255, 34, 34, 255)
+
 ICONS = {
     "deck-full-cam.png": full_cam,
     "deck-split-cam.png": split_cam,
@@ -121,6 +148,9 @@ ICONS = {
     "deck-listen-duo.png": live_listen_duo,
     "deck-listen-solo.png": live_listen_solo,
     "deck-end.png": ending,
+    "deck-light-pink.png": lamp(PINK, "pink"),
+    "deck-light-red.png": lamp(RED, "red"),
+    "deck-light-off.png": lamp(EDGE, "dark", on=False),
 }
 
 for name, fn in ICONS.items():
@@ -128,7 +158,8 @@ for name, fn in ICONS.items():
     print("wrote", name)
 
 # contact sheet for a quick human check
-sheet = Image.new("RGBA", (S * 3, S * 2), (24, 24, 27, 255))
+rows = (len(ICONS) + 2) // 3
+sheet = Image.new("RGBA", (S * 3, S * rows), (24, 24, 27, 255))
 for i, name in enumerate(ICONS):
     sheet.paste(Image.open(HERE / name), ((i % 3) * S, (i // 3) * S))
 sheet.convert("RGB").save(HERE / "_contact_sheet.png")
