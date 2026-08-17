@@ -72,12 +72,44 @@ local Whisper-class model feeding an overlay, OBS captioning plugin, or
 Twitch's own CC. Weigh latency, accuracy on show audio vs mic, and whether
 it can style-match the house look.
 
-## 4. INTERACTIVE ELEMENTS  ← waiting on owner's list
+## 4. INTERACTIVE ELEMENTS
 
-Channel point redeems, sub awards, and similar. Owner is drafting the list.
 The threshold redeem is the working template: Firebot effect fires HTTP at
 the control server, server drives OBS/overlays, auto-revert timer.
 `buttons/FX-THRESHOLD-30S.vbs` + `/effect/threshold` show the whole pattern.
+Shipped so far: threshold, mic EQ (`/effect/micfx`).
+
+### RED VS BLUE  ← the centrepiece, designed 2026-08-17
+
+Owner's revived team system - name stays RED VS BLUE (owner's call, and
+red/blue both read perfectly on the black ground). v1 died of two things:
+built poorly, and winning meant nothing. The redesign fixes both.
+
+**The reason to compete: the leading team holds the broadcast.** The theme
+system recolours every overlay from one state field - when a team takes
+the lead, the stream's accent becomes their colour until the other team
+takes it back. The whole broadcast is the scoreboard; nobody needs to
+redeem anything to know who is winning.
+
+Mechanics:
+- Assignment: first-ever chat = drafted (Viewer Arrived, same trigger as
+  walk-ons). Roster in a teams.json ledger on the control server, same
+  shape and reset discipline as credits.json.
+- Points: chatting (capped per stream or spam becomes the meta), bits and
+  subs (weighted so money helps but cannot buy the month), watch time
+  (Firebot tracks it natively - bridge, do not rebuild).
+- Captains: Athan captains one team, Jamie the other. On-air trash talk is
+  the content engine; the losing captain does a forfeit at month end.
+- Powers: leading team's threshold fires in their colour; floor lamps go
+  team colour at stream start; selected redeems only fire for the leading
+  team (server checks the username against the roster - Firebot passes it).
+- Score peek: channel points show a 5s tug-of-war bar with exact numbers.
+  Ambient colour says who leads; the bar says by how much.
+- Month end: credits dedication ("this month's broadcast held by RED"),
+  forfeit, then a draft-night reshuffle - an event, never a silent reset.
+
+Build order when we start: roster + points ledger -> ambient colour
+takeover -> score bar -> team-gated redeems -> monthly ceremony.
 
 ---
 
