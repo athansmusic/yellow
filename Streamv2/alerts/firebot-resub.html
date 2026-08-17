@@ -1,21 +1,19 @@
 <!--
-  [REDACTED] gift-sub alert - the redaction bar.
+  [REDACTED] resub alert - the redaction bar.
 
   The show's actual brush-stroke bar (media/redactedbar.png, embedded)
   swipes across, then the name declassifies out of it: scanner sweep,
   reveal, one glitch jolt, hold, re-redact, wipe out. ~5.6s total.
 
   FIREBOT SETUP
-    Event:   Community Subs Gifted (and/or Sub Gifted)
+    Event:   Sub (resub)
     Effect:  Show HTML
     HTML:    paste this entire file
     Removal: 6 seconds
-    On gift events the username variable IS the gifter. Variable
-    names are spelled without their dollar sign here because
-    Firebot parses every dollar-word in this box, comments
-    included: the name uses (dollar)username, the label uses
-    (dollar)giftCount - the dollar button in this effect lists
-    what each event offers if that one is missing.
+    The name uses Firebot's username variable. To add a count
+    or amount to the label, use the dollar button on this
+    field - it lists exactly which variables THIS event
+    supports, which differs per event.
 -->
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=IBM+Plex+Mono:wght@500;600&display=swap');
@@ -84,7 +82,7 @@
 
 <div class="rk-alert">
   <div class="rk-stamp">
-    <div class="rk-label">[ gifted &times;$giftCount subs ]</div>
+    <div class="rk-label">[ resubscribed ]</div>
     <div class="rk-bar">
       <div class="rk-brush"></div>
       <div class="rk-name">$username</div>
@@ -101,8 +99,8 @@
     // Standalone preview only. In Firebot, the variables are substituted
     // before this ever renders, so this branch never fires there.
     if (name && name.textContent.indexOf('$') === 0) {
-      name.textContent = 'QUIETRIVER';
-      label.textContent = '[ gifted ×5 subs ]';
+      name.textContent = 'STATIC_ADA';
+      label.textContent = '[ resubscribed ]';
       // Backdrop on the alert element ONLY - never document.body. This
       // script also runs inside Firebot's overlay if a variable comes
       // through unreplaced, and painting the body there blacks out the
