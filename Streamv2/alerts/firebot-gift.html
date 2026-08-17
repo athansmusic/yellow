@@ -105,7 +105,11 @@
     if (name && name.textContent.indexOf('$') === 0) {
       name.textContent = 'QUIETRIVER';
       label.textContent = '[ gifted ×5 subs ]';
-      document.body.style.background = '#101013';
+      // Backdrop on the alert element ONLY - never document.body. This
+      // script also runs inside Firebot's overlay if a variable comes
+      // through unreplaced, and painting the body there blacks out the
+      // whole overlay source until it reloads.
+      document.querySelector('.rk-alert').style.background = '#101013';
     }
   })();
 </script>
