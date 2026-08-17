@@ -5,36 +5,32 @@ this date's work is either shipped or closed by an owner decision below.
 
 ---
 
-## 1. ALERTS  ← active
+## 1. ALERTS  — SHIPPED 2026-08-17
 
-Plumbing is decided and half-built:
+Owner went with Firebot's own queue instead of the planned control-server
+one: each event runs a Show HTML effect pasting a file from `alerts/`, on
+the `REDACTED` overlay instance (positionable separately from other
+Firebot alerts).
 
-```
-Twitch event -> Firebot -> POST 127.0.0.1:8722/alert -> overlay queue -> screen
-```
+The family - all built on the show's brush-stroke redaction bar
+(media/redactedbar.png, embedded per file, ink forced to house black):
 
-- Alerts play **one at a time** with a minimum gap - a raid burst must never
-  stack three animations
-- Queue state rides the existing SSE channel; overlays already reconnect
+| File | Status | Notes |
+|---|---|---|
+| firebot-sub.html | installed | name declassifies out of the bar, 6s |
+| firebot-gift.html | installed | credits the GIFTER, 6s |
+| firebot-follow.html | installed | ANONYMOUS - no name, small stamp, 3s |
+| firebot-raid.html | installed | INTRUSION DETECTED: letterbox + fire + big bar, 12s; pairs with POST /effect/threshold {"seconds":12} for the black/yellow takeover; raid shoutout chat effect uses $username |
+| firebot-resub.html | ready, not installed | |
+| firebot-bits.html | ready, not installed | amount via the $ picker |
 
-The build list. Owner picks per event: **on/off, what it shows, sound or
-silent, how long it holds.** Tackle one row at a time, top to bottom:
-
-| # | Event | Data available | Decided? |
-|---|---|---|---|
-| 1 | New sub | name, tier | not yet |
-| 2 | Resub | name, months, message | not yet |
-| 3 | Gift sub(s) | gifter, count (credit the GIFTER, per credits rule) | not yet |
-| 4 | Bits | name, amount, message | not yet |
-| 5 | Raid | raider, viewer count | not yet |
-| 6 | Follow | name | not yet |
-
-Notes carried from earlier decisions:
-- Sub/bits data already flows through `twitch_chat.py` parsing for the
-  credits roll - the alert queue can share that feed for 1-4. Raids and
-  follows need Firebot (follows are not in IRC at all).
-- The broadcast layout's follower rail (`#follow`) is a display slot an
-  alert can drive today via `alertName` / `alertMeta` in state.
+Regenerator: scratchpad build_alerts.py (session-local) - but each html
+file is self-contained; edit them directly if the scratchpad is gone.
+Firebot gotchas learned: it validates every $word in the pasted box,
+comments included; only $username is safe on all events; never style
+document.body from a Show HTML (it outlives the effect's removal).
+The fire layer (media/fire-alpha.webm, luma-keyed from Fire.mov) streams
+off the control server via /file - server down = alert plays fireless.
 
 ## 2. LIVE CAPTIONS  ← research, then owner decides
 
