@@ -141,8 +141,19 @@ def lamp(colour, text, on=True):
 PINK = (255, 45, 138, 255)
 RED = (255, 34, 34, 255)
 
+def live_screen():
+    im, d = canvas()
+    person(d, 88, 118, 0.85)
+    # the on-screen panel, dashed-ish frame with a corner tick
+    d.rectangle([150, 76, 246, 160], outline=FG, width=4)
+    d.rectangle([150, 76, 178, 90], fill=FG)
+    label(d, "screen")
+    return im
+
+
 ICONS = {
     "deck-full-cam.png": full_cam,
+    "deck-live-screen.png": live_screen,
     "deck-split-cam.png": split_cam,
     "deck-in-game.png": in_game,
     "deck-listen-duo.png": live_listen_duo,
