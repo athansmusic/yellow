@@ -36,7 +36,15 @@ Notes carried from earlier decisions:
 - The broadcast layout's follower rail (`#follow`) is a display slot an
   alert can drive today via `alertName` / `alertMeta` in state.
 
-## 2. INTERACTIVE ELEMENTS  ← waiting on owner's list
+## 2. LIVE CAPTIONS  ← research, then owner decides
+
+Owner asked (2026-08-16): can captions go on the live screen easily?
+Question to answer before building anything: which route -
+local Whisper-class model feeding an overlay, OBS captioning plugin, or
+Twitch's own CC. Weigh latency, accuracy on show audio vs mic, and whether
+it can style-match the house look.
+
+## 3. INTERACTIVE ELEMENTS  ← waiting on owner's list
 
 Channel point redeems, sub awards, and similar. Owner is drafting the list.
 The threshold redeem is the working template: Firebot effect fires HTTP at
