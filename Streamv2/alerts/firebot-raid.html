@@ -4,20 +4,20 @@
   Scanline flash, flickering breach warning, the raider's name stamps in
   on the big bar, and a crowd of small censor bars hits the screen behind
   it - the raiders, identities redacted. Bar positions randomize each
-  play. ~7.5s.
+  play. ~11.6s.
 
   FIREBOT SETUP
     Event:   Raid
     Effect:  Show HTML
     HTML:    paste this entire file
-    Removal: 8 seconds
+    Removal: 12 seconds
     The name uses Firebot's username variable. To put the raider count in
     the sub-label, use the dollar button - it lists this event's variables.
 
   THE FULL TAKEOVER (recommended): in the same Raid event, add an
   "HTTP Request" effect BEFORE this one -
       Method POST,  URL http://127.0.0.1:8722/effect/threshold
-      Body (raw JSON): {"seconds": 8}
+      Body (raw JSON): {"seconds": 12}
   The whole stream slams to black/yellow for the duration of the breach.
   It reverts by itself.
 -->
@@ -27,14 +27,14 @@
   .rk-raid {
     position: fixed; inset: 0; z-index: 9999; pointer-events: none;
     overflow: hidden;
-    animation: rkr-exit .4s ease-in 7.1s forwards;
+    animation: rkr-exit .4s ease-in 11.2s forwards;
   }
 
   /* Scanline slam on entry, then it settles to a faint hum. */
   .rk-raid .static {
     position: absolute; inset: 0;
     background: repeating-linear-gradient(0deg, rgba(255,255,255,.09) 0 1px, transparent 1px 3px);
-    opacity: 0; animation: rkr-static 7.5s linear both;
+    opacity: 0; animation: rkr-static 11.6s linear both;
   }
 
   /* The crowd: small anonymous censor bars, placed by script per play. */
@@ -51,7 +51,7 @@
     position: absolute; inset: 0;
     display: flex; flex-direction: column; align-items: center;
     justify-content: center; gap: 16px;
-    animation: rkr-jolt 6.8s steps(1, end) 1;
+    animation: rkr-jolt 11s steps(1, end) 1;
   }
   .rk-raid .warn {
     font-family: "IBM Plex Mono", Consolas, monospace;
@@ -59,14 +59,14 @@
     text-indent: .42em; text-transform: uppercase; color: #f4e409;
     opacity: 0; animation: rkr-flicker .9s steps(2, end) .25s 3,
                            rkr-hold 1s linear 2.95s forwards,
-                           rkr-fadeout .3s ease-in 6.5s forwards;
+                           rkr-fadeout .3s ease-in 10.9s forwards;
   }
   .rk-raid .bar {
     position: relative; padding: 38px 150px 40px;
     border-style: solid; border-color: transparent; border-width: 0 0;
     clip-path: inset(-8% 100% -8% -3%);
     animation: rkr-draw .5s cubic-bezier(.25,.8,.25,1) .9s both,
-               rkr-undraw .4s ease-in 6.6s forwards;
+               rkr-undraw .4s ease-in 11s forwards;
   }
   .rk-raid .brush {
     position: absolute; inset: 0; z-index: 0;
@@ -80,14 +80,7 @@
     font-weight: 700; font-size: 56px; line-height: 1; letter-spacing: .04em;
     text-transform: uppercase; color: #f7f7f5; white-space: nowrap;
     opacity: 0; animation: rkr-namein .3s ease 1.5s forwards,
-                           rkr-fadeout .25s ease-in 6.55s forwards;
-  }
-  .rk-raid .sub {
-    font-family: "IBM Plex Mono", Consolas, monospace;
-    font-weight: 500; font-size: 12px; letter-spacing: .3em;
-    text-indent: .3em; text-transform: uppercase; color: #9a9aa2;
-    opacity: 0; animation: rkr-hold .3s linear 1.9s forwards,
-                           rkr-fadeout .25s ease-in 6.5s forwards;
+                           rkr-fadeout .25s ease-in 10.95s forwards;
   }
 
   @keyframes rkr-static {
@@ -120,12 +113,11 @@
   <div class="static"></div>
   <div class="minis"></div>
   <div class="core">
-    <div class="warn">signal breach detected</div>
+    <div class="warn">intrusion detected</div>
     <div class="bar">
       <div class="brush"></div>
       <div class="name">$username</div>
     </div>
-    <div class="sub">unidentified signals inbound</div>
   </div>
 </div>
 
@@ -161,7 +153,7 @@
       m.style.transform = 'rotate(' + (Math.random() * 6 - 3).toFixed(1) + 'deg)';
       var delay = (0.4 + Math.random() * 2.2).toFixed(2);
       m.style.animation = 'rkr-ministamp .3s cubic-bezier(.25,.8,.25,1) ' + delay + 's forwards, '
-                        + 'rkr-miniout .4s ease-in ' + (5.6 + Math.random() * 0.8).toFixed(2) + 's forwards';
+                        + 'rkr-miniout .4s ease-in ' + (9.9 + Math.random() * 0.9).toFixed(2) + 's forwards';
       box.appendChild(m);
     }
   })();
