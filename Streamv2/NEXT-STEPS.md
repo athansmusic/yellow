@@ -95,9 +95,18 @@ by the state-driven team colour when this ships. Neutral (start of
 stream / tie) is undecided - yellow-until-first-blood is the candidate.
 
 Mechanics:
-- Assignment: first-ever chat = drafted (Viewer Arrived, same trigger as
-  walk-ons). Roster in a teams.json ledger on the control server, same
-  shape and reset discipline as credits.json.
+- Assignment: LAZY, against a monthly ledger. Every chat message, the
+  server checks whether the user has a team for the current month key
+  ("2026-09"); if not, they are drafted on the spot - so first chat of a
+  new month re-rolls them automatically and nothing has to run at
+  midnight. Draft = balanced random (weighted toward the smaller team so
+  sizes stay even while still feeling random to the individual).
+  Roster in a teams.json ledger on the control server, same shape and
+  reset discipline as credits.json.
+- Requires the Twitch chat reader back ON as a silent data feed
+  (twitch.enabled) - assignment and chat points need to see chat. Nothing
+  renders; the owner's own chat sources are untouched. This consciously
+  amends the earlier "reader stays off" decision, for this feature only.
 - Points: chatting (capped per stream or spam becomes the meta), bits and
   subs (weighted so money helps but cannot buy the month), watch time
   (Firebot tracks it natively - bridge, do not rebuild).
