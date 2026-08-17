@@ -271,13 +271,19 @@
     text('alert-meta', s.alertMeta);
   }
 
+  let es = null;
   function connect() {
-    const es = new EventSource('/events');
+    es = new EventSource('/events');
     es.onmessage = (e) => { try { render(JSON.parse(e.data)); } catch (_) {} };
     es.onerror = () => { es.close(); setTimeout(connect, 2000); };
   }
   fetch('/state').then(r => r.json()).then(render).catch(() => {});
   connect();
+
+  // OBS shutdown hygiene: CEF waits on open sockets at exit, so let the
+  // SSE connection go the moment the page is asked to unload.
+  window.addEventListener('pagehide', () => { try { if (es) es.close(); } catch (_) {} });
+
 
   /* Layout probe - build_scenes.py reads these so the native OBS cameras land
      exactly inside the design's tiles. The design owns the geometry. */

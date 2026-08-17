@@ -364,6 +364,9 @@
     const an = ctx.createAnalyser();
     an.fftSize = 2048;
     ctx.createMediaStreamSource(stream).connect(an);
+    // Kept for the unload handler: a live capture device is exactly what
+    // CEF waits on during OBS shutdown, so it must be released explicitly.
+    window.__audio = { stream, ctx };
 
     const buf = new Uint8Array(an.fftSize);
     const per = Math.floor(buf.length / WAVE_N);
@@ -506,12 +509,27 @@
 
   fetch('/state').then(r => r.json()).then(render).catch(() => { if (PREVIEW) render({}); });
 
+  let es = null;
   function connect() {
-    const es = new EventSource('/events');
+    es = new EventSource('/events');
     es.onmessage = (e) => { try { render(JSON.parse(e.data)); } catch (_) {} };
     es.onerror = () => { es.close(); setTimeout(connect, 2000); };
   }
   connect();
+
+  /* OBS shutdown hygiene. CEF tears pages down at exit, and it waits on
+     whatever they still hold - an open SSE socket and, worse, a live audio
+     capture. Releasing both the moment the page is asked to go away keeps
+     OBS close times sane. pagehide, not beforeunload: CEF delivers it more
+     reliably. */
+  window.addEventListener('pagehide', () => {
+    try { if (es) es.close(); } catch (_) {}
+    const a = window.__audio;
+    if (a) {
+      try { a.stream.getTracks().forEach(t => t.stop()); } catch (_) {}
+      try { a.ctx.close(); } catch (_) {}
+    }
+  });
 
   /* Layout probe - build_scenes reads these so the OBS cameras land exactly
      inside the design's tiles. */
