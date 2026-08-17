@@ -514,10 +514,14 @@ class Handler(BaseHTTPRequestHandler):
             # server; anything else 404s.
             qs = parse_qs(urlparse(self.path).query)
             path = Path((qs.get("path") or [""])[0])
-            img_ct = {".png": "image/png", ".svg": "image/svg+xml",
-                      ".webp": "image/webp", ".jpg": "image/jpeg",
-                      ".jpeg": "image/jpeg", ".gif": "image/gif"}
-            ctype = img_ct.get(path.suffix.lower())
+            media_ct = {".png": "image/png", ".svg": "image/svg+xml",
+                        ".webp": "image/webp", ".jpg": "image/jpeg",
+                        ".jpeg": "image/jpeg", ".gif": "image/gif",
+                        # Videos too: alert overlays pull effect footage
+                        # (e.g. the raid fire) through here.
+                        ".webm": "video/webm", ".mp4": "video/mp4",
+                        ".mov": "video/quicktime"}
+            ctype = media_ct.get(path.suffix.lower())
             if ctype and path.is_file():
                 self._send_file(path, ctype)
             else:
