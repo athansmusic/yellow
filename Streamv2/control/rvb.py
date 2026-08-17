@@ -54,6 +54,30 @@ class Teams:
         self._data = {"month": month_key(), "members": {}, "points": {RED: 0, BLUE: 0},
                       "chat_today": {}, "attendance": []}
         self.load()
+        self.purge_excluded()
+
+    def excluded(self, user: str) -> bool:
+        """Hosts, mods and bots: never drafted, never scored, never listed."""
+        names = self.cfg.get("exclude", {}).get("users", []) or []
+        return (user or "").strip().lower() in {str(u).strip().lower().lstrip("@")
+                                                for u in names}
+
+    def purge_excluded(self) -> None:
+        """Drop anyone who has since been excluded from an existing roster.
+
+        Runs at startup, so adding a name to the config and restarting is
+        enough - no hand-editing teams.json.
+        """
+        with self._lock:
+            gone = [u for u in self._data["members"] if self.excluded(u)]
+            if not gone:
+                return
+            for u in gone:
+                self._data["members"].pop(u, None)
+                self._data["chat_today"].pop(u, None)
+            self._data["attendance"] = [u for u in self._data["attendance"]
+                                        if u not in set(gone)]
+            self.save()
 
     # -- persistence ------------------------------------------------------
     def load(self) -> None:
@@ -119,8 +143,10 @@ class Teams:
             row = self._data["members"].get(user)
             return row["team"] if row else None
 
-    def draft(self, user: str, name: str) -> tuple[str, bool]:
-        """Return (team, was_newly_drafted)."""
+    def draft(self, user: str, name: str) -> tuple[str | None, bool]:
+        """Return (team, was_newly_drafted). Excluded users get (None, False)."""
+        if self.excluded(user):
+            return None, False
         with self._lock:
             self._roll_month_if_needed()
             row = self._data["members"].get(user)
@@ -138,21 +164,40 @@ class Teams:
                 team = smaller if random.random() < 0.75 else (
                     BLUE if smaller == RED else RED)
             self._data["members"][user] = {"name": name or user, "team": team,
-                                           "ts": time.time()}
+                                           "ts": time.time(), "pts": 0}
             self.save()
         self.on_draft(user, name or user, team)
         self.on_change()
         return team, True
 
     # -- scoring ----------------------------------------------------------
-    def _award_locked(self, team: str, pts: int) -> None:
-        self._data["points"][team] = self._data["points"].get(team, 0) + pts
+    def _award_locked(self, user: str, pts: int) -> None:
+        """Points belong to the MEMBER, not the team.
+
+        Team totals are summed on read. That keeps the ledger honest when
+        somebody is removed - excluding a mod takes their contribution with
+        them, instead of orphaning points on a team with nobody on it.
+        """
+        row = self._data["members"].get(user)
+        if row is not None:
+            row["pts"] = int(row.get("pts", 0)) + pts
+
+    def _totals_locked(self) -> tuple[int, int]:
+        red = blue = 0
+        for row in self._data["members"].values():
+            if row["team"] == RED:
+                red += int(row.get("pts", 0))
+            else:
+                blue += int(row.get("pts", 0))
+        return red, blue
 
     def on_chat(self, user: str, name: str) -> None:
         """Draft if needed, mark attendance, award capped chat points."""
         if not user:
             return
         team, _ = self.draft(user, name)
+        if team is None:
+            return                      # excluded: no draft, no points, no attendance
         pts = self.cfg.get("points", {})
         per = int(pts.get("chat", 1))
         cap = int(pts.get("chat_cap_per_day", 20))
@@ -165,32 +210,35 @@ class Teams:
                 rec = {"day": today, "n": 0}
             if rec["n"] < cap:
                 rec["n"] += 1
-                self._award_locked(team, per)
+                self._award_locked(user, per)
             self._data["chat_today"][user] = rec
             self.save()
         self.on_change()
 
     def on_sub(self, user: str, name: str, gifted: int = 0) -> None:
         team, _ = self.draft(user, name)
+        if team is None:
+            return
         pts = self.cfg.get("points", {})
         amount = (int(pts.get("gift_each", 25)) * gifted) if gifted else int(pts.get("sub", 25))
         with self._lock:
-            self._award_locked(team, amount)
+            self._award_locked(user, amount)
             self.save()
         self.on_change()
 
     def on_bits(self, user: str, name: str, bits: int) -> None:
         team, _ = self.draft(user, name)
+        if team is None:
+            return
         per100 = int(self.cfg.get("points", {}).get("per_100_bits", 10))
         with self._lock:
-            self._award_locked(team, int(bits / 100.0 * per100))
+            self._award_locked(user, int(bits / 100.0 * per100))
             self.save()
         self.on_change()
 
     # -- readout ----------------------------------------------------------
     def snapshot_locked(self) -> dict:
-        red = int(self._data["points"].get(RED, 0))
-        blue = int(self._data["points"].get(BLUE, 0))
+        red, blue = self._totals_locked()
         lead = RED if red > blue else (BLUE if blue > red else None)
         colors = self.cfg.get("colors", {})
         members = self._data["members"]

@@ -168,6 +168,24 @@
   }
   .sub .said:empty { display: none; }
 
+  /* ---- RED VS BLUE attendance ------------------------------------------
+     Deliberately smaller than the subs roll: subs and gifts are the
+     headline, this is the "everyone who showed up and talked" credit. */
+  #rvb-credit {
+    flex: 0 0 auto; padding: 4px 0 18px 56px; display: none;
+  }
+  body.has-rvb #rvb-credit { display: block; }
+  #rvb-head {
+    font-size: 13px; letter-spacing: .18em; text-transform: uppercase;
+    color: rgba(255, 222, 240, .62); margin-bottom: 6px;
+  }
+  #rvb-team { font-weight: 700; color: var(--rvb-team, #fff); }
+  #rvb-names {
+    font-size: 12px; line-height: 1.6; letter-spacing: .08em;
+    text-transform: uppercase; color: rgba(255, 222, 240, .45);
+    max-height: 58px; overflow: hidden;
+  }
+
   #footer { padding: 0 0 48px 56px; display: flex; align-items: center; gap: 12px; }
   #footer span {
     font-size: 17px; letter-spacing: .18em; text-transform: uppercase;
@@ -215,6 +233,10 @@
       </div>
       <div id="roll-window"><div id="roll"></div></div>
       <div id="none">no subs yet this stream</div>
+      <div id="rvb-credit">
+        <div id="rvb-head"><span id="rvb-team"></span> held the lead this stream</div>
+        <div id="rvb-names"></div>
+      </div>
       <div id="footer"><span id="footer-text"></span></div>
     </div>
 
@@ -313,6 +335,23 @@
     text('credits-label', s.endCreditsLabel);
     text('footer-text', s.endFooter);
     build(s.credits);
+    buildRvb(s.rvb);
+  }
+
+  /* RED VS BLUE: which team held the lead, and the members who actually
+     turned up and talked. Hidden entirely when nobody leads (a tie, or
+     the game is off) - a credit for "nobody" is worse than no credit. */
+  function buildRvb(r) {
+    r = r || {};
+    const names = r.attendance || [];
+    const show = Boolean(r.enabled && r.lead && names.length);
+    document.body.classList.toggle('has-rvb', show);
+    if (!show) return;
+    document.documentElement.style.setProperty('--rvb-team',
+      r.leadColor || '#fff');
+    text('rvb-team', r.lead.toUpperCase() + ' TEAM');
+    document.getElementById('rvb-names').textContent =
+      'members in attendance — ' + names.join(' · ');
   }
 
   fetch('/state').then(r => r.json()).then(render).catch(() => {});

@@ -30,12 +30,15 @@ from __future__ import annotations
 import argparse
 import json
 import queue
+import subprocess
+import sys
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
+from firebot import Firebot
 from obs_watch import ObsLink
 from rvb import Teams
 from twitch_chat import TwitchChat
@@ -118,6 +121,9 @@ _listeners: list[queue.Queue] = []
 # RED VS BLUE. Set up in main() when config enables it; None otherwise so
 # every call site can stay a plain truthiness check.
 _teams: Teams | None = None
+
+# Firebot bridge - the only authenticated path to Twitch chat.
+_fb: Firebot | None = None
 
 # Draft stamps waiting to be shown, newest last. Overlays pop them off the
 # state broadcast; kept tiny because a stamp missed is not worth replaying.
@@ -360,6 +366,9 @@ def push_message(msg: dict) -> None:
     # even where it must not draw it.
     if _teams is not None:
         _teams.on_chat(msg.get("user", ""), msg.get("name", ""))
+        trigger = _rvb_cfg().get("command", {}).get("trigger", "!team")
+        if msg.get("text", "").strip().lower().startswith(trigger):
+            handle_team_command(msg.get("user", ""), msg.get("name", ""))
     cfg = _twitch_cfg()
     if msg["user"] in {u.lower() for u in cfg.get("ignore_users", [])}:
         return
@@ -393,16 +402,52 @@ def drop_messages(pred) -> None:
     _broadcast()
 
 
-def announce_draft(user: str, name: str, team: str) -> None:
-    """Queue the on-screen draft stamp. Called by Teams on a fresh draft.
+def _rvb_cfg() -> dict:
+    return {k: v for k, v in _load_cfg().get("rvb", {}).items()
+            if not k.startswith("_")}
 
-    Chat announcements are NOT sent from here: this process reads Twitch
-    anonymously and holds no token, so anything that must appear in chat
-    goes out through Firebot.
+
+def announce_draft(user: str, name: str, team: str) -> None:
+    """On-screen stamp plus the chat line. Called by Teams on a fresh draft.
+
+    The stamp rides our own SSE; the chat line goes through Firebot,
+    because this process reads Twitch anonymously and holds no token.
     """
     _drafts.append({"name": name, "team": team, "ts": time.time()})
     del _drafts[:-6]   # a stamp missed is not worth replaying
     print(f"  [rvb] {name} drafted to {team.upper()}", flush=True)
+    if _fb is not None:
+        fb_cfg = _rvb_cfg().get("firebot", {})
+        _fb.run_preset(fb_cfg.get("draft_preset", "RVB Draft"),
+                       {"username": name, "team": team.upper()})
+
+
+# Per-user cooldown for !team, so the command cannot be used to spam chat.
+_cmd_seen: dict = {}
+
+
+def handle_team_command(user: str, name: str) -> None:
+    """Reply to !team with the sender's team, points and standing."""
+    if _teams is None or _fb is None:
+        return
+    cfg = _rvb_cfg()
+    cool = float(cfg.get("command", {}).get("cooldown_seconds", 30))
+    now = time.time()
+    if now - _cmd_seen.get(user, 0) < cool:
+        return
+    _cmd_seen[user] = now
+    # Drafts them if this is somehow their first message; that is correct -
+    # asking which team you are on should put you on one.
+    team, _ = _teams.draft(user, name)
+    snap = _teams.snapshot()
+    mine = snap.get(team, 0)
+    other = snap.get("blue" if team == "red" else "red", 0)
+    rank = "leading" if mine > other else ("trailing" if mine < other else "tied")
+    _fb.run_preset(cfg.get("firebot", {}).get("team_preset", "RVB Team"),
+                   {"username": name, "team": team.upper(),
+                    "points": str(mine), "rank": rank,
+                    "red": str(snap.get("red", 0)),
+                    "blue": str(snap.get("blue", 0))})
 
 
 def _rvb_payload() -> dict:
@@ -412,6 +457,9 @@ def _rvb_payload() -> dict:
         return {"enabled": False}
     snap = _teams.snapshot()
     snap["drafts"] = list(_drafts)
+    # The room follows the broadcast: a change of lead repaints the lamps.
+    # No-ops unless the lead actually changed.
+    _lamps_to_team()
     return snap
 
 
@@ -670,6 +718,20 @@ class Handler(BaseHTTPRequestHandler):
             self._send(json.dumps(rvb_peek(body.get("seconds"))).encode(),
                        "application/json")
             return
+        if route == "/rvb/gate":
+            # Team-gated redeems: Firebot posts {"user": "...", "effect": "..."}
+            # and the effect only fires if that user is on the LEADING team.
+            # Answers 200 either way with {"allowed": bool} so Firebot can
+            # branch on it and tell the viewer why nothing happened.
+            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                body = json.loads(self.rfile.read(length) or b"{}")
+            except json.JSONDecodeError:
+                body = {}
+            self._send(json.dumps(rvb_gate(
+                str(body.get("user", "")), str(body.get("effect", "")),
+                body.get("seconds"))).encode(), "application/json")
+            return
         if route == "/rvb/reset":
             # DRAFT NIGHT. Wipes the roster and the scores - explicit only,
             # never automatic, same discipline as /credits/reset.
@@ -870,6 +932,33 @@ def rvb_peek(seconds: float | None = None) -> dict:
     return {"ok": True, "seconds": secs, **_teams.snapshot()}
 
 
+def rvb_gate(user: str, effect: str, seconds=None) -> dict:
+    """Run an effect only if `user` is on the currently leading team.
+
+    Always answers 200 with an `allowed` flag rather than an error status:
+    a viewer being on the wrong team is a normal outcome of the game, not
+    a failure, and Firebot needs to branch on it to say so in chat.
+    """
+    if _teams is None:
+        return {"allowed": False, "reason": "rvb disabled"}
+    user = (user or "").strip().lower().lstrip("@")
+    snap = _teams.snapshot()
+    lead = snap.get("lead")
+    team = _teams.team_of(user)
+    if not lead:
+        return {"allowed": False, "reason": "tied", "team": team, "lead": lead}
+    if team != lead:
+        return {"allowed": False, "reason": "not on the leading team",
+                "team": team, "lead": lead}
+    runners = {"threshold": fire_threshold, "micfx": fire_micfx}
+    fn = runners.get(effect)
+    if fn is None:
+        return {"allowed": True, "ran": None, "team": team, "lead": lead,
+                "reason": f"unknown effect {effect!r}"}
+    return {"allowed": True, "ran": effect, "team": team, "lead": lead,
+            "result": fn(seconds)}
+
+
 _micfx_timer = None
 
 
@@ -931,10 +1020,60 @@ def clear_threshold() -> dict:
     return {"ok": True}
 
 
+# The lamp colour currently being streamed, so a lead that holds steady
+# does not relaunch the streamer on every single point scored.
+_lamp_lead = None
+
+
+def _lamps_to_team(force: bool = False) -> None:
+    """Standing lamps wear the leading team's colour while they hold it.
+
+    Physical territory: whoever holds the broadcast holds the room. Fires
+    only when the LEAD CHANGES (or on force, at stream start). Skipped on a
+    tie - nobody has taken anything yet. Launched detached, because
+    lan_hold streams colour forever and must outlive this call.
+    """
+    global _lamp_lead
+    if _teams is None:
+        return
+    cfg = _rvb_cfg()
+    if not cfg.get("lamps", {}).get("enabled"):
+        return
+    snap = _teams.snapshot()
+    lead = snap.get("lead")
+    if not lead:
+        return
+    if lead == _lamp_lead and not force:
+        return
+    hexval = (snap.get("leadColor") or "").lstrip("#")
+    if len(hexval) != 6:
+        return
+    _lamp_lead = lead
+    r, g, b = (int(hexval[i:i + 2], 16) for i in (0, 2, 4))
+    ips = cfg.get("lamps", {}).get("ips", "")
+    script = ROOT / "lights" / "lan_hold.py"
+    if not ips or not script.exists():
+        return
+    try:
+        subprocess.Popen(
+            [sys.executable, str(script), ips, str(r), str(g), str(b)],
+            cwd=str(script.parent),
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print(f"  [rvb] lamps -> {snap['lead'].upper()} ({r},{g},{b})", flush=True)
+    except OSError as exc:
+        print(f"  [rvb] lamp launch failed: {exc}", flush=True)
+
+
 def do_stream_start() -> None:
     """Going live: clear the credits, arm the counter, show the countdown."""
     reset_credits()
     startup_begin()
+    if _teams is not None:
+        # New stream, fresh attendance - teams and points carry over, but
+        # who turned up tonight starts empty.
+        _teams.reset_attendance()
+    _lamps_to_team(force=True)
     link = _obs["link"]
     if link is not None:
         # Re-show the video; it hides itself at the end of the last run.
@@ -982,7 +1121,12 @@ def main() -> int:
     rvb_cfg = {k: v for k, v in _load_cfg().get("rvb", {}).items()
                if not k.startswith("_")}
     if rvb_cfg.get("enabled"):
-        global _teams
+        global _teams, _fb
+        fb_cfg = rvb_cfg.get("firebot", {})
+        if fb_cfg.get("enabled"):
+            _fb = Firebot(host=fb_cfg.get("host", "127.0.0.1"),
+                          port=int(fb_cfg.get("port", 7472)))
+            print(f"  Firebot bridge: {'up' if _fb.available() else 'not answering (chat lines will no-op)'}")
         _teams = Teams(rvb_cfg, on_change=_broadcast, on_draft=announce_draft)
         snap = _teams.snapshot()
         print(f"  RED VS BLUE   : {snap['month']}  "
