@@ -1,123 +1,73 @@
 # Next steps
 
-Prepared groundwork for the four items queued up. Nothing here is built yet —
-this is the research and the decisions, so the build is fast when we start.
+Rewritten 2026-08-16 after the broadcast-design session. Everything before
+this date's work is either shipped or closed by an owner decision below.
 
 ---
 
-## 1. Waveform of AUDIENCE MIX on the live scenes
+## 1. ALERTS  ← active
 
-**Already solved by a plugin you have installed.** `phandasm_waveform_source` is
-in OBS and your old collection used two of them. Don't build this in HTML — a
-browser source cannot read OBS's audio, so the only web route would be
-`getUserMedia` on a second capture of the same device, which means duplicated
-audio, drift, and latency.
-
-Native plugin route:
-
-- Add a **Waveform** source, bind its audio to the existing `Audience Mix` input
-- Style to the house palette: `#FFF200` on transparent, zero radius
-- Goes in the `[SRC]` layer as a shared source so Move matches it across scenes,
-  same as `[CAM]`
-
-Open questions for you:
-- Which scenes — Live and In Game, or Live Listen too?
-- Bar/level style, or a scrolling oscilloscope?
-- Where does it sit? It needs its own strip; it should not overlap the cameras.
-
-To decide at build time: whether the waveform lives in the stage HTML's layout
-(so it gets a measured slot like the cameras) or floats free in OBS.
-
----
-
-## 2. Alerts
-
-Waiting on your list of what fires and what each one does.
-
-**Recommended plumbing — Firebot, not a new integration.** Firebot is already
-authenticated to your Twitch account and has an HTTP Request effect. So:
+Plumbing is decided and half-built:
 
 ```
-Twitch event -> Firebot -> POST 127.0.0.1:8722/alert -> stage renders it
+Twitch event -> Firebot -> POST 127.0.0.1:8722/alert -> overlay queue -> screen
 ```
 
-No new OAuth, no tokens for me to hold, no second connection to babysit.
+- Alerts play **one at a time** with a minimum gap - a raid burst must never
+  stack three animations
+- Queue state rides the existing SSE channel; overlays already reconnect
 
-Server-side design when we build it:
-- `POST /alert` with `{type, name, amount, message}` pushes onto a **queue**
-- Alerts play one at a time with a minimum gap, so a raid burst cannot stack
-  three overlapping animations on screen
-- Queue state broadcasts over the existing SSE channel
+The build list. Owner picks per event: **on/off, what it shows, sound or
+silent, how long it holds.** Tackle one row at a time, top to bottom:
 
-The alert bar in the stage design (`#alert`) is already built and hides itself
-when `alertName` is empty — that is the display half, done.
+| # | Event | Data available | Decided? |
+|---|---|---|---|
+| 1 | New sub | name, tier | not yet |
+| 2 | Resub | name, months, message | not yet |
+| 3 | Gift sub(s) | gifter, count (credit the GIFTER, per credits rule) | not yet |
+| 4 | Bits | name, amount, message | not yet |
+| 5 | Raid | raider, viewer count | not yet |
+| 6 | Follow | name | not yet |
 
----
+Notes carried from earlier decisions:
+- Sub/bits data already flows through `twitch_chat.py` parsing for the
+  credits roll - the alert queue can share that feed for 1-4. Raids and
+  follows need Firebot (follows are not in IRC at all).
+- The broadcast layout's follower rail (`#follow`) is a display slot an
+  alert can drive today via `alertName` / `alertMeta` in state.
 
-## 3. Stream interactive elements
+## 2. INTERACTIVE ELEMENTS  ← waiting on owner's list
 
-Undefined so far. The mechanism is the same as alerts: Firebot channel-point
-redemptions and chat commands POST to the control server, the stage reacts over
-SSE. Worth listing what you actually want before any of it is designed.
-
----
-
-## 4. CREDITS — subs during the stream  ← flagged very important
-
-**This is the most tractable of the four, and it needs nothing new to collect.**
-
-`control/twitch_chat.py` already connects to Twitch IRC anonymously and already
-requests the `twitch.tv/commands` capability. Subscriptions arrive on that same
-connection as `USERNOTICE` messages — no auth, no API key, no Firebot needed.
-
-The tags carry everything the credits need:
-
-| Tag | Gives you |
-|---|---|
-| `msg-id` | `sub`, `resub`, `subgift`, `submysterygift`, `giftpaidupgrade` |
-| `display-name` | who subbed |
-| `msg-param-recipient-display-name` | who a gift went to |
-| `msg-param-cumulative-months` | resub length |
-| `msg-param-sub-plan` | Prime / 1000 / 2000 / 3000 |
-| `msg-param-mass-gift-count` | size of a mystery gift bomb |
-
-**Must verify first:** that an anonymous `justinfan` connection actually receives
-`USERNOTICE`. It receives `PRIVMSG` and `CLEARCHAT` (proven), and `USERNOTICE`
-should come with the same capability — but this is the one assumption the whole
-feature rests on, so it gets tested against a real sub before anything is built
-on top of it. Fallback if not: Firebot's sub event POSTing to the server, same
-pattern as alerts.
-
-Design:
-- Accumulate a **session** list, separate from `messages`, persisted to disk so
-  an OBS or server restart mid-stream does not lose the credits
-- `POST /credits/reset` at stream start — must be explicit, never automatic, or
-  a crash-restart silently wipes the list
-- Dedupe by username; a gift bomb should list the gifter once with a count, not
-  twenty rows
-- End-screen overlay renders the list, in house style, scrolling if long
-
-Decisions needed from you:
-- Gifted subs: credit the **gifter**, the **recipients**, or both?
-- Resubs listed separately from new subs, or one combined list?
-- Does the end screen show anything else — raids, bits, follows?
+Channel point redeems, sub awards, and similar. Owner is drafting the list.
+The threshold redeem is the working template: Firebot effect fires HTTP at
+the control server, server drives OBS/overlays, auto-revert timer.
+`buttons/FX-THRESHOLD-30S.vbs` + `/effect/threshold` show the whole pattern.
 
 ---
 
-## Known open items, unrelated to the above
+## Closed by owner decision (2026-08-16) - do not reopen unprompted
 
-- **`[GUEST]` reports `0x0`** — the Cam Link has no signal, so the bottom
-  two-shot tile renders empty. Needs a camera plugged in, or repoint `[GUEST]`
-  at a different device in `config.json`.
-- **Govee BLE** — the H617A's control characteristic is confirmed present and
-  writable, and it connected once with a 60s timeout. Everything since fails at
-  `Could not get GATT services: Unreachable`. Two causes tangled together: the
-  factory reset likely put it in Wi-Fi pairing mode, and all four Govee devices
-  sit at -86 to -96 dBm, which is too weak for a reliable button. Resolve range
-  first (move a light closer, or a USB Bluetooth adapter on a cable near them)
-  before any control layer is worth writing.
-- **Twitch chat reader is disabled** (`twitch.enabled: false`) since you are
-  building your own chat. The parser, badges, emotes and mod-deletion handling
-  all still work — one flag brings it back as a data feed.
-- **Your chat slot**: `916, 262` — `980 x 736`, inside the panel frame the
-  stage draws.
+- **Twitch chat reader stays off** (`twitch.enabled: false`). Owner uses
+  their own chat sources.
+- **Split Cam speaker dimming stays off**, both tiles undimmed, both ticks
+  yellow. The per-mic-levels upgrade is not wanted.
+- **No Govee warranty claim.** The stuck H6076s run on the `lights/lan_hold.py`
+  streamer and FLOOR-* buttons for good.
+- **Broadcast logo size is final** at 30px.
+- **Start Menu OBS shortcut stays flagless** - owner only launches from the
+  taskbar pin, which carries `--enable-media-stream`. (If the waveform ever
+  falls back to fake bars, an unflagged launch is why:
+  `curl http://127.0.0.1:8722/slots` shows which mode each overlay got.)
+- **Jamie's Cam Link no-signal is expected** - the camera works; Jamie is
+  simply not present. Empty duo tiles are normal until he is.
+
+## Shipped since the last version of this file
+
+- Live waveform on the broadcast layout, fed by the Audience Mix capture,
+  with CSS fallback + self-reporting (`/slots`)
+- Broadcast design on Live Listen Duo/Solo; Split Cam seam scene;
+  In Game camera edge; Live thumbnail frame
+- Credits capture + end-screen roll (earlier session)
+- Show-mode audio toggle: `buttons/SHOW-MODE.vbs` flips
+  Audience + Mic/Aux against Show in one press, self-syncing
+- FLOOR-YELLOW / RED / BLUE / DARK lamp buttons
