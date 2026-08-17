@@ -117,6 +117,11 @@ Mechanics:
 - Powers: leading team's threshold fires in their colour; floor lamps go
   team colour at stream start; selected redeems only fire for the leading
   team (server checks the username against the roster - Firebot passes it).
+- Draft announcement (owner-approved): the moment someone is drafted -
+  their first chat of the month - a small on-screen stamp fires:
+  "USERNAME drafted to BLUE", mini censor-bar style like the follower
+  alert but in the team's colour and WITH the name (drafts are public).
+  Server-driven, since the server is what does the drafting.
 - Score peek: channel points show a 5s tug-of-war bar with exact numbers.
   Ambient colour says who leads; the bar says by how much.
 - End screen, PER STREAM: a credits section below subs/bits (smaller type
