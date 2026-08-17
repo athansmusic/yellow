@@ -85,11 +85,14 @@ Owner's revived team system - name stays RED VS BLUE (owner's call, and
 red/blue both read perfectly on the black ground). v1 died of two things:
 built poorly, and winning meant nothing. The redesign fixes both.
 
-**The reason to compete: the leading team holds the broadcast.** The theme
-system recolours every overlay from one state field - when a team takes
-the lead, the stream's accent becomes their colour until the other team
-takes it back. The whole broadcast is the scoreboard; nobody needs to
-redeem anything to know who is winning.
+**The reason to compete: the leading team holds the broadcast.** When a
+team takes the lead, the SCREEN border (Live Frame / frameglow) becomes
+their colour until the other team takes it back - the frame around the
+stream is the standing scoreboard. Scope decided by owner 2026-08-17:
+the screen border ONLY - the camera border (IG Cam Edge) stays pink
+permanently, and the pink ?accent pin on the screen frames gets replaced
+by the state-driven team colour when this ships. Neutral (start of
+stream / tie) is undecided - yellow-until-first-blood is the candidate.
 
 Mechanics:
 - Assignment: first-ever chat = drafted (Viewer Arrived, same trigger as
