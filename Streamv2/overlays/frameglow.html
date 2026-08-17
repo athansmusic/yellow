@@ -80,8 +80,12 @@
   r.setProperty('--s', s + 's');
   if (a !== null) r.setProperty('--base-a', (Number(a) * 100) + '%');
 
-  /* Per-show accent from state, live over SSE like the big overlays. */
+  /* ?accent=ff4d94 pins this source's colour; without it, the per-show
+     theme accent applies live over SSE like the big overlays. */
+  const PIN = p.get('accent');
+  if (PIN) r.setProperty('--accent', '#' + PIN.replace('#', ''));
   function applyTheme(st) {
+    if (PIN) return;
     const t = (st.themes || {})[st.show] || {};
     if (t.accent) r.setProperty('--accent', t.accent);
     else r.removeProperty('--accent');

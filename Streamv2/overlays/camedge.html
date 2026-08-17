@@ -41,8 +41,13 @@
 
   document.getElementById('edge').style.borderRadius = R + 'px';
 
-  /* Per-show accent from state, live over SSE like the big overlays. */
+  /* ?accent=ff4d94 pins this source's colour; without it, the per-show
+     theme accent applies live over SSE like the big overlays. */
+  const PIN = p.get('accent');
+  if (PIN) document.documentElement.style.setProperty('--accent',
+    '#' + PIN.replace('#', ''));
   function applyTheme(s) {
+    if (PIN) return;
     const t = (s.themes || {})[s.show] || {};
     const root = document.documentElement.style;
     if (t.accent) root.setProperty('--accent', t.accent);
