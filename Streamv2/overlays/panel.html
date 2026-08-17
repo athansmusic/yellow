@@ -131,6 +131,7 @@
     <legend>Chat &amp; alerts</legend>
     <label><span>Newest follower</span><input id="alertName" placeholder="Leave blank to hide the bar" autocomplete="off"></label>
     <label><span>Follower meta</span><input id="alertMeta" placeholder="followed · just now" autocomplete="off"></label>
+    <label><span>Sub goal (this stream)</span><input id="subGoal" placeholder="5" autocomplete="off"></label>
   </fieldset>
 
   <div class="foot">
@@ -150,7 +151,7 @@
 <script>
   const FIELDS = ['showName', 'episodeNumber', 'episodeTitle', 'episodeBlurb',
                   'hostA', 'hostARole', 'hostB', 'hostBRole', 'handle', 'cadence',
-                  'alertName', 'alertMeta'];
+                  'alertName', 'alertMeta', 'subGoal'];
 
   // Layout is NOT controlled here. Each OBS scene carries its own stage layers
   // pinned with ?scene=two|solo, so switching scenes in OBS switches the layout.

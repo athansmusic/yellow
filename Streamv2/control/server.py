@@ -84,6 +84,10 @@ DEFAULT_STATE = {
     "handle": "@theredactedunit",
     "cadence": "SOUND ALERTS ARE DISABLED FOR THIS LIVE EVENT",
 
+    # Per-stream sub goal, shown by overlays/subgoal.html. The count comes
+    # from the credits store; only the target lives here.
+    "subGoal": "5",
+
     # No viewerCount field. Nothing feeds it, so it could only ever display
     # a number somebody typed - i.e. a wrong one, live on stream.
     "messages": [],             # [{name, text, badge, nameColor}] - newest last
@@ -475,6 +479,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send_file(OVERLAY_DIR / "frameglow.html", "text/html; charset=utf-8")
         elif route == "/camedge":
             self._send_file(OVERLAY_DIR / "camedge.html", "text/html; charset=utf-8")
+        elif route == "/subgoal":
+            self._send_file(OVERLAY_DIR / "subgoal.html", "text/html; charset=utf-8")
         elif route == "/splitcam":
             self._send_file(OVERLAY_DIR / "splitcam.html", "text/html; charset=utf-8")
         elif route == "/broadcast":
