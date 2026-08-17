@@ -79,7 +79,8 @@
   }
   #sweep {
     height: 90px;
-    background: linear-gradient(180deg, transparent, rgba(244,228,9,.05), transparent);
+    background: linear-gradient(180deg, transparent,
+      color-mix(in srgb, var(--accent) 5%, transparent), transparent);
     animation: rk-sweep 9s linear infinite;
   }
 
@@ -129,7 +130,9 @@
      one of them is the one being listened to. `.is-live` is still set by the
      script but nothing keys off it. */
   .live { position: absolute; inset: 0; pointer-events: none; display: none; }
-  body[data-layer="front"] .live { display: block; box-shadow: inset 0 0 0 1px rgba(244,228,9,.35), inset 0 0 60px rgba(244,228,9,.10); }
+  body[data-layer="front"] .live { display: block; box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent),
+    inset 0 0 60px color-mix(in srgb, var(--accent) 10%, transparent); }
   .live i { position: absolute; width: 26px; height: 26px; }
   .live i.tl { top: 10px; left: 10px;  border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
   .live i.tr { top: 10px; right: 10px; border-top: 2px solid var(--accent); border-right: 2px solid var(--accent); }
@@ -166,7 +169,8 @@
   }
   #episode::before {
     content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-    background: linear-gradient(180deg, var(--accent), rgba(244,228,9,0));
+    background: linear-gradient(180deg, var(--accent),
+      color-mix(in srgb, var(--accent) 0%, transparent));
   }
   #ep-head { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
   #show { font-weight: 600; font-size: 13px; letter-spacing: .3em; text-transform: uppercase; color: var(--display); white-space: nowrap; animation: rk-glitch 7s steps(1, end) infinite; }
@@ -423,17 +427,23 @@
     .catch(e => { console.warn('[waveform] fallback:', e.message);
                   reportAudio('fallback-animation', e.message); });
 
-  /* Drop a file at overlays/assets/show-logo.png (or pass ?logo=/assets/x.svg)
-     and it replaces the wordmark. If it 404s nothing changes - the text stays,
-     so the header can never end up empty on stream. */
-  (function loadLogo() {
-    const img = document.getElementById('logo');
-    img.onload = () => {
-      document.body.classList.add('has-logo');
-      requestAnimationFrame(reportSlots);   // header height changed
-    };
-    img.src = params.get('logo') || '/assets/show-logo.png';
-  })();
+  /* Logo comes from the active show's theme (overlays/assets/<file>), with
+     ?logo= as a manual override and show-logo.png as the standing default.
+     If a file 404s the wordmark text returns - the header can never end up
+     empty on stream. */
+  const logoImg = document.getElementById('logo');
+  logoImg.onload = () => {
+    document.body.classList.add('has-logo');
+    requestAnimationFrame(reportSlots);     // header height changed
+  };
+  logoImg.onerror = () => document.body.classList.remove('has-logo');
+  function applyLogo(s) {
+    const t = (s.themes || {})[s.show] || {};
+    const want = params.get('logo')
+      || (t.logo ? '/assets/' + t.logo : '/assets/show-logo.png');
+    if (logoImg.getAttribute('src') !== want) logoImg.src = want;
+  }
+  applyLogo({});
 
   const text = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v || ''; };
   const el = (t, c, s) => { const n = document.createElement(t); if (c) n.className = c; if (s) n.textContent = s; return n; };
@@ -482,7 +492,28 @@
     { name: 'static_ada', badge: 'sub', text: 'the cold open genuinely got me' },
   ];
 
+  /* Per-show palette from state. Only the keys a theme actually sets are
+     overridden; anything missing falls back to the stylesheet defaults, so a
+     half-filled palette can never blank the layout. */
+  const THEME_MAP = {
+    bg:     ['--ground', '--panel', '--rail'],
+    accent: ['--accent'],
+    text:   ['--display'],
+    muted:  ['--secondary'],
+  };
+  function applyTheme(s) {
+    const t = (s.themes || {})[s.show] || {};
+    const root = document.documentElement.style;
+    for (const [key, vars] of Object.entries(THEME_MAP)) {
+      for (const v of vars) {
+        if (t[key]) root.setProperty(v, t[key]); else root.removeProperty(v);
+      }
+    }
+  }
+
   function render(s) {
+    applyTheme(s);
+    applyLogo(s);
     document.body.dataset.scene = (pinned || s.scene) === 'solo' ? 'solo' : 'two';
     text('hostA', s.hostA);   text('hostARole', s.hostARole);
     text('hostB', s.hostB);   text('hostBRole', s.hostBRole);

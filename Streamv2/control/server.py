@@ -48,6 +48,26 @@ DEFAULT_STATE = {
     # Which Live Listen layout the stage renders.
     "scene": "two",             # "two" | "solo"
 
+    # Show selection + per-show palettes. Every overlay maps these four onto
+    # its own CSS variables at render; a missing key falls back to the
+    # overlay's built-in default, so a partial palette can never blank a
+    # layout. Adding a show = adding a key here via the panel.
+    "show": "REDACTED",
+    "themes": {
+        "REDACTED": {
+            "bg":     "#060607",   # ground / panels
+            "accent": "#f4e409",   # waveform, borders, ticks, chips
+            "text":   "#f7f7f5",   # display type
+            "muted":  "#9a9aa2",   # secondary copy
+            # Show assets. logo is a filename under overlays/assets (web-
+            # served); the bg pair are OBS file paths pushed into the [BG]
+            # scene's Image and Media sources when the theme changes.
+            "logo":    "show-logo.png",
+            "bgImage": "C:/Users/19407/Documents/Redacted/Website v2/redactedheroimage.png",
+            "bgVideo": "C:/Users/19407/Documents/Redacted/Script/Streamv2/media/16mm_Film_Frame_With_Noise_source_1749841.mp4",
+        },
+    },
+
     # Episode block. These are the show's standing defaults - a fresh start
     # comes up ready to stream, and only the episode fields change week to week.
     "showName": "REDACTED",
@@ -123,6 +143,14 @@ def load_state() -> None:
             # would otherwise come straight back on the next restart.
             _state = {**DEFAULT_STATE,
                       **{k: v for k, v in saved.items() if k in DEFAULT_STATE}}
+            # Themes saved by an older build may predate newer per-show keys
+            # (logo, bg files). Backfill defaults per built-in show, so a new
+            # field appears with its standing value instead of KeyErroring.
+            # Custom shows are kept exactly as saved.
+            themes = dict(_state.get("themes") or {})
+            for name, defaults in DEFAULT_STATE["themes"].items():
+                themes[name] = {**defaults, **themes.get(name, {})}
+            _state["themes"] = themes
         except (json.JSONDecodeError, OSError):
             # A corrupt state file must never stop the stream from starting.
             _state = dict(DEFAULT_STATE)
@@ -352,11 +380,40 @@ def _broadcast() -> None:
             _listeners.remove(q)
 
 
+# What was last pushed to the [BG] sources, so a state churn (every chat
+# message runs update_state) never re-sends identical file paths to OBS.
+_bg_pushed = {"bgImage": None, "bgVideo": None}
+
+
+def _sync_bg_sources() -> None:
+    """Push the active theme's bg files into the [BG] scene's sources.
+
+    Called with _lock held. Fire-and-forget via the ObsLink socket, so it
+    cannot block state updates; if OBS is down the next theme change tries
+    again.
+    """
+    theme = (_state.get("themes") or {}).get(_state.get("show"), {})
+    link = _obs.get("link")
+    if not link:
+        return
+    plan = (("bgImage", "Image", "file"),
+            ("bgVideo", "Media", "local_file"))
+    for key, input_name, setting in plan:
+        path = theme.get(key)
+        if path and path != _bg_pushed[key]:
+            if link.request("SetInputSettings", {
+                    "inputName": input_name,
+                    "inputSettings": {setting: path}}):
+                _bg_pushed[key] = path
+
+
 def update_state(patch: dict) -> dict:
     with _lock:
         for k in DEFAULT_STATE:
             if k in patch:
                 _state[k] = patch[k]
+        if "show" in patch or "themes" in patch:
+            _sync_bg_sources()
         snapshot = dict(_state)
         snapshot["credits"] = json.loads(json.dumps(_credits))
         snapshot["startup"] = dict(_startup)
@@ -449,6 +506,20 @@ class Handler(BaseHTTPRequestHandler):
                 ".jpeg": "image/jpeg", ".gif": "image/gif",
             }.get(Path(name).suffix.lower(), "application/octet-stream")
             self._send_file(ASSET_DIR / name, ctype)
+        elif route == "/files":
+            # What the panel's asset pickers can offer: web-served logo
+            # images, and OBS-playable media for the [BG] video slot.
+            img_ext = {".png", ".svg", ".webp", ".jpg", ".jpeg", ".gif"}
+            vid_ext = {".mp4", ".mov", ".webm", ".mkv"}
+            media_dir = ROOT / "media"
+            out = {
+                "assets": sorted(p.name for p in ASSET_DIR.glob("*")
+                                 if p.suffix.lower() in img_ext),
+                "media": sorted(str(p).replace("\\", "/")
+                                for p in media_dir.glob("*")
+                                if p.suffix.lower() in vid_ext),
+            }
+            self._send(json.dumps(out).encode(), "application/json")
         elif route == "/slots":
             with _lock:
                 body = json.dumps(_slots).encode()
@@ -541,8 +612,14 @@ class Handler(BaseHTTPRequestHandler):
             self._send(json.dumps(reset_credits()).encode(), "application/json")
             return
         if route == "/reset":
-            # Back to the show's standing defaults, not to empty.
-            self._send(json.dumps(update_state(dict(DEFAULT_STATE))).encode(),
+            # Back to the show's standing defaults, not to empty - but themes
+            # and the selected show survive. A custom show's palette is hours
+            # of tuning; "Reset to defaults" must never be able to delete it.
+            fresh = dict(DEFAULT_STATE)
+            with _lock:
+                fresh["themes"] = json.loads(json.dumps(_state["themes"]))
+                fresh["show"] = _state["show"]
+            self._send(json.dumps(update_state(fresh)).encode(),
                        "application/json")
             return
         if route != "/state":

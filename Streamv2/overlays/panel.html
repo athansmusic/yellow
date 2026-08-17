@@ -44,6 +44,16 @@
     border: 1px solid var(--edge); border-radius: 0; font: inherit; font-size: 13px;
   }
   input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  select {
+    width: 100%; padding: 10px 12px; background: var(--field); color: var(--text);
+    border: 1px solid var(--edge); border-radius: 0; font: inherit; font-size: 13px;
+  }
+  select:focus { outline: none; border-color: var(--accent); }
+  .swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .swatches input[type="color"] {
+    width: 100%; height: 42px; padding: 3px; cursor: pointer;
+    background: var(--field); border: 1px solid var(--edge);
+  }
   textarea { resize: vertical; min-height: 62px; line-height: 1.55; }
   .row2 { display: grid; grid-template-columns: 1fr 150px; gap: 12px; }
 
@@ -73,6 +83,23 @@
 <main>
   <h1>REDACTED</h1>
   <div class="sub">Live Listen &middot; stage control</div>
+
+  <fieldset>
+    <legend>Show</legend>
+    <div class="row2">
+      <label><span>Show</span><select id="show"></select></label>
+      <label><span>&nbsp;</span><button class="ghost" id="addShow" style="width:100%;padding:10px 12px">+ new show</button></label>
+    </div>
+    <div class="swatches">
+      <label><span>Background</span><input type="color" id="th_bg"></label>
+      <label><span>Accent</span><input type="color" id="th_accent"></label>
+      <label><span>Text</span><input type="color" id="th_text"></label>
+      <label><span>Muted</span><input type="color" id="th_muted"></label>
+    </div>
+    <label><span>Logo (from overlays/assets)</span><select id="th_logo"></select></label>
+    <label><span>BG video (from media/)</span><select id="th_bgVideo"></select></label>
+    <label><span>BG image (full path)</span><input id="th_bgImage" placeholder="C:/path/to/image.png" autocomplete="off"></label>
+  </fieldset>
 
   <fieldset>
     <legend>Episode</legend>
@@ -145,6 +172,78 @@
     els[id].addEventListener('input', () => post({ [id]: els[id].value }));
   }
 
+  /* ---- Show + theme ---------------------------------------------------
+     `themes` is the whole per-show palette dict; `show` picks the active
+     one. Both live in server state, so every overlay recolours the moment a
+     swatch moves. Local copies below exist only to build complete objects
+     to POST - state remains the source of truth. */
+  const THEME_KEYS = ['bg', 'accent', 'text', 'muted'];
+  const ASSET_KEYS = ['logo', 'bgVideo', 'bgImage'];
+  const showSel = document.getElementById('show');
+  let themes = {};
+  let activeShow = '';
+
+  // Populate the pickers from what actually exists on disk; a typo'd path
+  // can't be selected, only typed into the free-text bg image field.
+  fetch('/files').then(r => r.json()).then(f => {
+    const fill = (id, values) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = '';
+      for (const v of values) {
+        const o = document.createElement('option');
+        o.value = v;
+        o.textContent = v.split('/').pop();
+        sel.appendChild(o);
+      }
+    };
+    fill('th_logo', f.assets || []);
+    fill('th_bgVideo', f.media || []);
+    fillShowUI();   // re-sync selections now that options exist
+  }).catch(() => {});
+
+  function fillShowUI() {
+    showSel.innerHTML = '';
+    for (const name of Object.keys(themes)) {
+      const o = document.createElement('option');
+      o.value = o.textContent = name;
+      showSel.appendChild(o);
+    }
+    showSel.value = activeShow;
+    const t = themes[activeShow] || {};
+    for (const k of [...THEME_KEYS, ...ASSET_KEYS]) {
+      const el = document.getElementById('th_' + k);
+      if (document.activeElement !== el && t[k] !== undefined) el.value = t[k];
+    }
+  }
+
+  showSel.addEventListener('change', () => {
+    activeShow = showSel.value;
+    // The dropdown IS the show: the episode header follows it. The show-name
+    // text field still overrides for one-off cases.
+    post({ show: activeShow, showName: activeShow });
+    fillShowUI();
+  });
+
+  document.getElementById('addShow').addEventListener('click', () => {
+    const name = (prompt('New show name:') || '').trim().toUpperCase();
+    if (!name || themes[name]) return;
+    // Start from the current show's palette - tweaking beats blank slates.
+    themes[name] = { ...(themes[activeShow] || {}) };
+    activeShow = name;
+    post({ themes, show: name, showName: name });
+    fillShowUI();
+  });
+
+  for (const k of [...THEME_KEYS, ...ASSET_KEYS]) {
+    const el = document.getElementById('th_' + k);
+    const ev = el.tagName === 'SELECT' ? 'change' : 'input';
+    el.addEventListener(ev, () => {
+      if (!themes[activeShow]) themes[activeShow] = {};
+      themes[activeShow][k] = el.value;
+      post({ themes });
+    });
+  }
+
   document.getElementById('reset').addEventListener('click', () => {
     // Server-side reset to the show's standing defaults; the SSE broadcast
     // refills the inputs, so nothing is duplicated here.
@@ -157,6 +256,16 @@
       for (const id of FIELDS) {
         if (document.activeElement !== els[id]) els[id].value = s[id] || '';
       }
+    }
+    // Rebuild the show UI only when its data changed - state broadcasts ride
+    // in constantly (every chat message), and re-filling a <select> the user
+    // has open would snap it shut in their hand.
+    const sig = JSON.stringify([s.themes, s.show]);
+    if (sig !== apply._sig) {
+      apply._sig = sig;
+      themes = s.themes || {};
+      activeShow = s.show || Object.keys(themes)[0] || '';
+      fillShowUI();
     }
     echo = false;
     dot.classList.add('on');

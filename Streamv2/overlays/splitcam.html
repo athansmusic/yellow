@@ -66,7 +66,8 @@
   }
   #sweep {
     position: absolute; left: 0; right: 0; height: 90px;
-    background: linear-gradient(180deg, transparent, rgba(244,228,9,.05), transparent);
+    background: linear-gradient(180deg, transparent,
+      color-mix(in srgb, var(--accent) 5%, transparent), transparent);
     animation: rk-sweep 9s linear infinite;
   }
 
@@ -144,7 +145,24 @@
 
   const text = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v || ''; };
 
+  /* Per-show palette from state; missing keys fall back to the stylesheet. */
+  const THEME_MAP = {
+    bg:     ['--ground', '--scrim'],
+    accent: ['--accent'],
+    text:   ['--display'],
+  };
+  function applyTheme(s) {
+    const t = (s.themes || {})[s.show] || {};
+    const root = document.documentElement.style;
+    for (const [key, vars] of Object.entries(THEME_MAP)) {
+      for (const v of vars) {
+        if (t[key]) root.setProperty(v, t[key]); else root.removeProperty(v);
+      }
+    }
+  }
+
   function render(s) {
+    applyTheme(s);
     text('hostA', s.hostA);  text('hostARole', s.hostARole);
     text('hostB', s.hostB);  text('hostBRole', s.hostBRole);
 
