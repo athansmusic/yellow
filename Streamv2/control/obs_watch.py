@@ -95,6 +95,56 @@ class ObsLink(threading.Thread):
         threading.Thread(target=self._toggle_worker,
                          args=(scene, source, enabled), daemon=True).start()
 
+    def swap_audio(self, live_in_a: list[str], muted_in_a: list[str]) -> None:
+        """Flip a group of inputs between two mute states, atomically-ish.
+
+        State A: everything in live_in_a unmuted, everything in muted_in_a
+        muted. State B is the exact inverse. Which way to flip is read from
+        the FIRST input in live_in_a, so mashing the button can never drift
+        the group out of sync - every press re-asserts all inputs from one
+        source of truth.
+        """
+        threading.Thread(target=self._swap_audio_worker,
+                         args=(list(live_in_a), list(muted_in_a)),
+                         daemon=True).start()
+
+    def _swap_audio_worker(self, live_in_a: list[str],
+                           muted_in_a: list[str]) -> None:
+        try:
+            ws = websocket.create_connection(self.url, timeout=8)
+            try:
+                self._identify(ws, events=0)
+                ws.send(json.dumps({"op": 6, "d": {
+                    "requestType": "GetInputMute", "requestId": "s0",
+                    "requestData": {"inputName": live_in_a[0]}}}))
+                muted = None
+                for _ in range(20):
+                    msg = json.loads(ws.recv())
+                    if msg.get("op") == 7 and msg["d"]["requestId"] == "s0":
+                        if msg["d"]["requestStatus"]["result"]:
+                            muted = msg["d"]["responseData"]["inputMuted"]
+                        break
+                if muted is None:
+                    self.log(f"  [obs] swap: {live_in_a[0]!r} not found")
+                    return
+                # Indicator unmuted = currently state A -> go to B, and back.
+                to_b = not muted
+                plan = ([(n, to_b) for n in live_in_a]
+                        + [(n, not to_b) for n in muted_in_a])
+                for i, (name, mute) in enumerate(plan):
+                    ws.send(json.dumps({"op": 6, "d": {
+                        "requestType": "SetInputMute", "requestId": f"s{i + 1}",
+                        "requestData": {"inputName": name,
+                                        "inputMuted": mute}}}))
+                self.log(f"  [obs] audio swap -> {'B' if to_b else 'A'}: "
+                         + ", ".join(f"{n} {'muted' if m else 'live'}"
+                                     for n, m in plan))
+                time.sleep(0.3)
+            finally:
+                ws.close()
+        except Exception as exc:                       # noqa: BLE001
+            self.log(f"  [obs] audio swap failed: {type(exc).__name__}: {exc}")
+
     def _toggle_worker(self, scene: str, source: str, enabled: bool) -> None:
         try:
             ws = websocket.create_connection(self.url, timeout=8)

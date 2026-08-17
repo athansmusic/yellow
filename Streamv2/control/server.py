@@ -473,6 +473,21 @@ class Handler(BaseHTTPRequestHandler):
                     _slots[key] = rects
             self._send(b'{"ok":true}', "application/json")
             return
+        if route == "/audio/swap":
+            # Show-mode toggle: state A = Audience + Mic/Aux live, Show muted
+            # (normal talking). One press flips to state B = Show live,
+            # everything else muted (episode playback). Press again to return.
+            # The flip direction is read from OBS each press, so it cannot
+            # drift out of sync with reality.
+            link = _obs["link"]
+            if link is None:
+                self._send(b'{"error":"obs link not up"}',
+                           "application/json", 503)
+                return
+            link.swap_audio(live_in_a=["Audience", "Mic/Aux"],
+                            muted_in_a=["Show"])
+            self._send(b'{"ok":true}', "application/json")
+            return
         if route == "/effect/threshold":
             length = int(self.headers.get("Content-Length") or 0)
             try:
