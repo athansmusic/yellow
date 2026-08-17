@@ -136,8 +136,11 @@ takeover -> score bar -> team-gated redeems -> monthly ceremony.
 
 ## Closed by owner decision (2026-08-16) - do not reopen unprompted
 
-- **Twitch chat reader stays off** (`twitch.enabled: false`). Owner uses
-  their own chat sources.
+- **The chat reader may SEE chat but must never DRAW it** (clarified
+  2026-08-17). Turning `twitch.enabled` on as a data feed (RVB draft,
+  points, counters) is fine; rendering messages through the built-in
+  overlay chat is not - the owner disliked that design and uses their
+  own chat sources exclusively. The stage URLs' `chat=ext` pin stays.
 - **Split Cam speaker dimming stays off**, both tiles undimmed, both ticks
   yellow. The per-mic-levels upgrade is not wanted.
 - **No Govee warranty claim.** The stuck H6076s run on the `lights/lan_hold.py`
