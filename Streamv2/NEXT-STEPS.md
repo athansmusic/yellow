@@ -98,15 +98,24 @@ Mechanics:
 - Points: chatting (capped per stream or spam becomes the meta), bits and
   subs (weighted so money helps but cannot buy the month), watch time
   (Firebot tracks it natively - bridge, do not rebuild).
-- Captains: Athan captains one team, Jamie the other. On-air trash talk is
-  the content engine; the losing captain does a forfeit at month end.
+- Captains: Athan captains one team, Jamie the other, and the captains
+  KEEP their teams permanently - only viewers reshuffle at draft night.
+  On-air trash talk is the content engine; the losing captain does a
+  forfeit at month end.
 - Powers: leading team's threshold fires in their colour; floor lamps go
   team colour at stream start; selected redeems only fire for the leading
   team (server checks the username against the roster - Firebot passes it).
 - Score peek: channel points show a 5s tug-of-war bar with exact numbers.
   Ambient colour says who leads; the bar says by how much.
-- Month end: credits dedication ("this month's broadcast held by RED"),
-  forfeit, then a draft-night reshuffle - an event, never a silent reset.
+- End screen, PER STREAM: a credits section below subs/bits (smaller type
+  than both) - "RED TEAM HELD THE LEAD THIS STREAM. MEMBERS IN
+  ATTENDANCE:" followed by every winning-team member who chatted that
+  stream. Attendance comes from the same per-stream chatter tracking the
+  points use, so being listed only requires showing up and talking - the
+  cheap seats get their name on the broadcast, which is the retention
+  hook.
+- Month end: the losing captain's forfeit, then a draft-night viewer
+  reshuffle - an event, never a silent reset.
 
 Build order when we start: roster + points ledger -> ambient colour
 takeover -> score bar -> team-gated redeems -> monthly ceremony.
