@@ -122,6 +122,11 @@ Mechanics:
   "USERNAME drafted to BLUE", mini censor-bar style like the follower
   alert but in the team's colour and WITH the name (drafts are public).
   Server-driven, since the server is what does the drafting.
+  Sending: the stamp rides our own SSE to the overlays. Any TWITCH CHAT
+  line must go through Firebot - the IRC reader is anonymous (read-only
+  by design, no tokens held), so the server triggers a Firebot preset
+  effect list over local HTTP with username+team args, and Firebot's
+  Chat effect posts from the owner's account.
 - Score peek: channel points show a 5s tug-of-war bar with exact numbers.
   Ambient colour says who leads; the bar says by how much.
 - End screen, PER STREAM: a credits section below subs/bits (smaller type
