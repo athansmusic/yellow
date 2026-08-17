@@ -467,6 +467,10 @@ class Handler(BaseHTTPRequestHandler):
             self._send(json.dumps(fire_threshold()).encode(), "application/json")
         elif route == "/effect/threshold/off":
             self._send(json.dumps(clear_threshold()).encode(), "application/json")
+        elif route == "/effect/micfx":
+            self._send(json.dumps(fire_micfx()).encode(), "application/json")
+        elif route == "/effect/micfx/off":
+            self._send(json.dumps(clear_micfx()).encode(), "application/json")
         elif route == "/frameglow":
             self._send_file(OVERLAY_DIR / "frameglow.html", "text/html; charset=utf-8")
         elif route == "/camedge":
@@ -590,6 +594,18 @@ class Handler(BaseHTTPRequestHandler):
             return
         if route == "/effect/threshold/off":
             self._send(json.dumps(clear_threshold()).encode(), "application/json")
+            return
+        if route == "/effect/micfx":
+            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                body = json.loads(self.rfile.read(length) or b"{}")
+            except json.JSONDecodeError:
+                body = {}
+            self._send(json.dumps(fire_micfx(body.get("seconds"))).encode(),
+                       "application/json")
+            return
+        if route == "/effect/micfx/off":
+            self._send(json.dumps(clear_micfx()).encode(), "application/json")
             return
         if route == "/dev/startup":
             length = int(self.headers.get("Content-Length") or 0)
@@ -735,6 +751,50 @@ def fire_threshold(seconds: float | None = None) -> dict:
     print(f"  [fx] threshold ON for {secs:g}s across {len(scenes)} scenes",
           flush=True)
     return {"ok": True, "seconds": secs, "scenes": scenes, "filter": name}
+
+
+_micfx_timer = None
+
+
+def fire_micfx(seconds: float | None = None) -> dict:
+    """Enable the mic's 3-Band Equalizer (the radio-voice EQ) for a while.
+
+    Same shape as the threshold redeem: auto-reverts on an unconditional
+    timer, and a re-redeem mid-effect restarts the clock instead of being
+    cut short by the first timer.
+    """
+    global _micfx_timer
+    secs = float(seconds if seconds is not None else 15)
+    link = _obs["link"]
+    if link is None:
+        return {"ok": False, "error": "not connected to OBS"}
+
+    link.set_filter_enabled("Mic/Aux", "3-Band Equalizer", True)
+    if _micfx_timer is not None:
+        _micfx_timer.cancel()
+
+    def revert():
+        link.set_filter_enabled("Mic/Aux", "3-Band Equalizer", False)
+        print("  [fx] mic EQ off", flush=True)
+
+    _micfx_timer = threading.Timer(secs, revert)
+    _micfx_timer.daemon = True
+    _micfx_timer.start()
+    print(f"  [fx] mic EQ ON for {secs:g}s", flush=True)
+    return {"ok": True, "seconds": secs}
+
+
+def clear_micfx() -> dict:
+    """Panic off - kill it immediately regardless of the timer."""
+    global _micfx_timer
+    link = _obs["link"]
+    if _micfx_timer is not None:
+        _micfx_timer.cancel()
+        _micfx_timer = None
+    if link is None:
+        return {"ok": False, "error": "not connected to OBS"}
+    link.set_filter_enabled("Mic/Aux", "3-Band Equalizer", False)
+    return {"ok": True}
 
 
 def clear_threshold() -> dict:
