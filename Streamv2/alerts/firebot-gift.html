@@ -9,8 +9,13 @@
     Effect:  Show HTML
     HTML:    paste this entire file
     Removal: 6 seconds
-    Variables: $gifterUsername and $giftCount - on the single-gift event,
-    swap $giftCount for 1 or use the matching variable for that event.
+    Variables: on gift events, Firebot's "username" variable IS the gifter.
+    NOTE - Firebot parses every dollar-word in this box, comments included,
+    so variable names are spelled out here without their dollar sign:
+    the name uses (dollar)username, the label uses (dollar)giftCount. On the
+    single-gift event, replace the giftCount one with the literal number 1
+    if that event lacks it - the dollar button in this effect lists what
+    each event offers.
 
   Preview: open this file in a browser - it fills in sample values and a
   dark backdrop by itself when Firebot hasn't substituted the variables.
@@ -85,7 +90,7 @@
     <div class="rk-label">[ gifted &times;$giftCount subs ]</div>
     <div class="rk-bar">
       <i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i>
-      <div class="rk-name">$gifterUsername</div>
+      <div class="rk-name">$username</div>
       <div class="rk-scan"></div>
     </div>
   </div>
