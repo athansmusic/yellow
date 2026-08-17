@@ -1,0 +1,118 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>On Screen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  /* ---------------------------------------------------------------------
+     "ON SCREEN" panel for the full-cam layout, from the owner's mock:
+     dashed accent frame floating right, label tab, caption line beneath.
+     The window itself is TRANSPARENT - the OBS Screen source sits under
+     this overlay, fitted to the slot this page reports to /slots.
+
+     ?ground=off   drop the textured ground (cam is the background)
+     ?caption=...  override the caption line (default: episode fields)
+     ?x=980 ?y=140 ?w=820 ?h=470   move/resize the window
+     --------------------------------------------------------------------- */
+  :root {
+    --ground:  #060607;
+    --accent:  #f4e409;
+    --display: #f7f7f5;
+    --meta:    #5c5c64;
+    --mono: "IBM Plex Mono", Consolas, monospace;
+  }
+  html, body {
+    margin: 0; width: 1920px; height: 1080px;
+    overflow: hidden; position: relative;
+    background: transparent; font-family: var(--mono);
+  }
+  #ground {
+    position: absolute; inset: 0;
+    background:
+      repeating-linear-gradient(115deg, rgba(255,255,255,.02) 0 2px, transparent 2px 7px),
+      radial-gradient(120% 90% at 50% 50%, #0a0a0d 0%, var(--ground) 60%, #030304 100%);
+  }
+  body[data-ground="off"] #ground { display: none; }
+
+  #panel { position: absolute; }
+  #tab {
+    position: absolute; top: -26px; left: 0;
+    display: flex; align-items: center; gap: 8px;
+  }
+  #tab .bar { width: 4px; height: 14px; background: var(--accent); }
+  #tab .txt {
+    font-weight: 600; font-size: 12px; letter-spacing: .3em;
+    text-transform: uppercase; color: var(--display);
+  }
+  #dot {
+    position: absolute; top: -22px; right: 0;
+    width: 7px; height: 7px; background: var(--accent);
+    animation: os-pulse 2.2s ease-in-out infinite;
+  }
+  #frame {
+    position: absolute; inset: 0;
+    border: 1px dashed color-mix(in srgb, var(--accent) 75%, transparent);
+  }
+  #frame i { position: absolute; width: 14px; height: 14px; }
+  #frame i.tl { top: -2px; left: -2px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+  #frame i.br { bottom: -2px; right: -2px; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+  #caption {
+    position: absolute; bottom: -26px; left: 0; right: 0;
+    display: flex; justify-content: space-between; gap: 20px;
+    font-weight: 500; font-size: 11px; letter-spacing: .2em;
+    text-transform: uppercase; color: var(--meta); white-space: nowrap;
+  }
+  #cap-note { overflow: hidden; text-overflow: ellipsis; }
+  @keyframes os-pulse { 0%,100% { opacity: .3; } 50% { opacity: 1; } }
+</style>
+
+<div id="ground"></div>
+<div id="panel">
+  <div id="tab"><span class="bar"></span><span class="txt">on screen</span></div>
+  <div id="dot"></div>
+  <div id="frame"><i class="tl"></i><i class="br"></i></div>
+  <div id="caption"><span id="cap-note"></span><span>looping</span></div>
+</div>
+
+<script>
+  const p = new URLSearchParams(location.search);
+  document.body.dataset.ground = p.get('ground') === 'off' ? 'off' : 'on';
+
+  const X = +(p.get('x') || 980), Y = +(p.get('y') || 140);
+  const W = +(p.get('w') || 820), H = +(p.get('h') || 470);
+  const panel = document.getElementById('panel');
+  panel.style.left = X + 'px'; panel.style.top = Y + 'px';
+  panel.style.width = W + 'px'; panel.style.height = H + 'px';
+
+  function render(s) {
+    const cap = p.get('caption')
+      || [s.episodeNumber && ('episode ' + s.episodeNumber), s.episodeTitle]
+           .filter(Boolean).join(' — ')
+      || 'on screen';
+    document.getElementById('cap-note').textContent = cap;
+    const t = (s.themes || {})[s.show] || {};
+    const root = document.documentElement.style;
+    if (t.accent) root.setProperty('--accent', t.accent);
+    else root.removeProperty('--accent');
+  }
+
+  // Report the window rect so OBS can fit the Screen source exactly,
+  // same contract as the broadcast layout.
+  function reportSlots() {
+    fetch('/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'onscreen', slots: { screen: [X, Y, W, H] } }) })
+      .catch(() => {});
+  }
+
+  fetch('/state').then(r => r.json()).then(s => { render(s); reportSlots(); })
+    .catch(() => render({}));
+  let es = null;
+  function connect() {
+    es = new EventSource('/events');
+    es.onmessage = (e) => { try { render(JSON.parse(e.data)); } catch (_) {} };
+    es.onerror = () => { es.close(); setTimeout(connect, 2000); };
+  }
+  connect();
+  window.addEventListener('pagehide', () => { try { if (es) es.close(); } catch (_) {} });
+</script>

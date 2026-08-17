@@ -479,6 +479,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send_file(OVERLAY_DIR / "frameglow.html", "text/html; charset=utf-8")
         elif route == "/camedge":
             self._send_file(OVERLAY_DIR / "camedge.html", "text/html; charset=utf-8")
+        elif route == "/onscreen":
+            self._send_file(OVERLAY_DIR / "onscreen.html", "text/html; charset=utf-8")
         elif route == "/subgoal":
             self._send_file(OVERLAY_DIR / "subgoal.html", "text/html; charset=utf-8")
         elif route == "/splitcam":

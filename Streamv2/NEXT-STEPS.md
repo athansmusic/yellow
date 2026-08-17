@@ -32,7 +32,39 @@ document.body from a Show HTML (it outlives the effect's removal).
 The fire layer (media/fire-alpha.webm, luma-keyed from Fire.mov) streams
 off the control server via /file - server down = alert plays fireless.
 
-## 2. LIVE CAPTIONS  ← research, then owner decides
+## 2. SCREEN-ON-CAM LAYOUT  ← prototype ready, owner composes on return
+
+Owner's mock (2026-08-17): full-bleed host cam, an "ON SCREEN" panel
+floating right with a dashed accent frame + caption line, face sitting
+left-centre in the space the panel leaves. "Maybe a fade out into a
+background."
+
+Prototype built: `overlays/onscreen.html` (route `/onscreen`) - the
+panel frame, labels and ground in house style, reports its screen-slot
+rect to `/slots` so the Screen source can be fitted exactly, caption
+derives from the episode fields with a `?caption=` override.
+
+Layout options to decide together:
+
+A. **Overlay only** (the mock literally): cam stays full-bleed and
+   untouched; panel floats over the right. Cheapest, but the face must be
+   physically framed left or it hides behind the panel.
+B. **Second scene + Move transition** (recommended): a "Live Screen"
+   scene where [CAM] sits shifted left and the panel + Screen live on the
+   right. The Move transition already matches [CAM] across scenes, so
+   switching slides the cam over in 160ms - the "pop up" becomes a scene
+   switch on a deck button, which also solves the toggle.
+C. **The fade-into-background**: the cam's edges dissolve into the
+   textured ground instead of hard-edging - an alpha-gradient mask on the
+   cam (image mask filter, like the In Game rounded mask but a gradient),
+   or the overlay painting ground-coloured gradients over the cam edges.
+   Pairs with either A or B.
+
+Owner said "we can mess with it when I'm back" - do not build scenes
+until then. The user's own `Full Cam Screen` item in Live is their
+work-in-progress; leave it alone.
+
+## 3. LIVE CAPTIONS  ← research, then owner decides
 
 Owner asked (2026-08-16): can captions go on the live screen easily?
 Question to answer before building anything: which route -
@@ -40,7 +72,7 @@ local Whisper-class model feeding an overlay, OBS captioning plugin, or
 Twitch's own CC. Weigh latency, accuracy on show audio vs mic, and whether
 it can style-match the house look.
 
-## 3. INTERACTIVE ELEMENTS  ← waiting on owner's list
+## 4. INTERACTIVE ELEMENTS  ← waiting on owner's list
 
 Channel point redeems, sub awards, and similar. Owner is drafting the list.
 The threshold redeem is the working template: Firebot effect fires HTTP at
