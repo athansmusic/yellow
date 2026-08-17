@@ -34,6 +34,7 @@ import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 from obs_watch import ObsLink
 from twitch_chat import TwitchChat
@@ -506,6 +507,21 @@ class Handler(BaseHTTPRequestHandler):
                 ".jpeg": "image/jpeg", ".gif": "image/gif",
             }.get(Path(name).suffix.lower(), "application/octet-stream")
             self._send_file(ASSET_DIR / name, ctype)
+        elif route == "/file":
+            # Serve one local image by full path, so a theme's logo can live
+            # anywhere on disk (like the bg files) instead of only in
+            # overlays/assets. Images only - this is not a general file
+            # server; anything else 404s.
+            qs = parse_qs(urlparse(self.path).query)
+            path = Path((qs.get("path") or [""])[0])
+            img_ct = {".png": "image/png", ".svg": "image/svg+xml",
+                      ".webp": "image/webp", ".jpg": "image/jpeg",
+                      ".jpeg": "image/jpeg", ".gif": "image/gif"}
+            ctype = img_ct.get(path.suffix.lower())
+            if ctype and path.is_file():
+                self._send_file(path, ctype)
+            else:
+                self._send(b"not found", "text/plain", 404)
         elif route == "/files":
             # What the panel's asset pickers can offer: web-served logo
             # images, and OBS-playable media for the [BG] video slot.

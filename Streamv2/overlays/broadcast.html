@@ -437,10 +437,16 @@
     requestAnimationFrame(reportSlots);     // header height changed
   };
   logoImg.onerror = () => document.body.classList.remove('has-logo');
+  // A bare filename means overlays/assets; anything with a path separator
+  // or drive letter is a full local path, served through /file - same
+  // freedom as the theme's bg image.
+  const logoUrl = (v) => /[/\\:]/.test(v)
+    ? '/file?path=' + encodeURIComponent(v)
+    : '/assets/' + v;
   function applyLogo(s) {
     const t = (s.themes || {})[s.show] || {};
     const want = params.get('logo')
-      || (t.logo ? '/assets/' + t.logo : '/assets/show-logo.png');
+      || logoUrl(t.logo || 'show-logo.png');
     if (logoImg.getAttribute('src') !== want) logoImg.src = want;
   }
   applyLogo({});

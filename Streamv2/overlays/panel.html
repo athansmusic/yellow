@@ -96,7 +96,7 @@
       <label><span>Text</span><input type="color" id="th_text"></label>
       <label><span>Muted</span><input type="color" id="th_muted"></label>
     </div>
-    <label><span>Logo (from overlays/assets)</span><select id="th_logo"></select></label>
+    <label><span>Logo (full path, or a filename in overlays/assets)</span><input id="th_logo" placeholder="show-logo.png  or  C:/path/to/logo.png" autocomplete="off"></label>
     <label><span>BG video (from media/)</span><select id="th_bgVideo"></select></label>
     <label><span>BG image (full path)</span><input id="th_bgImage" placeholder="C:/path/to/image.png" autocomplete="off"></label>
   </fieldset>
@@ -196,7 +196,6 @@
         sel.appendChild(o);
       }
     };
-    fill('th_logo', f.assets || []);
     fill('th_bgVideo', f.media || []);
     fillShowUI();   // re-sync selections now that options exist
   }).catch(() => {});
