@@ -1020,35 +1020,33 @@ def clear_threshold() -> dict:
     return {"ok": True}
 
 
-# The lamp colour currently being streamed, so a lead that holds steady
+# The lamp colour currently being streamed, so a colour that holds steady
 # does not relaunch the streamer on every single point scored.
-_lamp_lead = None
+_lamp_color = None
 
 
 def _lamps_to_team(force: bool = False) -> None:
-    """Standing lamps wear the leading team's colour while they hold it.
+    """Standing lamps mirror the screen border exactly.
 
-    Physical territory: whoever holds the broadcast holds the room. Fires
-    only when the LEAD CHANGES (or on force, at stream start). Skipped on a
-    tie - nobody has taken anything yet. Launched detached, because
-    lan_hold streams colour forever and must outlive this call.
+    Leading team's colour while somebody leads, the neutral house colour
+    while tied - the room says the same thing the frame does. Fires only
+    when that COLOUR CHANGES (or on force, at stream start). Launched
+    detached, because lan_hold streams colour forever and must outlive
+    this call.
     """
-    global _lamp_lead
+    global _lamp_color
     if _teams is None:
         return
     cfg = _rvb_cfg()
     if not cfg.get("lamps", {}).get("enabled"):
         return
     snap = _teams.snapshot()
-    lead = snap.get("lead")
-    if not lead:
-        return
-    if lead == _lamp_lead and not force:
-        return
-    hexval = (snap.get("leadColor") or "").lstrip("#")
+    hexval = (snap.get("color") or "").lstrip("#")
     if len(hexval) != 6:
         return
-    _lamp_lead = lead
+    if hexval == _lamp_color and not force:
+        return
+    _lamp_color = hexval
     r, g, b = (int(hexval[i:i + 2], 16) for i in (0, 2, 4))
     lamps = cfg.get("lamps", {})
     ips = lamps.get("stream_ips", "")
@@ -1067,7 +1065,8 @@ def _lamps_to_team(force: bool = False) -> None:
             cwd=str(script.parent),
             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        print(f"  [rvb] lamps -> {snap['lead'].upper()} ({r},{g},{b})", flush=True)
+        who = (snap.get("lead") or "tied").upper()
+        print(f"  [rvb] lamps -> {who} ({r},{g},{b})", flush=True)
     except OSError as exc:
         print(f"  [rvb] lamp launch failed: {exc}", flush=True)
 
