@@ -136,6 +136,7 @@
 
   <fieldset>
     <legend>BRB scene</legend>
+    <label><span>Headline (the big text)</span><input id="brbHeadline" placeholder="BRB" autocomplete="off"></label>
     <label><span>Note to the audience</span><input id="brbNote" autocomplete="off"></label>
     <label><span>Up next (blank hides it)</span><input id="brbUpNext" autocomplete="off"></label>
     <label><span>Back in (minutes &mdash; sets the countdown when you type it, blank clears)</span>
@@ -167,7 +168,7 @@
   const FIELDS = ['showName', 'episodeNumber', 'episodeTitle', 'episodeBlurb',
                   'hostA', 'hostARole', 'hostB', 'hostBRole', 'handle', 'cadence',
                   'alertName', 'alertMeta', 'subGoal', 'prompts', 'promptSeconds',
-                  'brbNote', 'brbUpNext', 'brbMinutes'];
+                  'brbHeadline', 'brbNote', 'brbUpNext', 'brbMinutes'];
 
   // Layout is NOT controlled here. Each OBS scene carries its own stage layers
   // pinned with ?scene=two|solo, so switching scenes in OBS switches the layout.
