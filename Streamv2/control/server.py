@@ -663,6 +663,11 @@ class Handler(BaseHTTPRequestHandler):
         elif route == "/art/pending":
             body = json.dumps(_art.pending() if _art else []).encode()
             self._send(body, "application/json")
+        elif route == "/art/next":
+            qs = parse_qs(urlparse(self.path).query)
+            exclude = (qs.get("not") or [""])[0]
+            out = _art.pick_next(exclude, count=_live) if _art                 else {"piece": None, "poolSize": 0}
+            self._send(json.dumps(out).encode(), "application/json")
         elif route == "/art/approved":
             # Owner call 2026-08-18: the whole approved pool rotates, not a
             # recency window - older art comes around again.

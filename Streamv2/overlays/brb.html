@@ -163,9 +163,7 @@
 
 <div id="foot">
   <span class="hl" id="f-handle"></span>
-  <span id="f-note"></span>
   <i></i>
-  <span>new episodes thursdays</span>
 </div>
 
 <script>
@@ -194,7 +192,6 @@
     $('upnext-wrap').style.display = up ? '' : 'none';
     $('t-div').style.display = up ? '' : 'none';
     $('f-handle').textContent = s.handle || '';
-    $('f-note').textContent = s.cadence || '';
     backAt = parseInt(s.brbBackAt || '0', 10) || 0;
   }
 
@@ -217,19 +214,7 @@
   // Two persistent layers; rotation swaps src + inline opacity. The glitch
   // wipe is WAAPI on top - dropped = instant cut, never a blank frame.
   const ROTATE_MS = 25000;
-  let setList = [], setKey = '', cur = null, front = 0;
-
-  function pollArt() {
-    fetch(API + '/art/approved').then(r => r.json()).then((list) => {
-      const key = list.map(i => i.id).join(',');
-      if (key === setKey) return;
-      const wasEmpty = !setList.length;
-      setKey = key;
-      setList = list.slice();
-      if (setList.length && wasEmpty) advance();
-      else if (!setList.length) showEmpty();
-    }).catch(() => {});
-  }
+  let cur = null, front = 0;
 
   function showEmpty() {
     $('empty').style.display = '';
@@ -239,14 +224,16 @@
   }
 
   function advance() {
-    if (!setList.length) { showEmpty(); return; }
+    // The server picks: weighted so art unseen on a LIVE stream comes up
+    // more, and a piece's count only rises while actually streaming.
+    fetch(API + '/art/next?not=' + encodeURIComponent(cur ? cur.id : ''))
+      .then(r => r.json()).then(show).catch(() => {});
+  }
+
+  function show(out) {
+    const piece = out.piece;
+    if (!piece) { showEmpty(); return; }
     $('empty').style.display = 'none';
-    // Random draw from the WHOLE approved pool (owner's call: art should
-    // come around again later) - only never the same piece twice running.
-    let piece = setList[Math.floor(Math.random() * setList.length)];
-    if (setList.length > 1 && cur && piece.id === cur.id) {
-      piece = setList[(setList.indexOf(piece) + 1) % setList.length];
-    }
     cur = piece;
     const layers = [$('art-a'), $('art-b')];
     const inEl = layers[front ^= 1], outEl = layers[front ^ 1];
@@ -271,11 +258,10 @@
       outEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, easing: 'ease-in' });
     } catch (_) {}
 
-    $('counter').textContent = setList.length + ' in rotation';
+    $('counter').textContent = out.poolSize + ' in rotation';
   }
 
-  pollArt();
-  setInterval(pollArt, 60000);
+  advance();
   setInterval(advance, ROTATE_MS);
   beacon('loaded');
 </script>

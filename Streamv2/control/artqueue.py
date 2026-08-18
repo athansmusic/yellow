@@ -19,6 +19,7 @@ by hand (POST /art/submit, for testing or non-Tumblr one-offs).
 from __future__ import annotations
 
 import json
+import random
 import re
 import threading
 import time
@@ -143,6 +144,26 @@ class ArtQueue:
             ok = [dict(i) for i in self._items if i["status"] == "approved"]
         ok.sort(key=lambda i: i["ts"], reverse=True)
         return ok[:limit]
+
+    def pick_next(self, exclude: str = "", count: bool = False) -> dict:
+        """One weighted-random approved piece for the gallery.
+
+        Weight is 1/(1+shows): art that has not yet been seen on a LIVE
+        stream is favoured, but everything keeps a chance. `count` is
+        True only while OBS is actually streaming - rehearsal showings
+        off air cost a piece nothing.
+        """
+        with self._lock:
+            pool = [i for i in self._items if i["status"] == "approved"]
+            if not pool:
+                return {"piece": None, "poolSize": 0}
+            pick_from = [i for i in pool if i["id"] != exclude] or pool
+            weights = [1.0 / (1 + i.get("shows", 0)) for i in pick_from]
+            piece = random.choices(pick_from, weights=weights, k=1)[0]
+            if count:
+                piece["shows"] = piece.get("shows", 0) + 1
+                self._save()
+            return {"piece": dict(piece), "poolSize": len(pool)}
 
     def decide(self, item_id: str, action: str) -> dict:
         if action == "undo":
