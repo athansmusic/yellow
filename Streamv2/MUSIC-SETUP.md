@@ -131,6 +131,31 @@ with the Media Foundation backend before concluding anything. The
 alternatives are a second cheap webcam (best isolation) or sharing the
 NVIDIA Broadcast device (untested, risks the live feed).
 
+## Decided 2026-08-18: scene-driven, not a button
+
+Owner chose the automation option over a MUSIC MODE button, because the
+mic mute is not the only thing that has to change on the music scene -
+the CAMERA needs a delay too, so video lines up with audio that has been
+through FL Studio and VB-Cable.
+
+So entering the Stage scene should:
+
+- mute `Mic/Aux` (the raw Focusrite feed) and unmute `FL Studio`
+- enable a **Render Delay** filter on the camera, tuned to match the
+  audio path
+- reverse all of it on leaving
+
+Safety requirement that must hold: **every failure mode leaves the normal
+mic working.** If the control server is down, or OBS is closed, or the
+automation never fires, the result must be the ordinary talking setup -
+never a muted mic nobody notices. That means the automation only ever
+mutes on ENTERING the music scene, and the resting state on disk is the
+talking state.
+
+Still to measure before this is built: the actual round-trip delay of
+FL -> VB-Cable -> OBS, so the camera's Render Delay is set from a
+measurement rather than a guess. Clap test on a local recording.
+
 ## Build order
 
 1. Prove the audio path with no hand tracking at all: FL → VB-Cable →
