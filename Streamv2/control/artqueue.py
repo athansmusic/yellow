@@ -184,7 +184,9 @@ class ArtQueue:
                 "title": (entry.get("title") or "untitled")[:80],
                 "artist": entry.get("artist") or "unknown",
                 "post_url": entry.get("post_url") or "",
-                "ts": int(time.time()), "notes": 0,
+                # Trust a supplied timestamp (the backfill passes the real
+                # post date); stamp "now" only for true one-offs.
+                "ts": int(entry.get("ts") or time.time()), "notes": 0,
                 "status": "pending",
             })
             self._save()
