@@ -256,7 +256,11 @@
     "_comment": "Fan-art queue. Get a free key at tumblr.com/oauth/apps (use the OAuth Consumer Key). Put the real key in config.local.json, not here.",
     "api_key": "",
     "tag": "the redacted unit",
-    "poll_seconds": 120
+    "poll_seconds": 120,
+    "block_tags": [
+      "keepredacted",
+      "keep redacted"
+    ]
   },
   "bucklein": {
     "_note": "Chatters have the whole stream to !bucklein; switching to the Ending scene tickets everyone who never did, all at once, through the Firebot preset in 'preset' (Chat effect, message = $presetListArg[message]). Citation lines live in the panel. exclude_users defaults to rvb.exclude.users.",

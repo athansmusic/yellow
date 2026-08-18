@@ -32,10 +32,21 @@ from pathlib import Path
 TAGGED_URL = "https://api.tumblr.com/v2/tagged?tag={tag}&api_key={key}"
 
 
+def _norm_tag(t: str) -> str:
+    """'#Keep Redacted' -> 'keepredacted' - spacing and case never matter."""
+    return "".join(str(t).lower().split()).lstrip("#")
+
+
 class ArtQueue:
     def __init__(self, store: Path, cfg: dict):
         self.store = store
         self.tag = cfg.get("tag", "the redacted unit")
+        # Opt-out tags. A post carrying any of these NEVER enters the
+        # rotation - it is stored as status "blocked" so the dedupe keeps
+        # it out forever, and no portal or gallery endpoint ever serves it.
+        self.block_tags = {_norm_tag(t) for t in
+                           cfg.get("block_tags",
+                                   ["keepredacted", "keep redacted"])}
         self.api_key = (cfg.get("api_key") or "").strip()
         self.poll_seconds = max(60, int(cfg.get("poll_seconds", 120)))
         self._lock = threading.Lock()
@@ -82,6 +93,8 @@ class ArtQueue:
             pid = str(p.get("id_string") or p.get("id") or "")
             if not pid:
                 continue
+            blocked = any(_norm_tag(t) in self.block_tags
+                          for t in (p.get("tags") or []))
             with self._lock:
                 if any(i["id"] == pid for i in self._items):
                     continue
@@ -96,7 +109,7 @@ class ArtQueue:
                     "post_url": p.get("post_url", ""),
                     "ts": int(p.get("timestamp") or time.time()),
                     "notes": int(p.get("note_count") or 0),
-                    "status": "pending",
+                    "status": "blocked" if blocked else "pending",
                 })
                 added += 1
         if added:
