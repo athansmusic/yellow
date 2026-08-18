@@ -1,5 +1,5 @@
 {
-  "taken": "2026-08-18 00:59:11",
+  "taken": "2026-08-18 01:19:56",
   "scenes": {
     "Audio": [
       {
@@ -212,15 +212,15 @@
           "cropRight": 0,
           "cropToBounds": false,
           "cropTop": 0,
-          "height": 1080.0,
+          "height": 0.0,
           "positionX": 0.0,
           "positionY": 0.0,
           "rotation": 0.0,
           "scaleX": 1.0,
           "scaleY": 1.0,
-          "sourceHeight": 1080.0,
-          "sourceWidth": 1920.0,
-          "width": 1920.0
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
         }
       },
       {
@@ -276,34 +276,8 @@
         }
       },
       {
-        "source": "Ending Overlay",
-        "index": 3,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
-          "boundsHeight": 1080.0,
-          "boundsType": "OBS_BOUNDS_SCALE_INNER",
-          "boundsWidth": 1920.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 1080.0,
-          "positionX": 0.0,
-          "positionY": 0.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 1080.0,
-          "sourceWidth": 1920.0,
-          "width": 1920.0
-        }
-      },
-      {
         "source": "Image 2",
-        "index": 4,
+        "index": 3,
         "enabled": true,
         "transform": {
           "alignment": 5,
@@ -329,7 +303,7 @@
       },
       {
         "source": "Audience",
-        "index": 5,
+        "index": 4,
         "enabled": true,
         "transform": {
           "alignment": 5,
@@ -355,7 +329,7 @@
       },
       {
         "source": "Outro theme",
-        "index": 6,
+        "index": 5,
         "enabled": true,
         "transform": {
           "alignment": 5,
@@ -381,7 +355,7 @@
       },
       {
         "source": "Twitch Alerts",
-        "index": 7,
+        "index": 6,
         "enabled": true,
         "transform": {
           "alignment": 5,
@@ -406,8 +380,60 @@
         }
       },
       {
-        "source": "Live Frame",
+        "source": "Ending Overlay",
+        "index": 7,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Chat Full Cam",
         "index": 8,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 900.0,
+          "positionX": 18.0,
+          "positionY": 180.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 900.0,
+          "sourceWidth": 700.0,
+          "width": 700.0
+        }
+      },
+      {
+        "source": "Stream Overlay",
+        "index": 9,
         "enabled": true,
         "transform": {
           "alignment": 5,
@@ -694,93 +720,15 @@
         }
       },
       {
-        "source": "Sub Goal",
+        "source": "Stream Overlay",
         "index": 10,
         "enabled": true,
         "transform": {
           "alignment": 5,
           "boundsAlignment": 0,
-          "boundsHeight": 0.0,
-          "boundsType": "OBS_BOUNDS_NONE",
-          "boundsWidth": 0.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 120.0,
-          "positionX": 720.0,
-          "positionY": 960.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 120.0,
-          "sourceWidth": 480.0,
-          "width": 480.0
-        }
-      },
-      {
-        "source": "Live Frame Yellow",
-        "index": 11,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
           "boundsHeight": 1080.0,
           "boundsType": "OBS_BOUNDS_SCALE_INNER",
           "boundsWidth": 1920.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 1080.0,
-          "positionX": 0.0,
-          "positionY": 0.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 1080.0,
-          "sourceWidth": 1920.0,
-          "width": 1920.0
-        }
-      },
-      {
-        "source": "Live Frame",
-        "index": 12,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
-          "boundsHeight": 1080.0,
-          "boundsType": "OBS_BOUNDS_SCALE_INNER",
-          "boundsWidth": 1920.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 1080.0,
-          "positionX": 0.0,
-          "positionY": 0.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 1080.0,
-          "sourceWidth": 1920.0,
-          "width": 1920.0
-        }
-      },
-      {
-        "source": "RVB Overlay",
-        "index": 13,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
-          "boundsHeight": 0.0,
-          "boundsType": "OBS_BOUNDS_NONE",
-          "boundsWidth": 0.0,
           "cropBottom": 0,
           "cropLeft": 0,
           "cropRight": 0,
@@ -1086,93 +1034,15 @@
         }
       },
       {
-        "source": "Sub Goal",
+        "source": "Stream Overlay",
         "index": 11,
         "enabled": true,
         "transform": {
           "alignment": 5,
           "boundsAlignment": 0,
-          "boundsHeight": 0.0,
-          "boundsType": "OBS_BOUNDS_NONE",
-          "boundsWidth": 0.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 120.0,
-          "positionX": 720.0,
-          "positionY": 960.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 120.0,
-          "sourceWidth": 480.0,
-          "width": 480.0
-        }
-      },
-      {
-        "source": "Live Frame Yellow",
-        "index": 12,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
           "boundsHeight": 1080.0,
           "boundsType": "OBS_BOUNDS_SCALE_INNER",
           "boundsWidth": 1920.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 1080.0,
-          "positionX": 0.0,
-          "positionY": 0.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 1080.0,
-          "sourceWidth": 1920.0,
-          "width": 1920.0
-        }
-      },
-      {
-        "source": "Live Frame",
-        "index": 13,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
-          "boundsHeight": 1080.0,
-          "boundsType": "OBS_BOUNDS_SCALE_INNER",
-          "boundsWidth": 1920.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 1080.0,
-          "positionX": 0.0,
-          "positionY": 0.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 1080.0,
-          "sourceWidth": 1920.0,
-          "width": 1920.0
-        }
-      },
-      {
-        "source": "RVB Overlay",
-        "index": 14,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
-          "boundsHeight": 0.0,
-          "boundsType": "OBS_BOUNDS_NONE",
-          "boundsWidth": 0.0,
           "cropBottom": 0,
           "cropLeft": 0,
           "cropRight": 0,
@@ -1374,34 +1244,8 @@
         }
       },
       {
-        "source": "Sub Goal",
+        "source": "Stream Overlay",
         "index": 7,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
-          "boundsHeight": 0.0,
-          "boundsType": "OBS_BOUNDS_NONE",
-          "boundsWidth": 0.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 120.0,
-          "positionX": 720.0,
-          "positionY": 960.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 120.0,
-          "sourceWidth": 480.0,
-          "width": 480.0
-        }
-      },
-      {
-        "source": "Live Frame",
-        "index": 8,
         "enabled": true,
         "transform": {
           "alignment": 5,
@@ -1409,32 +1253,6 @@
           "boundsHeight": 1080.0,
           "boundsType": "OBS_BOUNDS_SCALE_INNER",
           "boundsWidth": 1920.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 1080.0,
-          "positionX": 0.0,
-          "positionY": 0.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 1080.0,
-          "sourceWidth": 1920.0,
-          "width": 1920.0
-        }
-      },
-      {
-        "source": "RVB Overlay",
-        "index": 9,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
-          "boundsHeight": 0.0,
-          "boundsType": "OBS_BOUNDS_NONE",
-          "boundsWidth": 0.0,
           "cropBottom": 0,
           "cropLeft": 0,
           "cropRight": 0,
@@ -1662,93 +1480,15 @@
         }
       },
       {
-        "source": "Sub Goal",
+        "source": "Stream Overlay",
         "index": 8,
         "enabled": true,
         "transform": {
           "alignment": 5,
           "boundsAlignment": 0,
-          "boundsHeight": 0.0,
-          "boundsType": "OBS_BOUNDS_NONE",
-          "boundsWidth": 0.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 120.0,
-          "positionX": 720.0,
-          "positionY": 960.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 120.0,
-          "sourceWidth": 480.0,
-          "width": 480.0
-        }
-      },
-      {
-        "source": "Live Frame Yellow",
-        "index": 9,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
           "boundsHeight": 1080.0,
           "boundsType": "OBS_BOUNDS_SCALE_INNER",
           "boundsWidth": 1920.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 1080.0,
-          "positionX": 0.0,
-          "positionY": 0.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 1080.0,
-          "sourceWidth": 1920.0,
-          "width": 1920.0
-        }
-      },
-      {
-        "source": "Live Frame",
-        "index": 10,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
-          "boundsHeight": 1080.0,
-          "boundsType": "OBS_BOUNDS_SCALE_INNER",
-          "boundsWidth": 1920.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 1080.0,
-          "positionX": 0.0,
-          "positionY": 0.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 1080.0,
-          "sourceWidth": 1920.0,
-          "width": 1920.0
-        }
-      },
-      {
-        "source": "RVB Overlay",
-        "index": 11,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
-          "boundsHeight": 0.0,
-          "boundsType": "OBS_BOUNDS_NONE",
-          "boundsWidth": 0.0,
           "cropBottom": 0,
           "cropLeft": 0,
           "cropRight": 0,
@@ -1950,34 +1690,8 @@
         }
       },
       {
-        "source": "Sub Goal",
+        "source": "Stream Overlay",
         "index": 7,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
-          "boundsHeight": 0.0,
-          "boundsType": "OBS_BOUNDS_NONE",
-          "boundsWidth": 0.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 120.0,
-          "positionX": 720.0,
-          "positionY": 960.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 120.0,
-          "sourceWidth": 480.0,
-          "width": 480.0
-        }
-      },
-      {
-        "source": "Live Frame",
-        "index": 8,
         "enabled": true,
         "transform": {
           "alignment": 5,
@@ -1985,32 +1699,6 @@
           "boundsHeight": 1080.0,
           "boundsType": "OBS_BOUNDS_SCALE_INNER",
           "boundsWidth": 1920.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 1080.0,
-          "positionX": 0.0,
-          "positionY": 0.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 1080.0,
-          "sourceWidth": 1920.0,
-          "width": 1920.0
-        }
-      },
-      {
-        "source": "RVB Overlay",
-        "index": 9,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
-          "boundsHeight": 0.0,
-          "boundsType": "OBS_BOUNDS_NONE",
-          "boundsWidth": 0.0,
           "cropBottom": 0,
           "cropLeft": 0,
           "cropRight": 0,
@@ -2186,34 +1874,8 @@
         }
       },
       {
-        "source": "Sub Goal",
+        "source": "Stream Overlay",
         "index": 6,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
-          "boundsHeight": 0.0,
-          "boundsType": "OBS_BOUNDS_NONE",
-          "boundsWidth": 0.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 120.0,
-          "positionX": 720.0,
-          "positionY": 960.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 120.0,
-          "sourceWidth": 480.0,
-          "width": 480.0
-        }
-      },
-      {
-        "source": "Live Frame",
-        "index": 7,
         "enabled": true,
         "transform": {
           "alignment": 5,
@@ -2221,32 +1883,6 @@
           "boundsHeight": 1080.0,
           "boundsType": "OBS_BOUNDS_SCALE_INNER",
           "boundsWidth": 1920.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 1080.0,
-          "positionX": 0.0,
-          "positionY": 0.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 1080.0,
-          "sourceWidth": 1920.0,
-          "width": 1920.0
-        }
-      },
-      {
-        "source": "RVB Overlay",
-        "index": 8,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
-          "boundsHeight": 0.0,
-          "boundsType": "OBS_BOUNDS_NONE",
-          "boundsWidth": 0.0,
           "cropBottom": 0,
           "cropLeft": 0,
           "cropRight": 0,
@@ -2422,34 +2058,8 @@
         }
       },
       {
-        "source": "Sub Goal",
+        "source": "Stream Overlay",
         "index": 6,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
-          "boundsHeight": 0.0,
-          "boundsType": "OBS_BOUNDS_NONE",
-          "boundsWidth": 0.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 120.0,
-          "positionX": 720.0,
-          "positionY": 960.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 120.0,
-          "sourceWidth": 480.0,
-          "width": 480.0
-        }
-      },
-      {
-        "source": "Live Frame",
-        "index": 7,
         "enabled": true,
         "transform": {
           "alignment": 5,
@@ -2457,32 +2067,6 @@
           "boundsHeight": 1080.0,
           "boundsType": "OBS_BOUNDS_SCALE_INNER",
           "boundsWidth": 1920.0,
-          "cropBottom": 0,
-          "cropLeft": 0,
-          "cropRight": 0,
-          "cropToBounds": false,
-          "cropTop": 0,
-          "height": 1080.0,
-          "positionX": 0.0,
-          "positionY": 0.0,
-          "rotation": 0.0,
-          "scaleX": 1.0,
-          "scaleY": 1.0,
-          "sourceHeight": 1080.0,
-          "sourceWidth": 1920.0,
-          "width": 1920.0
-        }
-      },
-      {
-        "source": "RVB Overlay",
-        "index": 8,
-        "enabled": true,
-        "transform": {
-          "alignment": 5,
-          "boundsAlignment": 0,
-          "boundsHeight": 0.0,
-          "boundsType": "OBS_BOUNDS_NONE",
-          "boundsWidth": 0.0,
           "cropBottom": 0,
           "cropLeft": 0,
           "cropRight": 0,
@@ -2597,7 +2181,7 @@
       "settings": {
         "height": 1080,
         "reroute_audio": false,
-        "shutdown": true,
+        "shutdown": false,
         "undo_uuid": "064acfb4-b452-4e68-8dfb-98cabbb56550",
         "url": "http://127.0.0.1:8722/broadcast?layer=front&scene=two&ground=off&chat=ext",
         "width": 1920
@@ -2626,7 +2210,7 @@
       "settings": {
         "height": 1080,
         "reroute_audio": false,
-        "shutdown": true,
+        "shutdown": false,
         "url": "http://127.0.0.1:8722/broadcast?layer=front&scene=solo&ground=off&chat=ext",
         "width": 1920
       }
@@ -2703,8 +2287,9 @@
       "kind": "browser_source",
       "settings": {
         "height": 1080,
+        "is_local_file": false,
         "reroute_audio": false,
-        "shutdown": true,
+        "shutdown": false,
         "url": "http://127.0.0.1:8722/ending",
         "width": 1920
       }
@@ -2791,7 +2376,7 @@
       "settings": {
         "height": 1080,
         "reroute_audio": false,
-        "shutdown": true,
+        "shutdown": false,
         "url": "http://127.0.0.1:8722/splitcam?layer=back",
         "width": 1920
       }
@@ -2801,7 +2386,7 @@
       "settings": {
         "height": 1080,
         "reroute_audio": false,
-        "shutdown": true,
+        "shutdown": false,
         "url": "http://127.0.0.1:8722/splitcam?layer=front",
         "width": 1920
       }
@@ -2832,17 +2417,6 @@
         "width": 381
       }
     },
-    "Live Frame": {
-      "kind": "browser_source",
-      "settings": {
-        "height": 1080,
-        "reroute_audio": false,
-        "restart_when_active": true,
-        "shutdown": false,
-        "url": "http://127.0.0.1:8722/frameglow?w=10&s=12&a=0.5&accent=ff4d94",
-        "width": 1920
-      }
-    },
     "Show": {
       "kind": "wasapi_output_capture",
       "settings": {
@@ -2857,16 +2431,6 @@
         "width": 1920
       }
     },
-    "Sub Goal": {
-      "kind": "browser_source",
-      "settings": {
-        "height": 120,
-        "reroute_audio": false,
-        "shutdown": false,
-        "url": "http://127.0.0.1:8722/subgoal",
-        "width": 480
-      }
-    },
     "Window Capture": {
       "kind": "window_capture",
       "settings": {
@@ -2874,26 +2438,16 @@
         "window": "Start Page - Vivaldi:Chrome_WidgetWin_1:vivaldi.exe"
       }
     },
-    "Live Frame Yellow": {
+    "Stream Overlay": {
       "kind": "browser_source",
       "settings": {
         "height": 1080,
         "reroute_audio": false,
         "shutdown": false,
-        "url": "http://127.0.0.1:8722/frameglow?w=10&s=12&a=0.5",
-        "width": 1920
-      }
-    },
-    "RVB Overlay": {
-      "kind": "browser_source",
-      "settings": {
-        "height": 1080,
-        "reroute_audio": false,
-        "shutdown": false,
-        "url": "http://127.0.0.1:8722/scorebar",
+        "url": "http://127.0.0.1:8722/overlay2",
         "width": 1920
       }
     }
   },
-  "current_program_scene": "Ending"
+  "current_program_scene": "Live"
 }
