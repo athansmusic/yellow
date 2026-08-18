@@ -583,6 +583,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send(json.dumps(clear_micfx()).encode(), "application/json")
         elif route == "/frameglow":
             self._send_file(OVERLAY_DIR / "frameglow.html", "text/html; charset=utf-8")
+        elif route == "/screenframe":
+            self._send_file(OVERLAY_DIR / "screenframe.html", "text/html; charset=utf-8")
         elif route == "/camedge":
             self._send_file(OVERLAY_DIR / "camedge.html", "text/html; charset=utf-8")
         elif route == "/rvb":

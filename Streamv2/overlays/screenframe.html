@@ -1,0 +1,121 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Screen Frame</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  /* ---------------------------------------------------------------------
+     Frame for the monitor capture. Lives INSIDE the OBS group with the
+     capture, so dragging or scaling the group takes the frame with it.
+
+     Sized to nothing of its own - the browser source is created at the
+     capture's exact size, so `inset: 0` IS the screen edge. Same trick as
+     camedge.html: geometry stays in the OBS transform, never duplicated
+     here.
+
+     Hard corners, unlike the camera's rounded mask - a screen is a screen.
+
+     ?label=ON SCREEN   the tab text, or blank for no tab
+     ?t=2               border thickness
+     ?arm=40            corner bracket length
+     ?accent=ff4d94     pin a colour; otherwise follows the show theme
+     --------------------------------------------------------------------- */
+  :root { --accent: #f4e409; --ink: #f7f7f5; }
+  html, body {
+    margin: 0; width: 100%; height: 100%;
+    background: transparent; overflow: hidden;
+    font-family: "IBM Plex Mono", Consolas, monospace;
+  }
+
+  #frame {
+    position: absolute; inset: 0;
+    box-shadow:
+      inset 0 0 0 var(--t, 2px) color-mix(in srgb, var(--accent) 55%, transparent),
+      inset 0 0 70px rgba(0,0,0,.55);
+  }
+
+  /* Heavier brackets at the corners - the same grammar as the camera tiles
+     and the raid alert, so this reads as part of the set. */
+  .br { position: absolute; }
+  .br.h { height: var(--t, 2px); width: var(--arm, 40px); background: var(--accent); }
+  .br.v { width: var(--t, 2px); height: var(--arm, 40px); background: var(--accent); }
+  .tl.h { top: 0; left: 0; }      .tl.v { top: 0; left: 0; }
+  .tr.h { top: 0; right: 0; }     .tr.v { top: 0; right: 0; }
+  .bl.h { bottom: 0; left: 0; }   .bl.v { bottom: 0; left: 0; }
+  .br2.h { bottom: 0; right: 0; } .br2.v { bottom: 0; right: 0; }
+
+  /* Label tab, sitting on the top edge like the ON SCREEN panel. */
+  #tab {
+    position: absolute; top: 0; left: 0;
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 11px 5px 9px; background: #050506;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  #tab .bar { width: 3px; height: 11px; background: var(--accent); }
+  #tab .txt {
+    font-weight: 600; font-size: 10px; letter-spacing: .28em;
+    text-transform: uppercase; color: var(--ink);
+  }
+  #tab.empty { display: none; }
+
+  /* A slow scanline drift over the capture, very faint - it ties the
+     screen to the broadcast textures without touching legibility. */
+  #scan {
+    position: absolute; inset: 0; pointer-events: none; opacity: .12;
+    background: repeating-linear-gradient(0deg,
+      rgba(255,255,255,.5) 0 1px, transparent 1px 3px);
+  }
+
+  /* Live dot, bottom right - quiet proof the capture is running. */
+  #dot {
+    position: absolute; right: 9px; bottom: 8px;
+    width: 6px; height: 6px; background: var(--accent);
+    animation: sf-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes sf-pulse { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+</style>
+
+<div id="scan"></div>
+<div id="frame">
+  <i class="br h tl"></i><i class="br v tl"></i>
+  <i class="br h tr"></i><i class="br v tr"></i>
+  <i class="br h bl"></i><i class="br v bl"></i>
+  <i class="br h br2"></i><i class="br v br2"></i>
+</div>
+<div id="tab"><span class="bar"></span><span class="txt" id="tab-txt"></span></div>
+<div id="dot"></div>
+
+<script>
+  const p = new URLSearchParams(location.search);
+  const root = document.documentElement.style;
+  root.setProperty('--t', (Number(p.get('t') || 2)) + 'px');
+  root.setProperty('--arm', (Number(p.get('arm') || 40)) + 'px');
+
+  const label = p.get('label');
+  const txt = label === null ? 'on screen' : label;
+  document.getElementById('tab-txt').textContent = txt;
+  if (!txt) document.getElementById('tab').classList.add('empty');
+
+  // ?accent pins the colour; otherwise follow the show theme live, like the
+  // other overlays. Deliberately NOT tied to RED VS BLUE - the team colour
+  // is the screen border's job, and two scoreboards would be noise.
+  const PIN = p.get('accent');
+  if (PIN) root.setProperty('--accent', '#' + PIN.replace('#', ''));
+  function applyTheme(s) {
+    if (PIN) return;
+    const t = (s.themes || {})[s.show] || {};
+    if (t.accent) root.setProperty('--accent', t.accent);
+    else root.removeProperty('--accent');
+  }
+
+  fetch('/state').then(r => r.json()).then(applyTheme).catch(() => {});
+  let es = null;
+  function connect() {
+    es = new EventSource('/events');
+    es.onmessage = (e) => { try { applyTheme(JSON.parse(e.data)); } catch (_) {} };
+    es.onerror = () => { es.close(); setTimeout(connect, 2000); };
+  }
+  connect();
+  window.addEventListener('pagehide', () => { try { if (es) es.close(); } catch (_) {} });
+</script>
