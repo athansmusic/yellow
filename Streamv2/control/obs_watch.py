@@ -90,6 +90,10 @@ class ObsLink(threading.Thread):
             "sourceName": source, "filterName": filter_name,
             "filterEnabled": enabled})
 
+    def set_input_mute(self, name: str, muted: bool) -> bool:
+        return self.request("SetInputMute",
+                            {"inputName": name, "inputMuted": muted})
+
     def set_scene(self, name: str) -> bool:
         return self.request("SetCurrentProgramScene", {"sceneName": name})
 

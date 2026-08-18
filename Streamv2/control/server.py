@@ -160,6 +160,11 @@ _art: ArtQueue | None = None
 # !bucklein compliance - tickets for chatters who never buckled.
 _buckle: Buckle | None = None
 
+# Stage scene automation. _stage_prev tracks the last program scene so
+# the restore fires ONLY when actually leaving the stage scene - never on
+# ordinary switches, where it would fight the SHOW-MODE button.
+_stage_prev: str | None = None
+
 # Whether OBS is actually streaming. RED VS BLUE only scores while live -
 # the chat reader is connected around the clock, and points earned at 3am
 # in an empty offline channel would be meaningless. Seeded from OBS at
@@ -1200,6 +1205,37 @@ def _lamps_to_team(force: bool = False) -> None:
         print(f"  [rvb] lamp launch failed: {exc}", flush=True)
 
 
+def _seed_stage_prev(obs_cfg: dict) -> None:
+    """Learn the current program scene at startup. Without this, a server
+    restart while ON the stage scene would forget it is there, and leaving
+    would never restore the talking state."""
+    def worker():
+        global _stage_prev
+        try:
+            import websocket as _ws
+            ws = _ws.create_connection(
+                f"ws://{obs_cfg.get('host','127.0.0.1')}:{obs_cfg.get('port',4455)}",
+                timeout=6)
+            try:
+                ws.recv()
+                ws.send(json.dumps({"op": 1, "d": {"rpcVersion": 1,
+                                                   "eventSubscriptions": 0}}))
+                ws.recv()
+                ws.send(json.dumps({"op": 6, "d": {
+                    "requestType": "GetCurrentProgramScene",
+                    "requestId": "seedscene", "requestData": {}}}))
+                for _ in range(20):
+                    m = json.loads(ws.recv())
+                    if m.get("op") == 7 and m["d"]["requestId"] == "seedscene":
+                        _stage_prev = m["d"]["responseData"]                             .get("currentProgramSceneName")
+                        break
+            finally:
+                ws.close()
+        except Exception:                                  # noqa: BLE001
+            pass          # unknown scene = no restore assumptions, safe
+    threading.Thread(target=worker, daemon=True).start()
+
+
 def _seed_live_flag(obs_cfg: dict) -> None:
     """Ask OBS whether it is streaming right now.
 
@@ -1356,7 +1392,52 @@ def main() -> int:
     else:
         print("  Twitch chat   : disabled (see config.json -> twitch)")
 
+    stage_cfg = {k: v for k, v in _load_cfg().get("stage", {}).items()
+                 if not k.startswith("_")}
+
+    def _stage_audio(entering: bool) -> None:
+        """The music-scene swap, both directions.
+
+        HYPER CRITICAL (owner's words): this touches ONLY the inputs named
+        in config, and ONLY on entering/leaving the exact stage scene.
+        The resting state is the talking state - the mic mutes exclusively
+        on ENTER, so every failure mode leaves the normal mic working."""
+        link = _obs["link"]
+        if link is None or not stage_cfg.get("enabled"):
+            return
+        mute_on_enter = list(stage_cfg.get("mute_on_enter", ["Mic/Aux"]))
+        unmute_on_enter = list(stage_cfg.get("unmute_on_enter", ["FL Studio"]))
+        cam = stage_cfg.get("camera", "")
+        filt = stage_cfg.get("delay_filter", "")
+        if entering:
+            for n in mute_on_enter:
+                link.set_input_mute(n, True)
+            for n in unmute_on_enter:
+                link.set_input_mute(n, False)
+            if cam and filt:
+                link.set_filter_enabled(cam, filt, True)
+            print("  [stage] entered - mic to FL Studio, camera delayed",
+                  flush=True)
+        else:
+            for n in mute_on_enter:
+                link.set_input_mute(n, False)
+            for n in unmute_on_enter:
+                link.set_input_mute(n, True)
+            if cam and filt:
+                link.set_filter_enabled(cam, filt, False)
+            print("  [stage] left - talking state restored", flush=True)
+
     def do_scene_change(name: str) -> None:
+        global _stage_prev
+        stage_name = stage_cfg.get("scene", "Stage")
+        if stage_cfg.get("enabled"):
+            entering = name == stage_name and _stage_prev != stage_name
+            leaving = _stage_prev == stage_name and name != stage_name
+            if entering:
+                _stage_audio(True)
+            elif leaving:
+                _stage_audio(False)
+        _stage_prev = name
         # Entering any scene with "brb" in its name restarts the BACK IN
         # clock from the panel's minutes field. Type 5 once and every
         # switch to BRB starts a fresh 5:00; empty field = no clock.
@@ -1395,6 +1476,7 @@ def main() -> int:
         _obs["link"] = link
         link.start()
         _seed_live_flag(obs_cfg)
+        _seed_stage_prev(obs_cfg)
 
     server = ThreadingHTTPServer((args.host, args.port), Handler)
     server.daemon_threads = True
