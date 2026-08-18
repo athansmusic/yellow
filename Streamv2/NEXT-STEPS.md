@@ -88,6 +88,23 @@ Tumblr tag -> approval -> on-stream gallery, all local:
 - Instagram: declined - Meta's hashtag API strips artist credit and
   wants business-account app review. Do not reopen unprompted.
 
+## !BUCKLEIN — SHIPPED 2026-08-18
+
+The owner opens every stream with "buckle in", so chat has to comply.
+`control/buckle.py`: chatters have the WHOLE stream to !bucklein (no
+mid-stream tickets - owner overruled the grace-period design); switching
+to the Ending scene tickets every unbuckled chatter AT ONCE - the wall
+is the joke. Citations are written in the panel (one per line, {user}),
+used IN ORDER. Chat lines go out via Firebot preset "Buckle Ticket".
+Bots/hosts ride free on rvb.exclude.users. Only counts while live.
+Test rig: POST /dev/startup (+ action "stop"), /dev/simulate.
+
+Art queue hardening, same day: #keepredacted / #keep redacted (any
+case/spacing) blocks a post from rotation at ingest, and a 6-hour
+reverify pass catches opt-out tags added later and deleted posts.
+Dashboard-only blogs 404 on the per-post API even when alive - the
+pass never blocks on an unverifiable lookup.
+
 ## 2. LIVE CAPTIONS  ← research, then owner decides
 
 Owner asked (2026-08-16): can captions go on the live screen easily?
