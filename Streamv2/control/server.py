@@ -39,6 +39,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from artqueue import ArtQueue
+from buckle import Buckle
 from firebot import Firebot
 from obs_watch import ObsLink
 from rvb import Teams
@@ -151,6 +152,9 @@ _fb: Firebot | None = None
 # Fan-art pipeline (Tumblr tag -> approval -> BRB gallery). Always
 # constructed; it only polls Tumblr when config gives it an api_key.
 _art: ArtQueue | None = None
+
+# !bucklein compliance - tickets for chatters who never buckled.
+_buckle: Buckle | None = None
 
 # Whether OBS is actually streaming. RED VS BLUE only scores while live -
 # the chat reader is connected around the clock, and points earned at 3am
@@ -400,6 +404,9 @@ def push_message(msg: dict) -> None:
     # even where it must not draw it.
     if _teams is not None and _live:
         _teams.on_chat(msg.get("user", ""), msg.get("name", ""))
+    if _buckle is not None:
+        _buckle.on_chat(msg.get("user", ""), msg.get("name", ""),
+                        msg.get("text", ""))
     if _teams is not None:
         trigger = _rvb_cfg().get("command", {}).get("trigger", "!team")
         if msg.get("text", "").strip().lower().startswith(trigger):
@@ -1238,6 +1245,8 @@ def do_stream_start() -> None:
     global _live
     _live = True
     reset_credits()
+    if _buckle is not None:
+        _buckle.reset()
     startup_begin()
     if _teams is not None:
         # New stream, fresh attendance - teams and points carry over, but
@@ -1310,6 +1319,18 @@ def main() -> int:
     print("  Fan art queue :",
           f"polling #{_art.tag} every {_art.poll_seconds}s" if _art.api_key
           else "no tumblr api_key (manual submissions only) - see artqueue.py docstring")
+
+    bk_cfg = {k: v for k, v in _load_cfg().get("bucklein", {}).items()
+              if not k.startswith("_")}
+    if bk_cfg.get("enabled"):
+        global _buckle
+        fb = _fb or Firebot()
+        if not bk_cfg.get("exclude_users"):
+            # Default to RVB's exclusion list - same bots, same hosts.
+            bk_cfg["exclude_users"] = _load_cfg().get("rvb", {})                 .get("exclude", {}).get("users", [])
+        _buckle = Buckle(bk_cfg, fb, is_live=lambda: _live)
+        print(f"  Buckle check  : {bk_cfg.get('command', '!bucklein')} or a "
+              f"ticket after {int(bk_cfg.get('grace_seconds', 240)) // 60} min")
 
     tw = _twitch_cfg()
     if tw.get("enabled") and tw.get("channel"):

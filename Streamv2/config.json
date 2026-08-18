@@ -257,5 +257,13 @@
     "api_key": "",
     "tag": "the redacted unit",
     "poll_seconds": 120
+  },
+  "bucklein": {
+    "_note": "Chatters get grace_seconds to !bucklein once they chat while live; then ONE ticket per user per stream, through the Firebot preset effect list named in 'preset' (Chat effect, message = $presetListArg[message]). Templates use {user}. exclude_users defaults to rvb.exclude.users.",
+    "enabled": true,
+    "command": "!bucklein",
+    "grace_seconds": 240,
+    "preset": "Buckle Ticket",
+    "max_tickets_per_sweep": 2
   }
 }
