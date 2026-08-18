@@ -138,8 +138,8 @@
     $('tug-mid').style.left = 'calc(' + pct + '% - 1px)';
 
     const caps = r.captains || {};
-    $('cap-red').textContent = caps.red ? 'cpt ' + caps.red : '';
-    $('cap-blue').textContent = caps.blue ? 'cpt ' + caps.blue : '';
+    $('cap-red').textContent = caps.red || '';
+    $('cap-blue').textContent = caps.blue || '';
     $('month').textContent = r.month || '';
 
     document.body.classList.toggle('peek', s.scorePeek === true);
@@ -174,10 +174,23 @@
     setTimeout(() => el.remove(), 5200);
   }
 
-  function initialState() {
-    fetch('/state').then(r => r.json()).then(render)
-      .catch(() => setTimeout(initialState, 1500));
+  // Liveness beacon: OBS gives no way to read a browser source's console,
+  // so the page tells the server it is alive and what it last rendered.
+  // curl /slots to tell "page is dead" from "page is fine, peek is off".
+  function beacon(note) {
+    fetch('/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'scorebar', slots: {
+        note: String(note), at: new Date().toISOString() } }) }).catch(() => {});
   }
+  window.addEventListener('error', (e) => beacon('JS ERROR: ' + e.message));
+
+  function initialState() {
+    fetch('/state').then(r => r.json()).then((s) => {
+      render(s);
+      beacon('rendered, peek=' + (s.scorePeek === true));
+    }).catch(() => setTimeout(initialState, 1500));
+  }
+  beacon('loaded');
   initialState();
   let es = null;
   function connect() {
