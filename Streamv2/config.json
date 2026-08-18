@@ -270,16 +270,14 @@
     "preset": "Buckle Ticket"
   },
   "stage": {
-    "_note": "Music scene automation (MUSIC-SETUP.md). EXACT scene name match. Entering mutes mute_on_enter, unmutes unmute_on_enter, enables delay_filter on camera; leaving reverses all of it. Resting state is the talking state. Set enabled true once the FL Studio source and Music Delay filter exist in OBS.",
+    "_note": "Music scene automation, v1 for the 3rd-gen 2i2 (no loopback): voice stays on the normal Mic/Aux chain, FL carries backing/synth only via VB-Cable, so entering Stage just unmutes FL Studio and leaving re-mutes it. No mic muting, no camera delay needed. The full-FL-vocal-chain design (MUSIC-SETUP.md) needs a loopback-capable interface - revisit if the owner ever upgrades to a 4th gen.",
     "enabled": false,
     "scene": "Stage",
-    "mute_on_enter": [
-      "Mic/Aux"
-    ],
+    "mute_on_enter": [],
     "unmute_on_enter": [
       "FL Studio"
     ],
-    "camera": "Cam Raw",
-    "delay_filter": "Music Delay"
+    "camera": "",
+    "delay_filter": ""
   }
 }
