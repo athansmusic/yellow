@@ -108,7 +108,7 @@
 
     "exclude": {
       "_note": "Never drafted, never scored, never listed in the end-screen attendance - hosts, mods and bots. Case-insensitive Twitch LOGIN names (no @). Excluding somebody who already has a team also removes them from the roster on the next restart.",
-      "users": ["athansmusic", "nightbot", "streamelements", "streamlabs", "sery_bot", "moobot", "wizebot", "fossabot"]
+      "users": ["athansmusic", "curtaincontrol", "nightbot", "streamelements", "streamlabs", "sery_bot", "moobot", "wizebot", "fossabot"]
     }
   },
 
