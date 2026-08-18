@@ -14,7 +14,7 @@
      the server drafts somebody and leave on their own.
 
      Designed full-canvas 1920x1080 - the bar sits top-centre, stamps
-     bottom-left. Both are positioned in CSS, so one source, no layout
+     top-right. Both are positioned in CSS, so one source, no layout
      fiddling in OBS.
      --------------------------------------------------------------------- */
   :root {
@@ -75,15 +75,19 @@
   }
 
   /* ---- draft stamps --------------------------------------------------- */
+  /* Top right. Newest on top, and they slide in from the right edge so
+     the motion reads as arriving from off-screen rather than crossing it.
+     Sits clear of the score peek, which owns top-centre. */
   #stamps {
-    position: absolute; left: 60px; bottom: 120px;
-    display: flex; flex-direction: column-reverse; gap: 10px;
+    position: absolute; right: 60px; top: 150px;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
   }
   .stamp {
     display: flex; align-items: stretch; gap: 0;
     box-shadow: 0 0 24px rgba(0,0,0,.5);
     animation: st-in .35s cubic-bezier(.25,.8,.25,1) both,
                st-out .4s ease-in 4.6s forwards;
+    white-space: nowrap;
   }
   .stamp .tag {
     padding: 9px 12px; font-weight: 600; font-size: 11px;
@@ -96,9 +100,9 @@
     letter-spacing: .04em; text-transform: uppercase; color: var(--ink);
     display: flex; align-items: center;
   }
-  @keyframes st-in  { from { opacity: 0; transform: translateX(-24px); }
+  @keyframes st-in  { from { opacity: 0; transform: translateX(24px); }
                       to   { opacity: 1; transform: none; } }
-  @keyframes st-out { to { opacity: 0; transform: translateX(-16px); } }
+  @keyframes st-out { to { opacity: 0; transform: translateX(16px); } }
 </style>
 
 <div id="peek">
