@@ -140,6 +140,21 @@ def lamp(colour, text, on=True):
 
 PINK = (255, 45, 138, 255)
 RED = (255, 34, 34, 255)
+TEAM_RED = (212, 0, 25, 255)
+TEAM_BLUE = (31, 63, 222, 255)
+
+
+def draft_night():
+    """Split disc: the reshuffle, in both team colours."""
+    im, d = canvas()
+    cx, cy, r = S // 2, 112, 58
+    d.pieslice([cx - r, cy - r, cx + r, cy + r], 90, 270, fill=TEAM_RED)
+    d.pieslice([cx - r, cy - r, cx + r, cy + r], 270, 90, fill=TEAM_BLUE)
+    # arrows crossing the seam - the shuffle
+    d.polygon([(cx - 4, cy - 40), (cx + 22, cy - 22), (cx - 4, cy - 4)], fill=BG)
+    d.polygon([(cx + 4, cy + 40), (cx - 22, cy + 22), (cx + 4, cy + 4)], fill=BG)
+    label(d, "draft")
+    return im
 
 def live_screen():
     im, d = canvas()
@@ -162,6 +177,7 @@ ICONS = {
     "deck-light-pink.png": lamp(PINK, "pink"),
     "deck-light-red.png": lamp(RED, "red"),
     "deck-light-off.png": lamp(EDGE, "dark", on=False),
+    "deck-draft-night.png": draft_night,
 }
 
 for name, fn in ICONS.items():

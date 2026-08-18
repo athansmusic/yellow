@@ -101,16 +101,30 @@ class Teams:
             pass
 
     # -- lifecycle --------------------------------------------------------
+    def draft_due(self) -> bool:
+        """True when the calendar has moved on but the reshuffle has not."""
+        with self._lock:
+            return self._data.get("month") != month_key()
+
     def _roll_month_if_needed(self) -> None:
-        """Called with the lock held. A new month empties the roster and the
-        scores; captains are re-seeded by whoever calls seed_captains."""
+        """Called with the lock held.
+
+        In MANUAL mode (the default) a new month changes nothing on its own -
+        last month's teams and scores keep running until draft night is
+        pressed, so the reshuffle is an event the owner hosts rather than
+        something that happens silently at midnight. Automatic mode wipes
+        immediately on the first message of the new month.
+        """
         now = month_key()
-        if self._data.get("month") != now:
-            self._data["month"] = now
-            self._data["members"] = {}
-            self._data["points"] = {RED: 0, BLUE: 0}
-            self._data["chat_today"] = {}
-            self._data["attendance"] = []
+        if self._data.get("month") == now:
+            return
+        if self.cfg.get("draft_night", {}).get("manual", True):
+            return                      # waiting for the button
+        self._data["month"] = now
+        self._data["members"] = {}
+        self._data["points"] = {RED: 0, BLUE: 0}
+        self._data["chat_today"] = {}
+        self._data["attendance"] = []
 
     def reset_month(self) -> dict:
         """Draft night. Explicit only - never automatic mid-month."""
@@ -248,6 +262,7 @@ class Teams:
         return {
             "enabled": True,
             "month": self._data["month"],
+            "draftDue": self._data["month"] != month_key(),
             "red": red, "blue": blue,
             "lead": lead,
             "leadColor": colors.get(lead) if lead else None,
