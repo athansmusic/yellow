@@ -19,3 +19,4 @@ displays/multimonitortool-x64/
 
 # Per-stream subscriber list, not source
 control/credits.json
+.venv-motion/
