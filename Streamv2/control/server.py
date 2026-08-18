@@ -594,6 +594,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send_file(OVERLAY_DIR / "scorebar.html", "text/html; charset=utf-8")
         elif route == "/onscreen":
             self._send_file(OVERLAY_DIR / "onscreen.html", "text/html; charset=utf-8")
+        elif route == "/overlay2":
+            self._send_file(OVERLAY_DIR / "overlay.html", "text/html; charset=utf-8")
         elif route == "/subgoal":
             self._send_file(OVERLAY_DIR / "subgoal.html", "text/html; charset=utf-8")
         elif route == "/splitcam":

@@ -1,0 +1,348 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Stream Overlay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  /* =====================================================================
+     THE overlay. One browser source on every scene, replacing the three
+     separate ones it was built from: Live Frame, Sub Goal, RVB Overlay.
+
+     Three sources meant three CEF instances and three SSE connections to
+     draw one canvas - which is what made OBS slow to shut down. This is
+     one of each.
+
+     Carries:
+       - the animated screen border (team colour, neutral while tied)
+       - the per-stream sub goal bar
+       - RED VS BLUE score peek and draft stamps
+
+     Everything is positioned in CSS at 1920x1080, so this drops in at full
+     canvas on every scene and never needs arranging in OBS.
+
+     ?w=10 ?s=12 ?a=0.5   border thickness / lap seconds / base alpha
+     ?goal=5              override the sub goal target
+     ?accent=ff4d94       pin a border colour (RED VS BLUE still wins)
+     ?rvb=off             opt out of the team colour
+     ?no=border,goal,rvb  drop a piece on this source only
+     ===================================================================== */
+  :root {
+    --accent:  #f4e409;
+    --w:       10px;
+    --base-a:  50%;
+    --red:     #d40019;
+    --blue:    #1f3fde;
+    --ink:     #f7f7f5;
+    --meta:    #9a9aa2;
+    --display: #f7f7f5;
+    --dim:     #5c5c64;
+    --edge:    #26262c;
+    --panel:   rgba(5,5,6,.92);
+    --disp: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --mono: "IBM Plex Mono", Consolas, monospace;
+  }
+  html, body {
+    margin: 0; width: 1920px; height: 1080px;
+    overflow: hidden; position: relative; background: transparent;
+    font-family: var(--mono);
+  }
+
+  /* ---------------- 1. the border ---------------- */
+  #base {
+    position: absolute; inset: 0;
+    box-shadow: inset 0 0 0 var(--w)
+      color-mix(in srgb, var(--accent) var(--base-a), transparent);
+  }
+  /* The moving highlight, clipped to the ring: two masks with the inner
+     rectangle excluded leaves exactly the frame. */
+  #ring {
+    position: absolute; inset: 0;
+    padding: var(--w); box-sizing: border-box; overflow: hidden;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite: exclude;
+  }
+  #spin {
+    position: absolute; left: 50%; top: 50%;
+    width: 2400px; height: 2400px; margin: -1200px 0 0 -1200px;
+    background: conic-gradient(from 0deg,
+      transparent 0deg, transparent 250deg,
+      color-mix(in srgb, color-mix(in srgb, var(--accent) 55%, white) 55%, transparent) 310deg,
+      color-mix(in srgb, color-mix(in srgb, var(--accent) 25%, white) 95%, transparent) 340deg,
+      color-mix(in srgb, color-mix(in srgb, var(--accent) 55%, white) 55%, transparent) 350deg,
+      transparent 360deg);
+    animation: lap var(--s, 12s) linear infinite;
+  }
+  @keyframes lap { to { transform: rotate(360deg); } }
+  body.no-border #base, body.no-border #ring { display: none; }
+
+  /* ---------------- 2. sub goal ---------------- */
+  /* Sits where the standalone source used to: 720,960 at 480x120. */
+  #goal {
+    position: absolute; left: 720px; top: 960px; width: 480px; height: 120px;
+    display: flex; flex-direction: column; justify-content: center;
+    gap: 6px; padding: 0 2px; box-sizing: border-box;
+  }
+  #goal-head { display: flex; align-items: baseline; gap: 12px;
+               text-shadow: 0 1px 3px rgba(0,0,0,.9); }
+  #goal-lbl { font-weight: 600; font-size: 12px; letter-spacing: .3em;
+              text-transform: uppercase; color: var(--accent); }
+  #goal-rule { flex: 1; height: 1px;
+               background: linear-gradient(90deg, var(--edge), transparent); }
+  #goal-num { font-family: var(--disp); font-weight: 700; font-size: 26px;
+              letter-spacing: .04em; color: var(--display);
+              font-variant-numeric: tabular-nums; }
+  #goal-num .of { color: var(--dim); font-size: 18px; }
+  #goal-track { position: relative; height: 34px; background: #050506;
+                box-shadow: inset 0 0 0 1px var(--edge); }
+  /* Accent fill in the brush stroke's shape - the stroke masks the colour,
+     because black ink on a near-black track is invisible. */
+  #goal-fill {
+    position: absolute; inset: 3px; background: var(--accent);
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path .6s cubic-bezier(.25,.8,.25,1);
+    filter: drop-shadow(0 0 8px rgba(244,228,9,.12));
+  }
+  #goal-ticks { position: absolute; inset: 0; display: flex; }
+  #goal-ticks i { flex: 1; border-right: 1px solid var(--edge); }
+  #goal-ticks i:last-child { border-right: none; }
+  body.goal-done #goal-lbl { color: var(--display); }
+  body.goal-done #goal-num, body.goal-done #goal-num .of { color: var(--accent); }
+  body.goal-done #goal-track { box-shadow: inset 0 0 0 1px rgba(244,228,9,.6); }
+  body.goal-done #goal-fill { animation: sg-pulse 2.2s ease-in-out infinite; }
+  @keyframes sg-pulse {
+    0%,100% { filter: drop-shadow(0 0 8px rgba(244,228,9,.15)); }
+    50%     { filter: drop-shadow(0 0 18px rgba(244,228,9,.45)); }
+  }
+  body.no-goal #goal { display: none; }
+
+  /* ---------------- 3. red vs blue ---------------- */
+  #peek {
+    position: absolute; top: 46px; left: 50%; width: 900px;
+    transform: translate(-50%, -18px); opacity: 0;
+    transition: opacity .3s ease, transform .3s cubic-bezier(.25,.8,.25,1);
+    background: var(--panel); box-shadow: inset 0 0 0 1px var(--edge);
+    padding: 14px 18px 16px; box-sizing: border-box;
+  }
+  body.peek #peek { opacity: 1; transform: translate(-50%, 0); }
+  #peek-head { display: flex; align-items: baseline;
+               justify-content: space-between; margin-bottom: 10px; }
+  .side { display: flex; align-items: baseline; gap: 10px; }
+  .side .nm { font-weight: 600; font-size: 12px; letter-spacing: .28em;
+              text-transform: uppercase; }
+  .side .pts { font-family: var(--disp); font-weight: 700; font-size: 30px;
+               color: var(--ink); font-variant-numeric: tabular-nums; }
+  .side.r .nm { color: var(--red); }
+  .side.b .nm { color: var(--blue); }
+  .side.b { flex-direction: row-reverse; }
+  /* Tug of war: one track, the split point IS the score ratio. */
+  #tug { position: relative; height: 26px; background: #101014; overflow: hidden; }
+  #tug-red, #tug-blue { position: absolute; top: 0; bottom: 0;
+                        transition: width .5s cubic-bezier(.25,.8,.25,1); }
+  #tug-red  { left: 0;  background: var(--red); }
+  #tug-blue { right: 0; background: var(--blue); }
+  #tug-mid { position: absolute; top: -3px; bottom: -3px; width: 2px;
+             background: var(--ink);
+             transition: left .5s cubic-bezier(.25,.8,.25,1); }
+  #peek-foot { display: flex; justify-content: space-between; margin-top: 9px;
+               font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+               color: var(--meta); }
+
+  /* Draft stamps, top right, sliding in from off-screen. */
+  #stamps { position: absolute; right: 60px; top: 150px;
+            display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+  .stamp { display: flex; align-items: stretch; white-space: nowrap;
+           box-shadow: 0 0 24px rgba(0,0,0,.5);
+           animation: st-in .35s cubic-bezier(.25,.8,.25,1) both,
+                      st-out .4s ease-in 4.6s forwards; }
+  .stamp .tag { padding: 9px 12px; font-weight: 600; font-size: 11px;
+                letter-spacing: .24em; text-transform: uppercase;
+                color: #0b0b0d; display: flex; align-items: center; }
+  .stamp .who { background: #050506; padding: 9px 16px;
+                font-family: var(--disp); font-weight: 700; font-size: 26px;
+                letter-spacing: .04em; text-transform: uppercase;
+                color: var(--ink); display: flex; align-items: center; }
+  @keyframes st-in  { from { opacity: 0; transform: translateX(24px); }
+                      to   { opacity: 1; transform: none; } }
+  @keyframes st-out { to { opacity: 0; transform: translateX(16px); } }
+  body.no-rvb #peek, body.no-rvb #stamps { display: none; }
+</style>
+
+<div id="base"></div>
+<div id="ring"><div id="spin"></div></div>
+
+<div id="goal">
+  <div id="goal-head">
+    <span id="goal-lbl">sub goal</span>
+    <span id="goal-rule"></span>
+    <span id="goal-num"><span id="goal-cur">0</span> <span class="of">/ <span id="goal-tgt">5</span></span></span>
+  </div>
+  <div id="goal-track">
+    <div id="goal-fill"></div>
+    <div id="goal-ticks"></div>
+  </div>
+</div>
+
+<div id="peek">
+  <div id="peek-head">
+    <span class="side r"><span class="nm">red</span><span class="pts" id="p-red">0</span></span>
+    <span class="side b"><span class="nm">blue</span><span class="pts" id="p-blue">0</span></span>
+  </div>
+  <div id="tug"><div id="tug-red"></div><div id="tug-blue"></div><div id="tug-mid"></div></div>
+  <div id="peek-foot"><span id="cap-red"></span><span id="month"></span><span id="cap-blue"></span></div>
+</div>
+
+<div id="stamps"></div>
+
+<script>
+  const p = new URLSearchParams(location.search);
+  const $ = (id) => document.getElementById(id);
+  const root = document.documentElement.style;
+
+  // Per-source opt-outs, e.g. ?no=goal,rvb on a scene that should only frame.
+  for (const part of (p.get('no') || '').split(',').map(s => s.trim()).filter(Boolean)) {
+    document.body.classList.add('no-' + part);
+  }
+
+  // ---- border knobs ----
+  root.setProperty('--w', (Number(p.get('w') || 10)) + 'px');
+  root.setProperty('--s', (Number(p.get('s') || 12)) + 's');
+  if (p.get('a') !== null) root.setProperty('--base-a', (Number(p.get('a')) * 100) + '%');
+  const PIN = p.get('accent');
+  const RVB_ON = p.get('rvb') !== 'off';
+  if (PIN) root.setProperty('--accent', '#' + PIN.replace('#', ''));
+
+  // ---- sub goal: the brush stroke masks the fill ----
+  const BRUSH = "/file?path=C:/Users/19407/Documents/Redacted/Script/Streamv2/media/redactedbar.png";
+  const probe = new Image();
+  probe.onload = () => {
+    const f = $('goal-fill').style;
+    f.webkitMaskBoxImageSource = "url('" + BRUSH + "')";
+    f.webkitMaskBoxImageSlice = "0 200 fill";
+    f.webkitMaskBoxImageWidth = "0 24px";
+    f.webkitMaskBoxImageRepeat = "stretch";
+  };
+  probe.src = BRUSH;
+
+  function subCount(credits) {
+    // Same accounting as the credits roll: a gifter counts for every sub
+    // they gave, everyone else counts once.
+    let n = 0;
+    for (const r of ((credits || {}).subs || [])) n += r.gifted ? r.gifted : 1;
+    return n;
+  }
+
+  let ticksBuilt = 0;
+  const seen = new Set();
+  let primed = false;
+
+  function render(s) {
+    const r = s.rvb || {};
+
+    // --- colour precedence: team colour > pinned > show theme ---
+    const teamColour = (RVB_ON && r.enabled) ? (r.color || r.leadColor || null) : null;
+    if (teamColour) {
+      root.setProperty('--accent', teamColour);
+    } else if (PIN) {
+      root.setProperty('--accent', '#' + PIN.replace('#', ''));
+    } else {
+      const t = (s.themes || {})[s.show] || {};
+      if (t.accent) root.setProperty('--accent', t.accent);
+      else root.removeProperty('--accent');
+    }
+    if (r.colors) {
+      if (r.colors.red) root.setProperty('--red', r.colors.red);
+      if (r.colors.blue) root.setProperty('--blue', r.colors.blue);
+    }
+
+    // --- sub goal ---
+    const goal = Math.max(1, parseInt(p.get('goal') || s.subGoal || '5', 10) || 5);
+    const cur = subCount(s.credits);
+    $('goal-cur').textContent = cur;
+    $('goal-tgt').textContent = goal;
+    const frac = Math.min(1, cur / goal);
+    $('goal-fill').style.clipPath = 'inset(0 ' + ((1 - frac) * 100).toFixed(2) + '% 0 0)';
+    if (ticksBuilt !== goal) {
+      const box = $('goal-ticks');
+      box.innerHTML = '';
+      for (let i = 0; i < goal; i++) box.appendChild(document.createElement('i'));
+      ticksBuilt = goal;
+    }
+    document.body.classList.toggle('goal-done', cur >= goal);
+
+    // --- red vs blue ---
+    const red = r.red || 0, blue = r.blue || 0;
+    $('p-red').textContent = red;
+    $('p-blue').textContent = blue;
+    const total = red + blue;
+    const pct = total > 0 ? (red / total) * 100 : 50;   // dead even before any score
+    $('tug-red').style.width = pct + '%';
+    $('tug-blue').style.width = (100 - pct) + '%';
+    $('tug-mid').style.left = 'calc(' + pct + '% - 1px)';
+    const caps = r.captains || {};
+    $('cap-red').textContent = caps.red || '';
+    $('cap-blue').textContent = caps.blue || '';
+    $('month').textContent = r.month || '';
+    document.body.classList.toggle('peek', s.scorePeek === true);
+
+    // Draft stamps: show each once. The first payload after load only
+    // PRIMES the set - otherwise reloading a source would replay old
+    // drafts as if they had just happened.
+    for (const d of (r.drafts || [])) {
+      const key = d.ts + '|' + d.name;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      if (primed) showStamp(d);
+    }
+    primed = true;
+  }
+
+  function showStamp(d) {
+    const el = document.createElement('div');
+    el.className = 'stamp';
+    const colour = d.team === 'red' ? 'var(--red)' : 'var(--blue)';
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.style.background = colour;
+    tag.textContent = 'drafted to ' + d.team;
+    const who = document.createElement('span');
+    who.className = 'who';
+    who.style.boxShadow = 'inset 0 0 0 1px ' + colour;
+    who.textContent = d.name;
+    el.append(tag, who);
+    $('stamps').appendChild(el);
+    setTimeout(() => el.remove(), 5200);
+  }
+
+  // Liveness beacon - OBS gives no way to read a browser source's console,
+  // so one curl of /slots tells a dead page from a working one.
+  function beacon(note) {
+    fetch('/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'overlay', slots: {
+        note: String(note), at: new Date().toISOString() } }) }).catch(() => {});
+  }
+  window.addEventListener('error', (e) => beacon('JS ERROR: ' + e.message));
+
+  // Retry until the first snapshot lands; a swallowed one-shot fetch would
+  // leave the whole overlay frozen at its defaults.
+  function initialState() {
+    fetch('/state').then(r => r.json()).then((s) => {
+      render(s);
+      beacon('rendered');
+    }).catch(() => setTimeout(initialState, 1500));
+  }
+  beacon('loaded');
+  initialState();
+
+  let es = null;
+  function connect() {
+    es = new EventSource('/events');
+    es.onmessage = (e) => { try { render(JSON.parse(e.data)); } catch (_) {} };
+    es.onerror = () => { es.close(); setTimeout(connect, 2000); };
+  }
+  connect();
+  // CEF waits on open sockets at exit; let it go the moment we unload.
+  window.addEventListener('pagehide', () => { try { if (es) es.close(); } catch (_) {} });
+</script>
