@@ -9,9 +9,9 @@ token - Firebot is the one authenticated as the broadcaster).
 Rules of the road:
 - Only counts while OBS is actually streaming. Off-air chat is nobody's
   business.
-- One ticket per user per stream, ever. Tickets drip out at most two per
-  sweep so a busy chat gets a steady trickle of citations instead of a
-  wall of them.
+- One ticket per user per stream, ever. max_tickets_per_sweep 0 means
+  UNLIMITED - every overdue chatter gets cited in the same sweep. The
+  owner wants the wall: a pileup is the joke.
 - Buckling at ANY point before the grace runs out - even before their
   first message - keeps a user safe for the whole stream.
 - The exclusion list (bots, hosts) never gets ticketed and never needs
@@ -92,7 +92,8 @@ class Buckle:
                 if now - first_ts >= self.grace:
                     due.append((first_ts, user, display))
             due.sort()                       # longest-overdue first
-            due = due[:self.per_sweep]
+            if self.per_sweep > 0:
+                due = due[:self.per_sweep]
             for _, user, _ in due:
                 self._ticketed.add(user)
         for _, user, display in due:
