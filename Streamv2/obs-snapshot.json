@@ -1,0 +1,2899 @@
+{
+  "taken": "2026-08-18 00:58:17",
+  "scenes": {
+    "Audio": [
+      {
+        "source": "Audience",
+        "index": 0,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      }
+    ],
+    "[BG]": [
+      {
+        "source": "Image",
+        "index": 0,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": -88.5,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.092187523841858,
+          "scaleY": 1.0920121669769287,
+          "sourceHeight": 989.0,
+          "sourceWidth": 1920.0,
+          "width": 2097.0
+        }
+      },
+      {
+        "source": "Media",
+        "index": 1,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 2160.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 2160.0,
+          "sourceWidth": 3840.0,
+          "width": 3840.0
+        }
+      }
+    ],
+    "Twitch Alerts": [
+      {
+        "source": "Twitches",
+        "index": 0,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      }
+    ],
+    "Alerts on Screen": [
+      {
+        "source": "Firebot",
+        "index": 0,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      }
+    ],
+    "Jamie [CAM]": [
+      {
+        "source": "Browser 2",
+        "index": 0,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      }
+    ],
+    "[CAM]": [
+      {
+        "source": "Cam Raw",
+        "index": 0,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      }
+    ],
+    "-----------------------------------------------------": [],
+    "Ending": [
+      {
+        "source": "Media 2",
+        "index": 0,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Alerts on Screen",
+        "index": 1,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "[CAM]",
+        "index": 2,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 483.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 868.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 78.0,
+          "positionY": 262.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Ending Overlay",
+        "index": 3,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Image 2",
+        "index": 4,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Audience",
+        "index": 5,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Outro theme",
+        "index": 6,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Twitch Alerts",
+        "index": 7,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 329,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 353,
+          "height": 1080.0,
+          "positionX": 715.0,
+          "positionY": -130.0,
+          "rotation": 3.5517325401306152,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Live Frame",
+        "index": 8,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      }
+    ],
+    "Live Listen Solo": [
+      {
+        "source": "[BG]",
+        "index": 0,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Stage Back Solo",
+        "index": 1,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Emoji Blast",
+        "index": 2,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "[CAM]",
+        "index": 3,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 698.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1240.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 20.0,
+          "positionY": 125.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Stage Front Solo",
+        "index": 4,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Alerts on Screen",
+        "index": 5,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Chat Solo",
+        "index": 6,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 682.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 616.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 706.0,
+          "positionX": 1285.0,
+          "positionY": 340.0,
+          "rotation": 0.0,
+          "scaleX": 0.8820000290870667,
+          "scaleY": 0.8824999928474426,
+          "sourceHeight": 800.0,
+          "sourceWidth": 700.0,
+          "width": 617.4000244140625
+        }
+      },
+      {
+        "source": "Audience",
+        "index": 7,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Show",
+        "index": 8,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Twitch Alerts",
+        "index": 9,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 329,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 353,
+          "height": 1080.0,
+          "positionX": 715.0,
+          "positionY": -130.0,
+          "rotation": 3.5517325401306152,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Sub Goal",
+        "index": 10,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 120.0,
+          "positionX": 720.0,
+          "positionY": 960.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 120.0,
+          "sourceWidth": 480.0,
+          "width": 480.0
+        }
+      },
+      {
+        "source": "Live Frame Yellow",
+        "index": 11,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Live Frame",
+        "index": 12,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "RVB Overlay",
+        "index": 13,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      }
+    ],
+    "Live Listen Duo": [
+      {
+        "source": "[BG]",
+        "index": 0,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Stage Back",
+        "index": 1,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Emoji Blast",
+        "index": 2,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "[CAM]",
+        "index": 3,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 446.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 792.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 20.0,
+          "positionY": 24.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Jamie [CAM]",
+        "index": 4,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 446.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 792.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 20.0,
+          "positionY": 479.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Stage Front",
+        "index": 5,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Alerts on Screen",
+        "index": 6,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Chat Duo",
+        "index": 7,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 804.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1045.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 43,
+          "height": 733.0,
+          "positionX": 837.0,
+          "positionY": 247.0,
+          "rotation": 0.0,
+          "scaleX": 0.9163461327552795,
+          "scaleY": 0.9162499904632568,
+          "sourceHeight": 800.0,
+          "sourceWidth": 1040.0,
+          "width": 953.0
+        }
+      },
+      {
+        "source": "Audience",
+        "index": 8,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Show",
+        "index": 9,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Twitch Alerts",
+        "index": 10,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 329,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 353,
+          "height": 1080.0,
+          "positionX": 715.0,
+          "positionY": -130.0,
+          "rotation": 3.5517325401306152,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Sub Goal",
+        "index": 11,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 120.0,
+          "positionX": 720.0,
+          "positionY": 960.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 120.0,
+          "sourceWidth": 480.0,
+          "width": 480.0
+        }
+      },
+      {
+        "source": "Live Frame Yellow",
+        "index": 12,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Live Frame",
+        "index": 13,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "RVB Overlay",
+        "index": 14,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      }
+    ],
+    "In Game": [
+      {
+        "source": "Screen",
+        "index": 0,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": -0.50018310546875,
+          "positionY": 6.103515625e-05,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1921.0,
+          "width": 1921.0
+        }
+      },
+      {
+        "source": "In Game Cam",
+        "index": 1,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 538,
+          "cropRight": 534,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 508.0,
+          "positionX": 1492.0,
+          "positionY": 286.0,
+          "rotation": 0.0,
+          "scaleX": 0.4705188572406769,
+          "scaleY": 0.4703703820705414,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 903.3961791992188
+        }
+      },
+      {
+        "source": "IG Cam Edge",
+        "index": 2,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 508.0,
+          "positionX": 1500.0,
+          "positionY": 286.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 508.0,
+          "sourceWidth": 381.0,
+          "width": 381.0
+        }
+      },
+      {
+        "source": "Alerts on Screen",
+        "index": 3,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Chat Full Cam",
+        "index": 4,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 900.0,
+          "positionX": 18.0,
+          "positionY": 180.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 900.0,
+          "sourceWidth": 700.0,
+          "width": 700.0
+        }
+      },
+      {
+        "source": "Audience",
+        "index": 5,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Twitch Alerts",
+        "index": 6,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 329,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 353,
+          "height": 1080.0,
+          "positionX": 715.0,
+          "positionY": -130.0,
+          "rotation": 3.5517325401306152,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Sub Goal",
+        "index": 7,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 120.0,
+          "positionX": 720.0,
+          "positionY": 960.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 120.0,
+          "sourceWidth": 480.0,
+          "width": 480.0
+        }
+      },
+      {
+        "source": "Live Frame",
+        "index": 8,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "RVB Overlay",
+        "index": 9,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      }
+    ],
+    "Split Cam": [
+      {
+        "source": "SC Back",
+        "index": 0,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Athan Split",
+        "index": 1,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 472,
+          "cropRight": 472,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Jamie Split",
+        "index": 2,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 473,
+          "cropRight": 473,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 946.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "SC Front",
+        "index": 3,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Alerts on Screen",
+        "index": 4,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Chat Full Cam",
+        "index": 5,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 663.0,
+          "positionX": 25.0,
+          "positionY": 316.0,
+          "rotation": 0.0,
+          "scaleX": 0.7371428608894348,
+          "scaleY": 0.7366666793823242,
+          "sourceHeight": 900.0,
+          "sourceWidth": 700.0,
+          "width": 516.0
+        }
+      },
+      {
+        "source": "Audience",
+        "index": 6,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Twitch Alerts",
+        "index": 7,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 329,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 353,
+          "height": 1080.0,
+          "positionX": 715.0,
+          "positionY": -130.0,
+          "rotation": 3.5517325401306152,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Sub Goal",
+        "index": 8,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 120.0,
+          "positionX": 720.0,
+          "positionY": 960.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 120.0,
+          "sourceWidth": 480.0,
+          "width": 480.0
+        }
+      },
+      {
+        "source": "Live Frame Yellow",
+        "index": 9,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Live Frame",
+        "index": 10,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "RVB Overlay",
+        "index": 11,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      }
+    ],
+    "Live Clone": [
+      {
+        "source": "[CAM]",
+        "index": 0,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": -300.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Screen",
+        "index": 1,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 484.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 860.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 1000.0,
+          "positionY": 150.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1921.0,
+          "width": 1921.0
+        }
+      },
+      {
+        "source": "Full Cam Screen",
+        "index": 2,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 288.0,
+          "positionY": 162.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Alerts on Screen",
+        "index": 3,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Chat Full Cam",
+        "index": 4,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 900.0,
+          "positionX": 21.0,
+          "positionY": 175.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 900.0,
+          "sourceWidth": 700.0,
+          "width": 700.0
+        }
+      },
+      {
+        "source": "Audience",
+        "index": 5,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Twitch Alerts",
+        "index": 6,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 329,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 353,
+          "height": 1080.0,
+          "positionX": 715.0,
+          "positionY": -130.0,
+          "rotation": 3.5517325401306152,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Sub Goal",
+        "index": 7,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 120.0,
+          "positionX": 720.0,
+          "positionY": 960.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 120.0,
+          "sourceWidth": 480.0,
+          "width": 480.0
+        }
+      },
+      {
+        "source": "Live Frame",
+        "index": 8,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "RVB Overlay",
+        "index": 9,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      }
+    ],
+    "Live": [
+      {
+        "source": "[CAM]",
+        "index": 0,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Full Cam Screen",
+        "index": 1,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 288.0,
+          "positionY": 162.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Alerts on Screen",
+        "index": 2,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Chat Full Cam",
+        "index": 3,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 900.0,
+          "positionX": 21.0,
+          "positionY": 175.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 900.0,
+          "sourceWidth": 700.0,
+          "width": 700.0
+        }
+      },
+      {
+        "source": "Audience",
+        "index": 4,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Twitch Alerts",
+        "index": 5,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 329,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 353,
+          "height": 1080.0,
+          "positionX": 715.0,
+          "positionY": -130.0,
+          "rotation": 3.5517325401306152,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Sub Goal",
+        "index": 6,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 120.0,
+          "positionX": 720.0,
+          "positionY": 960.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 120.0,
+          "sourceWidth": 480.0,
+          "width": 480.0
+        }
+      },
+      {
+        "source": "Live Frame",
+        "index": 7,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "RVB Overlay",
+        "index": 8,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      }
+    ],
+    "Starting Soon": [
+      {
+        "source": "Start Video",
+        "index": 0,
+        "enabled": false,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Chat Full Cam",
+        "index": 1,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 900.0,
+          "positionX": 26.0,
+          "positionY": 57.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 900.0,
+          "sourceWidth": 700.0,
+          "width": 700.0
+        }
+      },
+      {
+        "source": "Audience",
+        "index": 2,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 0.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
+        }
+      },
+      {
+        "source": "Browser",
+        "index": 3,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Twitch Alerts",
+        "index": 4,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 329,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 353,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 321.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Alerts on Screen",
+        "index": 5,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "Sub Goal",
+        "index": 6,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 120.0,
+          "positionX": 720.0,
+          "positionY": 960.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 120.0,
+          "sourceWidth": 480.0,
+          "width": 480.0
+        }
+      },
+      {
+        "source": "Live Frame",
+        "index": 7,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 1080.0,
+          "boundsType": "OBS_BOUNDS_SCALE_INNER",
+          "boundsWidth": 1920.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      },
+      {
+        "source": "RVB Overlay",
+        "index": 8,
+        "enabled": true,
+        "transform": {
+          "alignment": 5,
+          "boundsAlignment": 0,
+          "boundsHeight": 0.0,
+          "boundsType": "OBS_BOUNDS_NONE",
+          "boundsWidth": 0.0,
+          "cropBottom": 0,
+          "cropLeft": 0,
+          "cropRight": 0,
+          "cropToBounds": false,
+          "cropTop": 0,
+          "height": 1080.0,
+          "positionX": 0.0,
+          "positionY": 0.0,
+          "rotation": 0.0,
+          "scaleX": 1.0,
+          "scaleY": 1.0,
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
+        }
+      }
+    ]
+  },
+  "inputs": {
+    "Desktop Audio": {
+      "kind": "wasapi_output_capture",
+      "settings": {
+        "device_id": "default"
+      }
+    },
+    "Mic/Aux": {
+      "kind": "wasapi_input_capture",
+      "settings": {
+        "device_id": "{0.0.1.00000000}.{fc9eb12f-133d-4f6d-a142-1ed399a27ec5}"
+      },
+      "filters": [
+        {
+          "name": "Limiter",
+          "kind": "limiter_filter",
+          "enabled": true,
+          "settings": {
+            "release_time": 22,
+            "threshold": -5.4
+          }
+        },
+        {
+          "name": "Upward Compressor",
+          "kind": "upward_compressor_filter",
+          "enabled": true,
+          "settings": {
+            "attack_time": 19,
+            "output_gain": 0.7,
+            "release_time": 106,
+            "threshold": -3.1
+          }
+        },
+        {
+          "name": "VST 2.x Plug-in",
+          "kind": "vst_filter",
+          "enabled": true,
+          "settings": {
+            "chunk_data": "BgAAAOwDAAACAAAAAQAAAO4oXD6xHqU+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAA=",
+            "chunk_hash": "4fe61b44eccc17d380dadcea562ca2b9",
+            "open_when_active_vst_settings": true,
+            "plugin_path": "C:/Program Files/VSTPlugins/Slate Digital/Fresh Air.dll"
+          }
+        },
+        {
+          "name": "3-Band Equalizer",
+          "kind": "basic_eq_filter",
+          "enabled": false,
+          "settings": {
+            "high": 9.7,
+            "low": -6.7,
+            "mid": -20.0
+          }
+        }
+      ]
+    },
+    "Cam Raw": {
+      "kind": "dshow_input",
+      "settings": {
+        "active": true,
+        "res_type": 1,
+        "resolution": "1920x1080",
+        "video_device_id": "Camera (NVIDIA Broadcast):"
+      }
+    },
+    "Game Capture": {
+      "kind": "game_capture",
+      "settings": {
+        "capture_cursor": false,
+        "capture_mode": "any_fullscreen"
+      }
+    },
+    "Firebot": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 1080,
+        "reroute_audio": false,
+        "url": "http://localhost:7472/overlay/",
+        "width": 1920
+      }
+    },
+    "Stage Back": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 1080,
+        "reroute_audio": false,
+        "shutdown": true,
+        "url": "http://127.0.0.1:8722/broadcast?layer=back&scene=two&ground=off&chat=ext",
+        "width": 1920
+      }
+    },
+    "Stage Front": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 1080,
+        "reroute_audio": false,
+        "shutdown": true,
+        "undo_uuid": "064acfb4-b452-4e68-8dfb-98cabbb56550",
+        "url": "http://127.0.0.1:8722/broadcast?layer=front&scene=two&ground=off&chat=ext",
+        "width": 1920
+      }
+    },
+    "Browser 2": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 1080,
+        "url": "https://vdo.ninja/?view=VAvmdmb&bitrate=20000&codec=vp9&stereo&password=202013TRU!&label=Jamie_Camera",
+        "width": 1920
+      }
+    },
+    "Stage Back Solo": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 1080,
+        "reroute_audio": false,
+        "shutdown": false,
+        "url": "http://127.0.0.1:8722/broadcast?layer=back&scene=solo&ground=off&chat=ext",
+        "width": 1920
+      }
+    },
+    "Stage Front Solo": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 1080,
+        "reroute_audio": false,
+        "shutdown": true,
+        "url": "http://127.0.0.1:8722/broadcast?layer=front&scene=solo&ground=off&chat=ext",
+        "width": 1920
+      }
+    },
+    "Image": {
+      "kind": "image_source",
+      "settings": {
+        "file": "C:/Users/19407/Documents/Redacted/Website v2/redactedheroimage.png"
+      }
+    },
+    "Media": {
+      "kind": "ffmpeg_source",
+      "settings": {
+        "close_when_inactive": true,
+        "local_file": "C:/Users/19407/Documents/Redacted/Script/Streamv2/media/16mm_Film_Frame_With_Noise_source_1749841.mp4",
+        "looping": true
+      }
+    },
+    "Display Capture": {
+      "kind": "monitor_capture",
+      "settings": {
+        "monitor_id": "\\\\?\\DISPLAY#SPT0C0D#5&3b924512&0&UID4353#{e6f07b5f-ee97-4a90-b076-33f57bf4eaa7}"
+      }
+    },
+    "Chat Duo": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 800,
+        "url": "https://streamlabs.com/widgets/chat-box/v1/9D68DBBEC883378E3815",
+        "width": 1040
+      }
+    },
+    "Chat Solo": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 800,
+        "url": "https://streamlabs.com/widgets/chat-box/v1/9D68DBBEC883378E3815",
+        "width": 700
+      }
+    },
+    "Chat Full Cam": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 900,
+        "url": "https://streamlabs.com/widgets/chat-box/v1/9D68DBBEC883378E3815",
+        "width": 700
+      }
+    },
+    "In Game Cam": {
+      "kind": "source-clone",
+      "settings": {
+        "canvas": "",
+        "clone": "[CAM]"
+      },
+      "filters": [
+        {
+          "name": "Image Mask/Blend",
+          "kind": "mask_filter_v2",
+          "enabled": true,
+          "settings": {
+            "image_path": "C:/Users/19407/Documents/Stream/Masks/4-3mask.png",
+            "type": "mask_alpha_filter.effect"
+          }
+        }
+      ]
+    },
+    "Audience": {
+      "kind": "wasapi_input_capture",
+      "settings": {
+        "device_id": "{0.0.1.00000000}.{323910c6-e94f-45ea-9167-973d32fd8f27}"
+      }
+    },
+    "Ending Overlay": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 1080,
+        "reroute_audio": false,
+        "shutdown": true,
+        "url": "http://127.0.0.1:8722/ending",
+        "width": 1920
+      }
+    },
+    "Image 2": {
+      "kind": "image_source",
+      "settings": {}
+    },
+    "Media 2": {
+      "kind": "ffmpeg_source",
+      "settings": {
+        "close_when_inactive": true,
+        "local_file": "C:/Users/19407/Documents/Stream/Primary Files/AnimatedWallpaper.mp4",
+        "looping": true
+      }
+    },
+    "Start Video": {
+      "kind": "ffmpeg_source",
+      "settings": {
+        "close_when_inactive": true,
+        "hw_decode": true,
+        "local_file": "C:/Users/19407/Documents/Stream/Primary Files/STARTING NEW V45.mp4",
+        "looping": false
+      }
+    },
+    "Browser": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 1080,
+        "reroute_audio": false,
+        "restart_when_active": false,
+        "shutdown": false,
+        "url": "http://127.0.0.1:8722/startingsoon",
+        "width": 1920
+      }
+    },
+    "Athan Split": {
+      "kind": "source-clone",
+      "settings": {
+        "clone": "[CAM]",
+        "same_clones": "In Game Cam"
+      },
+      "filters": [
+        {
+          "name": "Seam",
+          "kind": "shader_filter",
+          "enabled": true,
+          "settings": {
+            "edge_width": 0.0,
+            "feather": 0.0006,
+            "from_file": true,
+            "keep_left": true,
+            "shader_file_name": "C:\\Users\\19407\\Documents\\Redacted\\Script\\Streamv2\\shaders\\diagonal-split.shader",
+            "slant": -0.015625,
+            "split": 0.74583
+          }
+        }
+      ]
+    },
+    "Jamie Split": {
+      "kind": "source-clone",
+      "settings": {
+        "clone": "Jamie [CAM]"
+      },
+      "filters": [
+        {
+          "name": "Seam",
+          "kind": "shader_filter",
+          "enabled": true,
+          "settings": {
+            "edge_width": 0.0,
+            "feather": 0.0006,
+            "from_file": true,
+            "keep_left": false,
+            "shader_file_name": "C:\\Users\\19407\\Documents\\Redacted\\Script\\Streamv2\\shaders\\diagonal-split.shader",
+            "slant": -0.015625,
+            "split": 0.25469
+          }
+        }
+      ]
+    },
+    "SC Back": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 1080,
+        "reroute_audio": false,
+        "shutdown": true,
+        "url": "http://127.0.0.1:8722/splitcam?layer=back",
+        "width": 1920
+      }
+    },
+    "SC Front": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 1080,
+        "reroute_audio": false,
+        "shutdown": true,
+        "url": "http://127.0.0.1:8722/splitcam?layer=front",
+        "width": 1920
+      }
+    },
+    "Emoji Blast": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 1080,
+        "url": "https://streamelements.com/overlay/6a824d6a36cc20f92cfee691/3Rnvpln_EVtZ5BMF69klO9l85soevu_torXgPROL2AYa92rX",
+        "width": 1920
+      }
+    },
+    "Outro theme": {
+      "kind": "ffmpeg_source",
+      "settings": {
+        "close_when_inactive": true,
+        "local_file": "C:/Users/19407/Documents/Stream/Stream Music/lofi 2.wav",
+        "looping": true
+      }
+    },
+    "IG Cam Edge": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 508,
+        "reroute_audio": false,
+        "shutdown": false,
+        "url": "http://127.0.0.1:8722/camedge?r=24&accent=ff4d94",
+        "width": 381
+      }
+    },
+    "Live Frame": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 1080,
+        "reroute_audio": false,
+        "restart_when_active": true,
+        "shutdown": false,
+        "url": "http://127.0.0.1:8722/frameglow?w=10&s=12&a=0.5&accent=ff4d94",
+        "width": 1920
+      }
+    },
+    "Show": {
+      "kind": "wasapi_output_capture",
+      "settings": {
+        "device_id": "{0.0.0.00000000}.{c42da370-e73e-4276-9776-0d30014157f6}"
+      }
+    },
+    "Twitches": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 1080,
+        "url": "file:///C:\\Users\\19407\\AppData\\Roaming\\Firebot\\v5\\overlay.html?instance=Twitch%20Alerts",
+        "width": 1920
+      }
+    },
+    "Sub Goal": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 120,
+        "reroute_audio": false,
+        "shutdown": false,
+        "url": "http://127.0.0.1:8722/subgoal",
+        "width": 480
+      }
+    },
+    "Window Capture": {
+      "kind": "window_capture",
+      "settings": {
+        "priority": 2,
+        "window": "Start Page - Vivaldi:Chrome_WidgetWin_1:vivaldi.exe"
+      }
+    },
+    "Live Frame Yellow": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 1080,
+        "reroute_audio": false,
+        "shutdown": false,
+        "url": "http://127.0.0.1:8722/frameglow?w=10&s=12&a=0.5",
+        "width": 1920
+      }
+    },
+    "RVB Overlay": {
+      "kind": "browser_source",
+      "settings": {
+        "height": 1080,
+        "reroute_audio": false,
+        "shutdown": false,
+        "url": "http://127.0.0.1:8722/scorebar",
+        "width": 1920
+      }
+    }
+  },
+  "current_program_scene": "Live Listen Solo"
+}
