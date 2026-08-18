@@ -270,24 +270,18 @@
     "preset": "Buckle Ticket"
   },
   "stage": {
-    "_note": "Stage performance automation. Entering the scene named exactly 'Stage': unmutes FL Studio (backing/synth via Focusrite loopback capture), enables the Stage Reverb VST on Mic/Aux. Leaving reverses both. Mic never muted; resting state = talking state. FL Studio stays on FL Studio ASIO -> Speakers (Focusrite USB Audio) permanently - never switched.",
+    "_note": "Stage performance automation, final form: entering the scene named exactly Stage mutes Mic/Aux and unmutes FL Studio (backing, Focusrite loopback) + Stage Voice (Cantabile-processed mic via VB-Cable). Leaving reverses everything. Resting state is the talking state - raw mic works if anything else dies. The vocal FX chain (Antares VST3s) lives in Cantabile Lite, which OBS cannot host directly.",
     "enabled": true,
     "scene": "Stage",
-    "mute_on_enter": [],
+    "mute_on_enter": [
+      "Mic/Aux"
+    ],
     "unmute_on_enter": [
-      "FL Studio"
+      "FL Studio",
+      "Stage Voice"
     ],
     "camera": "",
     "delay_filter": "",
-    "filters_on_enter": [
-      [
-        "Mic/Aux",
-        "Stage Reverb"
-      ],
-      [
-        "Mic/Aux",
-        "Stage Tune"
-      ]
-    ]
+    "filters_on_enter": []
   }
 }
