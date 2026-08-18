@@ -283,6 +283,10 @@
       [
         "Mic/Aux",
         "Stage Reverb"
+      ],
+      [
+        "Mic/Aux",
+        "Stage Tune"
       ]
     ]
   }
