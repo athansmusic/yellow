@@ -898,6 +898,8 @@ class Handler(BaseHTTPRequestHandler):
             elif action == "videoend":
                 # The full handoff, scene switch included.
                 do_video_end(_obs["starting_video"])
+            elif action == "stop":
+                do_stream_stop()
             else:
                 do_stream_start()
             with _lock:
@@ -1358,7 +1360,12 @@ def main() -> int:
         # Entering any scene with "brb" in its name restarts the BACK IN
         # clock from the panel's minutes field. Type 5 once and every
         # switch to BRB starts a fresh 5:00; empty field = no clock.
-        if "brb" not in name.lower():
+        low = name.lower()
+        if "ending" in low and _buckle is not None:
+            # End of the road: everyone still unbuckled gets their ticket
+            # the moment the credits start.
+            _buckle.flush()
+        if "brb" not in low:
             return
         with _lock:
             raw = str(_state.get("brbMinutes") or "").strip()

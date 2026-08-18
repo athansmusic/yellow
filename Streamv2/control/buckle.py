@@ -75,6 +75,12 @@ class Buckle:
                 return
             self._chatters.setdefault(user, (time.time(), name or user))
 
+    def flush(self) -> None:
+        """The reckoning: entering the Ending scene tickets EVERY
+        unbuckled chatter at once, grace period or not. The stream is
+        over; there is no more time to buckle."""
+        self._sweep(ignore_grace=True)
+
     def _sweep_loop(self) -> None:
         while True:
             time.sleep(20)
@@ -83,7 +89,7 @@ class Buckle:
             except Exception:                              # noqa: BLE001
                 pass
 
-    def _sweep(self) -> None:
+    def _sweep(self, ignore_grace: bool = False) -> None:
         if not self.is_live() or self.fb is None:
             return
         now = time.time()
@@ -92,10 +98,10 @@ class Buckle:
             for user, (first_ts, display) in self._chatters.items():
                 if user in self._buckled or user in self._ticketed:
                     continue
-                if now - first_ts >= self.grace:
+                if ignore_grace or now - first_ts >= self.grace:
                     due.append((first_ts, user, display))
             due.sort()                       # longest-overdue first
-            if self.per_sweep > 0:
+            if self.per_sweep > 0 and not ignore_grace:
                 due = due[:self.per_sweep]
             for _, user, _ in due:
                 self._ticketed.add(user)
