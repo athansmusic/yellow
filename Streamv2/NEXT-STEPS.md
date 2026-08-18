@@ -105,7 +105,22 @@ reverify pass catches opt-out tags added later and deleted posts.
 Dashboard-only blogs 404 on the per-post API even when alive - the
 pass never blocks on an unverifiable lookup.
 
-## STAGE SCENE AUTOMATION — SHIPPED 2026-08-18 (v1)
+## STAGE SCENE AUTOMATION — PARKED 2026-08-18, owner's call
+
+The server side works (verified: enter/leave toggling, prev-scene
+tracking, talking resting state). The audio plumbing defeated the
+evening: OBS is VST2-only and the owner's whole Antares suite is VST3,
+Cantabile Lite can't span Focusrite-in + CABLE-out on one WASAPI
+driver, ASIO4ALL risks stealing the mic from OBS. Owner called it.
+Config `stage` sits DISABLED; the FL Studio / Stage Voice sources were
+removed. Do not reopen unprompted.
+
+If it ever comes back, the two live paths were: ASIO4ALL multi-assign
+(each Cantabile output channel to BOTH cable and Focusrite = FX in
+ears too; must verify OBS keeps Mic/Aux) or FlexASIO in shared mode.
+The clean fix remains a loopback-capable interface (4th-gen Scarlett).
+
+## STAGE (old design notes, for that day)
 
 Entering the scene named exactly "Stage" unmutes the FL Studio source
 (CABLE Output capture, muted at rest, on the Stage scene); leaving

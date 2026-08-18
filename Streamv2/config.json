@@ -271,7 +271,7 @@
   },
   "stage": {
     "_note": "Stage performance automation, final form: entering the scene named exactly Stage mutes Mic/Aux and unmutes FL Studio (backing, Focusrite loopback) + Stage Voice (Cantabile-processed mic via VB-Cable). Leaving reverses everything. Resting state is the talking state - raw mic works if anything else dies. The vocal FX chain (Antares VST3s) lives in Cantabile Lite, which OBS cannot host directly.",
-    "enabled": true,
+    "enabled": false,
     "scene": "Stage",
     "mute_on_enter": [
       "Mic/Aux"
