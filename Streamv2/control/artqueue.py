@@ -23,6 +23,7 @@ import random
 import re
 import threading
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -53,8 +54,10 @@ class ArtQueue:
         self._undo: list[tuple[str, str]] = []   # (id, previous status)
         self._items: list[dict] = []
         self._load()
+        self.reverify_seconds = max(3600, int(cfg.get("reverify_hours", 6)) * 3600)
         if self.api_key:
             threading.Thread(target=self._poll_loop, daemon=True).start()
+            threading.Thread(target=self._reverify_loop, daemon=True).start()
 
     # ---- store ----------------------------------------------------------
     def _load(self) -> None:
@@ -117,6 +120,89 @@ class ArtQueue:
                 # newest first, cap the store so it never grows unbounded
                 self._items.sort(key=lambda i: i["ts"], reverse=True)
                 del self._items[400:]
+                self._save()
+
+    # ---- re-verification -------------------------------------------------
+    # Artists change their minds. Every few hours, re-check everything
+    # pending or approved: a post that has GAINED an opt-out tag, or been
+    # deleted, gets blocked and silently leaves the rotation.
+    def _reverify_loop(self) -> None:
+        time.sleep(600)              # let startup settle first
+        while True:
+            try:
+                self._reverify_once()
+            except Exception:                          # noqa: BLE001
+                pass
+            time.sleep(self.reverify_seconds)
+
+    def _reverify_once(self) -> None:
+        # Pass 1: walk the whole show tag - current tags for every post
+        # still carrying it, dashboard-only blogs included.
+        tagmap: dict[str, list] = {}
+        before = ""
+        for _ in range(60):
+            url = TAGGED_URL.format(tag=urllib.parse.quote(self.tag),
+                                    key=self.api_key)
+            if before:
+                url += f"&before={before}"
+            with urllib.request.urlopen(url, timeout=15) as r:
+                posts = json.loads(r.read()).get("response", [])
+            if not posts:
+                break
+            for p in posts:
+                pid = str(p.get("id_string") or p.get("id") or "")
+                if pid:
+                    tagmap[pid] = [_norm_tag(t) for t in (p.get("tags") or [])]
+            before = str(min(int(p.get("timestamp") or 0) for p in posts))
+            time.sleep(1)
+
+        with self._lock:
+            snapshot = [dict(i) for i in self._items
+                        if i["status"] in ("pending", "approved")
+                        and not i["id"].startswith("manual-")]
+
+        to_block: list[tuple[str, str]] = []          # (id, reason)
+        for it in snapshot:
+            tags = tagmap.get(it["id"])
+            if tags is not None:
+                if any(t in self.block_tags for t in tags):
+                    to_block.append((it["id"], "opt-out tag added"))
+                continue
+            # Not under the show tag any more. Dashboard-only blogs
+            # (post_url /blog/view/) 404 on the per-post API even when the
+            # post is alive - they are UNVERIFIABLE here, so leave them:
+            # never block on a lookup that cannot succeed.
+            if "/blog/view/" in it.get("post_url", ""):
+                continue
+            # Pass 2: normal blog, direct lookup - deleted, made private,
+            # or re-tagged with an opt-out all end the run.
+            url = (f"https://api.tumblr.com/v2/blog/{it['artist']}/posts"
+                   f"?id={it['id']}&api_key={self.api_key}")
+            try:
+                with urllib.request.urlopen(url, timeout=15) as r:
+                    posts = json.loads(r.read()).get("response", {})                         .get("posts", [])
+                if not posts:
+                    to_block.append((it["id"], "post gone"))
+                elif any(_norm_tag(t) in self.block_tags
+                         for t in (posts[0].get("tags") or [])):
+                    to_block.append((it["id"], "opt-out tag added"))
+            except urllib.error.HTTPError as e:
+                if e.code == 404:
+                    to_block.append((it["id"], "post deleted"))
+                # any other HTTP error: transient - never block on doubt
+            except Exception:                          # noqa: BLE001
+                pass                                   # network blip - skip
+            time.sleep(0.5)
+
+        if to_block:
+            with self._lock:
+                for pid, reason in to_block:
+                    for i in self._items:
+                        if i["id"] == pid:
+                            i["status"] = "blocked"
+                            print(f"  [art] blocked ({reason}): "
+                                  f"{i['artist']} - {i['title'][:40]}",
+                                  flush=True)
                 self._save()
 
     @staticmethod

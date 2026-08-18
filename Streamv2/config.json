@@ -260,7 +260,8 @@
     "block_tags": [
       "keepredacted",
       "keep redacted"
-    ]
+    ],
+    "reverify_hours": 6
   },
   "bucklein": {
     "_note": "Chatters have the whole stream to !bucklein; switching to the Ending scene tickets everyone who never did, all at once, through the Firebot preset in 'preset' (Chat effect, message = $presetListArg[message]). Citation lines live in the panel. exclude_users defaults to rvb.exclude.users.",
