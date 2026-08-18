@@ -271,7 +271,7 @@
   },
   "stage": {
     "_note": "Music scene automation, v1 for the 3rd-gen 2i2 (no loopback): voice stays on the normal Mic/Aux chain, FL carries backing/synth only via VB-Cable, so entering Stage just unmutes FL Studio and leaving re-mutes it. No mic muting, no camera delay needed. The full-FL-vocal-chain design (MUSIC-SETUP.md) needs a loopback-capable interface - revisit if the owner ever upgrades to a 4th gen.",
-    "enabled": false,
+    "enabled": true,
     "scene": "Stage",
     "mute_on_enter": [],
     "unmute_on_enter": [

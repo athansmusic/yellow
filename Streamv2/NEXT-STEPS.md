@@ -105,6 +105,22 @@ reverify pass catches opt-out tags added later and deleted posts.
 Dashboard-only blogs 404 on the per-post API even when alive - the
 pass never blocks on an unverifiable lookup.
 
+## STAGE SCENE AUTOMATION — SHIPPED 2026-08-18 (v1)
+
+Entering the scene named exactly "Stage" unmutes the FL Studio source
+(CABLE Output capture, muted at rest, on the Stage scene); leaving
+re-mutes it. Verified live, both directions, twice. v1 for the 3rd-gen
+2i2 (NO loopback): the voice stays on the normal Mic/Aux chain and is
+NEVER touched by the automation - FL carries backing/synth only, so no
+camera delay is needed. Config: `stage` block. The restore fires only
+on a real Stage exit (prev-scene tracked, seeded at startup), so it
+cannot fight SHOW-MODE.
+
+Owner still to do in FL: device = FL Studio ASIO with output CABLE
+In, 48k everywhere, Windows "Listen" on CABLE Output -> Focusrite for
+ears, 2i2 Direct Monitor for voice. Full FL vocal chain (MUSIC-SETUP)
+waits on a loopback-capable interface (4th gen).
+
 ## 2. LIVE CAPTIONS  ← research, then owner decides
 
 Owner asked (2026-08-16): can captions go on the live screen easily?
