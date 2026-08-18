@@ -292,6 +292,9 @@
 </div>
 
 <script>
+  // Served from disk as a local file in OBS; the control server is only
+  // the data feed. API is absolute so file:// pages reach it.
+  const API = 'http://127.0.0.1:8722';
   const params = new URLSearchParams(location.search);
   document.body.dataset.layer = params.get('layer') === 'front' ? 'front' : 'back';
   const raw = params.get('scene');
@@ -415,7 +418,7 @@
      browser source's console, so without this there is no way to tell a
      working waveform from the fallback animation - both move. */
   function reportAudio(status, detail) {
-    fetch('/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    fetch(API + '/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         key: `audio:${document.body.dataset.layer}:${document.body.dataset.scene || 'two'}`,
         slots: { status, detail: String(detail), at: new Date().toISOString() },
@@ -441,7 +444,7 @@
   // or drive letter is a full local path, served through /file - same
   // freedom as the theme's bg image.
   const logoUrl = (v) => /[/\\:]/.test(v)
-    ? '/file?path=' + encodeURIComponent(v)
+    ? API + '/file?path=' + encodeURIComponent(v)
     : '/assets/' + v;
   function applyLogo(s) {
     const t = (s.themes || {})[s.show] || {};
@@ -517,7 +520,14 @@
     }
   }
 
+  // Self-reload on deploy: outside navigation wedges CEF, so the page
+  // pulls its own ripcord when the server's reloadNonce changes.
+  let bootNonce = null;
+
   function render(s) {
+    if (bootNonce === null) bootNonce = s.reloadNonce || '';
+    else if ((s.reloadNonce || '') !== bootNonce) { location.reload(); return; }
+
     applyTheme(s);
     applyLogo(s);
     document.body.dataset.scene = (pinned || s.scene) === 'solo' ? 'solo' : 'two';
@@ -544,15 +554,32 @@
     requestAnimationFrame(reportSlots);
   }
 
-  fetch('/state').then(r => r.json()).then(render).catch(() => { if (PREVIEW) render({}); });
+  // Retry until the first snapshot lands - a swallowed one-shot fetch left
+  // the duo cams NAMELESS for a whole session once. Never again.
+  function initialState() {
+    fetch(API + '/state').then(r => r.json()).then(render).catch(() => {
+      if (PREVIEW) render({});
+      setTimeout(initialState, 1500);
+    });
+  }
+  initialState();
+
+  // Poll fallback: SSE has died silently in CEF before. This keeps the
+  // page current (and the reloadNonce honoured) even with SSE dead.
+  setInterval(() => {
+    fetch(API + '/state').then(r => r.json()).then(render).catch(() => {});
+  }, 5000);
 
   let es = null;
   function connect() {
-    es = new EventSource('/events');
+    es = new EventSource(API + '/events');
     es.onmessage = (e) => { try { render(JSON.parse(e.data)); } catch (_) {} };
     es.onerror = () => { es.close(); setTimeout(connect, 2000); };
   }
-  connect();
+  // connect() intentionally NOT called: 10 overlay pages each holding a
+  // permanent SSE socket exhausts Chromium's 6-per-host pool and starves
+  // every other page's fetches (blank stage layers, frozen overlays).
+  // The 5s poll above is the transport now - sockets open, close, share.
 
   /* OBS shutdown hygiene. CEF tears pages down at exit, and it waits on
      whatever they still hold - an open SSE socket and, worse, a live audio
@@ -591,7 +618,7 @@
     const payload = JSON.stringify({ key, slots: window.__slots() });
     if (payload === lastReport) return;          // only on real change
     lastReport = payload;
-    fetch('/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    fetch(API + '/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' },
                       body: payload }).catch(() => {});
   }
   (document.fonts ? document.fonts.ready : Promise.resolve())

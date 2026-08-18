@@ -20,3 +20,6 @@ displays/multimonitortool-x64/
 # Per-stream subscriber list, not source
 control/credits.json
 .venv-motion/
+
+# Request log the control server appends at runtime
+control/access.log

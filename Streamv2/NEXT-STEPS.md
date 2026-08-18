@@ -20,7 +20,7 @@ The family - all built on the show's brush-stroke redaction bar
 | firebot-sub.html | installed | name declassifies out of the bar, 6s |
 | firebot-gift.html | installed | credits the GIFTER, 6s |
 | firebot-follow.html | installed | ANONYMOUS - no name, small stamp, 3s |
-| firebot-raid.html | installed | INTRUSION DETECTED: letterbox + fire + big bar, 12s; pairs with POST /effect/threshold {"seconds":12} for the black/yellow takeover; raid shoutout chat effect uses $username |
+| firebot-raid.html | installed | INTRUSION DETECTED: letterbox + fire + big bar, 12s; pairs with POST /effect/threshold {"seconds":12} for the black/yellow takeover; raid shoutout chat effect uses $username. FIXED 2026-08-18: the effect had no overlay instance set, so it drew on the default Firebot source that is not on any live scene - all alerts must target the `Twitch Alerts` instance (that is the instance name; NEXT-STEPS previously said REDACTED, which was never a real instance) |
 | firebot-resub.html | ready, not installed | |
 | firebot-bits.html | ready, not installed | amount via the $ picker |
 
@@ -31,6 +31,42 @@ comments included; only $username is safe on all events; never style
 document.body from a Show HTML (it outlives the effect's removal).
 The fire layer (media/fire-alpha.webm, luma-keyed from Fire.mov) streams
 off the control server via /file - server down = alert plays fireless.
+
+## ROTATING PROMPTS — SHIPPED 2026-08-18, REDESIGNED SAME DAY
+
+Bottom-right TERMINAL TICKER on the main overlay (owner picked this
+concept over the brush-bar version - the zip lives in Downloads as
+"Podcast livestream layout design (5).zip"): a small dark panel that
+types each prompt on character by character, holds, backspaces, moves
+on. Blinking caret, scanline, pulsing "unit feed" label. Fed by the
+panel textarea (one prompt per line) + seconds-each field; empty box
+hides it, `?no=prompts` opts a source out. Box width auto-fits the
+longest line. All motion is JS textContent writes on persistent DOM -
+deliberately animation-free where it matters, because of the CEF
+lessons below. media/bar1/bar2 are now unused by the overlay (originals
+kept as bar*-orig.png).
+
+Ops note from the same day: port 8722 can end up DOUBLE-BOUND if an
+elevated orphan of server.py survives - it wins all connections and
+serves stale code while a fresh server listens beside it. Symptom: file
+edits that never show up in /state. Check `netstat -ano | findstr 8722`
+for two LISTENING pids; an elevated one needs an admin taskkill.
+
+Related CEF lessons (same day, learned the hard way):
+- NEVER navigate or refresh a browser source from outside (websocket
+  refreshnocache is unreliable; SetInputSettings URL bounces WEDGE the
+  CEF instance - white page, deaf to everything, only an OBS restart
+  recovers it; relaunch with --enable-media-stream
+  --use-fake-ui-for-media-stream, same as the taskbar pin).
+- To deploy overlay code instead:
+  curl -X POST 127.0.0.1:8722/state -d "{\"reloadNonce\":\"anything-new\"}"
+  The overlay reloads ITSELF when the nonce changes (self-reload is safe;
+  outside navigation is not).
+- CEF also intermittently fails to composite background images on freshly
+  inserted DOM. The prompt bar therefore keeps a PERSISTENT DOM: both
+  strokes exist from page load, rotation only crossfades opacity and
+  swaps text, and final states are inline styles (animations are optional
+  polish CEF may drop). Do not refactor it back to create-per-rotation.
 
 ## 2. LIVE CAPTIONS  ← research, then owner decides
 

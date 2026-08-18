@@ -17,6 +17,7 @@
        - the animated screen border (team colour, neutral while tied)
        - the per-stream sub goal bar
        - RED VS BLUE score peek and draft stamps
+       - the rotating prompt bar, bottom right (panel textarea feeds it)
 
      Everything is positioned in CSS at 1920x1080, so this drops in at full
      canvas on every scene and never needs arranging in OBS.
@@ -25,7 +26,7 @@
      ?goal=5              override the sub goal target
      ?accent=ff4d94       pin a border colour (RED VS BLUE still wins)
      ?rvb=off             opt out of the team colour
-     ?no=border,goal,rvb  drop a piece on this source only
+     ?no=border,goal,rvb,prompts  drop a piece on this source only
      ===================================================================== */
   :root {
     --accent:  #f4e409;
@@ -171,6 +172,40 @@
                       to   { opacity: 1; transform: none; } }
   @keyframes st-out { to { opacity: 0; transform: translateX(16px); } }
   body.no-rvb #peek, body.no-rvb #stamps { display: none; }
+
+  /* ---------------- 4. rotating prompts: terminal ticker ------------- */
+  /* Owner-picked concept (option 1b): a small terminal panel that TYPES
+     each prompt on character by character, holds, backspaces, moves on.
+     Blinking block caret at the right edge; scanline texture; pulsing
+     dot beside a tiny label. Replaces the brush-bar version.
+     PERSISTENT DOM + JS-driven typing (plain textContent writes), so the
+     CEF animation/compositing bugs have nothing to drop: the CSS
+     animations here (caret, dot, sweep) are decoration only and a dropped
+     one just leaves a solid caret or a still dot. Box width follows the
+     longest line in the list. */
+  #prompt { position: absolute; right: 46px; top: 34px;
+    height: 76px; min-width: 280px; display: none; overflow: hidden;
+    background: #07070a; box-shadow: 0 0 0 1px #1f1f24;
+    font-size: 17px; font-family: var(--mono); }
+  #prompt.on { display: block; }
+  #tk-scanlines { position: absolute; inset: 0; opacity: .5;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 3px); }
+  #tk-head { position: absolute; left: 15px; right: 12px; top: 13px;
+    display: flex; align-items: center; gap: 7px; }
+  #tk-dot { width: 6px; height: 6px; background: #f4e409;
+    animation: tk-pulse 2s ease-in-out infinite; }
+  #tk-label { font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+    color: #6a6a72; }
+  #tk-line { position: absolute; left: 15px; right: 12px; bottom: 15px;
+    height: 24px; display: flex; align-items: center; gap: 6px;
+    letter-spacing: .02em; color: var(--ink); white-space: nowrap; }
+  #tk-mark { color: #4c4c54; }
+  #tk-caret { position: absolute; right: 12px; bottom: 18px;
+    width: 10px; height: 19px; background: #f4e409;
+    animation: tk-caret 1s steps(1) infinite; }
+  @keyframes tk-caret { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+  @keyframes tk-pulse { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
+  body.no-prompts #prompt { display: none; }
 </style>
 
 <div id="base"></div>
@@ -198,8 +233,12 @@
 </div>
 
 <div id="stamps"></div>
+<div id="prompt"></div>
 
 <script>
+  // Served from disk as a local file in OBS; the control server is only
+  // the data feed. API is absolute so file:// pages reach it.
+  const API = 'http://127.0.0.1:8722';
   const p = new URLSearchParams(location.search);
   const $ = (id) => document.getElementById(id);
   const root = document.documentElement.style;
@@ -218,7 +257,7 @@
   if (PIN) root.setProperty('--accent', '#' + PIN.replace('#', ''));
 
   // ---- sub goal: the brush stroke masks the fill ----
-  const BRUSH = "/file?path=C:/Users/19407/Documents/Redacted/Script/Streamv2/media/redactedbar.png";
+  const BRUSH = API + "/file?path=C:/Users/19407/Documents/Redacted/Script/Streamv2/media/redactedbar.png";
   const probe = new Image();
   probe.onload = () => {
     const f = $('goal-fill').style;
@@ -241,7 +280,14 @@
   const seen = new Set();
   let primed = false;
 
+  // Self-reload on deploy: outside navigation wedges CEF, so the page
+  // pulls its own ripcord when the server's reloadNonce changes.
+  let bootNonce = null;
+
   function render(s) {
+    if (bootNonce === null) bootNonce = s.reloadNonce || '';
+    else if ((s.reloadNonce || '') !== bootNonce) { location.reload(); return; }
+
     const r = s.rvb || {};
 
     // --- colour precedence: team colour > pinned > show theme ---
@@ -290,6 +336,12 @@
     $('month').textContent = r.month || '';
     document.body.classList.toggle('peek', s.scorePeek === true);
 
+    // --- rotating prompts ---
+    // try/catch with a beacon: a throw in here was once swallowed by the
+    // initial-fetch retry loop and the module just silently never drew.
+    try { applyPrompts(s); }
+    catch (e) { beacon('PROMPT ERR: ' + e.message); }
+
     // Draft stamps: show each once. The first payload after load only
     // PRIMES the set - otherwise reloading a source would replay old
     // drafts as if they had just happened.
@@ -300,6 +352,84 @@
       if (primed) showStamp(d);
     }
     primed = true;
+  }
+
+  // ---- rotating prompts: terminal ticker ----
+  // render() fires on every state broadcast, so only touch the DOM when the
+  // list or the timer actually changed - otherwise every unrelated panel
+  // edit would restart the typing mid-word. All motion is JS textContent
+  // writes on ONE persistent element; a generation counter invalidates
+  // stale timeouts whenever the list changes.
+  let prList = [], prSecs = 0, prIdx = 0, prGen = 0, prEls = null;
+
+  function prSetup() {
+    if (prEls) return;
+    const wrap = $('prompt');
+    const scan = document.createElement('div');
+    scan.id = 'tk-scanlines'; wrap.appendChild(scan);
+    const head = document.createElement('div'); head.id = 'tk-head';
+    const dot = document.createElement('span'); dot.id = 'tk-dot';
+    const label = document.createElement('span'); label.id = 'tk-label';
+    label.textContent = 'unit feed';
+    head.append(dot, label);
+    const line = document.createElement('div'); line.id = 'tk-line';
+    const mark = document.createElement('span'); mark.id = 'tk-mark';
+    mark.textContent = '>';
+    const text = document.createElement('span'); text.id = 'tk-text';
+    line.append(mark, text);
+    const caret = document.createElement('span'); caret.id = 'tk-caret';
+    wrap.append(head, line, caret);
+    prEls = { wrap, text };
+  }
+
+  function prRunLine(gen) {
+    if (gen !== prGen || !prList.length) return;
+    const line = prList[prIdx % prList.length];
+    const el = prEls.text;
+    const TYPE_MS = 55, CLEAR_MS = 22;
+    const typeT = line.length * TYPE_MS;
+    const clearT = Math.min(600, line.length * CLEAR_MS);
+    // Hold fills whatever the panel's seconds leave after type + clear.
+    const holdT = Math.max(800, prSecs * 1000 - typeT - clearT);
+    let i = 0;
+    const typer = setInterval(() => {
+      if (gen !== prGen) { clearInterval(typer); return; }
+      el.textContent = line.slice(0, ++i);
+      if (i >= line.length) {
+        clearInterval(typer);
+        setTimeout(() => {
+          if (gen !== prGen) return;
+          if (prList.length === 1) return;    // single line just stays up
+          let j = line.length;
+          const wiper = setInterval(() => {   // backspace out
+            if (gen !== prGen) { clearInterval(wiper); return; }
+            el.textContent = line.slice(0, --j);
+            if (j <= 0) {
+              clearInterval(wiper);
+              prIdx = (prIdx + 1) % prList.length;
+              setTimeout(() => prRunLine(gen), 350);
+            }
+          }, CLEAR_MS);
+        }, holdT);
+      }
+    }, TYPE_MS);
+  }
+
+  function applyPrompts(s) {
+    const list = String(s.prompts || '').split('\n').map(t => t.trim()).filter(Boolean);
+    const secs = Math.min(120, Math.max(3, parseFloat(s.promptSeconds) || 9));
+    if (list.join('\n') === prList.join('\n') && secs === prSecs) return;
+    prList = list; prSecs = secs; prIdx = 0; prGen++;
+    const wrap = $('prompt');
+    if (!list.length) { wrap.classList.remove('on'); return; }
+    prSetup();
+    // Box width follows the longest line: text at 14px mono + "> ", the
+    // caret, and the side padding. Never narrower than the 220 design.
+    const longest = Math.max(...list.map(t => t.length));
+    prEls.wrap.style.width = Math.max(280, Math.round(longest * 10.2) + 72) + 'px';
+    prEls.text.textContent = '';
+    wrap.classList.add('on');
+    prRunLine(prGen);
   }
 
   function showStamp(d) {
@@ -322,16 +452,18 @@
   // Liveness beacon - OBS gives no way to read a browser source's console,
   // so one curl of /slots tells a dead page from a working one.
   function beacon(note) {
-    fetch('/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    fetch(API + '/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ key: 'overlay', slots: {
         note: String(note), at: new Date().toISOString() } }) }).catch(() => {});
   }
   window.addEventListener('error', (e) => beacon('JS ERROR: ' + e.message));
+  window.addEventListener('unhandledrejection',
+    (e) => beacon('PROMISE ERR: ' + ((e.reason && e.reason.message) || e.reason)));
 
   // Retry until the first snapshot lands; a swallowed one-shot fetch would
   // leave the whole overlay frozen at its defaults.
   function initialState() {
-    fetch('/state').then(r => r.json()).then((s) => {
+    fetch(API + '/state').then(r => r.json()).then((s) => {
       render(s);
       beacon('rendered');
     }).catch(() => setTimeout(initialState, 1500));
@@ -339,13 +471,22 @@
   beacon('loaded');
   initialState();
 
+  // Poll fallback: SSE has died silently in CEF before. This keeps the
+  // page current (and the reloadNonce honoured) even with SSE dead.
+  setInterval(() => {
+    fetch(API + '/state').then(r => r.json()).then(render).catch(() => {});
+  }, 5000);
+
   let es = null;
   function connect() {
-    es = new EventSource('/events');
+    es = new EventSource(API + '/events');
     es.onmessage = (e) => { try { render(JSON.parse(e.data)); } catch (_) {} };
     es.onerror = () => { es.close(); setTimeout(connect, 2000); };
   }
-  connect();
+  // connect() intentionally NOT called: 10 overlay pages each holding a
+  // permanent SSE socket exhausts Chromium's 6-per-host pool and starves
+  // every other page's fetches (blank stage layers, frozen overlays).
+  // The 5s poll above is the transport now - sockets open, close, share.
   // CEF waits on open sockets at exit; let it go the moment we unload.
   window.addEventListener('pagehide', () => { try { if (es) es.close(); } catch (_) {} });
 </script>

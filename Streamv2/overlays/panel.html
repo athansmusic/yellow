@@ -134,6 +134,13 @@
     <label><span>Sub goal (this stream)</span><input id="subGoal" placeholder="5" autocomplete="off"></label>
   </fieldset>
 
+  <fieldset>
+    <legend>Rotating prompts</legend>
+    <label><span>One per line &mdash; blank line removes it, empty box hides the bar</span>
+      <textarea id="prompts" rows="5" placeholder="follow so you stop missing these"></textarea></label>
+    <label><span>Seconds each</span><input id="promptSeconds" placeholder="9" autocomplete="off"></label>
+  </fieldset>
+
   <div class="foot">
     <span id="dot"></span>
     <span id="status">connecting</span>
@@ -151,7 +158,7 @@
 <script>
   const FIELDS = ['showName', 'episodeNumber', 'episodeTitle', 'episodeBlurb',
                   'hostA', 'hostARole', 'hostB', 'hostBRole', 'handle', 'cadence',
-                  'alertName', 'alertMeta', 'subGoal'];
+                  'alertName', 'alertMeta', 'subGoal', 'prompts', 'promptSeconds'];
 
   // Layout is NOT controlled here. Each OBS scene carries its own stage layers
   // pinned with ?scene=two|solo, so switching scenes in OBS switches the layout.

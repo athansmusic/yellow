@@ -95,6 +95,19 @@ DEFAULT_STATE = {
     # RED VS BLUE score bar visibility, driven by the peek redeem's timer.
     "scorePeek": False,
 
+    # Rotating prompt bar, bottom right. One prompt per line - a textarea
+    # in the panel is the whole add/remove interface, which beats building
+    # a list editor for something edited twice a month. Blank = hidden.
+    "prompts": "follow so you stop missing these\nnew episodes thursdays\n!team to pick a side",
+    "promptSeconds": "9",
+
+    # Deploy hook. OBS's CEF wedges if you navigate/refresh a browser
+    # source from outside, so the overlay reloads ITSELF instead: it
+    # remembers the nonce it booted with and location.reload()s when a
+    # different one arrives over SSE. Push overlay code with:
+    #   curl -X POST 127.0.0.1:8722/state -d "{\"reloadNonce\":\"anything-new\"}"
+    "reloadNonce": "",
+
     # No viewerCount field. Nothing feeds it, so it could only ever display
     # a number somebody typed - i.e. a wrong one, live on stream.
     "messages": [],             # [{name, text, badge, nameColor}] - newest last
@@ -547,13 +560,35 @@ class Handler(BaseHTTPRequestHandler):
         pass
 
     # -- helpers -----------------------------------------------------------
+    def log_message(self, fmt, *args):  # noqa: N802 - stdlib name
+        # pythonw has no stderr; write access lines to a ring file instead.
+        # The UA tail tells OBS's CEF (OBS/xx) apart from a desktop browser.
+        try:
+            ua = self.headers.get("User-Agent", "?")[-24:]
+            with open(HERE / "access.log", "a", encoding="utf-8") as f:
+                line = "%s %s [%s]" % (time.strftime("%H:%M:%S"),
+                                       self.path.split("?")[0], ua)
+                f.write(line + "\n")
+        except OSError:
+            pass
+
     def _send(self, body: bytes, ctype: str, status: int = 200) -> None:
         self.send_response(status)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
+        # The overlays are file:// pages in OBS now; without CORS their
+        # fetches to this server are silently blocked.
+        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
         self.wfile.write(body)
+
+    def do_OPTIONS(self) -> None:  # CORS preflight for the file:// pages
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.end_headers()
 
     def _send_file(self, path: Path, ctype: str) -> None:
         if not path.exists():
@@ -845,6 +880,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "text/event-stream")
         self.send_header("Cache-Control", "no-store")
         self.send_header("Connection", "keep-alive")
+        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
 
         try:
