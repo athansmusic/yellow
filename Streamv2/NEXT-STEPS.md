@@ -68,6 +68,26 @@ Related CEF lessons (same day, learned the hard way):
   swaps text, and final states are inline styles (animations are optional
   polish CEF may drop). Do not refactor it back to create-per-rotation.
 
+## BRB SCENE + FAN ART PIPELINE — SHIPPED 2026-08-18
+
+Tumblr tag -> approval -> on-stream gallery, all local:
+
+- `control/artqueue.py` polls #the redacted unit every 2 min (api key in
+  config.local.json; NPF gotcha: images live inside text-post bodies,
+  and filter=text would strip them). Backfilled the tag's full history.
+- `/artqueue` is the moderation portal (A approve / X reject / U undo).
+  NOTHING renders unapproved.
+- `/brb` is the scene page (owner's design, no bg): auto-fit writable
+  headline, write-in note, BACK IN clock, up-next, chat safe area at
+  800,168 268x560, gallery at 1132,168 660x660.
+- Rotation: every 25s the SERVER picks from all approved, weighted
+  1/(1+shows); shows only count while OBS streams. Glitch-wipe swap.
+- Entering any scene named *brb* re-arms the clock from the panel's
+  minutes field (scene watcher LISTENS only - never drives OBS).
+- Panel: headline / note / up next / minutes fields.
+- Instagram: declined - Meta's hashtag API strips artist credit and
+  wants business-account app review. Do not reopen unprompted.
+
 ## 2. LIVE CAPTIONS  ← research, then owner decides
 
 Owner asked (2026-08-16): can captions go on the live screen easily?
