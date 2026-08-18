@@ -11,4 +11,4 @@ Set fso = CreateObject("Scripting.FileSystemObject")
 Set shell = CreateObject("WScript.Shell")
 here = fso.GetParentFolderName(WScript.ScriptFullName)
 shell.CurrentDirectory = here
-shell.Run "pythonw.exe " & Chr(34) & here & "\lan_hold.py" & Chr(34) & " 192.168.4.84,192.168.4.85 255 45 138", 0, False
+shell.Run "pythonw.exe " & Chr(34) & here & "\lan_hold.py" & Chr(34) & " 192.168.4.84,192.168.4.85 255 45 138 --once 192.168.4.133", 0, False

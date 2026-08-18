@@ -1050,13 +1050,20 @@ def _lamps_to_team(force: bool = False) -> None:
         return
     _lamp_lead = lead
     r, g, b = (int(hexval[i:i + 2], 16) for i in (0, 2, 4))
-    ips = cfg.get("lamps", {}).get("ips", "")
+    lamps = cfg.get("lamps", {})
+    ips = lamps.get("stream_ips", "")
+    once = lamps.get("once_ips", "")
     script = ROOT / "lights" / "lan_hold.py"
     if not ips or not script.exists():
         return
+    args = [sys.executable, str(script), ips, str(r), str(g), str(b)]
+    if once:
+        # Healthy units take one ordinary command; only the stuck pair needs
+        # the continuous stream.
+        args += ["--once", once]
     try:
         subprocess.Popen(
-            [sys.executable, str(script), ips, str(r), str(g), str(b)],
+            args,
             cwd=str(script.parent),
             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

@@ -100,9 +100,10 @@
     },
 
     "lamps": {
-      "_note": "The three STANDING Govee lights (H6076, LAN) wear the leading team's colour for as long as they hold the lead - the room is territory. NOT the 4th table light: that one is the Bluetooth-only H617A and is never touched by this. Driven by lights/lan_hold.py, which streams colour continuously (.84/.85 need that; .133 takes it fine too). Re-fires only when the LEAD CHANGES, never on every point. Firing any FLOOR-* button replaces this until the next lead change.",
+      "_note": "The three STANDING Govee lights (H6076, LAN) wear the leading team's colour for as long as they hold the lead - the room is territory. NOT the 4th table light: that one is the Bluetooth-only H617A and is never touched by this. Driven by lights/lan_hold.py: .84/.85 are STREAMED because their firmware is stuck, .133 is healthy so it gets one ordinary command and is then left alone. Re-fires only when the LEAD CHANGES, never on every point. Firing any FLOOR-* button replaces this until the next lead change.",
       "enabled": true,
-      "ips": "192.168.4.84,192.168.4.85,192.168.4.133"
+      "stream_ips": "192.168.4.84,192.168.4.85",
+      "once_ips": "192.168.4.133"
     },
 
     "exclude": {
