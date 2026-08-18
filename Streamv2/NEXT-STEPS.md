@@ -79,70 +79,33 @@ the control server, server drives OBS/overlays, auto-revert timer.
 `buttons/FX-THRESHOLD-30S.vbs` + `/effect/threshold` show the whole pattern.
 Shipped so far: threshold, mic EQ (`/effect/micfx`).
 
-### RED VS BLUE  ← the centrepiece, designed 2026-08-17
+### RED VS BLUE — SHIPPED 2026-08-18
 
-Owner's revived team system - name stays RED VS BLUE (owner's call, and
-red/blue both read perfectly on the black ground). v1 died of two things:
-built poorly, and winning meant nothing. The redesign fixes both.
+Built and verified end to end. `control/rvb.py` owns the ledger in its own
+`teams.json`; `overlays/scorebar.html` carries the peek and the stamps.
 
-**The reason to compete: the leading team holds the broadcast.** When a
-team takes the lead, the SCREEN border (Live Frame / frameglow) becomes
-their colour until the other team takes it back - the frame around the
-stream is the standing scoreboard. Scope decided by owner 2026-08-17:
-the screen border ONLY - the camera border (IG Cam Edge) stays pink
-permanently, and the pink ?accent pin on the screen frames gets replaced
-by the state-driven team colour when this ships. Neutral (start of
-stream / tie) is undecided - yellow-until-first-blood is the candidate.
+- Draft: lazy, per calendar month, balanced-random (weighted to the smaller
+  side). Only while live.
+- Points: chat 1 (cap 20/day), sub 25, gift 25 each to the GIFTER, bits 10
+  per 100. WATCH THIS: 10k bits = 1000 pts = 50 chatty regulars. Owner chose
+  to see how it plays on a real stream before rebalancing.
+- Scoring is gated on OBS actually streaming, seeded from GetStreamStatus at
+  startup so a mid-stream restart does not silently stop counting.
+- Colours: RED #d40019, BLUE #1f3fde, #FFF200 when tied. The SCREEN border
+  and the three standing lamps both follow one published colour, so they
+  cannot disagree. Cam border stays pink, deliberately out of the game.
+- Lamps: .84/.85 streamed (stuck firmware), .133 gets one ordinary command.
+  Never the Bluetooth table light.
+- Draft night is a BUTTON (`buttons/RVB-DRAFT-NIGHT.vbs`), not a midnight
+  rollover: a new month leaves last month's game running and flags
+  `draftDue` until pressed. `rvb.draft_night.manual=false` restores auto.
+- Chat lines (draft announcements, !team) go out through Firebot preset
+  effect lists `RVB Draft` and `RVB Team`, called by name.
+- Excluded from the game entirely: athansmusic, curtaincontrol, and the
+  usual bots (`rvb.exclude.users`). Adding a name purges them on restart.
 
-Mechanics:
-- Assignment: LAZY, against a monthly ledger. Every chat message, the
-  server checks whether the user has a team for the current month key
-  ("2026-09"); if not, they are drafted on the spot - so first chat of a
-  new month re-rolls them automatically and nothing has to run at
-  midnight. Draft = balanced random (weighted toward the smaller team so
-  sizes stay even while still feeling random to the individual).
-  Roster in a teams.json ledger on the control server, same shape and
-  reset discipline as credits.json.
-- Requires the Twitch chat reader back ON as a silent data feed
-  (twitch.enabled) - assignment and chat points need to see chat. Nothing
-  renders; the owner's own chat sources are untouched. This consciously
-  amends the earlier "reader stays off" decision, for this feature only.
-- Points: chatting (capped per stream or spam becomes the meta), bits and
-  subs (weighted so money helps but cannot buy the month), watch time
-  (Firebot tracks it natively - bridge, do not rebuild).
-- Captains: Athan captains one team, Jamie the other, and the captains
-  KEEP their teams permanently - only viewers reshuffle at draft night.
-  On-air trash talk is the content engine; the losing captain does a
-  forfeit at month end.
-- Powers: leading team's threshold fires in their colour; floor lamps go
-  team colour at stream start; selected redeems only fire for the leading
-  team (server checks the username against the roster - Firebot passes it).
-- Draft announcement (owner-approved): the moment someone is drafted -
-  their first chat of the month - a small on-screen stamp fires:
-  "USERNAME drafted to BLUE", mini censor-bar style like the follower
-  alert but in the team's colour and WITH the name (drafts are public).
-  Server-driven, since the server is what does the drafting.
-  Sending: the stamp rides our own SSE to the overlays. Any TWITCH CHAT
-  line must go through Firebot - the IRC reader is anonymous (read-only
-  by design, no tokens held), so the server triggers a Firebot preset
-  effect list over local HTTP with username+team args, and Firebot's
-  Chat effect posts from the owner's account.
-- Score peek: channel points show a 5s tug-of-war bar with exact numbers.
-  Ambient colour says who leads; the bar says by how much.
-- End screen, PER STREAM: a credits section below subs/bits (smaller type
-  than both) - "RED TEAM HELD THE LEAD THIS STREAM. MEMBERS IN
-  ATTENDANCE:" followed by every winning-team member who chatted that
-  stream. Attendance comes from the same per-stream chatter tracking the
-  points use, so being listed only requires showing up and talking - the
-  cheap seats get their name on the broadcast, which is the retention
-  hook.
-- Month end: the losing captain's forfeit, then a draft-night viewer
-  reshuffle - an event, never a silent reset.
-
-Build order when we start: roster + points ledger -> ambient colour
-takeover -> score bar -> team-gated redeems -> monthly ceremony.
-
----
+Not built yet: team-gated redeems exist as `POST /rvb/gate` but the owner
+has not wired one to a channel point reward.
 
 ## Closed by owner decision (2026-08-16) - do not reopen unprompted
 
