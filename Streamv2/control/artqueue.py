@@ -19,13 +19,16 @@ by hand (POST /art/submit, for testing or non-Tumblr one-offs).
 from __future__ import annotations
 
 import json
+import re
 import threading
 import time
 import urllib.parse
 import urllib.request
 from pathlib import Path
 
-TAGGED_URL = "https://api.tumblr.com/v2/tagged?tag={tag}&api_key={key}&filter=text"
+# No filter param: filter=text would strip the body HTML, and modern
+# (NPF) posts carry their images as <img> tags inside exactly that HTML.
+TAGGED_URL = "https://api.tumblr.com/v2/tagged?tag={tag}&api_key={key}"
 
 
 class ArtQueue:
@@ -104,12 +107,31 @@ class ArtQueue:
 
     @staticmethod
     def _image_of(post: dict):
-        """Largest image of a legacy photo post, or (None, 0, 0)."""
+        """First image of a post, or (None, 0, 0).
+
+        Legacy photo posts carry a photos[] array, but modern Tumblr
+        (NPF) serves nearly everything as type "text" with the image as
+        an <img> inside the body HTML - checked live 2026-08-18: 19 of
+        20 posts under the show tag were text posts. Only tumblr's own
+        media CDN counts; an external hotlink in a reblog does not.
+        """
         photos = post.get("photos") or []
-        if post.get("type") != "photo" or not photos:
-            return None, 0, 0
-        orig = (photos[0].get("original_size") or {})
-        return orig.get("url"), orig.get("width", 0), orig.get("height", 0)
+        if photos:
+            orig = (photos[0].get("original_size") or {})
+            return orig.get("url"), orig.get("width", 0), orig.get("height", 0)
+        for m in re.finditer(r'<img[^>]+src="([^"]+)"[^>]*>',
+                             post.get("body") or ""):
+            url = m.group(1)
+            if "media.tumblr.com" not in url:
+                continue
+            # (Do NOT rewrite the /sWxH/ path segment for a bigger
+            # rendition - the CDN signs URLs per size and 404s any other.
+            # 640px in the 660px frame is a negligible upscale.)
+            tag = m.group(0)
+            w = re.search(r'data-orig-width="(\d+)"', tag)
+            h = re.search(r'data-orig-height="(\d+)"', tag)
+            return url, int(w.group(1)) if w else 0, int(h.group(1)) if h else 0
+        return None, 0, 0
 
     # ---- queue operations ----------------------------------------------
     def pending(self) -> list[dict]:
