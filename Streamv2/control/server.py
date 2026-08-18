@@ -125,6 +125,13 @@ _teams: Teams | None = None
 # Firebot bridge - the only authenticated path to Twitch chat.
 _fb: Firebot | None = None
 
+# Whether OBS is actually streaming. RED VS BLUE only scores while live -
+# the chat reader is connected around the clock, and points earned at 3am
+# in an empty offline channel would be meaningless. Seeded from OBS at
+# startup so a server restart mid-stream comes up correct rather than
+# assuming off.
+_live = False
+
 # Draft stamps waiting to be shown, newest last. Overlays pop them off the
 # state broadcast; kept tiny because a stamp missed is not worth replaying.
 _drafts: list = []
@@ -237,7 +244,7 @@ def add_sub(event: dict) -> None:
         if existing["gifted"]:
             existing["kind"] = "gifter"
         save_credits()
-    if _teams is not None:
+    if _teams is not None and _live:
         _teams.on_sub(event["user"], event.get("name", ""),
                       int(event.get("gifted", 0)))
     _broadcast()
@@ -254,7 +261,7 @@ def add_bits(event: dict) -> None:
         existing["name"] = event["name"] or existing["name"]
         existing["bits"] += event.get("bits", 0)
         save_credits()
-    if _teams is not None:
+    if _teams is not None and _live:
         _teams.on_bits(event["user"], event.get("name", ""),
                        int(event.get("bits", 0)))
     _broadcast()
@@ -364,8 +371,9 @@ def push_message(msg: dict) -> None:
     # attendance, capped chat points. Deliberately BEFORE the ignore/command
     # filters below: those are display rules, and the reader may see chat
     # even where it must not draw it.
-    if _teams is not None:
+    if _teams is not None and _live:
         _teams.on_chat(msg.get("user", ""), msg.get("name", ""))
+    if _teams is not None:
         trigger = _rvb_cfg().get("command", {}).get("trigger", "!team")
         if msg.get("text", "").strip().lower().startswith(trigger):
             handle_team_command(msg.get("user", ""), msg.get("name", ""))
@@ -1071,8 +1079,56 @@ def _lamps_to_team(force: bool = False) -> None:
         print(f"  [rvb] lamp launch failed: {exc}", flush=True)
 
 
+def _seed_live_flag(obs_cfg: dict) -> None:
+    """Ask OBS whether it is streaming right now.
+
+    Without this the server would assume off-air after any restart, and a
+    restart mid-stream would silently stop scoring for the rest of the
+    night. Own short-lived connection, so it cannot disturb the event loop.
+    """
+    global _live
+    def worker():
+        global _live
+        try:
+            import websocket as _ws
+            ws = _ws.create_connection(
+                f"ws://{obs_cfg.get('host','127.0.0.1')}:{obs_cfg.get('port',4455)}",
+                timeout=6)
+            try:
+                ws.recv()
+                ws.send(json.dumps({"op": 1, "d": {"rpcVersion": 1,
+                                                   "eventSubscriptions": 0}}))
+                ws.recv()
+                ws.send(json.dumps({"op": 6, "d": {
+                    "requestType": "GetStreamStatus", "requestId": "seed",
+                    "requestData": {}}}))
+                for _ in range(20):
+                    m = json.loads(ws.recv())
+                    if m.get("op") == 7 and m["d"]["requestId"] == "seed":
+                        _live = bool(m["d"]["responseData"]["outputActive"])
+                        print(f"  RED VS BLUE   : scoring "
+                              f"{'ON (stream is live)' if _live else 'paused (off air)'}",
+                              flush=True)
+                        break
+            finally:
+                ws.close()
+        except Exception:                              # noqa: BLE001
+            pass                                       # stays off; the next
+                                                       # stream start fixes it
+    threading.Thread(target=worker, daemon=True).start()
+
+
+def do_stream_stop() -> None:
+    """Off air: stop scoring. Teams and points persist; nothing accrues."""
+    global _live
+    _live = False
+    print("  [rvb] off air - scoring paused", flush=True)
+
+
 def do_stream_start() -> None:
     """Going live: clear the credits, arm the counter, show the countdown."""
+    global _live
+    _live = True
     reset_credits()
     startup_begin()
     if _teams is not None:
@@ -1167,9 +1223,11 @@ def main() -> int:
             password=obs_cfg.get("password", ""),
             on_stream_start=do_stream_start,
             on_video_end=do_video_end,
+            on_stream_stop=do_stream_stop,
         )
         _obs["link"] = link
         link.start()
+        _seed_live_flag(obs_cfg)
 
     server = ThreadingHTTPServer((args.host, args.port), Handler)
     server.daemon_threads = True

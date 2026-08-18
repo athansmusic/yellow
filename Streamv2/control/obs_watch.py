@@ -37,12 +37,15 @@ class ObsLink(threading.Thread):
     daemon = True
 
     def __init__(self, host: str, port: int, password: str,
-                 on_stream_start, on_video_end,
+                 on_stream_start, on_video_end, on_stream_stop=None,
                  log=lambda *a: print(*a, flush=True)):
         super().__init__(name="obs-link")
         self.url = f"ws://{host}:{port}"
         self.password = password or ""
         self.on_stream_start = on_stream_start
+        # Optional: points must not accrue while off air, so the server
+        # needs the falling edge too, not just the rising one.
+        self.on_stream_stop = on_stream_stop or (lambda: None)
         self.on_video_end = on_video_end
         self.log = log
         self._stop = threading.Event()
@@ -217,9 +220,13 @@ class ObsLink(threading.Thread):
                 data = d.get("eventData", {})
 
                 if kind == "StreamStateChanged":
-                    if data.get("outputState") == "OBS_WEBSOCKET_OUTPUT_STARTED":
+                    state = data.get("outputState")
+                    if state == "OBS_WEBSOCKET_OUTPUT_STARTED":
                         self.log("  [obs] stream started")
                         self.on_stream_start()
+                    elif state == "OBS_WEBSOCKET_OUTPUT_STOPPED":
+                        self.log("  [obs] stream stopped")
+                        self.on_stream_stop()
 
                 elif kind == "MediaInputPlaybackEnded":
                     self.on_video_end(data.get("inputName", ""))
