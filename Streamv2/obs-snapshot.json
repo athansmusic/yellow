@@ -1,5 +1,5 @@
 {
-  "taken": "2026-08-18 00:58:17",
+  "taken": "2026-08-18 00:59:11",
   "scenes": {
     "Audio": [
       {
@@ -71,15 +71,15 @@
           "cropRight": 0,
           "cropToBounds": false,
           "cropTop": 0,
-          "height": 2160.0,
+          "height": 0.0,
           "positionX": 0.0,
           "positionY": 0.0,
           "rotation": 0.0,
           "scaleX": 1.0,
           "scaleY": 1.0,
-          "sourceHeight": 2160.0,
-          "sourceWidth": 3840.0,
-          "width": 3840.0
+          "sourceHeight": 0.0,
+          "sourceWidth": 0.0,
+          "width": 0.0
         }
       }
     ],
@@ -212,15 +212,15 @@
           "cropRight": 0,
           "cropToBounds": false,
           "cropTop": 0,
-          "height": 0.0,
+          "height": 1080.0,
           "positionX": 0.0,
           "positionY": 0.0,
           "rotation": 0.0,
           "scaleX": 1.0,
           "scaleY": 1.0,
-          "sourceHeight": 0.0,
-          "sourceWidth": 0.0,
-          "width": 0.0
+          "sourceHeight": 1080.0,
+          "sourceWidth": 1920.0,
+          "width": 1920.0
         }
       },
       {
@@ -2587,7 +2587,7 @@
       "settings": {
         "height": 1080,
         "reroute_audio": false,
-        "shutdown": true,
+        "shutdown": false,
         "url": "http://127.0.0.1:8722/broadcast?layer=back&scene=two&ground=off&chat=ext",
         "width": 1920
       }
@@ -2895,5 +2895,5 @@
       }
     }
   },
-  "current_program_scene": "Live Listen Solo"
+  "current_program_scene": "Ending"
 }
