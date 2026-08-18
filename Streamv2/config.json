@@ -1,15 +1,15 @@
 {
   "_readme": "Every knob for the rebuild lives here. Edit this, re-run build_scenes.py, re-import. Never hand-edit dist/*.json. Anything secret (widget URLs with tokens) goes in config.local.json, which is gitignored and deep-merged over this file.",
-
   "collection_name": "Rebuild",
-  "canvas": { "width": 1920, "height": 1080 },
-
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
   "transition": {
     "name": "Move",
     "duration_ms": 160,
     "_note": "Move Transition animates any source that shares a NAME between the outgoing and incoming scene. That is why the camera is the nested scene [CAM] everywhere instead of a per-scene copy."
   },
-
   "devices": {
     "camera": {
       "_note": "Defaults to the NVIDIA Broadcast virtual cam because that is known-working on this machine. See README 'Camera chain' - you likely want the RAW device here instead, with Broadcast's background effect OFF, so the AI keying happens once in OBS.",
@@ -31,7 +31,6 @@
       "device_id": "default"
     }
   },
-
   "media": {
     "countdown_video": {
       "_note": "Point this at the Starting Soon video you make. Leave as-is until the file exists; OBS shows an empty media source, which is harmless.",
@@ -39,28 +38,36 @@
       "loop": true
     }
   },
-
   "threshold_effect": {
     "_note": "Channel point redeem: turns the whole stream pure black and #FFF200, Photoshop-Threshold style. OBS has no global filter, so the shader lives on every scene and they toggle together. Nested scenes are included even though their parent already covers them - a hard threshold is idempotent (yellow luma 0.86 stays above the cut, black 0.0 stays below), so applying it twice looks identical to applying it once, and covering everything means no scene can be missed.",
     "filter_name": "Threshold Yellow",
     "seconds": 30,
-    "scenes": ["Audio", "[BG]", "Alerts on Screen", "Jamie [CAM]", "[CAM]", "Ending", "Live Listen Solo", "Live Listen Duo", "In Game", "Live", "Starting Soon"]
+    "scenes": [
+      "Audio",
+      "[BG]",
+      "Alerts on Screen",
+      "Jamie [CAM]",
+      "[CAM]",
+      "Ending",
+      "Live Listen Solo",
+      "Live Listen Duo",
+      "In Game",
+      "Live",
+      "Starting Soon"
+    ]
   },
-
   "obs_watch": {
     "_note": "Clears the per-stream credits list when OBS starts streaming. Fires on stream START, not END - the roll is shown on the ending scene before you stop, so the result on screen is identical, but an accidental stop cannot destroy a night's subscriber list. Read-only towards OBS; never sends a command.",
     "enabled": true,
     "host": "127.0.0.1",
     "port": 4455,
     "password": "",
-
     "_startup_note": "Starting Soon handoff. On stream start the credits list clears, the chat counter arms, and the countdown video is shown. When that video finishes, OBS switches to live_scene and the video hides itself again - OBS restarts a media source when it next becomes active, so hiding it is the whole reset.",
     "starting_scene": "Starting Soon",
     "starting_video": "Start Video",
     "live_scene": "Live",
     "auto_switch_on_video_end": true
   },
-
   "twitch": {
     "_note": "Read-only anonymous chat. No credentials involved - Twitch lets any client join a public channel as justinfan<n>. This cannot post or moderate. Mod deletions and timeouts are honoured, so a removed message vanishes from the stage instead of sitting frozen on screen.",
     "enabled": true,
@@ -70,12 +77,18 @@
     "hide_commands": false,
     "ignore_users": []
   },
-
   "rvb": {
     "_note": "RED VS BLUE. Lazy monthly draft: a user's first chat of the month rolls their team (weighted toward the smaller side). Points from chat (capped per day), bits and subs. The leading team's colour takes the SCREEN border only - the cam border stays pink. Captains never reshuffle; viewers do, at the explicit /rvb/reset (draft night - never automatic).",
     "enabled": true,
-    "colors": { "red": "#d40019", "blue": "#1f3fde", "neutral": "#FFF200" },
-    "captains": { "red": "ATHAN", "blue": "JAMIE" },
+    "colors": {
+      "red": "#d40019",
+      "blue": "#1f3fde",
+      "neutral": "#FFF200"
+    },
+    "captains": {
+      "red": "ATHAN",
+      "blue": "JAMIE"
+    },
     "points": {
       "chat": 1,
       "chat_cap_per_day": 20,
@@ -83,7 +96,6 @@
       "sub": 25,
       "gift_each": 25
     },
-
     "firebot": {
       "_note": "Chat lines go out through Firebot - this process reads Twitch anonymously and holds no token. Create these two PRESET EFFECT LISTS in Firebot, each containing one Chat effect; the server calls them by NAME and passes args you read with $presetListArg[...]. Draft: $presetListArg[username] and $presetListArg[team]. Team command: also $presetListArg[points] and $presetListArg[rank].",
       "enabled": true,
@@ -92,80 +104,146 @@
       "draft_preset": "RVB Draft",
       "team_preset": "RVB Team"
     },
-
     "command": {
       "_note": "!team in chat replies with the sender's team via the team_preset above. Cooldown is per user, in seconds, so it cannot be used to spam the channel.",
       "trigger": "!team",
       "cooldown_seconds": 30
     },
-
     "lamps": {
       "_note": "The three STANDING Govee lights (H6076, LAN) wear the leading team's colour for as long as they hold the lead - the room is territory. NOT the 4th table light: that one is the Bluetooth-only H617A and is never touched by this. Driven by lights/lan_hold.py: .84/.85 are STREAMED because their firmware is stuck, .133 is healthy so it gets one ordinary command and is then left alone. Re-fires only when the LEAD CHANGES, never on every point. Firing any FLOOR-* button replaces this until the next lead change.",
       "enabled": true,
       "stream_ips": "192.168.4.84,192.168.4.85",
       "once_ips": "192.168.4.133"
     },
-
     "draft_night": {
       "_note": "With manual true, a new calendar month does NOT silently wipe the game - the old standings keep running and the server just flags that a draft is due. Pressing buttons/RVB-DRAFT-NIGHT.vbs (POST /rvb/reset) is what actually reshuffles, so the reset is an event you host rather than something that happens while you sleep. Set false to go back to automatic rollover.",
       "manual": true
     },
-
     "exclude": {
       "_note": "Never drafted, never scored, never listed in the end-screen attendance - hosts, mods and bots. Case-insensitive Twitch LOGIN names (no @). Excluding somebody who already has a team also removes them from the roster on the next restart.",
-      "users": ["athansmusic", "curtaincontrol", "nightbot", "streamelements", "streamlabs", "sery_bot", "moobot", "wizebot", "fossabot"]
+      "users": [
+        "athansmusic",
+        "curtaincontrol",
+        "nightbot",
+        "streamelements",
+        "streamlabs",
+        "sery_bot",
+        "moobot",
+        "wizebot",
+        "fossabot"
+      ]
     }
   },
-
   "overlays": {
     "_note": "Put the real URLs in config.local.json - they carry private tokens and this file is committed. Empty string means the source is still created (so layout and Move matching are correct) but loads about:blank.",
     "chat_url": "",
     "alerts_url": ""
   },
-
   "control_panel": {
     "_note": "Local-only episode info server. Bound to 127.0.0.1 so nothing is exposed off this machine. The overlay is a thin reference renderer - when your Claude Design version is ready, point episode_overlay_url at it and have it read the same /state and /events endpoints.",
     "host": "127.0.0.1",
     "port": 8722,
     "episode_overlay_url": ""
   },
-
   "layouts": {
     "_note": "Rects are x, y, width, height in 1920x1080 canvas space. Sources are fitted INSIDE the rect preserving aspect, so you can retune these freely without stretching anyone's face. Chat sits at the SAME rect in every scene on purpose - Move then holds it perfectly still while everything else animates.",
-    "chat": [48, 168, 352, 700],
-    "alerts": [0, 0, 1920, 1080],
-    "episode": [0, 0, 1920, 1080],
+    "chat": [
+      48,
+      168,
+      352,
+      700
+    ],
+    "alerts": [
+      0,
+      0,
+      1920,
+      1080
+    ],
+    "episode": [
+      0,
+      0,
+      1920,
+      1080
+    ],
     "starting_soon": {
-      "countdown": [0, 0, 1920, 1080]
+      "countdown": [
+        0,
+        0,
+        1920,
+        1080
+      ]
     },
     "live": {
-      "cam": [0, 0, 1920, 1080]
+      "cam": [
+        0,
+        0,
+        1920,
+        1080
+      ]
     },
     "in_game": {
-      "game": [0, 0, 1920, 1080],
-      "cam": [1376, 664, 512, 384]
+      "game": [
+        0,
+        0,
+        1920,
+        1080
+      ],
+      "cam": [
+        1376,
+        664,
+        512,
+        384
+      ]
     },
     "live_listen": {
       "_note": "MEASURED from overlays/livelisten.html at 1920x1080, not hand-picked. The design owns this geometry - if you change the layout CSS, re-measure rather than editing these by hand. Both tiles are 16:9 to within a rounding pixel.",
       "two": {
-        "camA": [24, 24, 872, 492],
-        "camB": [24, 532, 872, 492]
+        "camA": [
+          24,
+          24,
+          872,
+          492
+        ],
+        "camB": [
+          24,
+          532,
+          872,
+          492
+        ]
       },
       "solo": {
-        "camA": [24, 130, 1400, 788]
+        "camA": [
+          24,
+          130,
+          1400,
+          788
+        ]
       }
     }
   },
-
   "scene_contents": {
     "_note": "Which shared overlays appear on which scene. The Live Listen scenes get NEITHER - the stage design renders its own chat panel and follower bar, so adding the standalone sources would double them up.",
-    "Starting Soon":    { "chat": true,  "alerts": true },
-    "Live":             { "chat": true,  "alerts": true },
-    "In Game":          { "chat": true,  "alerts": true },
-    "Live Listen":      { "chat": false, "alerts": false },
-    "Live Listen Solo": { "chat": false, "alerts": false }
+    "Starting Soon": {
+      "chat": true,
+      "alerts": true
+    },
+    "Live": {
+      "chat": true,
+      "alerts": true
+    },
+    "In Game": {
+      "chat": true,
+      "alerts": true
+    },
+    "Live Listen": {
+      "chat": false,
+      "alerts": false
+    },
+    "Live Listen Solo": {
+      "chat": false,
+      "alerts": false
+    }
   },
-
   "hotkeys": {
     "_note": "F13-F17 do not exist on a normal keyboard, so nothing else can steal them. Bind Stream Deck keys to send these, or use the OBS plugin's native Scene action and ignore them entirely.",
     "scene_starting_soon": "OBS_KEY_F13",
@@ -173,5 +251,11 @@
     "scene_in_game": "OBS_KEY_F15",
     "scene_live_listen": "OBS_KEY_F16",
     "scene_live_listen_solo": "OBS_KEY_F17"
+  },
+  "tumblr": {
+    "_comment": "Fan-art queue. Get a free key at tumblr.com/oauth/apps (use the OAuth Consumer Key). Put the real key in config.local.json, not here.",
+    "api_key": "",
+    "tag": "the redacted unit",
+    "poll_seconds": 120
   }
 }

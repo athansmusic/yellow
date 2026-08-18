@@ -38,6 +38,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
+from artqueue import ArtQueue
 from firebot import Firebot
 from obs_watch import ObsLink
 from rvb import Teams
@@ -114,6 +115,15 @@ DEFAULT_STATE = {
     "alertName": "",
     "alertMeta": "",
 
+    # BRB scene copy. brbMinutes is WRITE-ONLY sugar: posting it makes the
+    # server stamp brbBackAt = now + minutes, and the page counts down to
+    # that. Clearing it clears the clock.
+    "brbHeadline": "SHORT BREAK",
+    "brbNote": "stretching, water, regrouping. the unit holds the room while we are out.",
+    "brbUpNext": "",
+    "brbMinutes": "",
+    "brbBackAt": "",
+
     # Ending scene copy.
     "endTitle": "THANKS FOR WATCHING",
     "endSubtitle": "make sure you say !gn",
@@ -137,6 +147,10 @@ _teams: Teams | None = None
 
 # Firebot bridge - the only authenticated path to Twitch chat.
 _fb: Firebot | None = None
+
+# Fan-art pipeline (Tumblr tag -> approval -> BRB gallery). Always
+# constructed; it only polls Tumblr when config gives it an api_key.
+_art: ArtQueue | None = None
 
 # Whether OBS is actually streaming. RED VS BLUE only scores while live -
 # the chat reader is connected around the clock, and points earned at 3am
@@ -531,6 +545,15 @@ def _sync_bg_sources() -> None:
 
 def update_state(patch: dict) -> dict:
     rvb = _rvb_payload()
+    # Countdown sugar: "brbMinutes": "5" becomes an absolute deadline the
+    # page can count toward; empty string clears the clock.
+    if "brbMinutes" in patch:
+        raw = str(patch.get("brbMinutes") or "").strip()
+        try:
+            mins = float(raw)
+            patch["brbBackAt"] = str(int((time.time() + mins * 60) * 1000))
+        except ValueError:
+            patch["brbBackAt"] = ""
     with _lock:
         for k in DEFAULT_STATE:
             if k in patch:
@@ -633,6 +656,16 @@ class Handler(BaseHTTPRequestHandler):
             self._send_file(OVERLAY_DIR / "onscreen.html", "text/html; charset=utf-8")
         elif route == "/overlay2":
             self._send_file(OVERLAY_DIR / "overlay.html", "text/html; charset=utf-8")
+        elif route == "/brb":
+            self._send_file(OVERLAY_DIR / "brb.html", "text/html; charset=utf-8")
+        elif route == "/artqueue":
+            self._send_file(OVERLAY_DIR / "artqueue.html", "text/html; charset=utf-8")
+        elif route == "/art/pending":
+            body = json.dumps(_art.pending() if _art else []).encode()
+            self._send(body, "application/json")
+        elif route == "/art/approved":
+            body = json.dumps(_art.approved(30) if _art else []).encode()
+            self._send(body, "application/json")
         elif route == "/subgoal":
             self._send_file(OVERLAY_DIR / "subgoal.html", "text/html; charset=utf-8")
         elif route == "/splitcam":
@@ -728,6 +761,34 @@ class Handler(BaseHTTPRequestHandler):
                 with _lock:
                     _slots[key] = rects
             self._send(b'{"ok":true}', "application/json")
+            return
+        if route == "/art/decide":
+            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                body = json.loads(self.rfile.read(length) or b"{}")
+            except json.JSONDecodeError:
+                self._send(b'{"error":"bad json"}', "application/json", 400)
+                return
+            if _art is None:
+                self._send(b'{"error":"art queue not up"}', "application/json", 503)
+                return
+            out = _art.decide(str(body.get("id", "")), str(body.get("action", "")))
+            self._send(json.dumps(out).encode(), "application/json",
+                       200 if out.get("ok") else 400)
+            return
+        if route == "/art/submit":
+            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                body = json.loads(self.rfile.read(length) or b"{}")
+            except json.JSONDecodeError:
+                self._send(b'{"error":"bad json"}', "application/json", 400)
+                return
+            if _art is None:
+                self._send(b'{"error":"art queue not up"}', "application/json", 503)
+                return
+            out = _art.submit(body if isinstance(body, dict) else {})
+            self._send(json.dumps(out).encode(), "application/json",
+                       200 if out.get("ok") else 400)
             return
         if route == "/audio/swap":
             # Show-mode toggle: state A = Audience + Mic/Aux live, Show muted
@@ -1234,6 +1295,14 @@ def main() -> int:
         print(f"  RED VS BLUE   : {snap['month']}  "
               f"red {snap['red']} / blue {snap['blue']}  "
               f"({snap['counts']['red']}v{snap['counts']['blue']} members)")
+
+    global _art
+    art_cfg = {k: v for k, v in _load_cfg().get("tumblr", {}).items()
+               if not k.startswith("_")}
+    _art = ArtQueue(HERE / "art.json", art_cfg)
+    print("  Fan art queue :",
+          f"polling #{_art.tag} every {_art.poll_seconds}s" if _art.api_key
+          else "no tumblr api_key (manual submissions only) - see artqueue.py docstring")
 
     tw = _twitch_cfg()
     if tw.get("enabled") and tw.get("channel"):

@@ -23,3 +23,6 @@ control/credits.json
 
 # Request log the control server appends at runtime
 control/access.log
+
+# Fan-art queue store - moderation decisions, not source
+control/art.json

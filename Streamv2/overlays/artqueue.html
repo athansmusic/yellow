@@ -1,0 +1,215 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Art Queue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* Approval portal for the Tumblr fan-art queue. Runs in a NORMAL
+     browser tab (not OBS). Keyboard first: A approve, X reject, U undo,
+     J/K or arrows to move. Nothing reaches the BRB gallery until it is
+     approved here. */
+  :root {
+    --bg: #08080a; --panel: #0b0b0e; --edge: #1f1f24; --line: #17171b;
+    --accent: #f4e409; --ink: #f2f2f0; --body: #b0b0b8; --meta: #6a6a72;
+    --ok: #5ad1a5; --no: #d46a6a;
+    --disp: "Barlow Condensed", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg);
+               color: var(--ink); font-family: var(--mono); }
+  #app { height: 100vh; display: flex; flex-direction: column; }
+
+  header { display: flex; align-items: center; gap: 14px;
+           padding: 14px 20px; border-bottom: 1px solid var(--edge); }
+  header h1 { margin: 0; font-family: var(--disp); font-size: 22px;
+              font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+  header .rule { flex: 1; height: 1px;
+                 background: linear-gradient(90deg, transparent, var(--edge) 48px, var(--edge) calc(100% - 48px), transparent); }
+  #pending-count { font-size: 11px; letter-spacing: .16em;
+                   text-transform: uppercase; color: var(--meta); }
+  #keys { font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+          color: var(--meta); border: 1px solid var(--edge); padding: 5px 10px; }
+
+  #cols { flex: 1; display: grid; grid-template-columns: 320px minmax(0,1fr) 300px;
+          min-height: 0; }
+
+  /* inbox */
+  nav { border-right: 1px solid var(--edge); overflow: auto; }
+  .row { display: flex; gap: 12px; align-items: center; width: 100%;
+         padding: 11px 14px; background: none; border: 0; text-align: left;
+         border-bottom: 1px solid var(--line); border-left: 2px solid transparent;
+         cursor: pointer; color: var(--ink); font-family: var(--mono); }
+  .row:hover { background: #101014; }
+  .row.sel { background: #101014; border-left-color: var(--accent); }
+  .row img { width: 44px; height: 44px; object-fit: cover;
+             background: #16161a; flex: 0 0 auto; }
+  .row .who { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .row .t { font-size: 13px; white-space: nowrap; overflow: hidden;
+            text-overflow: ellipsis; }
+  .row .a { font-size: 11px; letter-spacing: .08em; color: var(--meta);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #inbox-empty { padding: 40px 20px; text-align: center; color: var(--meta);
+                 font-size: 12px; letter-spacing: .1em; line-height: 1.8; }
+
+  /* preview */
+  main { display: flex; flex-direction: column; min-width: 0; }
+  #stage { flex: 1; display: flex; align-items: center; justify-content: center;
+           padding: 28px; min-height: 0;
+           background: radial-gradient(80% 70% at 50% 30%, #0e0e12 0%, var(--bg) 100%); }
+  #stage-box { position: relative; width: min(62vh, 560px); height: min(62vh, 560px);
+               background: var(--panel); box-shadow: 0 0 0 1px var(--edge); }
+  #stage-box img { position: absolute; inset: 0; width: 100%; height: 100%;
+                   object-fit: contain; }
+  #verdict { position: absolute; inset: 0; display: none; align-items: center;
+             justify-content: center; font-family: var(--disp); font-size: 54px;
+             font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+             background: rgba(6,6,7,.55); }
+  #actions { display: flex; gap: 10px; padding: 16px 28px 22px; justify-content: center; }
+  .act { font-family: var(--mono); font-size: 12px; letter-spacing: .18em;
+         text-transform: uppercase; padding: 12px 26px; cursor: pointer;
+         background: var(--panel); color: var(--ink);
+         border: 1px solid var(--edge); }
+  .act:hover { border-color: var(--accent); }
+  .act.ok { color: var(--ok); } .act.no { color: var(--no); }
+
+  /* meta */
+  aside { border-left: 1px solid var(--edge); padding: 18px; overflow: auto;
+          display: flex; flex-direction: column; gap: 16px; }
+  aside .k { font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+             color: var(--meta); margin-bottom: 5px; }
+  aside .v { font-size: 13px; line-height: 1.5; color: var(--body);
+             overflow-wrap: anywhere; }
+  aside a { color: var(--accent); }
+</style>
+
+<div id="app">
+  <header>
+    <h1>Redacted · Art Queue</h1>
+    <span class="rule"></span>
+    <span id="pending-count"></span>
+    <span id="keys">A approve · X reject · U undo · J/K move</span>
+  </header>
+  <div id="cols">
+    <nav id="inbox"></nav>
+    <main>
+      <div id="stage"><div id="stage-box"><img id="big" alt=""><div id="verdict"></div></div></div>
+      <div id="actions">
+        <button class="act ok" onclick="decide('approve')">approve [A]</button>
+        <button class="act no" onclick="decide('reject')">reject [X]</button>
+        <button class="act" onclick="decide('undo')">undo [U]</button>
+      </div>
+    </main>
+    <aside id="meta"></aside>
+  </div>
+</div>
+
+<script>
+  const API = '';   // same origin - this page is opened from the server
+  const $ = (id) => document.getElementById(id);
+  let items = [], sel = 0;
+
+  function age(ts) {
+    const m = Math.max(1, Math.round((Date.now() / 1000 - ts) / 60));
+    if (m < 60) return m + 'm';
+    if (m < 60 * 24) return Math.round(m / 60) + 'h';
+    return Math.round(m / 1440) + 'd';
+  }
+
+  function load() {
+    fetch(API + '/art/pending').then(r => r.json()).then((list) => {
+      items = list;
+      if (sel >= items.length) sel = Math.max(0, items.length - 1);
+      paint();
+    }).catch(() => {});
+  }
+
+  function paint() {
+    $('pending-count').textContent = items.length
+      ? items.length + ' pending' : 'inbox zero';
+    const box = $('inbox');
+    box.innerHTML = '';
+    if (!items.length) {
+      const d = document.createElement('div');
+      d.id = 'inbox-empty';
+      d.textContent = 'nothing waiting. new tagged posts land here on the next poll.';
+      box.appendChild(d);
+    }
+    items.forEach((it, i) => {
+      const b = document.createElement('button');
+      b.className = 'row' + (i === sel ? ' sel' : '');
+      b.onclick = () => { sel = i; paint(); };
+      const im = document.createElement('img'); im.src = it.image; im.alt = '';
+      const who = document.createElement('span'); who.className = 'who';
+      const t = document.createElement('span'); t.className = 't';
+      t.textContent = it.title || 'untitled';
+      const a = document.createElement('span'); a.className = 'a';
+      a.textContent = '@' + it.artist + ' · ' + age(it.ts);
+      who.append(t, a);
+      b.append(im, who);
+      box.appendChild(b);
+    });
+    const cur = items[sel];
+    $('big').src = cur ? cur.image : '';
+    $('big').style.display = cur ? '' : 'none';
+    const meta = $('meta');
+    meta.innerHTML = '';
+    if (cur) {
+      const rows = [
+        ['title', cur.title || 'untitled'],
+        ['artist', '@' + cur.artist],
+        ['posted', new Date(cur.ts * 1000).toLocaleString()],
+        ['notes', String(cur.notes ?? 0)],
+        ['size', (cur.width && cur.height) ? cur.width + ' × ' + cur.height : 'unknown'],
+      ];
+      for (const [k, v] of rows) {
+        const d = document.createElement('div');
+        const kk = document.createElement('div'); kk.className = 'k'; kk.textContent = k;
+        const vv = document.createElement('div'); vv.className = 'v'; vv.textContent = v;
+        d.append(kk, vv); meta.appendChild(d);
+      }
+      if (cur.post_url) {
+        const d = document.createElement('div');
+        const kk = document.createElement('div'); kk.className = 'k'; kk.textContent = 'original';
+        const vv = document.createElement('div'); vv.className = 'v';
+        const ln = document.createElement('a'); ln.href = cur.post_url;
+        ln.target = '_blank'; ln.rel = 'noreferrer'; ln.textContent = cur.post_url;
+        vv.appendChild(ln); d.append(kk, vv); meta.appendChild(d);
+      }
+    }
+  }
+
+  function flash(text, color) {
+    const v = $('verdict');
+    v.textContent = text; v.style.color = color; v.style.display = 'flex';
+    setTimeout(() => { v.style.display = 'none'; }, 450);
+  }
+
+  function decide(action) {
+    if (action !== 'undo' && !items[sel]) return;
+    const id = action === 'undo' ? '' : items[sel].id;
+    fetch(API + '/art/decide', { method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, action }) })
+      .then(r => r.json())
+      .then((out) => {
+        if (out.ok && action === 'approve') flash('approved', 'var(--ok)');
+        if (out.ok && action === 'reject') flash('rejected', 'var(--no)');
+        if (out.ok && action === 'undo') flash('undone', 'var(--accent)');
+        load();
+      }).catch(() => {});
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    const k = e.key.toLowerCase();
+    if (k === 'a') decide('approve');
+    else if (k === 'x') decide('reject');
+    else if (k === 'u') decide('undo');
+    else if (k === 'j' || k === 'arrowdown') { sel = Math.min(items.length - 1, sel + 1); paint(); e.preventDefault(); }
+    else if (k === 'k' || k === 'arrowup') { sel = Math.max(0, sel - 1); paint(); e.preventDefault(); }
+  });
+
+  load();
+  setInterval(load, 30000);
+</script>

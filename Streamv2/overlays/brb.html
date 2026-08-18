@@ -1,0 +1,297 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>BRB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* =====================================================================
+     BRB scene: break copy + countdown, a chat safe area, and the fan-art
+     gallery fed by the Tumblr approval queue (/artqueue).
+
+     Owner asked for NO background - the scene's own [BG] shows through.
+
+     Transport rules (see NEXT-STEPS "CEF lessons"): no SSE, a short poll
+     that releases its socket; persistent DOM for the gallery - two image
+     layers that exist from load, rotation swaps their src/opacity with
+     inline styles and the glitch wipe is WAAPI decoration CEF may drop.
+     ===================================================================== */
+  :root {
+    --accent: #f4e409;
+    --ink:    #f7f7f5;
+    --body:   #b0b0b8;
+    --meta:   #8d8d95;
+    --dim:    #5c5c64;
+    --edge:   #26262c;
+    --frame:  #1f1f24;
+    --disp: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --mono: "IBM Plex Mono", Consolas, monospace;
+  }
+  html, body {
+    margin: 0; width: 1920px; height: 1080px;
+    overflow: hidden; position: relative; background: transparent;
+    font-family: var(--mono); color: var(--ink);
+  }
+
+  /* ---------------- left: status + countdown ---------------- */
+  #left { position: absolute; left: 128px; top: 168px; width: 616px;
+          display: flex; flex-direction: column; align-items: flex-start;
+          text-shadow: 0 1px 4px rgba(0,0,0,.8); }
+  #statusline { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  #live-dot { width: 8px; height: 8px; background: var(--accent);
+              animation: pulse 2.2s ease-in-out infinite; }
+  #live-lbl { font-size: 12px; font-weight: 600; letter-spacing: .32em;
+              text-transform: uppercase; }
+  #live-rule { width: 34px; height: 1px; background: rgba(244,228,9,.45); }
+  #live-show { font-size: 12px; letter-spacing: .2em; text-transform: uppercase;
+               color: var(--meta); }
+  #headline { font-family: var(--disp); font-size: 132px; font-weight: 700;
+              letter-spacing: .005em; text-transform: uppercase;
+              line-height: .84; }
+  #bar { position: relative; width: 560px; height: 3px; margin: 30px 0 26px;
+         overflow: hidden; background: #1a1a1f; }
+  #bar span { position: absolute; inset: 0; width: 42%;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: barslide 3.4s linear infinite; }
+  #note { font-size: 20px; line-height: 1.5; color: var(--body); max-width: 580px; }
+  #timers { display: flex; align-items: flex-end; gap: 44px; margin-top: 48px; }
+  .t-lbl { font-size: 11px; letter-spacing: .24em; text-transform: uppercase;
+           color: var(--dim); display: block; margin-bottom: 9px; }
+  #clock { font-family: var(--disp); font-size: 84px; font-weight: 700;
+           letter-spacing: .02em; line-height: .84; color: var(--accent);
+           font-variant-numeric: tabular-nums; }
+  #t-div { width: 1px; height: 68px;
+           background: linear-gradient(180deg, transparent, var(--edge), transparent); }
+  #upnext { font-family: var(--disp); font-size: 28px; font-weight: 600;
+            letter-spacing: .05em; text-transform: uppercase; line-height: 1.1;
+            max-width: 260px; padding-bottom: 6px; }
+
+  /* ---------------- middle: chat safe area ---------------- */
+  /* Frame only - the real chat source sits in this rect in OBS. */
+  #chatcol { position: absolute; left: 800px; top: 168px; width: 268px;
+             height: 748px; display: flex; flex-direction: column; gap: 16px; }
+  #chat-head { display: flex; align-items: center; gap: 10px; }
+  #chat-head b { font-size: 11px; font-weight: 600; letter-spacing: .28em;
+                 text-transform: uppercase; }
+  #chat-head i { flex: 1; height: 1px;
+                 background: linear-gradient(90deg, var(--edge), transparent); }
+  #chat-head s { width: 6px; height: 6px; border-radius: 50%; text-decoration: none;
+                 background: var(--accent); animation: pulse 2.6s ease-in-out infinite; }
+  #chat-well { flex: 1; background: linear-gradient(180deg, rgba(255,255,255,.015), transparent);
+               box-shadow: inset 0 0 0 1px #17171b; }
+
+  /* ---------------- right: fan-art gallery ---------------- */
+  #gal { position: absolute; left: 1132px; top: 168px; width: 660px;
+         display: flex; flex-direction: column; gap: 16px; }
+  #gal-head { display: flex; align-items: center; gap: 12px; }
+  #gal-head b { font-size: 11px; font-weight: 600; letter-spacing: .28em;
+                text-transform: uppercase; }
+  #gal-head i { flex: 1; height: 1px;
+                background: linear-gradient(90deg, var(--edge), transparent); }
+  #counter { font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+             color: var(--dim); font-variant-numeric: tabular-nums; }
+  #frame { position: relative; width: 660px; height: 660px; overflow: hidden;
+           background: #0b0b0e;
+           box-shadow: 0 0 0 1px var(--frame), inset 0 0 120px rgba(0,0,0,.8); }
+  .art { position: absolute; inset: 0; opacity: 0; }
+  .art img { position: absolute; inset: 0; width: 100%; height: 100%;
+             object-fit: contain; }
+  .art .scrim { position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 24px 26px 20px; display: flex; flex-direction: column; gap: 6px;
+    background: linear-gradient(0deg, rgba(6,6,7,.92) 0%, rgba(6,6,7,.6) 55%, transparent 100%); }
+  .art .a-title { font-family: var(--disp); font-size: 32px; font-weight: 600;
+    letter-spacing: .04em; text-transform: uppercase; line-height: 1; }
+  .art .a-artist { font-size: 14px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent); }
+  #empty { position: absolute; inset: 0; display: flex; flex-direction: column;
+           align-items: center; justify-content: center; gap: 14px;
+           color: var(--dim); text-align: center; padding: 40px; }
+  #empty b { font-size: 13px; letter-spacing: .28em; text-transform: uppercase;
+             color: var(--meta); }
+  #empty span { font-size: 13px; line-height: 1.7; letter-spacing: .06em; }
+  #ticks { display: flex; gap: 5px; }
+  #ticks i { flex: 1; height: 3px; background: #1a1a1f; }
+  #ticks i.on { background: var(--accent); }
+  #tagline { font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+             color: var(--dim); }
+
+  /* ---------------- footer ---------------- */
+  #foot { position: absolute; left: 128px; right: 128px; bottom: 44px;
+          display: flex; align-items: baseline; gap: 18px;
+          font-size: 12px; letter-spacing: .2em; text-transform: uppercase;
+          color: var(--meta); text-shadow: 0 1px 4px rgba(0,0,0,.8); }
+  #foot i { flex: 1; height: 1px;
+            background: linear-gradient(90deg, var(--edge), transparent); }
+  #foot .hl { color: var(--accent); }
+
+  @keyframes pulse { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+  @keyframes barslide { from { transform: translateX(-100%); } to { transform: translateX(238%); } }
+</style>
+
+<div id="left">
+  <div id="statusline">
+    <span id="live-dot"></span>
+    <span id="live-lbl">still live</span>
+    <span id="live-rule"></span>
+    <span id="live-show"></span>
+  </div>
+  <div id="headline">SHORT BREAK</div>
+  <div id="bar"><span></span></div>
+  <div id="note"></div>
+  <div id="timers">
+    <span><span class="t-lbl">back in</span><span id="clock">SOON</span></span>
+    <span id="t-div"></span>
+    <span id="upnext-wrap" style="display:none"><span class="t-lbl">up next</span><span id="upnext"></span></span>
+  </div>
+</div>
+
+<div id="chatcol">
+  <div id="chat-head"><b>chat</b><i></i><s></s></div>
+  <div id="chat-well"></div>
+</div>
+
+<div id="gal">
+  <div id="gal-head"><b>from the unit</b><i></i><span id="counter"></span></div>
+  <div id="frame">
+    <div class="art" id="art-a"><img alt=""><div class="scrim"><span class="a-title"></span><span class="a-artist"></span></div></div>
+    <div class="art" id="art-b"><img alt=""><div class="scrim"><span class="a-title"></span><span class="a-artist"></span></div></div>
+    <div id="empty">
+      <b>gallery open</b>
+      <span>post art on tumblr tagged<br>#the redacted unit<br>and it can end up right here</span>
+    </div>
+  </div>
+  <div id="ticks"></div>
+  <div id="tagline">art from tumblr · #the redacted unit · approved by the unit</div>
+</div>
+
+<div id="foot">
+  <span class="hl" id="f-handle"></span>
+  <span id="f-note"></span>
+  <i></i>
+  <span>new episodes thursdays</span>
+</div>
+
+<script>
+  const API = 'http://127.0.0.1:8722';
+  const $ = (id) => document.getElementById(id);
+
+  function beacon(note) {
+    fetch(API + '/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'brb', slots: {
+        note: String(note), at: new Date().toISOString() } }) }).catch(() => {});
+  }
+  window.addEventListener('error', (e) => beacon('JS ERROR: ' + e.message));
+
+  // ---- show copy + countdown (from /state) ----
+  let bootNonce = null;
+  let backAt = 0;
+
+  function render(s) {
+    if (bootNonce === null) bootNonce = s.reloadNonce || '';
+    else if ((s.reloadNonce || '') !== bootNonce) { location.reload(); return; }
+
+    $('live-show').textContent =
+      (s.showName ? '[ ' + s.showName + ' ]' : '') +
+      (s.episodeNumber ? ' · ep ' + s.episodeNumber : '');
+    $('headline').textContent = s.brbHeadline || 'SHORT BREAK';
+    $('note').textContent = s.brbNote || '';
+    const up = (s.brbUpNext || '').trim();
+    $('upnext').textContent = up;
+    $('upnext-wrap').style.display = up ? '' : 'none';
+    $('t-div').style.display = up ? '' : 'none';
+    $('f-handle').textContent = s.handle || '';
+    $('f-note').textContent = s.cadence || '';
+    backAt = parseInt(s.brbBackAt || '0', 10) || 0;
+  }
+
+  function tickClock() {
+    const el = $('clock');
+    if (!backAt) { el.textContent = 'SOON'; return; }
+    const left = Math.round((backAt - Date.now()) / 1000);
+    if (left <= 0) { el.textContent = 'ANY MINUTE'; return; }
+    el.textContent = Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0');
+  }
+  setInterval(tickClock, 250);
+
+  function pollState() {
+    fetch(API + '/state').then(r => r.json()).then(render).catch(() => {});
+  }
+  pollState();
+  setInterval(pollState, 5000);
+
+  // ---- gallery (from /art/approved) ----
+  // Two persistent layers; rotation swaps src + inline opacity. The glitch
+  // wipe is WAAPI on top - dropped = instant cut, never a blank frame.
+  const ROTATE_MS = 25000;
+  let setList = [], setKey = '', idx = -1, front = 0;
+
+  function pollArt() {
+    fetch(API + '/art/approved').then(r => r.json()).then((list) => {
+      const key = list.map(i => i.id).join(',');
+      if (key === setKey) return;
+      setKey = key;
+      // Shuffle once per set change; the queue serves the 30 most recent.
+      setList = list.slice();
+      for (let i = setList.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [setList[i], setList[j]] = [setList[j], setList[i]];
+      }
+      idx = -1;
+      buildTicks();
+      if (setList.length) advance();
+      else showEmpty();
+    }).catch(() => {});
+  }
+
+  function buildTicks() {
+    const box = $('ticks');
+    box.innerHTML = '';
+    for (let i = 0; i < setList.length; i++) box.appendChild(document.createElement('i'));
+  }
+
+  function showEmpty() {
+    $('empty').style.display = '';
+    $('art-a').style.opacity = '0';
+    $('art-b').style.opacity = '0';
+    $('counter').textContent = '';
+  }
+
+  function advance() {
+    if (!setList.length) { showEmpty(); return; }
+    $('empty').style.display = 'none';
+    idx = (idx + 1) % setList.length;
+    const piece = setList[idx];
+    const layers = [$('art-a'), $('art-b')];
+    const inEl = layers[front ^= 1], outEl = layers[front ^ 1];
+
+    inEl.querySelector('img').src = piece.image;
+    inEl.querySelector('.a-title').textContent = piece.title || 'untitled';
+    inEl.querySelector('.a-artist').textContent = '@' + (piece.artist || 'unknown');
+
+    // Final states inline; glitch wipe as optional decoration.
+    inEl.style.opacity = '1';
+    outEl.style.opacity = '0';
+    try {
+      inEl.animate([
+        { clipPath: 'inset(0 0 84% 0)',  transform: 'translate3d(-16px,0,0)', offset: 0 },
+        { clipPath: 'inset(26% 0 46% 0)', transform: 'translate3d(13px,0,0)',  offset: .1 },
+        { clipPath: 'inset(64% 0 6% 0)',  transform: 'translate3d(-9px,0,0)',  offset: .2 },
+        { clipPath: 'inset(8% 0 12% 0)',  transform: 'translate3d(7px,0,0)',   offset: .3 },
+        { clipPath: 'inset(46% 0 32% 0)', transform: 'translate3d(-4px,0,0)',  offset: .42 },
+        { clipPath: 'inset(0 0 0 0)',     transform: 'translate3d(3px,0,0)',   offset: .54 },
+        { clipPath: 'inset(0 0 0 0)',     transform: 'none',                   offset: 1 },
+      ], { duration: 520, easing: 'linear' });
+      outEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, easing: 'ease-in' });
+    } catch (_) {}
+
+    const n = String(idx + 1).padStart(2, '0');
+    $('counter').textContent = n + ' / ' + String(setList.length).padStart(2, '0');
+    const ticks = $('ticks').children;
+    for (let i = 0; i < ticks.length; i++) ticks[i].classList.toggle('on', i === idx);
+  }
+
+  pollArt();
+  setInterval(pollArt, 60000);
+  setInterval(advance, ROTATE_MS);
+  beacon('loaded');
+</script>
