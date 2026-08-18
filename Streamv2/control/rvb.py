@@ -251,6 +251,10 @@ class Teams:
             "red": red, "blue": blue,
             "lead": lead,
             "leadColor": colors.get(lead) if lead else None,
+            # One colour for the border to follow: the leader's while
+            # somebody leads, the neutral house colour while tied. Tied is
+            # a real state, not an absence - nobody has taken the broadcast.
+            "color": colors.get(lead) if lead else colors.get("neutral"),
             "colors": colors,
             "captains": self.cfg.get("captains", {}),
             "counts": {RED: rc, BLUE: bc},

@@ -92,7 +92,10 @@
   const RVB_ON = p.get('rvb') !== 'off';
   if (PIN) r.setProperty('--accent', '#' + PIN.replace('#', ''));
   function applyTheme(st) {
-    const lead = RVB_ON ? ((st.rvb || {}).leadColor || null) : null;
+    // rvb.color is the leader's colour, or the neutral house colour
+    // while tied - a tie is a real state, not an absence.
+    const r2 = st.rvb || {};
+    const lead = (RVB_ON && r2.enabled) ? (r2.color || r2.leadColor || null) : null;
     if (lead) { r.setProperty('--accent', lead); return; }
     if (PIN) { r.setProperty('--accent', '#' + PIN.replace('#', '')); return; }
     const t = (st.themes || {})[st.show] || {};

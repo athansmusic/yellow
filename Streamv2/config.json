@@ -74,7 +74,7 @@
   "rvb": {
     "_note": "RED VS BLUE. Lazy monthly draft: a user's first chat of the month rolls their team (weighted toward the smaller side). Points from chat (capped per day), bits and subs. The leading team's colour takes the SCREEN border only - the cam border stays pink. Captains never reshuffle; viewers do, at the explicit /rvb/reset (draft night - never automatic).",
     "enabled": true,
-    "colors": { "red": "#ff2f3d", "blue": "#2e7cff" },
+    "colors": { "red": "#d40019", "blue": "#1f3fde", "neutral": "#FFF200" },
     "captains": { "red": "ATHAN", "blue": "JAMIE" },
     "points": {
       "chat": 1,
