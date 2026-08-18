@@ -29,6 +29,9 @@
      ===================================================================== */
   :root {
     --accent:  #f4e409;
+    /* The sub goal never follows the team colour - only the border does.
+       Yellow-on-red or yellow-on-blue looked wrong. */
+    --goal-ink: #f4e409;
     --w:       10px;
     --base-a:  50%;
     --red:     #d40019;
@@ -88,7 +91,7 @@
   #goal-head { display: flex; align-items: baseline; gap: 12px;
                text-shadow: 0 1px 3px rgba(0,0,0,.9); }
   #goal-lbl { font-weight: 600; font-size: 12px; letter-spacing: .3em;
-              text-transform: uppercase; color: var(--accent); }
+              text-transform: uppercase; color: #fff; }
   #goal-rule { flex: 1; height: 1px;
                background: linear-gradient(90deg, var(--edge), transparent); }
   #goal-num { font-family: var(--disp); font-weight: 700; font-size: 26px;
@@ -100,7 +103,7 @@
   /* Accent fill in the brush stroke's shape - the stroke masks the colour,
      because black ink on a near-black track is invisible. */
   #goal-fill {
-    position: absolute; inset: 3px; background: var(--accent);
+    position: absolute; inset: 3px; background: var(--goal-ink);
     clip-path: inset(0 100% 0 0);
     transition: clip-path .6s cubic-bezier(.25,.8,.25,1);
     filter: drop-shadow(0 0 8px rgba(244,228,9,.12));
@@ -108,8 +111,8 @@
   #goal-ticks { position: absolute; inset: 0; display: flex; }
   #goal-ticks i { flex: 1; border-right: 1px solid var(--edge); }
   #goal-ticks i:last-child { border-right: none; }
-  body.goal-done #goal-lbl { color: var(--display); }
-  body.goal-done #goal-num, body.goal-done #goal-num .of { color: var(--accent); }
+  body.goal-done #goal-lbl { color: #fff; }
+  body.goal-done #goal-num, body.goal-done #goal-num .of { color: var(--goal-ink); }
   body.goal-done #goal-track { box-shadow: inset 0 0 0 1px rgba(244,228,9,.6); }
   body.goal-done #goal-fill { animation: sg-pulse 2.2s ease-in-out infinite; }
   @keyframes sg-pulse {
