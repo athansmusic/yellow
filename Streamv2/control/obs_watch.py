@@ -29,6 +29,7 @@ import time
 import websocket
 
 # obs-websocket EventSubscription bitmask.
+SUB_SCENES = 1 << 2          # CurrentProgramSceneChanged
 SUB_OUTPUTS = 1 << 6         # StreamStateChanged
 SUB_MEDIA = 1 << 8           # MediaInputPlaybackEnded
 
@@ -38,6 +39,7 @@ class ObsLink(threading.Thread):
 
     def __init__(self, host: str, port: int, password: str,
                  on_stream_start, on_video_end, on_stream_stop=None,
+                 on_scene=None,
                  log=lambda *a: print(*a, flush=True)):
         super().__init__(name="obs-link")
         self.url = f"ws://{host}:{port}"
@@ -47,6 +49,9 @@ class ObsLink(threading.Thread):
         # needs the falling edge too, not just the rising one.
         self.on_stream_stop = on_stream_stop or (lambda: None)
         self.on_video_end = on_video_end
+        # Optional: fires with the scene name on every program-scene switch.
+        # Pure observation - this class never switches scenes on its own.
+        self.on_scene = on_scene or (lambda name: None)
         self.log = log
         self._stop = threading.Event()
         self._ws = None
@@ -207,7 +212,7 @@ class ObsLink(threading.Thread):
     def _session(self) -> None:
         ws = websocket.create_connection(self.url, timeout=10)
         try:
-            self._identify(ws, SUB_OUTPUTS | SUB_MEDIA)
+            self._identify(ws, SUB_OUTPUTS | SUB_MEDIA | SUB_SCENES)
             self._ws = ws
             self.log("  [obs] connected - watching stream state and media")
             ws.settimeout(None)
@@ -230,6 +235,9 @@ class ObsLink(threading.Thread):
 
                 elif kind == "MediaInputPlaybackEnded":
                     self.on_video_end(data.get("inputName", ""))
+
+                elif kind == "CurrentProgramSceneChanged":
+                    self.on_scene(data.get("sceneName", ""))
         finally:
             self._ws = None
             try:

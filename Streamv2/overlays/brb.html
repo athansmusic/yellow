@@ -44,16 +44,16 @@
               text-transform: uppercase; }
   #live-rule { width: 34px; height: 1px; background: rgba(244,228,9,.45); }
   #live-show { font-size: 12px; letter-spacing: .2em; text-transform: uppercase;
-               color: var(--meta); }
-  #headline { font-family: var(--disp); font-size: 132px; font-weight: 700;
-              letter-spacing: .005em; text-transform: uppercase;
-              line-height: .84; }
+               color: var(--ink); }
+  #headline { font-family: var(--disp); font-size: 300px; font-weight: 700;
+              letter-spacing: .01em; text-transform: uppercase;
+              line-height: .8; margin-left: -8px; }
   #bar { position: relative; width: 560px; height: 3px; margin: 30px 0 26px;
          overflow: hidden; background: #1a1a1f; }
   #bar span { position: absolute; inset: 0; width: 42%;
     background: linear-gradient(90deg, transparent, var(--accent), transparent);
     animation: barslide 3.4s linear infinite; }
-  #note { font-size: 20px; line-height: 1.5; color: var(--body); max-width: 580px; }
+  #note { font-size: 20px; line-height: 1.5; color: var(--ink); max-width: 580px; }
   #timers { display: flex; align-items: flex-end; gap: 44px; margin-top: 48px; }
   .t-lbl { font-size: 11px; letter-spacing: .24em; text-transform: uppercase;
            color: var(--dim); display: block; margin-bottom: 9px; }
@@ -77,8 +77,8 @@
                  background: linear-gradient(90deg, var(--edge), transparent); }
   #chat-head s { width: 6px; height: 6px; border-radius: 50%; text-decoration: none;
                  background: var(--accent); animation: pulse 2.6s ease-in-out infinite; }
-  #chat-well { flex: 1; background: linear-gradient(180deg, rgba(255,255,255,.015), transparent);
-               box-shadow: inset 0 0 0 1px #17171b; }
+  #chat-well { flex: 1; background: rgba(5,5,6,.92);
+               box-shadow: inset 0 0 0 1px var(--edge); }
 
   /* ---------------- right: fan-art gallery ---------------- */
   #gal { position: absolute; left: 1132px; top: 168px; width: 660px;
@@ -113,7 +113,7 @@
   #ticks i { flex: 1; height: 3px; background: #1a1a1f; }
   #ticks i.on { background: var(--accent); }
   #tagline { font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
-             color: var(--dim); }
+             color: var(--ink); }
 
   /* ---------------- footer ---------------- */
   #foot { position: absolute; left: 128px; right: 128px; bottom: 44px;
@@ -132,8 +132,6 @@
   <div id="statusline">
     <span id="live-dot"></span>
     <span id="live-lbl">still live</span>
-    <span id="live-rule"></span>
-    <span id="live-show"></span>
   </div>
   <div id="headline">SHORT BREAK</div>
   <div id="bar"><span></span></div>
@@ -151,7 +149,7 @@
 </div>
 
 <div id="gal">
-  <div id="gal-head"><b>from the unit</b><i></i><span id="counter"></span></div>
+  <div id="gal-head"><b>art from truthers</b><i></i><span id="counter"></span></div>
   <div id="frame">
     <div class="art" id="art-a"><img alt=""><div class="scrim"><span class="a-title"></span><span class="a-artist"></span></div></div>
     <div class="art" id="art-b"><img alt=""><div class="scrim"><span class="a-title"></span><span class="a-artist"></span></div></div>
@@ -160,8 +158,7 @@
       <span>post art on tumblr tagged<br>#the redacted unit<br>and it can end up right here</span>
     </div>
   </div>
-  <div id="ticks"></div>
-  <div id="tagline">art from tumblr · #the redacted unit · approved by the unit</div>
+  <div id="tagline">tumblr #the redacted unit</div>
 </div>
 
 <div id="foot">
@@ -190,9 +187,6 @@
     if (bootNonce === null) bootNonce = s.reloadNonce || '';
     else if ((s.reloadNonce || '') !== bootNonce) { location.reload(); return; }
 
-    $('live-show').textContent =
-      (s.showName ? '[ ' + s.showName + ' ]' : '') +
-      (s.episodeNumber ? ' · ep ' + s.episodeNumber : '');
     $('headline').textContent = s.brbHeadline || 'SHORT BREAK';
     $('note').textContent = s.brbNote || '';
     const up = (s.brbUpNext || '').trim();
@@ -223,30 +217,18 @@
   // Two persistent layers; rotation swaps src + inline opacity. The glitch
   // wipe is WAAPI on top - dropped = instant cut, never a blank frame.
   const ROTATE_MS = 25000;
-  let setList = [], setKey = '', idx = -1, front = 0;
+  let setList = [], setKey = '', cur = null, front = 0;
 
   function pollArt() {
     fetch(API + '/art/approved').then(r => r.json()).then((list) => {
       const key = list.map(i => i.id).join(',');
       if (key === setKey) return;
+      const wasEmpty = !setList.length;
       setKey = key;
-      // Shuffle once per set change; the queue serves the 30 most recent.
       setList = list.slice();
-      for (let i = setList.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [setList[i], setList[j]] = [setList[j], setList[i]];
-      }
-      idx = -1;
-      buildTicks();
-      if (setList.length) advance();
-      else showEmpty();
+      if (setList.length && wasEmpty) advance();
+      else if (!setList.length) showEmpty();
     }).catch(() => {});
-  }
-
-  function buildTicks() {
-    const box = $('ticks');
-    box.innerHTML = '';
-    for (let i = 0; i < setList.length; i++) box.appendChild(document.createElement('i'));
   }
 
   function showEmpty() {
@@ -259,8 +241,13 @@
   function advance() {
     if (!setList.length) { showEmpty(); return; }
     $('empty').style.display = 'none';
-    idx = (idx + 1) % setList.length;
-    const piece = setList[idx];
+    // Random draw from the WHOLE approved pool (owner's call: art should
+    // come around again later) - only never the same piece twice running.
+    let piece = setList[Math.floor(Math.random() * setList.length)];
+    if (setList.length > 1 && cur && piece.id === cur.id) {
+      piece = setList[(setList.indexOf(piece) + 1) % setList.length];
+    }
+    cur = piece;
     const layers = [$('art-a'), $('art-b')];
     const inEl = layers[front ^= 1], outEl = layers[front ^ 1];
 
@@ -284,10 +271,7 @@
       outEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, easing: 'ease-in' });
     } catch (_) {}
 
-    const n = String(idx + 1).padStart(2, '0');
-    $('counter').textContent = n + ' / ' + String(setList.length).padStart(2, '0');
-    const ticks = $('ticks').children;
-    for (let i = 0; i < ticks.length; i++) ticks[i].classList.toggle('on', i === idx);
+    $('counter').textContent = setList.length + ' in rotation';
   }
 
   pollArt();

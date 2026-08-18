@@ -118,7 +118,7 @@ DEFAULT_STATE = {
     # BRB scene copy. brbMinutes is WRITE-ONLY sugar: posting it makes the
     # server stamp brbBackAt = now + minutes, and the page counts down to
     # that. Clearing it clears the clock.
-    "brbHeadline": "SHORT BREAK",
+    "brbHeadline": "BRB",
     "brbNote": "stretching, water, regrouping. the unit holds the room while we are out.",
     "brbUpNext": "",
     "brbMinutes": "",
@@ -664,7 +664,9 @@ class Handler(BaseHTTPRequestHandler):
             body = json.dumps(_art.pending() if _art else []).encode()
             self._send(body, "application/json")
         elif route == "/art/approved":
-            body = json.dumps(_art.approved(30) if _art else []).encode()
+            # Owner call 2026-08-18: the whole approved pool rotates, not a
+            # recency window - older art comes around again.
+            body = json.dumps(_art.approved(100000) if _art else []).encode()
             self._send(body, "application/json")
         elif route == "/subgoal":
             self._send_file(OVERLAY_DIR / "subgoal.html", "text/html; charset=utf-8")
@@ -1318,6 +1320,20 @@ def main() -> int:
     else:
         print("  Twitch chat   : disabled (see config.json -> twitch)")
 
+    def do_scene_change(name: str) -> None:
+        # Entering any scene with "brb" in its name restarts the BACK IN
+        # clock from the panel's minutes field. Type 5 once and every
+        # switch to BRB starts a fresh 5:00; empty field = no clock.
+        if "brb" not in name.lower():
+            return
+        with _lock:
+            raw = str(_state.get("brbMinutes") or "").strip()
+        try:
+            if float(raw) > 0:
+                update_state({"brbMinutes": raw})
+        except ValueError:
+            pass
+
     obs_cfg = {k: v for k, v in _load_cfg().get("obs_watch", {}).items()
                if not k.startswith("_")}
     if obs_cfg.get("enabled"):
@@ -1333,6 +1349,7 @@ def main() -> int:
             on_stream_start=do_stream_start,
             on_video_end=do_video_end,
             on_stream_stop=do_stream_stop,
+            on_scene=do_scene_change,
         )
         _obs["link"] = link
         link.start()
