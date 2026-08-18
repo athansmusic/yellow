@@ -24,7 +24,6 @@ The server fills `message` with a random citation and also passes
 """
 from __future__ import annotations
 
-import random
 import threading
 import time
 
@@ -39,11 +38,15 @@ DEFAULT_TEMPLATES = [
 
 
 class Buckle:
-    def __init__(self, cfg: dict, firebot, is_live, log=print):
+    def __init__(self, cfg: dict, firebot, is_live, log=print,
+                 templates_fn=None):
         self.command = str(cfg.get("command", "!bucklein")).lower()
         self.grace = int(cfg.get("grace_seconds", 240))
         self.preset = cfg.get("preset", "Buckle Ticket")
-        self.templates = list(cfg.get("templates") or DEFAULT_TEMPLATES)
+        # The panel owns the citation copy (one per line, {user} inside);
+        # templates_fn reads it live so edits apply without a restart.
+        self._templates_fn = templates_fn or (lambda: [])
+        self._cycle = 0
         self.per_sweep = int(cfg.get("max_tickets_per_sweep", 2))
         self.exclude = {str(u).lower() for u in cfg.get("exclude_users", [])}
         self.fb = firebot
@@ -96,8 +99,12 @@ class Buckle:
                 due = due[:self.per_sweep]
             for _, user, _ in due:
                 self._ticketed.add(user)
+        templates = [t.strip() for t in self._templates_fn() if t.strip()]             or DEFAULT_TEMPLATES
         for _, user, display in due:
-            line = random.choice(self.templates).replace("{user}", display)
+            # In order, not random - the owner writes these and the order
+            # is part of the bit.
+            line = templates[self._cycle % len(templates)].replace("{user}", display)
+            self._cycle += 1
             self.log(f"  [buckle] {line}", flush=True)
             self.fb.run_preset(self.preset, {"username": display,
                                              "message": line})

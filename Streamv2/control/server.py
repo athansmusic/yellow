@@ -125,6 +125,10 @@ DEFAULT_STATE = {
     "brbMinutes": "",
     "brbBackAt": "",
 
+    # !bucklein ticket copy, one line per citation, {user} is the chatter.
+    # Cycled in order. The Buckle sweeper reads this live.
+    "buckleTickets": "TICKET ISSUED: {user} - OPERATING A CHAT WITHOUT BUCKLING IN\n{user} CRASHED. THEY WERE NOT BUCKLED IN. WITNESSES CALL IT PREVENTABLE.\nINCIDENT REPORT: {user} EJECTED ON THE FIRST TURN. NO BUCKLE DETECTED.\nCITATION: {user} CAUGHT RIDING UNRESTRAINED IN AN ACTIVE BROADCAST\n{user} WENT STRAIGHT THROUGH THE WINDSHIELD. !bucklein NEXT TIME.",
+
     # Ending scene copy.
     "endTitle": "THANKS FOR WATCHING",
     "endSubtitle": "make sure you say !gn",
@@ -1328,7 +1332,11 @@ def main() -> int:
         if not bk_cfg.get("exclude_users"):
             # Default to RVB's exclusion list - same bots, same hosts.
             bk_cfg["exclude_users"] = _load_cfg().get("rvb", {})                 .get("exclude", {}).get("users", [])
-        _buckle = Buckle(bk_cfg, fb, is_live=lambda: _live)
+        def _ticket_lines() -> list[str]:
+            with _lock:
+                return str(_state.get("buckleTickets") or "").split("\n")
+        _buckle = Buckle(bk_cfg, fb, is_live=lambda: _live,
+                         templates_fn=_ticket_lines)
         print(f"  Buckle check  : {bk_cfg.get('command', '!bucklein')} or a "
               f"ticket after {int(bk_cfg.get('grace_seconds', 240)) // 60} min")
 

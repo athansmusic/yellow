@@ -144,6 +144,12 @@
   </fieldset>
 
   <fieldset>
+    <legend>Buckle tickets</legend>
+    <label><span>One citation per line &mdash; {user} is the chatter, used in order</span>
+      <textarea id="buckleTickets" rows="5" placeholder="TICKET ISSUED: {user} - ..."></textarea></label>
+  </fieldset>
+
+  <fieldset>
     <legend>Rotating prompts</legend>
     <label><span>One per line &mdash; blank line removes it, empty box hides the bar</span>
       <textarea id="prompts" rows="5" placeholder="follow so you stop missing these"></textarea></label>
@@ -168,7 +174,7 @@
   const FIELDS = ['showName', 'episodeNumber', 'episodeTitle', 'episodeBlurb',
                   'hostA', 'hostARole', 'hostB', 'hostBRole', 'handle', 'cadence',
                   'alertName', 'alertMeta', 'subGoal', 'prompts', 'promptSeconds',
-                  'brbHeadline', 'brbNote', 'brbUpNext', 'brbMinutes'];
+                  'brbHeadline', 'brbNote', 'brbUpNext', 'brbMinutes', 'buckleTickets'];
 
   // Layout is NOT controlled here. Each OBS scene carries its own stage layers
   // pinned with ?scene=two|solo, so switching scenes in OBS switches the layout.
