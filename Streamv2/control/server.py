@@ -1409,20 +1409,24 @@ def main() -> int:
         unmute_on_enter = list(stage_cfg.get("unmute_on_enter", ["FL Studio"]))
         cam = stage_cfg.get("camera", "")
         filt = stage_cfg.get("delay_filter", "")
+        toggles = list(stage_cfg.get("filters_on_enter", []))
         if entering:
             for n in mute_on_enter:
                 link.set_input_mute(n, True)
             for n in unmute_on_enter:
                 link.set_input_mute(n, False)
+            for src, fname in toggles:
+                link.set_filter_enabled(src, fname, True)
             if cam and filt:
                 link.set_filter_enabled(cam, filt, True)
-            print("  [stage] entered - mic to FL Studio, camera delayed",
-                  flush=True)
+            print("  [stage] entered - performance state on", flush=True)
         else:
             for n in mute_on_enter:
                 link.set_input_mute(n, False)
             for n in unmute_on_enter:
                 link.set_input_mute(n, True)
+            for src, fname in toggles:
+                link.set_filter_enabled(src, fname, False)
             if cam and filt:
                 link.set_filter_enabled(cam, filt, False)
             print("  [stage] left - talking state restored", flush=True)

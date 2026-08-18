@@ -270,7 +270,7 @@
     "preset": "Buckle Ticket"
   },
   "stage": {
-    "_note": "Music scene automation, v1 for the 3rd-gen 2i2 (no loopback): voice stays on the normal Mic/Aux chain, FL carries backing/synth only via VB-Cable, so entering Stage just unmutes FL Studio and leaving re-mutes it. No mic muting, no camera delay needed. The full-FL-vocal-chain design (MUSIC-SETUP.md) needs a loopback-capable interface - revisit if the owner ever upgrades to a 4th gen.",
+    "_note": "Stage performance automation. Entering the scene named exactly 'Stage': unmutes FL Studio (backing/synth via Focusrite loopback capture), enables the Stage Reverb VST on Mic/Aux. Leaving reverses both. Mic never muted; resting state = talking state. FL Studio stays on FL Studio ASIO -> Speakers (Focusrite USB Audio) permanently - never switched.",
     "enabled": true,
     "scene": "Stage",
     "mute_on_enter": [],
@@ -278,6 +278,12 @@
       "FL Studio"
     ],
     "camera": "",
-    "delay_filter": ""
+    "delay_filter": "",
+    "filters_on_enter": [
+      [
+        "Mic/Aux",
+        "Stage Reverb"
+      ]
+    ]
   }
 }
