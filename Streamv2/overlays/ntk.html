@@ -192,8 +192,12 @@
   const HASH = p.get('hash') || '';
 
   function feedUrl(streamId) {
+    // &scene is what makes this an OBS-style VIEWER: no join prompt, no
+    // camera request, auto-plays whatever that id is pushing. Without it
+    // vdo treats the iframe as a guest arriving and renders its whole
+    // "Join Room with Camera" UI instead of the feed.
     let u = 'https://vdo.ninja/?view=' + encodeURIComponent(streamId) +
-            '&cover&transparent&autostart&cleanoutput';
+            '&scene&cover&transparent&autostart&cleanoutput&noaudio=0';
     if (ROOM) u += '&room=' + encodeURIComponent(ROOM);
     if (HASH) u += '&hash=' + encodeURIComponent(HASH);
     else if (PW) u += '&password=' + encodeURIComponent(PW);
@@ -247,7 +251,7 @@
       plate.append(nm, rl);
       const tag = document.createElement('div');
       tag.className = 'tag';
-      tag.textContent = person.id === 'h' ? 'HOST' : 'PLAYER';
+      tag.textContent = person.id === 'h' ? 'GM' : 'PLAYER';
       root.append(ph, sheen, plate, tag);
       $('grid').appendChild(root);
       tiles[person.id] = { root, ph, phb, nm, rl, frame: null };
