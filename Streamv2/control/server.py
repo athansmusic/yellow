@@ -129,6 +129,31 @@ DEFAULT_STATE = {
     # Cycled in order. The Buckle sweeper reads this live.
     "buckleTickets": "TICKET ISSUED: {user} - OPERATING A CHAT WITHOUT BUCKLING IN\n{user} CRASHED. THEY WERE NOT BUCKLED IN. WITNESSES CALL IT PREVENTABLE.\nINCIDENT REPORT: {user} EJECTED ON THE FIRST TURN. NO BUCKLE DETECTED.\nCITATION: {user} CAUGHT RIDING UNRESTRAINED IN AN ACTIVE BROADCAST\n{user} WENT STRAIGHT THROUGH THE WINDSHIELD. !bucklein NEXT TIME.",
 
+    # NEED TO KNOW (actual play). One page draws every layout; the host
+    # panel moves people between slots, so nothing is arranged in OBS.
+    # streamId is the VDO Ninja push id that person keeps all season.
+    "ntk": {
+        "scene": "all5",          # all5|four|duo|solo|host|media
+        "speaking": "p2",
+        "soloId": "p2",
+        "duoA": "p1",
+        "duoB": "p3",
+        "episode": "EP 01",
+        "caseTitle": "",
+        "chatOn": True,
+        "diceOn": True,
+        "diceLabel": "",
+        "diceValue": "",
+        "diceOutcome": "",
+        "cast": [
+            {"id": "h",  "slot": "GM", "name": "",  "role": "", "streamId": ""},
+            {"id": "p1", "slot": "01", "name": "",  "role": "", "streamId": ""},
+            {"id": "p2", "slot": "02", "name": "",  "role": "", "streamId": ""},
+            {"id": "p3", "slot": "03", "name": "",  "role": "", "streamId": ""},
+            {"id": "p4", "slot": "04", "name": "",  "role": "", "streamId": ""},
+        ],
+    },
+
     # Ending scene copy.
     "endTitle": "THANKS FOR WATCHING",
     "endSubtitle": "make sure you say !gn",
@@ -672,6 +697,10 @@ class Handler(BaseHTTPRequestHandler):
             self._send_file(OVERLAY_DIR / "onscreen.html", "text/html; charset=utf-8")
         elif route == "/overlay2":
             self._send_file(OVERLAY_DIR / "overlay.html", "text/html; charset=utf-8")
+        elif route == "/ntk":
+            self._send_file(OVERLAY_DIR / "ntk.html", "text/html; charset=utf-8")
+        elif route == "/ntkpanel":
+            self._send_file(OVERLAY_DIR / "ntkpanel.html", "text/html; charset=utf-8")
         elif route == "/brb":
             self._send_file(OVERLAY_DIR / "brb.html", "text/html; charset=utf-8")
         elif route == "/artqueue":

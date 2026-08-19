@@ -1,0 +1,319 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Need To Know</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@600;700&display=swap">
+<style>
+  /* =====================================================================
+     NEED TO KNOW - the whole show in ONE browser source.
+
+     Every layout (all5 / four / duo / solo / host / media) is this page
+     rearranging a 12-row grid; the cast's VDO Ninja feeds are iframes
+     that NEVER move in the DOM - only their grid-area changes. That is
+     deliberate: re-creating an iframe would renegotiate WebRTC and drop
+     a player's video for a second on every scene change. Moving a grid
+     area is instant and the stream never blinks.
+
+     So OBS needs ONE browser source at 1920x1080 pointed here, and
+     nothing in this show is ever arranged in OBS.
+
+     Host drives it from /ntkpanel. Transport is the house standard:
+     5s poll, no SSE, self-reload on reloadNonce.
+     ===================================================================== */
+  :root {
+    --accent:  #E8215A;
+    --ink:     #F4EFE6;
+    --lilac:   #B7A9E0;
+    --muted:   #7A6A8C;
+    --edge:    #3A2B47;
+    --panel:   #1D1429;
+    --deep:    #17101F;
+    --black:   #140E1A;
+    --disp: "Archivo Black", Impact, sans-serif;
+    --narrow: "Archivo Narrow", "Arial Narrow", sans-serif;
+    --body: Archivo, system-ui, sans-serif;
+  }
+  html, body {
+    margin: 0; width: 1920px; height: 1080px; overflow: hidden;
+    background: var(--black); color: var(--ink); font-family: var(--body);
+  }
+  #glow { position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(120% 80% at 50% -10%, rgba(232,33,90,.20), rgba(232,33,90,0) 60%); }
+  #stack { position: absolute; inset: 0; display: flex; flex-direction: column;
+           padding: 16px 20px; }
+
+  /* ---- header ---- */
+  #head { display: flex; align-items: center; justify-content: space-between;
+          gap: 24px; height: 58px; flex: none; }
+  #head-l { display: flex; align-items: center; gap: 18px; }
+  #logo { background: var(--accent); padding: 9px 16px 11px; display: flex; align-items: center; }
+  #logo span { font-family: var(--disp); font-size: 30px; line-height: 1;
+               letter-spacing: .02em; }
+  #head-div { width: 1px; height: 38px; background: var(--edge); }
+  #ep { font-family: var(--narrow); font-weight: 700; font-size: 24px;
+        letter-spacing: .30em; color: var(--lilac); }
+  #case { font-family: var(--narrow); font-weight: 700; font-size: 24px;
+          letter-spacing: .14em; }
+  #live { display: flex; align-items: center; gap: 12px; }
+  #live i { width: 11px; height: 11px; border-radius: 50%; background: var(--accent);
+            animation: pulse 1.8s ease-in-out infinite; }
+  #live b { font-family: var(--narrow); font-weight: 700; font-size: 20px;
+            letter-spacing: .34em; }
+  @keyframes pulse { 0%,100% { opacity:.55; } 50% { opacity:1; } }
+
+  /* ---- grid ---- */
+  #grid { flex: 1 1 auto; min-height: 0; display: grid; width: 100%;
+          margin: 12px auto; gap: 18px;
+          grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(12, 1fr); }
+  body[data-scene="media"] #grid { grid-template-columns: repeat(15, 1fr); }
+  body[data-scene="four"] #grid { max-width: 1660px; }
+
+  .tile { position: relative; overflow: hidden; background: var(--panel);
+          border: 2px solid var(--edge); display: none;
+          box-shadow: 0 18px 40px rgba(0,0,0,.35);
+          transition: box-shadow .25s ease, border-color .25s ease; }
+  .tile.on { display: block; }
+  .tile.host { border: 3px double var(--lilac); }
+  .tile.live { border-color: var(--accent);
+               box-shadow: 0 0 0 4px rgba(232,33,90,.2), 0 18px 40px rgba(0,0,0,.45); }
+  .tile iframe { position: absolute; inset: 0; width: 100%; height: 100%;
+                 border: 0; background: transparent; }
+  /* Placeholder shows until a streamId is set - initials on the show's
+     diagonal weave, so an empty seat still looks intentional. */
+  .tile .ph { position: absolute; inset: 0;
+    background: repeating-linear-gradient(135deg, #221730 0 12px, #1D1429 12px 24px);
+    display: flex; align-items: center; justify-content: center; }
+  .tile .ph b { font-family: var(--disp); font-size: 64px; color: var(--edge);
+                letter-spacing: .06em; }
+  .tile .sheen { position: absolute; left: 0; right: 0; top: 0; height: 34%;
+    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0)); }
+  .plate { position: absolute; left: -2px; bottom: 16px; display: flex;
+           align-items: baseline; gap: 10px; padding: 7px 16px 9px;
+           background: var(--black); transform-origin: left bottom; }
+  .tile.live .plate { background: var(--accent); }
+  .plate .nm { font-family: var(--disp); font-size: 22px; letter-spacing: .06em; }
+  .plate .rl { font-family: var(--narrow); font-weight: 700; font-size: 15px;
+               letter-spacing: .20em; color: var(--lilac); }
+  .tile.live .plate .rl { color: var(--ink); opacity: .85; }
+  .tag { position: absolute; top: 0; right: 0; display: none;
+         background: var(--lilac); color: var(--black); padding: 5px 12px 6px;
+         font-family: var(--narrow); font-weight: 700; font-size: 15px;
+         letter-spacing: .24em; }
+  .tile.host .tag { display: block; }
+  body[data-scene="media"] .tag { display: none; }
+  body[data-scene="media"] .plate { transform: scale(.72); bottom: 10px;
+                                    padding: 4px 12px 5px; }
+
+  /* Chat frame only - the real chat source sits in this rect in OBS, per
+     the standing rule that the reader may see chat but never draw it. */
+  #chat { grid-area: 5 / 1 / 13 / 5; display: none; flex-direction: column;
+          background: var(--deep); border: 2px solid var(--edge); overflow: hidden;
+          box-shadow: 0 18px 40px rgba(0,0,0,.35); }
+  #chat.on { display: flex; }
+  #chat-head { display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 14px 10px; background: var(--panel); border-bottom: 2px solid var(--edge); }
+  #chat-head b { font-family: var(--narrow); font-weight: 700; font-size: 17px;
+                 letter-spacing: .28em; color: var(--lilac); }
+  #chat-head i { font-family: var(--narrow); font-weight: 700; font-size: 15px;
+                 letter-spacing: .20em; color: #5C4A70; font-style: normal; }
+
+  /* Evidence / full-screen media well */
+  #media { grid-area: 1 / 1 / 10 / 16; position: relative; display: none;
+           border: 2px solid var(--edge); background: var(--panel);
+           align-items: center; justify-content: center; overflow: hidden; }
+  #media.on { display: flex; }
+  #media .weave { position: absolute; inset: 0;
+    background: repeating-linear-gradient(45deg, rgba(183,169,224,.05) 0 2px, transparent 2px 10px); }
+  #media .lbl { position: absolute; top: 0; left: 0; background: var(--accent);
+    padding: 8px 18px 10px; font-family: var(--narrow); font-weight: 700;
+    font-size: 20px; letter-spacing: .28em; }
+
+  /* ---- footer: speaking + roll ---- */
+  #foot { height: 46px; flex: none; display: flex; align-items: stretch;
+          justify-content: space-between; gap: 20px; }
+  #speaking { display: flex; align-items: center; gap: 14px; padding: 0 18px;
+    border: 1px solid var(--edge); background: rgba(29,20,41,.7); }
+  #speaking b { font-family: var(--narrow); font-weight: 700; font-size: 17px;
+                letter-spacing: .26em; color: var(--muted); }
+  #speaking span { font-family: var(--disp); font-size: 20px; letter-spacing: .05em; }
+  #dice { display: none; align-items: center; gap: 16px; padding: 0 20px;
+          background: var(--accent); box-shadow: 0 14px 30px rgba(0,0,0,.4); }
+  #dice.on { display: flex; }
+  #dice .lbl { font-family: var(--narrow); font-weight: 700; font-size: 17px;
+               letter-spacing: .26em; opacity: .75; }
+  #dice .bar { width: 1px; align-self: stretch; background: rgba(244,239,230,.3); }
+  #dice .val { font-family: var(--disp); font-size: 30px; line-height: 1; }
+  #dice .out { font-family: var(--narrow); font-weight: 700; font-size: 19px;
+    letter-spacing: .22em; color: var(--black); background: var(--ink);
+    padding: 4px 10px 5px; }
+</style>
+
+<div id="glow"></div>
+<div id="stack">
+  <div id="head">
+    <div id="head-l">
+      <div id="logo"><span>NEED TO KNOW</span></div>
+      <div id="head-div"></div>
+      <span id="ep"></span>
+      <span id="case"></span>
+    </div>
+    <div id="live"><i></i><b>LIVE</b></div>
+  </div>
+
+  <div id="grid">
+    <div id="chat">
+      <div id="chat-head"><b>CHAT</b><i>TRU.SHOW</i></div>
+    </div>
+    <div id="media"><div class="weave"></div><div class="lbl">EVIDENCE</div></div>
+  </div>
+
+  <div id="foot">
+    <div id="speaking"><b>SPEAKING</b><span id="speaking-name"></span></div>
+    <div id="dice">
+      <span class="lbl" id="dice-label"></span>
+      <span class="bar"></span>
+      <span class="val" id="dice-value"></span>
+      <span class="out" id="dice-outcome"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://127.0.0.1:8722';
+  const $ = (id) => document.getElementById(id);
+  const p = new URLSearchParams(location.search);
+  // VDO Ninja room/password come from the URL so no credential lives in
+  // the repo: ?room=needtoknow&pw=secret
+  const ROOM = p.get('room') || '';
+  const PW = p.get('pw') || '';
+
+  function feedUrl(streamId) {
+    let u = 'https://vdo.ninja/?view=' + encodeURIComponent(streamId) +
+            '&cover&transparent&autostart&cleanoutput';
+    if (ROOM) u += '&room=' + encodeURIComponent(ROOM);
+    if (PW) u += '&password=' + encodeURIComponent(PW);
+    return u;
+  }
+
+  // Grid areas per scene, straight from the design.
+  const AREAS = {
+    all5: { h:'1 / 1 / 5 / 5', p1:'1 / 5 / 7 / 9', p2:'1 / 9 / 7 / 13',
+            p3:'7 / 5 / 13 / 9', p4:'7 / 9 / 13 / 13' },
+    four: { p1:'1 / 1 / 7 / 7', p2:'1 / 7 / 7 / 13',
+            p3:'7 / 1 / 13 / 7', p4:'7 / 7 / 13 / 13' },
+    media:{ p1:'10 / 1 / 13 / 4', p2:'10 / 4 / 13 / 7', h:'10 / 7 / 13 / 10',
+            p3:'10 / 10 / 13 / 13', p4:'10 / 13 / 13 / 16' },
+  };
+  function areasFor(n) {
+    if (AREAS[n.scene]) return AREAS[n.scene];
+    if (n.scene === 'duo') {
+      const o = {}; o[n.duoA] = '3 / 1 / 11 / 7'; o[n.duoB] = '3 / 7 / 11 / 13';
+      return o;
+    }
+    if (n.scene === 'solo') { const o = {}; o[n.soloId] = '1 / 3 / 13 / 11'; return o; }
+    if (n.scene === 'host') return { h: '1 / 3 / 13 / 11' };
+    return {};
+  }
+
+  // Tiles are built ONCE and then only restyled - see the header note
+  // about never re-creating an iframe.
+  const tiles = {};
+  let builtIds = '', lastFeeds = {};
+
+  function buildTiles(cast) {
+    const key = cast.map(c => c.id).join(',');
+    if (key === builtIds) return;
+    builtIds = key;
+    for (const el of Object.values(tiles)) el.root.remove();
+    for (const k of Object.keys(tiles)) delete tiles[k];
+    for (const person of cast) {
+      const root = document.createElement('div');
+      root.className = 'tile' + (person.id === 'h' ? ' host' : '');
+      const ph = document.createElement('div');
+      ph.className = 'ph';
+      const phb = document.createElement('b');
+      ph.appendChild(phb);
+      const sheen = document.createElement('div');
+      sheen.className = 'sheen';
+      const plate = document.createElement('div');
+      plate.className = 'plate';
+      const nm = document.createElement('span'); nm.className = 'nm';
+      const rl = document.createElement('span'); rl.className = 'rl';
+      plate.append(nm, rl);
+      const tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.textContent = person.id === 'h' ? 'HOST' : 'PLAYER';
+      root.append(ph, sheen, plate, tag);
+      $('grid').appendChild(root);
+      tiles[person.id] = { root, ph, phb, nm, rl, frame: null };
+    }
+  }
+
+  function render(s) {
+    if (bootNonce === null) bootNonce = s.reloadNonce || '';
+    else if ((s.reloadNonce || '') !== bootNonce) { location.reload(); return; }
+
+    const n = s.ntk || {};
+    const cast = n.cast || [];
+    buildTiles(cast);
+    document.body.dataset.scene = n.scene || 'all5';
+    const areas = areasFor(n);
+
+    for (const person of cast) {
+      const t = tiles[person.id];
+      if (!t) continue;
+      const area = areas[person.id];
+      t.root.classList.toggle('on', Boolean(area));
+      if (area) t.root.style.gridArea = area;
+      t.root.classList.toggle('live',
+        person.id === n.speaking && n.scene !== 'media');
+      t.nm.textContent = person.name || '';
+      t.rl.textContent = person.role || '';
+      t.phb.textContent = ((person.role || person.name || '?').slice(0, 2)).toUpperCase();
+
+      // Feed: created once per streamId, then left completely alone.
+      const sid = (person.streamId || '').trim();
+      if (sid !== (lastFeeds[person.id] || '')) {
+        lastFeeds[person.id] = sid;
+        if (t.frame) { t.frame.remove(); t.frame = null; }
+        if (sid) {
+          const f = document.createElement('iframe');
+          f.allow = 'autoplay; camera; microphone; fullscreen';
+          f.src = feedUrl(sid);
+          t.root.insertBefore(f, t.root.firstChild.nextSibling);
+          t.frame = f;
+        }
+      }
+      t.ph.style.display = sid ? 'none' : '';
+    }
+
+    $('ep').textContent = n.episode || '';
+    $('case').textContent = n.caseTitle || '';
+    $('chat').classList.toggle('on', n.chatOn !== false && n.scene === 'all5');
+    $('media').classList.toggle('on', n.scene === 'media');
+
+    const who = cast.find(c => c.id === n.speaking);
+    $('speaking-name').textContent = who
+      ? (who.name || '') + (who.role ? ' · ' + who.role : '') : '—';
+    $('dice').classList.toggle('on', n.diceOn !== false &&
+      Boolean((n.diceLabel || '') + (n.diceValue || '') + (n.diceOutcome || '')));
+    $('dice-label').textContent = n.diceLabel || '';
+    $('dice-value').textContent = n.diceValue || '';
+    $('dice-outcome').textContent = n.diceOutcome || '';
+  }
+
+  let bootNonce = null;
+  function beacon(note) {
+    fetch(API + '/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'ntk', slots: {
+        note: String(note), at: new Date().toISOString() } }) }).catch(() => {});
+  }
+  window.addEventListener('error', (e) => beacon('JS ERROR: ' + e.message));
+  function poll() {
+    fetch(API + '/state').then(r => r.json()).then((s) => { render(s); }).catch(() => {});
+  }
+  poll();
+  setInterval(poll, 5000);
+  beacon('loaded');
+</script>
