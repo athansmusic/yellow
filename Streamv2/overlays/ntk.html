@@ -183,16 +183,20 @@
   const API = 'http://127.0.0.1:8722';
   const $ = (id) => document.getElementById(id);
   const p = new URLSearchParams(location.search);
-  // VDO Ninja room/password come from the URL so no credential lives in
-  // the repo: ?room=needtoknow&pw=secret
+  // VDO Ninja room + credential come from the URL so nothing secret
+  // lives in the repo. Either form works:
+  //   ?room=Need_to_Know&hash=c3d7      (what the room creator hands you)
+  //   ?room=Need_to_Know&pw=raw         (raw password, hashed by vdo)
   const ROOM = p.get('room') || '';
   const PW = p.get('pw') || '';
+  const HASH = p.get('hash') || '';
 
   function feedUrl(streamId) {
     let u = 'https://vdo.ninja/?view=' + encodeURIComponent(streamId) +
             '&cover&transparent&autostart&cleanoutput';
     if (ROOM) u += '&room=' + encodeURIComponent(ROOM);
-    if (PW) u += '&password=' + encodeURIComponent(PW);
+    if (HASH) u += '&hash=' + encodeURIComponent(HASH);
+    else if (PW) u += '&password=' + encodeURIComponent(PW);
     return u;
   }
 
