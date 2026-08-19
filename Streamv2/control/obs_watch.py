@@ -94,6 +94,47 @@ class ObsLink(threading.Thread):
         return self.request("SetInputMute",
                             {"inputName": name, "inputMuted": muted})
 
+    def place_source(self, scene: str, source: str,
+                     x: float, y: float, w: float, h: float) -> None:
+        """Put one scene item at an exact rect. Fire and forget - a
+        layout change must never block on OBS being slow."""
+        threading.Thread(target=self._place_worker,
+                         args=(scene, source, x, y, w, h), daemon=True).start()
+
+    def _place_worker(self, scene, source, x, y, w, h) -> None:
+        try:
+            ws = websocket.create_connection(self.url, timeout=6)
+            try:
+                ws.recv()
+                ws.send(json.dumps({"op": 1, "d": {"rpcVersion": 1,
+                                                   "eventSubscriptions": 0}}))
+                ws.recv()
+                ws.send(json.dumps({"op": 6, "d": {
+                    "requestType": "GetSceneItemId", "requestId": "id",
+                    "requestData": {"sceneName": scene, "sourceName": source}}}))
+                item = None
+                for _ in range(20):
+                    m = json.loads(ws.recv())
+                    if m.get("op") == 7 and m["d"]["requestId"] == "id":
+                        if m["d"]["requestStatus"]["result"]:
+                            item = m["d"]["responseData"]["sceneItemId"]
+                        break
+                if item is None:
+                    return
+                ws.send(json.dumps({"op": 6, "d": {
+                    "requestType": "SetSceneItemTransform", "requestId": "tr",
+                    "requestData": {"sceneName": scene, "sceneItemId": item,
+                        "sceneItemTransform": {
+                            "positionX": float(x), "positionY": float(y),
+                            "boundsType": "OBS_BOUNDS_SCALE_INNER",
+                            "boundsWidth": float(w), "boundsHeight": float(h),
+                            "alignment": 5}}}}))
+                ws.recv()
+            finally:
+                ws.close()
+        except Exception:                                  # noqa: BLE001
+            pass
+
     def set_scene(self, name: str) -> bool:
         return self.request("SetCurrentProgramScene", {"sceneName": name})
 

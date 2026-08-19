@@ -832,6 +832,19 @@ class Handler(BaseHTTPRequestHandler):
                     _slots[key] = rects
             self._send(b'{"ok":true}', "application/json")
             return
+        if route == "/ntk/tiles":
+            # The NTK stage page measured its tiles; move each cast
+            # member's OBS browser source onto its rect. Video lives in
+            # real sources because CEF will not run WebRTC in an iframe.
+            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                rects = json.loads(self.rfile.read(length) or b"{}")
+            except json.JSONDecodeError:
+                self._send(b'{"error":"bad json"}', "application/json", 400)
+                return
+            place_ntk_cams(rects if isinstance(rects, dict) else {})
+            self._send(b'{"ok":true}', "application/json")
+            return
         if route == "/art/decide":
             length = int(self.headers.get("Content-Length") or 0)
             try:
@@ -1250,6 +1263,31 @@ def _lamps_to_team(force: bool = False) -> None:
         print(f"  [rvb] lamps -> {who} ({r},{g},{b})", flush=True)
     except OSError as exc:
         print(f"  [rvb] lamp launch failed: {exc}", flush=True)
+
+
+NTK_SOURCE_PREFIX = "NTK CAM "
+
+
+def place_ntk_cams(rects: dict) -> None:
+    """Position one browser source per cast member over its tile.
+
+    A hidden tile is moved off-canvas rather than disabled: toggling
+    visibility tears down the WebRTC connection and the player would
+    have to reconnect every time the layout changed.
+    """
+    link = _obs["link"]
+    if link is None:
+        return
+    with _lock:
+        cast = list((_state.get("ntk") or {}).get("cast") or [])
+    for person in cast:
+        rect = rects.get(person["id"])
+        name = NTK_SOURCE_PREFIX + str(person["id"]).upper()
+        if rect:
+            x, y, w, h = rect
+        else:
+            x, y, w, h = 4000, 4000, 320, 180        # parked off-canvas
+        link.place_source("Main Cast Stage", name, x, y, w, h)
 
 
 def _seed_stage_prev(obs_cfg: dict) -> None:

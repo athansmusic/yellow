@@ -34,10 +34,17 @@
     --narrow: "Archivo Narrow", "Arial Narrow", sans-serif;
     --body: Archivo, system-ui, sans-serif;
   }
+  /* TWO LAYERS, like the REDACTED stage:
+       ?layer=back   ground + glow only, sits UNDER the camera sources
+       ?layer=front  (default) chrome only, fully transparent, sits OVER
+     The cameras are real OBS sources sandwiched between them. */
   html, body {
     margin: 0; width: 1920px; height: 1080px; overflow: hidden;
-    background: var(--black); color: var(--ink); font-family: var(--body);
+    background: transparent; color: var(--ink); font-family: var(--body);
   }
+  body[data-layer="back"] { background: var(--black); }
+  body[data-layer="back"] #stack { display: none; }
+  body[data-layer="front"] #glow { display: none; }
   #glow { position: absolute; inset: 0; pointer-events: none;
     background: radial-gradient(120% 80% at 50% -10%, rgba(232,33,90,.20), rgba(232,33,90,0) 60%); }
   #stack { position: absolute; inset: 0; display: flex; flex-direction: column;
@@ -69,7 +76,12 @@
   body[data-scene="media"] #grid { grid-template-columns: repeat(15, 1fr); }
   body[data-scene="four"] #grid { max-width: 1660px; }
 
-  .tile { position: relative; overflow: hidden; background: var(--panel);
+  /* Tiles are HOLES: the video is a real OBS browser source underneath,
+     positioned by the server to match these rects. OBS's CEF refuses
+     WebRTC inside a cross-origin iframe (verified 2026-08-19: the same
+     feed works as a direct browser source and stays black in an iframe),
+     so this page draws only the chrome. */
+  .tile { position: relative; overflow: hidden; background: transparent;
           border: 2px solid var(--edge); display: none;
           box-shadow: 0 18px 40px rgba(0,0,0,.35);
           transition: box-shadow .25s ease, border-color .25s ease; }
@@ -81,9 +93,10 @@
                  border: 0; background: transparent; }
   /* Placeholder shows until a streamId is set - initials on the show's
      diagonal weave, so an empty seat still looks intentional. */
-  .tile .ph { position: absolute; inset: 0;
+  .tile .ph { position: absolute; inset: 0; display: none;
     background: repeating-linear-gradient(135deg, #221730 0 12px, #1D1429 12px 24px);
-    display: flex; align-items: center; justify-content: center; }
+    align-items: center; justify-content: center; }
+  .tile.empty .ph { display: flex; }
   .tile .ph b { font-family: var(--disp); font-size: 64px; color: var(--edge);
                 letter-spacing: .06em; }
   .tile .sheen { position: absolute; left: 0; right: 0; top: 0; height: 34%;
@@ -187,6 +200,8 @@
   // lives in the repo. Either form works:
   //   ?room=Need_to_Know&hash=c3d7      (what the room creator hands you)
   //   ?room=Need_to_Know&pw=raw         (raw password, hashed by vdo)
+  document.body.dataset.layer = p.get('layer') === 'back' ? 'back' : 'front';
+  const IS_BACK = document.body.dataset.layer === 'back';
   const ROOM = p.get('room') || '';
   const PW = p.get('pw') || '';
   const HASH = p.get('hash') || '';
@@ -197,7 +212,7 @@
     // vdo treats the iframe as a guest arriving and renders its whole
     // "Join Room with Camera" UI instead of the feed.
     let u = 'https://vdo.ninja/?view=' + encodeURIComponent(streamId) +
-            '&scene&cover&transparent&autostart&cleanoutput&noaudio=0';
+            '&scene&cover&transparent&autostart&cleanoutput';
     if (ROOM) u += '&room=' + encodeURIComponent(ROOM);
     if (HASH) u += '&hash=' + encodeURIComponent(HASH);
     else if (PW) u += '&password=' + encodeURIComponent(PW);
@@ -280,20 +295,7 @@
       t.rl.textContent = person.role || '';
       t.phb.textContent = ((person.role || person.name || '?').slice(0, 2)).toUpperCase();
 
-      // Feed: created once per streamId, then left completely alone.
-      const sid = (person.streamId || '').trim();
-      if (sid !== (lastFeeds[person.id] || '')) {
-        lastFeeds[person.id] = sid;
-        if (t.frame) { t.frame.remove(); t.frame = null; }
-        if (sid) {
-          const f = document.createElement('iframe');
-          f.allow = 'autoplay; camera; microphone; fullscreen';
-          f.src = feedUrl(sid);
-          t.root.insertBefore(f, t.root.firstChild.nextSibling);
-          t.frame = f;
-        }
-      }
-      t.ph.style.display = sid ? 'none' : '';
+      t.root.classList.toggle('empty', !(person.streamId || '').trim());
     }
 
     $('ep').textContent = n.episode || '';
@@ -309,6 +311,32 @@
     $('dice-label').textContent = n.diceLabel || '';
     $('dice-value').textContent = n.diceValue || '';
     $('dice-outcome').textContent = n.diceOutcome || '';
+    reportTiles(cast, areas);
+  }
+
+  // The server places one OBS browser source per cast member on top of
+  // these rects. Measured, never computed: the CSS grid owns the truth,
+  // and a design tweak must never need matching maths on the server.
+  let lastRects = '';
+  function reportTiles(cast, areas) {
+    if (IS_BACK) return;          // one reporter only, or they fight
+    requestAnimationFrame(() => {
+      const out = {};
+      for (const person of cast) {
+        const t = tiles[person.id];
+        if (!t) continue;
+        if (!areas[person.id]) { out[person.id] = null; continue; }
+        const r = t.root.getBoundingClientRect();
+        out[person.id] = [Math.round(r.left), Math.round(r.top),
+                          Math.round(r.width), Math.round(r.height)];
+      }
+      const key = JSON.stringify(out);
+      if (key === lastRects) return;
+      lastRects = key;
+      fetch(API + '/ntk/tiles', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: key }).catch(() => {});
+    });
   }
 
   let bootNonce = null;
@@ -322,6 +350,6 @@
     fetch(API + '/state').then(r => r.json()).then((s) => { render(s); }).catch(() => {});
   }
   poll();
-  setInterval(poll, 5000);
+  setInterval(poll, 1000);
   beacon('loaded');
 </script>
