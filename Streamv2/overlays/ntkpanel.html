@@ -39,6 +39,12 @@
           font-family:inherit; }
   input.role { color:var(--lilac); }
   input.sid { color:#7FD1C4; font-size:12px; }
+  .pick { font-family:var(--narrow); font-weight:700; font-size:12px;
+          letter-spacing:.14em; color:#5C4A70; background:var(--black);
+          border:1px solid var(--edge); cursor:pointer; padding:6px 0; }
+  .pick.on { background:var(--lilac); border-color:var(--lilac);
+             color:var(--black); }
+  #pickhint.warn { color:var(--accent); }
   .dot { width:28px; height:28px; cursor:pointer; border:1px solid var(--edge);
          background:var(--black); color:var(--edge); font-size:11px; }
   .dot.on { background:var(--accent); border-color:var(--accent); color:var(--ink); }
@@ -77,13 +83,9 @@
   <div class="card">
     <h2>CAST</h2>
     <div id="cast"></div>
-    <div class="pair">
-      <div><span class="lbl">2-UP LEFT</span><select id="duoA"></select></div>
-      <div><span class="lbl">2-UP RIGHT</span><select id="duoB"></select></div>
-    </div>
-    <div class="pair" style="grid-template-columns:1fr">
-      <div><span class="lbl">SOLO / SPOTLIGHT</span><select id="soloId"></select></div>
-    </div>
+    <div id="pickhint" class="note">Click a slot number to pick who is on
+      camera &mdash; one for SOLO, two for 2-UP. The &#9679; dot is who is
+      speaking, and is separate.</div>
   </div>
 
   <div class="card">
@@ -113,14 +115,32 @@
   const API = '';
   const $ = (id) => document.getElementById(id);
   const SCENES = {
-    all5:  ['ALL FIVE', 'HOST + CHAT / 2x2'],
-    four:  ['PLAYERS',  'NO HOST · 2x2'],
+    all5:  ['ALL FIVE', 'GM + CHAT / 2x2'],
+    four:  ['PLAYERS',  'NO GM · 2x2'],
     duo:   ['2-UP',     'INTERROGATION'],
     solo:  ['SOLO',     'SPOTLIGHT'],
-    host:  ['HOST',     'SOLO'],
+    host:  ['GM',       'SOLO'],
     media: ['EVIDENCE', 'MEDIA + STRIP'],
   };
   let ntk = null, dirty = 0;
+  // Director selection: ids in click order. Purely local - the stage only
+  // ever sees the resulting scene + slots.
+  let sel = [];
+  // Which scenes consume a selection, and how many they need.
+  const NEEDS = { solo: 1, duo: 2 };
+
+  function togglePick(id) {
+    const i = sel.indexOf(id);
+    if (i >= 0) sel.splice(i, 1);
+    else { sel.push(id); if (sel.length > 2) sel.shift(); }
+    paint();
+  }
+
+  function hint(msg, warn) {
+    const el = $('pickhint');
+    el.textContent = msg;
+    el.classList.toggle('warn', Boolean(warn));
+  }
 
   function push(patch) {
     ntk = Object.assign({}, ntk, patch);
@@ -137,6 +157,21 @@
     push({ cast });
   }
 
+  function goScene(k) {
+    const need = NEEDS[k] || 0;
+    if (need && sel.length < need) {
+      hint('Pick ' + need + (need > 1 ? ' people' : ' person') +
+           ' first - click the slot numbers.', true);
+      return;
+    }
+    if (k === 'solo') push({ scene: 'solo', soloId: sel[sel.length - 1] });
+    else if (k === 'duo') push({ scene: 'duo', duoA: sel[0], duoB: sel[1] });
+    else push({ scene: k });
+    hint(DEFAULT_HINT, false);
+  }
+  const DEFAULT_HINT = 'Click a slot number to pick who is on camera - one ' +
+    'for SOLO, two for 2-UP. The ● dot is who is speaking, and is separate.';
+
   function paint() {
     if (!ntk) return;
     // scenes
@@ -148,7 +183,7 @@
         const nb = document.createElement('b'); nb.textContent = SCENES[k][0];
         const ni = document.createElement('i'); ni.textContent = SCENES[k][1];
         b.append(nb, ni);
-        b.onclick = () => push({ scene: k });
+        b.onclick = () => goScene(k);
         sc.appendChild(b);
       }
     }
@@ -160,7 +195,8 @@
       box.innerHTML = '';
       ntk.cast.forEach((c, i) => {
         const row = document.createElement('div'); row.className = 'row';
-        const slot = document.createElement('span'); slot.className = 'slot'; slot.textContent = c.slot;
+        const slot = document.createElement('button'); slot.className = 'pick';
+        slot.onclick = () => togglePick(c.id);
         const nm = document.createElement('input'); nm.placeholder = 'NAME';
         nm.oninput = () => pushCast(i, 'name', nm.value);
         const rl = document.createElement('input'); rl.className = 'role'; rl.placeholder = 'CHARACTER';
@@ -172,7 +208,7 @@
         dot.onclick = () => push({ speaking: c.id, soloId: c.id });
         row.append(slot, nm, rl, sid, dot);
         box.appendChild(row);
-        row._els = { nm, rl, sid, dot };
+        row._els = { nm, rl, sid, dot, slot, id: c.id, slotText: c.slot };
       });
     }
     ntk.cast.forEach((c, i) => {
@@ -181,24 +217,10 @@
       if (document.activeElement !== e.rl) e.rl.value = c.role || '';
       if (document.activeElement !== e.sid) e.sid.value = c.streamId || '';
       e.dot.classList.toggle('on', ntk.speaking === c.id);
+      const at = sel.indexOf(c.id);
+      e.slot.textContent = at >= 0 ? String(at + 1) : e.slotText;
+      e.slot.classList.toggle('on', at >= 0);
     });
-
-    // selects
-    for (const key of ['duoA', 'duoB', 'soloId']) {
-      const sel = $(key);
-      const want = ntk.cast.map(c => c.id).join(',');
-      if (sel.dataset.built !== want) {
-        sel.innerHTML = '';
-        for (const c of ntk.cast) {
-          const o = document.createElement('option');
-          o.value = c.id; o.textContent = (c.name || c.slot) + (c.role ? ' · ' + c.role : '');
-          sel.appendChild(o);
-        }
-        sel.dataset.built = want;
-        sel.onchange = () => push({ [key]: sel.value });
-      }
-      sel.value = ntk[key];
-    }
 
     // text fields
     for (const key of ['episode', 'caseTitle', 'diceLabel', 'diceValue', 'diceOutcome']) {

@@ -134,10 +134,10 @@ DEFAULT_STATE = {
     # streamId is the VDO Ninja push id that person keeps all season.
     "ntk": {
         "scene": "all5",          # all5|four|duo|solo|host|media
-        "speaking": "p2",
-        "soloId": "p2",
+        "speaking": "h",
+        "soloId": "p1",
         "duoA": "p1",
-        "duoB": "p3",
+        "duoB": "p2",
         "episode": "EP 01",
         "caseTitle": "",
         "chatOn": True,
@@ -145,12 +145,20 @@ DEFAULT_STATE = {
         "diceLabel": "",
         "diceValue": "",
         "diceOutcome": "",
+        # Five ON-CAMERA seats. The show's host/director (Athan) runs the
+        # room and the panel but is deliberately NOT a tile - he never
+        # appears on stream, so there is no seat for him here.
         "cast": [
-            {"id": "h",  "slot": "GM", "name": "",  "role": "", "streamId": ""},
-            {"id": "p1", "slot": "01", "name": "",  "role": "", "streamId": ""},
-            {"id": "p2", "slot": "02", "name": "",  "role": "", "streamId": ""},
-            {"id": "p3", "slot": "03", "name": "",  "role": "", "streamId": ""},
-            {"id": "p4", "slot": "04", "name": "",  "role": "", "streamId": ""},
+            {"id": "h",  "slot": "GM", "name": "GIANCARLO", "role": "",
+             "streamId": "ntk_gm"},
+            {"id": "p1", "slot": "01", "name": "LANDON",  "role": "",
+             "streamId": "ntk_landon"},
+            {"id": "p2", "slot": "02", "name": "KIRSTEN", "role": "",
+             "streamId": "ntk_kirsten"},
+            {"id": "p3", "slot": "03", "name": "KAYLA",   "role": "",
+             "streamId": "ntk_kayla"},
+            {"id": "p4", "slot": "04", "name": "HANNAH",  "role": "",
+             "streamId": "ntk_hannah"},
         ],
     },
 
@@ -597,7 +605,17 @@ def update_state(patch: dict) -> dict:
             patch["brbBackAt"] = ""
     with _lock:
         for k in DEFAULT_STATE:
-            if k in patch:
+            if k not in patch:
+                continue
+            # Nested dicts (ntk, themes) MERGE key by key. A partial post
+            # like {"ntk":{"scene":"duo"}} used to replace the whole dict
+            # and take the cast with it - one careless patch could empty
+            # the show mid-session.
+            if isinstance(DEFAULT_STATE[k], dict) and isinstance(patch[k], dict):
+                merged = dict(_state.get(k) or {})
+                merged.update(patch[k])
+                _state[k] = merged
+            else:
                 _state[k] = patch[k]
         if "show" in patch or "themes" in patch:
             _sync_bg_sources()
