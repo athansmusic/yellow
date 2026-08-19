@@ -28,7 +28,28 @@ from pathlib import Path
 import websocket
 
 HERE = Path(__file__).resolve().parent
-SNAP = HERE / "obs-snapshot.json"
+LEGACY_SNAP = HERE / "obs-snapshot.json"
+
+
+def snap_path(obs: "Obs") -> Path:
+    """One snapshot file PER SCENE COLLECTION.
+
+    Two shows share this machine now; running --snapshot on the NEED TO
+    KNOW collection must never clobber the REDACTED restore point. The
+    pre-existing obs-snapshot.json is migrated (renamed) to the current
+    collection's file the first time this runs, since it was taken from
+    the only collection that existed back then.
+    """
+    d, st = obs.req("GetSceneCollectionList")
+    name = (d or {}).get("currentSceneCollectionName", "") if st["result"] else ""
+    safe = "".join(c if c.isalnum() or c in "-_ " else "_" for c in name).strip()
+    if not safe:
+        return LEGACY_SNAP
+    per = HERE / f"obs-snapshot.{safe}.json"
+    if not per.exists() and LEGACY_SNAP.exists():
+        LEGACY_SNAP.rename(per)
+        print(f"(migrated obs-snapshot.json -> {per.name})")
+    return per
 KEYS = ("positionX", "positionY", "scaleX", "scaleY",
         "boundsType", "boundsAlignment", "boundsWidth", "boundsHeight",
         "cropLeft", "cropRight", "cropTop", "cropBottom", "alignment")
@@ -59,7 +80,7 @@ class Obs:
             pass
 
 
-def take_snapshot(obs: Obs) -> None:
+def take_snapshot(obs: Obs, snap_file: Path) -> None:
     snap = {"taken": time.strftime("%Y-%m-%d %H:%M:%S"), "scenes": {}, "inputs": {}}
     d, _ = obs.req("GetSceneList")
     snap["current_program_scene"] = d.get("currentProgramSceneName")
@@ -83,8 +104,9 @@ def take_snapshot(obs: Obs) -> None:
                 {"name": f["filterName"], "kind": f["filterKind"],
                  "enabled": f["filterEnabled"], "settings": f["filterSettings"]}
                 for f in ff["filters"]]
-    SNAP.write_text(json.dumps(snap, indent=2), encoding="utf-8")
-    print(f"snapshot written: {len(snap['scenes'])} scenes, {len(snap['inputs'])} inputs")
+    snap_file.write_text(json.dumps(snap, indent=2), encoding="utf-8")
+    print(f"snapshot written to {snap_file.name}: "
+          f"{len(snap['scenes'])} scenes, {len(snap['inputs'])} inputs")
 
 
 def main() -> int:
@@ -102,16 +124,18 @@ def main() -> int:
               f"obs-websocket enabled?")
         return 1
 
+    snap_file = snap_path(obs)
+
     if a.snapshot:
-        take_snapshot(obs)
+        take_snapshot(obs, snap_file)
         obs.close()
         return 0
 
-    if not SNAP.exists():
-        print(f"no snapshot at {SNAP}. Run with --snapshot first.")
+    if not snap_file.exists():
+        print(f"no snapshot at {snap_file}. Run with --snapshot first.")
         obs.close()
         return 1
-    snap = json.loads(SNAP.read_text(encoding="utf-8"))
+    snap = json.loads(snap_file.read_text(encoding="utf-8"))
     print(f"snapshot taken {snap['taken']}")
     print("DRY RUN - nothing will change\n" if not a.apply else "APPLYING\n")
 
