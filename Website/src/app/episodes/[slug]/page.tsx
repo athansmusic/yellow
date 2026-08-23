@@ -93,6 +93,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
   const title = ep.kind === "episode" ? `${ep.code}: ${ep.shortTitle}` : ep.title;
   const url = `${SITE.url}/episodes/${ep.slug}`;
   const art = ep.image || "/brand/showart.jpeg";
+  const readerUrl = transcript ? `https://www.tru.show/transcripts/${ep.kind === "postmortem" ? "postmortem" : "redacted"}/s${transcript.episode.season}e${transcript.episode.number}` : undefined;
   const boilerplate = new Set(["Co-created", "Executive producers", "Writing", "Music and Sound Design", "Dialogue Editing", "Show art", "Associated producers", "Concept"].map((x) => x.toLowerCase()));
   const episodeCredits = ep.credits.filter((c) => !boilerplate.has(c.label.toLowerCase()));
   const showCredits = ep.credits.filter((c) => boilerplate.has(c.label.toLowerCase()));
@@ -214,7 +215,13 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
                       </div>
                     ))}
                   </dl>
-                  <p className="mt-5 text-xs text-muted">Transcript from the production script, matched to the final audio.</p>
+                  <p className="mt-5 text-xs text-muted">
+                    Transcript from the production script, matched to the final audio.{" "}
+                    <a href={readerUrl} target="_blank" rel="noreferrer" className="text-yellow underline underline-offset-4">
+                      Open in the accessible reader
+                    </a>{" "}
+                    (dyslexia-friendly font, large text, dark or paper mode, PDF download).
+                  </p>
                 </div>
               </details>
             </section>
