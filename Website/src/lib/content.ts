@@ -87,13 +87,27 @@ const SEEDS: Docs = { aberrations: seedAberrations as Aberration[], like: seedLi
 const useBlob = () => !!process.env.BLOB_READ_WRITE_TOKEN;
 const blobKey = (name: DocName) => `content/${name}.json`;
 
+/**
+ * The blob's public URL, derived from the RW token (vercel_blob_rw_<storeId>_...). Building it
+ * ourselves skips list(), which is eventually consistent and can point at a pre-save snapshot.
+ */
+async function blobUrl(name: DocName): Promise<string | null> {
+  const m = process.env.BLOB_READ_WRITE_TOKEN?.match(/^vercel_blob_rw_([A-Za-z0-9]+)_/);
+  if (m) return `https://${m[1].toLowerCase()}.public.blob.vercel-storage.com/${blobKey(name)}`;
+  const { list } = await import("@vercel/blob");
+  const { blobs } = await list({ prefix: blobKey(name), limit: 1 });
+  return blobs.find((x) => x.pathname === blobKey(name))?.url ?? null;
+}
+
 async function readRaw<N extends DocName>(name: N): Promise<Docs[N]> {
   if (useBlob()) {
-    const { list } = await import("@vercel/blob");
-    const { blobs } = await list({ prefix: blobKey(name), limit: 1 });
-    const b = blobs.find((x) => x.pathname === blobKey(name));
-    if (!b) return SEEDS[name];
-    const r = await fetch(b.url, { cache: "no-store" });
+    const url = await blobUrl(name);
+    if (!url) return SEEDS[name];
+    // ?v= busts the Blob CDN cache (it serves overwritten files stale for up to 30 days otherwise,
+    // which made admin saves look like no-ops: the site revalidated, re-read the OLD doc, and
+    // re-cached the pages). One uncached read per doc per minute is nothing.
+    const r = await fetch(`${url}?v=${Date.now()}`, { cache: "no-store" });
+    if (r.status === 404) return SEEDS[name];
     return (await r.json()) as Docs[N];
   }
   try {
@@ -115,7 +129,8 @@ export async function setDoc<N extends DocName>(name: N, value: Docs[N]) {
   if (useBlob()) {
     const { put } = await import("@vercel/blob");
     // allowOverwrite: the SDK (v1+) refuses to replace an existing pathname otherwise, so every save after the first would throw
-    await put(blobKey(name), body, { access: "public", addRandomSuffix: false, allowOverwrite: true, contentType: "application/json" });
+    // cacheControlMaxAge 60: even if a CDN node ignores the ?v= buster, staleness is capped at a minute
+    await put(blobKey(name), body, { access: "public", addRandomSuffix: false, allowOverwrite: true, contentType: "application/json", cacheControlMaxAge: 60 });
   } else {
     await fs.writeFile(path.join(process.cwd(), FILES[name]), body, "utf8");
   }

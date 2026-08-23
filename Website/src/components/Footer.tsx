@@ -18,6 +18,7 @@ const SITE_LINKS = [
   { label: "Discord", href: "/discord" },
   { label: "About", href: "/about" },
   { label: "FAQ", href: "/faq" },
+  { label: "Bingo", href: "/bingo" },
   { label: "Fan wiki", href: EXTERNAL.wiki },
 ];
 

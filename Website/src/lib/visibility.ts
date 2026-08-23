@@ -15,6 +15,7 @@ export const HIDEABLE: { href: string; label: string; note?: string }[] = [
   { href: "/supporter-wall", label: "Supporter wall" },
   { href: "/about", label: "About" },
   { href: "/faq", label: "FAQ" },
+  { href: "/bingo", label: "Bingo" },
 ];
 
 export async function hiddenPages(): Promise<string[]> {

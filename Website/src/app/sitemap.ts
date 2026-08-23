@@ -11,7 +11,7 @@ export const revalidate = 3600;
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = SITE.url;
   const [like, aberrations, hidden] = await Promise.all([getDoc("like"), getDoc("aberrations"), hiddenPages()]);
-  const statics = ["", "/about", "/faq", "/where", "/episodes", "/cast", "/store", "/store-faq", "/store-terms", "/assets", "/supporter-wall", "/partner", "/privacy", "/fan-art", "/like", ...like.map((l) => `/like/${l.slug}`), "/aberrations", ...aberrations.map((a) => `/aberrations/${a.slug}`)].map((p) => ({
+  const statics = ["", "/about", "/faq", "/where", "/episodes", "/cast", "/store", "/store-faq", "/store-terms", "/assets", "/supporter-wall", "/partner", "/privacy", "/fan-art", "/bingo", "/like", ...like.map((l) => `/like/${l.slug}`), "/aberrations", ...aberrations.map((a) => `/aberrations/${a.slug}`)].map((p) => ({
     url: `${base}${p}`,
     changeFrequency: (p === "" || p === "/episodes" ? "weekly" : "monthly") as "weekly" | "monthly",
     priority: p === "" ? 1 : 0.7,

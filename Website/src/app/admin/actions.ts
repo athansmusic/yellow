@@ -26,7 +26,9 @@ async function storeUpload(file: FormDataEntryValue | null, key: string): Promis
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     const { put } = await import("@vercel/blob");
     const blob = await put(`uploads/${pathname}`, file, { access: "public", addRandomSuffix: false, allowOverwrite: true, contentType: file.type });
-    return blob.url;
+    // ?v= makes each upload a fresh URL: the Blob CDN caches for 30 days, so replacing an image
+    // at the same pathname would otherwise keep serving the old file
+    return `${blob.url}?v=${Date.now()}`;
   }
   const fs = await import("node:fs/promises");
   const path = await import("node:path");
