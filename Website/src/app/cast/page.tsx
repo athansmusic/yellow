@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/cast" },
 };
 
-const CORE = ["Jamie Petronis", "Athan", "Ishani Kanetkar", "Kirsten Ria", "Devin Steffens", "Joe Cliff Thompson"];
+const CORE = ["Jamie Petronis", "Athan", "Ishani Kanetkar", "Kirsten Ria", "Devin Steffens", "Joe Cliff Thompson", "Ash Millman"];
 type Member = (typeof cast)[number];
 
 const GROUPS = [
