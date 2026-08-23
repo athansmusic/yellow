@@ -47,7 +47,10 @@ function safeHtml(html: string) {
     .replace(/\son\w+="[^"]*"/gi, "")
     // Feed copy sometimes links "example.com" without a scheme, which the browser would treat as a path on our site
     .replace(/href="(?!https?:|mailto:|\/|#)([^"]+\.[a-z]{2,}[^"]*)"/gi, 'href="https://$1"')
-    .replace(/<a\s/gi, '<a target="_blank" rel="noreferrer" ');
+    .replace(/<a\s/gi, '<a target="_blank" rel="noreferrer" ')
+    // House style: no em/en dashes
+    .replace(/(\d)\s?[\u2013\u2014]\s?(\d)/g, "$1 to $2")
+    .replace(/\s?[\u2013\u2014]\s?/g, ", ");
 }
 
 function castFor(actor: string) {

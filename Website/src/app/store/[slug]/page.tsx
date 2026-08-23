@@ -25,7 +25,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const p = await getProduct((await params).slug);
   if (!p) return {};
-  return { title: p.name, description: p.description.split("\n")[0] || `${p.name}, ${money(p.priceCents)}`, alternates: { canonical: `/store/${p.slug}` }, openGraph: { images: [{ url: p.image }] } };
+  return { title: p.name, description: clip(p.description.split("\n")[0] || `${p.name}, ${money(p.priceCents)}`), alternates: { canonical: `/store/${p.slug}` }, openGraph: { images: [{ url: p.image }] } };
+}
+
+/** Search snippets cut off around 160 characters. */
+function clip(s: string, n = 158) {
+  return s.length <= n ? s : s.slice(0, n).replace(/\s+\S*$/, "") + "…";
 }
 
 /** Printful descriptions are plain text with "•" bullet lines. Split into paragraphs + bullet list. */

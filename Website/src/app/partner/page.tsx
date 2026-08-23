@@ -15,7 +15,7 @@ import awards from "@/data/awards.json";
 import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
-  title: "Advertise on [REDACTED]: Podcast Media Kit, Audience Stats & Sponsorship",
+  title: "Advertise on [REDACTED]: Media Kit & Sponsorship",
   description: "Media kit for [REDACTED], the horror comedy audio drama on the Rusty Quill Network: 1.4M+ plays, daily listens by platform, listener demographics, festival awards, press kit downloads, and host-read sponsorship options.",
   alternates: { canonical: "/partner" },
 };
