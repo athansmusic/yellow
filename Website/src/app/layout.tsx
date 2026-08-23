@@ -13,7 +13,7 @@ import { CartProvider } from "@/lib/cart";
 import { PlayerProvider } from "@/lib/player";
 import { SITE, LISTEN } from "@/lib/site";
 import { JsonLd, siteJsonLd } from "@/lib/schema";
-import { Analytics } from "@/components/Analytics";
+import { Analytics, CookieConsent } from "@/components/CookieConsent";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-montserrat", display: "swap", weight: ["400", "500", "600", "700"] });
 const nk57 = localFont({ src: "../fonts/NK57MonospaceCdEb.otf", variable: "--font-nk57", display: "swap", weight: "800" });
@@ -45,6 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </a>
         <JsonLd data={siteJsonLd()} />
         {process.env.NEXT_PUBLIC_GA_ID && <Analytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
+        {process.env.NEXT_PUBLIC_GA_ID && <CookieConsent />}
         <div aria-hidden className="pointer-events-none fixed inset-0 z-0 bg-[url('/home/site-bg.avif')] bg-cover bg-center opacity-[0.13]" />
         <div aria-hidden className="pointer-events-none fixed inset-0 z-0 bg-[url('/home/static.gif')] bg-[length:300px] opacity-[0.04] mix-blend-screen" />
         <PlayerProvider>

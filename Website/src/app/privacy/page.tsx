@@ -42,7 +42,8 @@ const STORAGE: [string, string][] = [
   ["Player position", "Where you left off in an episode and the last one you played, so Resume works"],
   ["Recent searches", "Your last few site searches, shown when you open search"],
   ["Alerts popup", "That you dismissed or completed the signup, so it doesn't nag you for 30 days"],
-  ["Analytics cookie", "Google Analytics' _ga cookie, which tells repeat visits apart"],
+  ["Cookie choice", "Whether you said OK or No thanks to the analytics cookie"],
+  ["Analytics cookie", "Google Analytics' _ga cookie, which tells repeat visits apart (only if you said OK)"],
 ];
 
 function H2({ id, children }: { id: string; children: React.ReactNode }) {
@@ -143,11 +144,11 @@ export default function Privacy() {
 
           <H2 id="analytics">Analytics and embeds</H2>
           <p>
-            We use Google Analytics 4 to count visits and see which pages get used. It sets a first-party cookie and sends anonymised usage data to Google. To opt out, install{" "}
+            We use Google Analytics 4 to count visits and see which pages get used. It only loads after you press OK on the cookie bar; choose No thanks and it never runs. It sets a first-party cookie and sends anonymised usage data to Google. You can also install{" "}
             <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noreferrer" className="text-yellow underline underline-offset-2">
               Google&apos;s opt-out browser add-on
             </a>
-            , block third-party scripts, or use your browser&apos;s tracking protection; the site works the same either way.
+            , block third-party scripts, or use your browser&apos;s tracking protection; the site works the same either way. To change your answer, clear this site&apos;s data in your browser and the bar comes back.
           </p>
           <p>Trailers are YouTube embeds in privacy-enhanced mode (youtube-nocookie.com), so YouTube only sets cookies if you play the video. The live dock checks Twitch from our server, not your browser; opening the Twitch player loads Twitch&apos;s own embed under Twitch&apos;s policy.</p>
 
