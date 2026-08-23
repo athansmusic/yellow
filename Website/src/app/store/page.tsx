@@ -8,6 +8,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { StoreHero, type HeroItem } from "@/components/StoreHero";
 import { ShowMore } from "@/components/ShowMore";
 import { StoreNav } from "@/components/StoreNav";
+import { StoreSubSelect } from "@/components/StoreSubSelect";
 import { Container } from "@/components/ui";
 import { Arrow } from "@/components/Icons";
 import { assertVisible } from "@/lib/visibility";
@@ -86,16 +87,12 @@ export default async function StorePage({ searchParams }: { searchParams: Promis
           </div>
           <StoreNav counts={counts} active={{ category, sub }} />
           {category && (
-            <nav aria-label="Subcategories" className="flex gap-2 overflow-x-auto [scrollbar-width:none] -mx-4 px-4 sm:mx-0 sm:px-0 py-3">
-              <Link href={`/store?c=${category}`} aria-current={!sub ? "page" : undefined} className={`shrink-0 px-3 py-1.5 text-sm border ${!sub ? "border-yellow text-yellow" : "border-line text-paper/85 hover:border-paper"}`}>
-                All {TAXONOMY.find((c) => c.id === category)!.label} <span className="text-muted tabular">{counts[category] ?? 0}</span>
-              </Link>
-              {TAXONOMY.find((c) => c.id === category)!.subs.filter((x) => (counts[`${category}/${x.id}`] ?? 0) > 0).map((x) => (
-                <Link key={x.id} href={`/store?c=${category}&t=${x.id}`} aria-current={sub === x.id ? "page" : undefined} className={`shrink-0 px-3 py-1.5 text-sm border ${sub === x.id ? "border-yellow text-yellow" : "border-line text-paper/85 hover:border-paper"}`}>
-                  {x.label} <span className="text-muted tabular">{counts[`${category}/${x.id}`]}</span>
-                </Link>
-              ))}
-            </nav>
+            <StoreSubSelect
+              category={category}
+              label={TAXONOMY.find((c) => c.id === category)!.label}
+              sub={sub}
+              options={TAXONOMY.find((c) => c.id === category)!.subs.filter((x) => (counts[`${category}/${x.id}`] ?? 0) > 0).map((x) => ({ id: x.id, label: x.label, count: counts[`${category}/${x.id}`] ?? 0 }))}
+            />
           )}
         </Container>
       </div>
