@@ -32,10 +32,13 @@ export function ThankYou({ names, className = "" }: { names: string[]; className
 
   const name = names[i] ?? names[0] ?? "every backer";
   return (
-    <Link href="/supporter-wall" className={`inline-flex items-baseline justify-center gap-1.5 text-sm text-white/80 hover:text-white ${className}`} aria-live="off">
-      <span>Thank you to</span>
-      <span className={`display text-lg text-yellow transition-opacity duration-100 ${fade ? "opacity-0" : "opacity-100"}`}>{name}</span>
-      <span className="text-white/60">· 313% funded on Kickstarter</span>
+    // Fixed height and a single clipped line so a long name never reflows the section.
+    <Link href="/supporter-wall" className={`grid grid-cols-[auto_minmax(0,1fr)] sm:grid-cols-[auto_minmax(0,1fr)_auto] items-baseline justify-center gap-x-1.5 h-7 overflow-hidden text-sm text-white/80 hover:text-white ${className}`} aria-live="off">
+      <span className="whitespace-nowrap">Thank you to</span>
+      <span className={`display text-lg text-yellow truncate transition-opacity duration-100 ${fade ? "opacity-0" : "opacity-100"}`} title={name}>
+        {name}
+      </span>
+      <span className="hidden sm:inline whitespace-nowrap text-white/60">· 313% funded on Kickstarter</span>
     </Link>
   );
 }

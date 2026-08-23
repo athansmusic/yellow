@@ -344,7 +344,7 @@ export default async function Home() {
             <Heading eyebrow="Episode alerts">Know when it drops</Heading>
             <p className="mt-4 text-paper/85 max-w-prose">An email whenever an episode drops, plus the occasional update. Sign up and get 10% off store orders of $25 or more. Unsubscribe any time.</p>
           </div>
-          <NewsletterForm source="website-home" />
+          <NewsletterForm source="website-home" promo={settings?.promoEnabled && settings.promoCode ? { code: settings.promoCode } : null} />
         </div>
       </Section>
     </>

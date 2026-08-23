@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 
-export function NewsletterForm({ compact = false, onSuccess, source = "website" }: { compact?: boolean; onSuccess?: () => void; source?: string }) {
+/** `promo` (from Site settings) is revealed after a successful signup. */
+export function NewsletterForm({ compact = false, onSuccess, source = "website", promo }: { compact?: boolean; onSuccess?: () => void; source?: string; promo?: { code: string } | null }) {
   const [state, setState] = useState<"idle" | "busy" | "ok" | "err">("idle");
   const [msg, setMsg] = useState("");
 
@@ -41,6 +42,20 @@ export function NewsletterForm({ compact = false, onSuccess, source = "website" 
       setState("err");
       setMsg("Something went wrong. Please try again.");
     }
+  }
+
+  if (state === "ok" && promo?.code) {
+    return (
+      <div role="status" className="border border-yellow/60 bg-yellow/5 p-5">
+        <p className="display text-2xl">You&apos;re in.</p>
+        <p className="mt-1 text-paper/85">Your store code: 10% off orders of $25 or more.</p>
+        <p className="mt-3 display text-4xl text-yellow tracking-wider select-all">{promo.code}</p>
+        <p className="mt-2 text-xs text-muted">Enter it in the promo code box at checkout. It&apos;s in your welcome email too.</p>
+        <Link href="/store" className="btn btn-yellow mt-5">
+          Go to the store
+        </Link>
+      </div>
+    );
   }
 
   return (
