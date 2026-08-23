@@ -232,7 +232,7 @@ export function SearchOverlay() {
       <div className="p-4 sm:p-6">
         {open && <SearchPanel onNavigate={() => setOpen(false)} />}
         <p className="mt-3 text-[11px] text-muted">
-          <kbd className="border border-line px-1">Esc</kbd> to close · <kbd className="border border-line px-1">↑</kbd> <kbd className="border border-line px-1">↓</kbd> to move · <kbd className="border border-line px-1">Enter</kbd> to open
+          <kbd className="border border-line px-1">Esc</kbd> to close
         </p>
       </div>
     </dialog>

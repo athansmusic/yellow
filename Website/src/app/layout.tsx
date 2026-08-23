@@ -20,10 +20,10 @@ const nk57 = localFont({ src: "../fonts/NK57MonospaceCdEb.otf", variable: "--fon
 const nk57wide = localFont({ src: "../fonts/NK57MonospaceExBk.otf", variable: "--font-nk57-wide", display: "swap", weight: "400" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE.url),
+  metadataBase: new URL(process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : SITE.url),
   title: { default: `${SITE.name}: ${SITE.tagline}`, template: `%s · [REDACTED]` },
-  description:
-    "REDACTED is a horror comedy audio drama from Hush Studios on the Rusty Quill network. A failed actor assumes his dead twin's identity and lands in a secret agency that handles the paranormal. New episodes Fridays 9/8c.",
+  // Under 160 characters: search results and social cards truncate past that.
+  description: "Horror comedy audio drama from Hush Studios on the Rusty Quill network. A failed actor takes his dead twin's identity and lands in a secret paranormal agency.",
   keywords: ["REDACTED podcast", "horror comedy audio drama", "fiction podcast", "monster of the week podcast", "Rusty Quill", "Hush Studios", "Jacob Kane", "audio drama 2026"],
   openGraph: { type: "website", siteName: "[REDACTED]", locale: "en_US", images: [{ url: "/brand/share.png", width: 1200, height: 630, alt: "[REDACTED]: a horror comedy audio drama" }] },
   twitter: { card: "summary_large_image", site: "@TheRedactedUnit" },

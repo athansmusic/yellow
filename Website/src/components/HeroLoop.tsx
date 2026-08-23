@@ -7,18 +7,30 @@ import { Pause, Play } from "./Icons";
 export function HeroLoop() {
   const ref = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(false);
+  // Phones get the still only (no 1.5 MB download); wider screens load the loop after the page has painted.
+  const [wantVideo, setWantVideo] = useState(false);
 
   useEffect(() => {
-    const v = ref.current;
-    if (!v) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      v.pause();
+    const mq = window.matchMedia("(min-width: 640px)");
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    if (!mq.matches || reduce || conn?.saveData) {
       setPaused(true);
+      return;
     }
+    const start = () => setWantVideo(true);
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+    return () => window.removeEventListener("load", start);
   }, []);
 
   const toggle = () => {
     const v = ref.current;
+    if (!wantVideo) {
+      setWantVideo(true);
+      setPaused(false);
+      return;
+    }
     if (!v) return;
     if (v.paused) {
       v.play().catch(() => {});
@@ -31,10 +43,15 @@ export function HeroLoop() {
 
   return (
     <>
-      <video ref={ref} className="absolute inset-0 w-full h-full object-cover object-[30%_center] lg:object-[left_60%] min-[1800px]:object-[left_75%]" autoPlay muted loop playsInline poster="/video/hero-bg-poster.jpg" aria-hidden>
-        <source src="/video/hero-bg.webm" type="video/webm" />
-        <source src="/video/hero-bg.mp4" type="video/mp4" />
-      </video>
+      {/* Poster is the LCP element: a plain img, eager, high priority */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/video/hero-bg-poster.jpg" alt="" fetchPriority="high" decoding="async" className="absolute inset-0 w-full h-full object-cover object-[30%_center] lg:object-[left_60%] min-[1800px]:object-[left_75%]" aria-hidden />
+      {wantVideo && (
+        <video ref={ref} className="absolute inset-0 w-full h-full object-cover object-[30%_center] lg:object-[left_60%] min-[1800px]:object-[left_75%]" autoPlay muted loop playsInline preload="auto" aria-hidden>
+          <source src="/video/hero-bg.webm" type="video/webm" />
+          <source src="/video/hero-bg.mp4" type="video/mp4" />
+        </video>
+      )}
       <button
         type="button"
         onClick={toggle}

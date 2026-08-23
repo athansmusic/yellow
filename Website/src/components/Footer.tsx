@@ -38,7 +38,7 @@ export function Footer({ hidden = [] }: { hidden?: string[] }) {
             {SOCIAL.map((s) => {
               const I = ICONS[s.icon];
               return (
-                <a key={s.name} href={s.href} target={s.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer" aria-label={s.name} className="p-2 text-muted hover:text-yellow">
+                <a key={s.name} href={s.href} target="_blank" rel="noreferrer" aria-label={s.name} className="p-2 text-muted hover:text-yellow">
                   <I width={20} height={20} />
                 </a>
               );
