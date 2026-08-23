@@ -22,6 +22,49 @@ export function curtainCode(code?: string | null): string | null {
   return m ? `s${Number(m[1])}e${Number(m[2])}` : null;
 }
 
+async function fetchTranscript(showSlug: string, c: string): Promise<Transcript | null> {
+  try {
+    const res = await fetch(`${CURTAIN}/api/public-transcript?slug=${showSlug}&code=${c}`, { next: { revalidate: 3600, tags: ["transcripts"] } });
+    if (!res.ok) return null;
+    const data = (await res.json()) as Transcript;
+    return Array.isArray(data.lines) && data.lines.length ? data : null;
+  } catch {
+    return null;
+  }
+}
+
+const normTitle = (t: string) =>
+  t
+    .toLowerCase()
+    .replace(/^\s*postmortem\s*:\s*/, "")
+    .replace(/\s*\(part\s*\d+\)\s*$/, "")
+    .replace(/[^a-z0-9]+/g, "");
+
+/**
+ * Postmortem transcripts are a separate show in Curtain (slug "postmortem", numbered s1e1, s1e2, ...) and the
+ * feed items on this site carry titles, not numbers. Walk the numbers once (cached), index by title.
+ */
+async function postmortemIndex(): Promise<Map<string, Transcript>> {
+  const map = new Map<string, Transcript>();
+  let misses = 0;
+  for (let n = 1; n <= 80 && misses < 4; n++) {
+    const t = await fetchTranscript("postmortem", `s1e${n}`);
+    if (!t) {
+      misses++;
+      continue;
+    }
+    misses = 0;
+    map.set(normTitle(t.episode.title), t);
+  }
+  return map;
+}
+
+/** Transcript for a Postmortem item, matched by title ("Postmortem: False Start" -> "False Start"). */
+export async function getPostmortemTranscript(title?: string | null): Promise<Transcript | null> {
+  if (!title) return null;
+  return (await postmortemIndex()).get(normTitle(title)) ?? null;
+}
+
 export async function getTranscript(code?: string | null): Promise<Transcript | null> {
   const c = curtainCode(code);
   if (!c) return null;

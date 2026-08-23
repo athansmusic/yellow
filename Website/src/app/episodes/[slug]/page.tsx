@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllItems, getItemBySlug, getNeighbours, formatDate, formatDuration, toTrack } from "@/lib/feed";
 import { getPlatformLinks } from "@/lib/episodeLinks";
-import { getTranscript } from "@/lib/curtain";
+import { getPostmortemTranscript, getTranscript } from "@/lib/curtain";
 import { getDoc } from "@/lib/content";
 import { ResumeBadge } from "@/components/ResumeBadge";
 import { LISTEN, SITE } from "@/lib/site";
@@ -69,7 +69,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
     getPlatformLinks(ep.title),
     getAllItems().catch(() => []),
     getDoc("aberrations").catch(() => []),
-    ep.kind === "episode" ? getTranscript(ep.code) : Promise.resolve(null),
+    ep.kind === "episode" ? getTranscript(ep.code) : ep.kind === "postmortem" ? getPostmortemTranscript(ep.shortTitle) : Promise.resolve(null),
   ]);
   const norm = (x?: string) => (x ?? "").toLowerCase().replace(/[\s:]+/g, "");
   const stripPart = (x: string) => x.replace(/\s*\(part \d+\)\s*$/i, "");

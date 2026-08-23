@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { getAllItems } from "@/lib/feed";
-import { curtainCode, hasLockedTranscript } from "@/lib/curtain";
+import { curtainCode, getPostmortemTranscript, hasLockedTranscript } from "@/lib/curtain";
 
 export const dynamic = "force-dynamic";
 
 /** Which episodes have a transcript locked in Curtain (cached 1 h per episode; Curtain can bust it via /api/revalidate). */
 export default async function TranscriptsAdmin() {
-  const all = (await getAllItems().catch(() => [])).filter((e) => e.kind === "episode");
-  const rows = await Promise.all(all.map(async (e) => ({ e, done: await hasLockedTranscript(e.code) })));
+  const all = (await getAllItems().catch(() => [])).filter((e) => e.kind === "episode" || e.kind === "postmortem");
+  const rows = await Promise.all(all.map(async (e) => ({ e, done: e.kind === "episode" ? await hasLockedTranscript(e.code) : (await getPostmortemTranscript(e.shortTitle)) !== null })));
   const done = rows.filter((r) => r.done).length;
   const groups: [string, typeof rows][] = [
-    ["Episodes", rows],
+    ["Episodes", rows.filter((r) => r.e.kind === "episode")],
+    ["Postmortem", rows.filter((r) => r.e.kind === "postmortem")],
   ];
 
   return (
@@ -36,9 +37,11 @@ export default async function TranscriptsAdmin() {
                   <Link href={`/episodes/${e.slug}`} className="min-w-0 flex-1 truncate hover:text-yellow">
                     {e.title}
                   </Link>
-                  <a href={done ? `https://www.tru.show/transcripts/redacted/${curtainCode(e.code)}` : "https://www.opencurtain.app/transcripts"} target="_blank" rel="noreferrer" className="shrink-0 text-xs text-muted underline underline-offset-4 hover:text-yellow">
-                    {done ? "tru.show" : "Curtain"}
-                  </a>
+                  {e.kind === "episode" && (
+                    <a href={done ? `https://www.tru.show/transcripts/redacted/${curtainCode(e.code)}` : "https://www.opencurtain.app/transcripts"} target="_blank" rel="noreferrer" className="shrink-0 text-xs text-muted underline underline-offset-4 hover:text-yellow">
+                      {done ? "tru.show" : "Curtain"}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
