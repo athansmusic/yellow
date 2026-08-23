@@ -5,6 +5,9 @@ import { unstable_cache, revalidateTag, revalidatePath } from "next/cache";
 import seedAberrations from "@/data/aberrations.json";
 import seedLike from "@/data/like.json";
 import seedSettings from "@/data/settings.json";
+import seedFeatured from "@/data/featured.json";
+import seedStoreCopy from "@/data/store-copy.json";
+import seedFanart from "@/data/fanart.json";
 
 /**
  * Editable site content. The JSON files in src/data are the seed and the local-dev store;
@@ -78,7 +81,8 @@ const FILES: Record<DocName, string> = {
   storeCopy: "src/data/store-copy.json",
   fanart: "src/data/fanart.json",
 };
-const SEEDS: Docs = { aberrations: seedAberrations as Aberration[], like: seedLike as LikePage[], featured: { slugs: [] }, settings: seedSettings as Settings, storeCopy: {}, fanart: [] };
+// Committed JSON is the seed everywhere; in prod it is what you get until a doc has been saved to Blob once.
+const SEEDS: Docs = { aberrations: seedAberrations as Aberration[], like: seedLike as LikePage[], featured: seedFeatured as Featured, settings: seedSettings as Settings, storeCopy: seedStoreCopy as StoreCopy, fanart: seedFanart as FanArt[] };
 
 const useBlob = () => !!process.env.BLOB_READ_WRITE_TOKEN;
 const blobKey = (name: DocName) => `content/${name}.json`;

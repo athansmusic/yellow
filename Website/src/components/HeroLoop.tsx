@@ -31,7 +31,7 @@ export function HeroLoop() {
 
   return (
     <>
-      <video ref={ref} className="absolute inset-0 w-full h-full object-cover object-[30%_center] lg:object-left" autoPlay muted loop playsInline poster="/video/hero-bg-poster.jpg" aria-hidden>
+      <video ref={ref} className="absolute inset-0 w-full h-full object-cover object-[30%_center] lg:object-[left_60%] min-[1800px]:object-[left_75%]" autoPlay muted loop playsInline poster="/video/hero-bg-poster.jpg" aria-hidden>
         <source src="/video/hero-bg.webm" type="video/webm" />
         <source src="/video/hero-bg.mp4" type="video/mp4" />
       </video>
