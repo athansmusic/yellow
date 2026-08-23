@@ -23,7 +23,7 @@ function parts(ms: number) {
  * "Catch it a day early": the Thursday live premiere on Twitch. Big countdown, Twitch purple,
  * and it flips to a red "live now" state during the stream window.
  */
-export function EarlyAccess() {
+export function EarlyAccess({ onBreak = false }: { onBreak?: boolean }) {
   const now = useClock();
   const live = now ? isLive(LIVESTREAM, now) : false;
   const next = now ? nextStart(LIVESTREAM, now) : null;
@@ -44,12 +44,12 @@ export function EarlyAccess() {
               <span className={`absolute inline-flex h-full w-full rounded-full ${live ? "bg-white" : "bg-[#bf94ff]"} opacity-75 animate-ping`} />
               <span className={`relative inline-flex size-2.5 rounded-full ${live ? "bg-white" : "bg-[#bf94ff]"}`} />
             </span>
-            {live ? "Live right now" : tonight ? "Tonight · 9/8c on Twitch" : "Thursdays · 9/8c · Live on Twitch"}
+            {live ? "Live right now" : onBreak ? "Live on Twitch" : tonight ? "Tonight · 9/8c on Twitch" : "Thursdays · 9/8c · Live on Twitch"}
           </p>
-          <h2 className="display text-5xl sm:text-7xl mt-3 text-white">{live ? "We're live." : "Catch it a day early."}</h2>
-          <p className="mt-4 max-w-prose text-white/85 text-lg">Every new episode premieres live on Twitch on Thursday night, a full day before it hits the feed.</p>
+          <h2 className="display text-5xl sm:text-7xl mt-3 text-white">{live ? "We're live." : onBreak ? "Between seasons, still live." : "Catch it a day early."}</h2>
+          <p className="mt-4 max-w-prose text-white/85 text-lg">{onBreak ? "We stream with cast and crew often! Follow the channel to see more!" : "Every new episode premieres live on Twitch on Thursday night, a full day before it hits the feed."}</p>
 
-          {!live && left && (
+          {!live && !onBreak && left && (
             <div className="mt-7 flex gap-3 sm:gap-5" aria-label="Time until the next live premiere">
               {(
                 [

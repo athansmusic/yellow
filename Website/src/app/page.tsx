@@ -17,6 +17,7 @@ import { TrailerButton } from "@/components/TrailerButton";
 import { HeroLoop } from "@/components/HeroLoop";
 import { PlayButton } from "@/components/AudioPlayer";
 import { Countdown } from "@/components/Countdown";
+import { ReturnsCountdown } from "@/components/ReturnsCountdown";
 import { Reveal } from "@/components/Reveal";
 import { EarlyAccess } from "@/components/LiveNow";
 import { ProductCard } from "@/components/ProductCard";
@@ -43,6 +44,9 @@ export default async function Home() {
   const picked = featured.slugs.map((s) => products.find((p) => p.slug === s)).filter((p): p is (typeof products)[number] => !!p);
   const merch = picked.length ? picked : products.slice(0, 4);
   const latestPM = postmortems[0];
+  const onBreak = settings?.seasonStatus === "break";
+  const returnsAt = onBreak && settings?.nextSeasonDate ? settings.nextSeasonDate : null;
+  const nextLabel = settings?.nextSeasonLabel || "Season 2";
   const CORE = ["Jamie Petronis", "Athan", "Ishani Kanetkar", "Kirsten Ria", "Devin Steffens", "Joe Cliff Thompson"];
   const core = CORE.map((n) => cast.find((c) => c.actor === n)).filter(Boolean) as typeof cast;
 
@@ -70,9 +74,15 @@ export default async function Home() {
                 {settings.seasonNote && <span className="text-paper/70 normal-case tracking-normal font-medium">{settings.seasonNote}</span>}
               </p>
             )}
-            <p className="display mt-4 text-2xl sm:text-4xl">
-              {settings?.seasonStatus === "break" || settings?.seasonStatus === "finished" ? <span className="text-yellow">{settings.seasonStatus === "finished" ? "The complete series" : "Next season coming"}</span> : <>New episodes <span className="text-yellow">{SITE.schedule}</span></>}
-            </p>
+            {onBreak && returnsAt ? (
+              <div className="mt-5 flex justify-center lg:justify-start">
+                <ReturnsCountdown to={returnsAt} label={nextLabel} />
+              </div>
+            ) : (
+              <p className="display mt-4 text-2xl sm:text-4xl">
+                {settings?.seasonStatus === "break" || settings?.seasonStatus === "finished" ? <span className="text-yellow">{settings.seasonStatus === "finished" ? "The complete series" : `${nextLabel} is coming`}</span> : <>New episodes <span className="text-yellow">{SITE.schedule}</span></>}
+              </p>
+            )}
             {(!settings || settings.seasonStatus === "airing" || settings.seasonStatus === "finale") && (
               <p className="mt-2 text-xs sm:text-sm font-medium uppercase tracking-[0.18em] text-paper/70">
                 <span className="sm:hidden">
@@ -132,10 +142,27 @@ export default async function Home() {
           )}
           <div className="md:pl-6 flex items-center">
             <div>
-              <p className="eyebrow">Next episode</p>
-              <p className="display text-xl leading-none whitespace-nowrap">
-                {SITE.schedule} · <span className="text-yellow font-sans text-sm font-semibold tracking-wide normal-case"><Countdown compact prefix="in" /></span>
-              </p>
+              {onBreak ? (
+                <>
+                  <p className="eyebrow">{nextLabel}</p>
+                  <p className="display text-xl leading-none whitespace-nowrap">
+                    {returnsAt ? (
+                      <>
+                        Returns in <span className="text-yellow"><ReturnsCountdown to={returnsAt} label={nextLabel} compact /></span>
+                      </>
+                    ) : (
+                      "Between seasons"
+                    )}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="eyebrow">Next episode</p>
+                  <p className="display text-xl leading-none whitespace-nowrap">
+                    {SITE.schedule} · <span className="text-yellow font-sans text-sm font-semibold tracking-wide normal-case"><Countdown compact prefix="in" /></span>
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </Container>
@@ -201,7 +228,7 @@ export default async function Home() {
       )}
 
       {/* ── CATCH IT A DAY EARLY ── Thursday live on Twitch */}
-      <EarlyAccess />
+      <EarlyAccess onBreak={onBreak} />
 
       {/* ── WHAT IS REDACTED ── text beside the skinwalker art */}
       <Section className="bg-ink-2/80 border-y border-line">

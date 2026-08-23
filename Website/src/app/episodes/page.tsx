@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getDoc } from "@/lib/content";
 import Image from "next/image";
 import Link from "next/link";
 import { getEpisodes, getSevenPlanes, formatDate, formatDuration, type Episode } from "@/lib/feed";
@@ -29,6 +30,7 @@ const pageHref = (e: Episode) => (e.guid.startsWith("t7p-") ? `/episodes?show=t7
 
 export default async function EpisodesPage({ searchParams }: { searchParams: Promise<{ show?: string; season?: string; order?: string; tab?: string }> }) {
   const sp = await searchParams;
+  const onBreak = (await getDoc("settings").catch(() => null))?.seasonStatus === "break";
   // legacy ?tab= links from the first version
   const legacy: Record<string, { show: Show; season?: string }> = { "season-1": { show: "redacted", season: "1" }, minisodes: { show: "redacted", season: "minisodes" }, postmortem: { show: "postmortem" }, };
   const fromLegacy = sp.tab ? legacy[sp.tab] : undefined;
@@ -113,10 +115,10 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
       {(() => {
         const intro =
           show === "postmortem"
-            ? { name: "[REDACTED] Postmortem", tag: "In-universe spin-off", text: "Postmortem is an in-universe spin-off series, detailing the aberrations featured in each episode as the team debriefs their findings to The Curtain. Starring Lyssa Jay, Derek Moreland, Natalie Light, and Athan.", trailer: EXTERNAL.postmortemTrailerYouTubeId, schedule: <>Postmortems Tuesdays 9/8c</>, countdown: <Countdown to="postmortem" prefix="Next in" /> }
+            ? { name: "[REDACTED] Postmortem", tag: "In-universe spin-off", text: "Postmortem is an in-universe spin-off series, detailing the aberrations featured in each episode as the team debriefs their findings to The Curtain. Starring Lyssa Jay, Derek Moreland, Natalie Light, and Athan.", trailer: EXTERNAL.postmortemTrailerYouTubeId, schedule: <>Postmortems Tuesdays 9/8c</>, countdown: onBreak ? null : <Countdown to="postmortem" prefix="Next in" /> }
             : show === "t7p"
               ? { name: "The Seven Planes", tag: "Analog horror · by Landon Whisnant", text: "A collection of analog horror tapes chronicling the history of a strange world filled with even stranger inhabitants. Created by Landon Whisnant.", trailer: EXTERNAL.t7pTrailerYouTubeId, schedule: null, countdown: null }
-              : { name: "[REDACTED]", tag: "A Procedural Horror Comedy", text: "Following the death of his twin, failing actor Jacob Kane assumes his late brother's life in hopes of a fresh start. Instead he finds himself working within The REDACTED Unit, a covert agency tasked with containing impossible creatures and phenomena.", trailer: EXTERNAL.trailerYouTubeId, schedule: <>Episodes {SITE.schedule}</>, countdown: <Countdown prefix="Next in" /> };
+              : { name: "[REDACTED]", tag: "A Procedural Horror Comedy", text: "Following the death of his twin, failing actor Jacob Kane assumes his late brother's life in hopes of a fresh start. Instead he finds himself working within The REDACTED Unit, a covert agency tasked with containing impossible creatures and phenomena.", trailer: EXTERNAL.trailerYouTubeId, schedule: <>Episodes {SITE.schedule}</>, countdown: onBreak ? null : <Countdown prefix="Next in" /> };
         const links = show === "t7p"
           ? [
               { name: "Spotify", href: T7P_LISTEN.spotify, icon: "spotify" as const },

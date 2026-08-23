@@ -35,6 +35,14 @@ export default async function SettingsAdmin({ searchParams }: { searchParams: Pr
             </label>
           </div>
           <Field label="Note (optional, shown under the badge)" name="seasonNote" defaultValue={s.seasonNote} hint="e.g. Season 2 confirmed. Date soon." />
+          <div className="grid gap-4 sm:grid-cols-2 border-t border-line pt-4">
+            <Field label="Next season label" name="nextSeasonLabel" defaultValue={s.nextSeasonLabel ?? "Season 2"} hint="Used in the Between seasons countdown" />
+            <label className="grid gap-1 text-sm">
+              <span className="eyebrow">Next season date and time (optional)</span>
+              <input type="datetime-local" name="nextSeasonDate" defaultValue={s.nextSeasonDate ?? ""} className="field" />
+              <span className="text-xs text-muted">Leave blank for no countdown. With a date set and status Between seasons, the home page shows a big [REDACTED] returns in countdown.</span>
+            </label>
+          </div>
         </fieldset>
 
         <fieldset className="grid gap-4 border border-line p-5">

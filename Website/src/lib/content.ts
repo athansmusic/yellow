@@ -66,7 +66,7 @@ export type LikePage = {
 export type Featured = { slugs: string[] };
 
 export type SeasonStatus = "airing" | "finale" | "break" | "finished";
-export type Settings = { seasonStatus: SeasonStatus; seasonLabel: string; seasonNote: string; promoEnabled: boolean; promoCode: string; promoText: string; hiddenPages?: string[] };
+export type Settings = { seasonStatus: SeasonStatus; seasonLabel: string; seasonNote: string; promoEnabled: boolean; promoCode: string; promoText: string; hiddenPages?: string[]; nextSeasonLabel?: string; nextSeasonDate?: string };
 
 export type FanArt = { id: string; image: string; width: number; height: number; title: string; artist: string; postUrl: string; ts: number };
 export type StoreCopy = Record<string, { description?: string; artist?: string; artistUrl?: string }>;
@@ -114,7 +114,8 @@ export async function setDoc<N extends DocName>(name: N, value: Docs[N]) {
   const body = JSON.stringify(value, null, 2) + "\n";
   if (useBlob()) {
     const { put } = await import("@vercel/blob");
-    await put(blobKey(name), body, { access: "public", addRandomSuffix: false, contentType: "application/json" });
+    // allowOverwrite: the SDK (v1+) refuses to replace an existing pathname otherwise, so every save after the first would throw
+    await put(blobKey(name), body, { access: "public", addRandomSuffix: false, allowOverwrite: true, contentType: "application/json" });
   } else {
     await fs.writeFile(path.join(process.cwd(), FILES[name]), body, "utf8");
   }
