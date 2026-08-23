@@ -55,7 +55,6 @@ export const NAV = [
   { label: "Episodes", href: "/episodes" },
   { label: "Cast", href: "/cast" },
   { label: "Store", href: "/store" },
-  { label: "Discord", href: "/discord" },
 ] as const;
 
 /** Secondary pages, under "More" in the header and listed in the mobile drawer. */
@@ -65,6 +64,7 @@ export const MORE_NAV = [
   { label: "If you like…", href: "/like" },
   { label: "Fan art", href: "/fan-art" },
   { label: "About", href: "/about" },
+  { label: "Bingo", href: "/bingo" },
   { label: "FAQ", href: "/faq" },
   { label: "Partner with us", href: "/partner" },
 ] as const;

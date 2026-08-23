@@ -8,7 +8,7 @@ import { createPortal } from "react-dom";
 import { LISTEN, LISTEN_BUTTONS, MORE_NAV as MORE_NAV_ALL, NAV as NAV_ALL, SOCIAL } from "@/lib/site";
 import { COLLECTIONS, TAXONOMY } from "@/lib/storeTaxonomy";
 import { useCart } from "@/lib/cart";
-import { Cart, Close, Menu, Patreon, ICONS } from "./Icons";
+import { Cart, Close, Discord, Menu, Patreon, ICONS } from "./Icons";
 import { SearchButton, openSearch } from "./SiteSearch";
 
 /** Internal link, except routes that redirect off-site (Next would try to prefetch the redirect). */
@@ -32,7 +32,7 @@ const MENUS: Record<string, MenuGroup[]> = {
         { label: "Corrupted", href: "/episodes?show=corrupted", soon: true },
       ],
     },
-    { title: "Also", links: [{ label: "Aberrations", href: "/aberrations" }, { label: "Where to listen", href: "/where" }] },
+    { title: "Also", links: [{ label: "Where to listen", href: "/where" }] },
   ],
   "/store": [
     ...TAXONOMY.map((c) => ({ title: c.label, links: [{ label: `All ${c.label}`, href: `/store?c=${c.id}` }, ...c.subs.map((s) => ({ label: s.label, href: `/store?c=${c.id}&t=${s.id}` }))] })),
@@ -184,6 +184,10 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
         </nav>
 
         <div className="flex items-center gap-1">
+          {/* Discord in blurple so it stands out from the rest of the bar */}
+          <a href="/discord" target="_blank" rel="noreferrer" className="hidden lg:inline-flex items-center gap-2 display text-xl px-3 py-1.5 bg-[#5865F2] text-white border border-[#5865F2] hover:bg-[#4752C4] hover:border-[#4752C4] transition-colors">
+            <Discord width={16} height={16} /> Discord
+          </a>
           <a href={LISTEN.patreon} target="_blank" rel="noreferrer" className="hidden lg:inline-flex items-center gap-2 display text-xl px-3 py-1.5 mr-2 text-yellow border border-yellow/70 hover:bg-yellow hover:text-ink transition-colors">
             <Patreon width={16} height={16} /> Patreon
           </a>
@@ -313,9 +317,14 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
               </Link>
             </div>
 
-            <a href={LISTEN.patreon} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 display text-xl px-4 py-2 border border-yellow/70 text-yellow hover:bg-yellow hover:text-ink">
-              <Patreon width={16} height={16} /> Patreon
-            </a>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <a href="/discord" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 display text-xl px-4 py-2 border border-[#5865F2] text-[#8b9dff] hover:bg-[#5865F2] hover:text-white">
+                <Discord width={16} height={16} /> Discord
+              </a>
+              <a href={LISTEN.patreon} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 display text-xl px-4 py-2 border border-yellow/70 text-yellow hover:bg-yellow hover:text-ink">
+                <Patreon width={16} height={16} /> Patreon
+              </a>
+            </div>
           </nav>
           <div className="px-2 py-3 border-t border-line flex flex-wrap gap-1">
             {SOCIAL.map((s) => {
