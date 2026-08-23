@@ -60,16 +60,18 @@ export const NAV = [
 
 /** Secondary pages, under "More" in the header and listed in the mobile drawer. */
 export const MORE_NAV = [
+  { label: "Where to listen", href: "/where" },
   { label: "Aberrations", href: "/aberrations" },
   { label: "If you like…", href: "/like" },
   { label: "Fan art", href: "/fan-art" },
-  { label: "Where to listen", href: "/where" },
   { label: "About", href: "/about" },
   { label: "FAQ", href: "/faq" },
   { label: "Partner with us", href: "/partner" },
 ] as const;
 
 export const EXTERNAL = {
+  /** Fan-run wiki (not official, not canon) */
+  wiki: "https://theredactedunit.miraheze.org/",
   kickstarter: "/ks",
   whatsOnMars: "https://www.youtube.com/playlist?list=PLnKcUvxEvEXooA0CKLNBSfbRz-UcazIBZ",
   goodpods: "https://goodpods.com/podcasts/redacted-712167",

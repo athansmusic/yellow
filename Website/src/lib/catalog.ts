@@ -307,7 +307,9 @@ const cachedPrintful = unstable_cache(fromPrintful, ["catalog-printful-v7"], { r
 let lastGood: Product[] | null = null;
 let inflight: Promise<Product[]> | null = null;
 
-const COLD_START_WAIT_MS = 8000;
+// Requests wait this long on a cold start before falling back to the fixture. `next build` waits much longer so the
+// prerendered store pages are built from the real catalog, not the snapshot.
+const COLD_START_WAIT_MS = process.env.NEXT_PHASE === "phase-production-build" ? 180_000 : 8000;
 
 /**
  * Catalog with stale-while-revalidate: once a copy exists it is served immediately and refreshed in the

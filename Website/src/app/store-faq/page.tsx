@@ -188,7 +188,7 @@ export default async function StoreFaq() {
           <a href={`mailto:${SITE.email}?subject=Store%20order`} className="btn btn-yellow">
             {SITE.email}
           </a>
-          <a href="/discord" className="btn btn-ghost">
+          <a href="/discord" target="_blank" rel="noreferrer" className="btn btn-ghost">
             Discord
           </a>
         </div>

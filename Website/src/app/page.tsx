@@ -271,7 +271,7 @@ export default async function Home() {
             <a href={LISTEN.patreon} target="_blank" rel="noreferrer" className="btn bg-white text-ink hover:bg-yellow">
               <Patreon /> Support on Patreon
             </a>
-            <a href="/discord" className="btn border-2 border-white text-white hover:bg-white hover:text-ink">
+            <a href="/discord" target="_blank" rel="noreferrer" className="btn border-2 border-white text-white hover:bg-white hover:text-ink">
               <Discord /> Join the Discord
             </a>
             <ThankYou names={[...supporters.associateProducers, ...supporters.backers]} className="w-full" />

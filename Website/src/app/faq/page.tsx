@@ -33,9 +33,15 @@ function Item({ x, open = false }: { x: (typeof QA)[number]; open?: boolean }) {
         {x.link && (
           <>
             {" "}
-            <Link href={x.link.href} className="text-yellow underline underline-offset-4">
-              {x.link.label} →
-            </Link>
+            {x.link.href.startsWith("http") ? (
+              <a href={x.link.href} target="_blank" rel="noreferrer" className="text-yellow underline underline-offset-4">
+                {x.link.label} →
+              </a>
+            ) : (
+              <Link href={x.link.href} className="text-yellow underline underline-offset-4">
+                {x.link.label} →
+              </Link>
+            )}
           </>
         )}
       </div>
@@ -94,7 +100,7 @@ export default function FAQ() {
           <p className="text-sm text-paper/80 mt-1">Ask in the Discord, or email us.</p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <a href="/discord" className="btn btn-yellow">
+          <a href="/discord" target="_blank" rel="noreferrer" className="btn btn-yellow">
             Discord
           </a>
           <a href={`mailto:${SITE.email}`} className="btn btn-ghost">

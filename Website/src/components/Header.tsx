@@ -13,7 +13,8 @@ import { SearchButton, openSearch } from "./SiteSearch";
 
 /** Internal link, except routes that redirect off-site (Next would try to prefetch the redirect). */
 function NavA({ href, children, ...rest }: { href: string; children: React.ReactNode; className?: string; "aria-current"?: "page" }) {
-  return href === "/discord" || href === "/ks" ? <a href={href} {...rest}>{children}</a> : <Link href={href} {...rest}>{children}</Link>;
+  // /discord and /ks are redirects to external sites: plain anchors, new tab
+  return href === "/discord" || href === "/ks" ? <a href={href} target="_blank" rel="noreferrer" {...rest}>{children}</a> : <Link href={href} {...rest}>{children}</Link>;
 }
 
 type MenuLink = { label: string; href: string; soon?: boolean };

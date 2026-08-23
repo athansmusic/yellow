@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { LISTEN, SITE, SOCIAL } from "@/lib/site";
+import { EXTERNAL, LISTEN, SITE, SOCIAL } from "@/lib/site";
 import { ICONS } from "./Icons";
 
 const LISTEN_LINKS = [
@@ -18,10 +18,11 @@ const SITE_LINKS = [
   { label: "Discord", href: "/discord" },
   { label: "About", href: "/about" },
   { label: "FAQ", href: "/faq" },
+  { label: "Fan wiki", href: EXTERNAL.wiki },
 ];
 
 function NavA({ href, children, ...rest }: { href: string; children: React.ReactNode; className?: string }) {
-  return href === "/discord" || href === "/ks" ? <a href={href} {...rest}>{children}</a> : <Link href={href} {...rest}>{children}</Link>;
+  return href.startsWith("http") ? <a href={href} target="_blank" rel="noreferrer" {...rest}>{children}</a> : href === "/discord" || href === "/ks" ? <a href={href} target="_blank" rel="noreferrer" {...rest}>{children}</a> : <Link href={href} {...rest}>{children}</Link>;
 }
 
 export function Footer() {
