@@ -8,7 +8,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { StoreHero, type HeroItem } from "@/components/StoreHero";
 import { ShowMore } from "@/components/ShowMore";
 import { StoreNav } from "@/components/StoreNav";
-import { StoreSubSelect } from "@/components/StoreSubSelect";
+import { StoreMobileNav } from "@/components/StoreMobileNav";
 import { Container } from "@/components/ui";
 import { Arrow } from "@/components/Icons";
 import { assertVisible } from "@/lib/visibility";
@@ -85,15 +85,10 @@ export default async function StorePage({ searchParams }: { searchParams: Promis
             </div>
             <p className="inline-block bg-yellow text-ink display text-lg px-3 py-1">Free US shipping on $40+ · flat rate worldwide</p>
           </div>
-          <StoreNav counts={counts} active={{ category, sub }} />
-          {category && (
-            <StoreSubSelect
-              category={category}
-              label={TAXONOMY.find((c) => c.id === category)!.label}
-              sub={sub}
-              options={TAXONOMY.find((c) => c.id === category)!.subs.filter((x) => (counts[`${category}/${x.id}`] ?? 0) > 0).map((x) => ({ id: x.id, label: x.label, count: counts[`${category}/${x.id}`] ?? 0 }))}
-            />
-          )}
+          <div className="hidden sm:block">
+            <StoreNav counts={counts} active={{ category, sub }} />
+          </div>
+          <StoreMobileNav counts={counts} value={collection ? `/store?col=${collection.id}` : category ? `/store?c=${category}${sub ? `&t=${sub}` : ""}` : "/store"} collectionCounts={Object.fromEntries(collections.map((c) => [c.id, c.items.length]))} />
         </Container>
       </div>
 
