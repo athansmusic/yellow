@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { getAllItems, getItemBySlug, getNeighbours, formatDate, formatDuration, toTrack } from "@/lib/feed";
 import { getPlatformLinks } from "@/lib/episodeLinks";
 import { getTranscript } from "@/lib/curtain";
-import { TranscriptReader } from "@/components/TranscriptReader";
 import { getDoc } from "@/lib/content";
 import { ResumeBadge } from "@/components/ResumeBadge";
 import { LISTEN, SITE } from "@/lib/site";
@@ -200,15 +199,22 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
                 <summary className="cursor-pointer list-none p-4 sm:p-5 flex items-center justify-between gap-4">
                   <span>
                     <span className="eyebrow block">Transcript</span>
-                    <span className="display text-2xl">{transcript.lines.length} lines · read along</span>
+                    <span className="display text-2xl">{transcript.lines.length} lines</span>
                   </span>
                   <span aria-hidden className="text-yellow text-3xl leading-none transition-transform group-open:rotate-45">
                     +
                   </span>
                 </summary>
-                <div className="px-4 sm:px-5 pb-5 pt-4 border-t border-line">
-                  <TranscriptReader lines={transcript.lines} track={toTrack(ep)} />
-                  <p className="mt-4 text-xs text-muted">Transcript from the production script, matched to the final audio.</p>
+                <div className="px-4 sm:px-5 pb-5 max-h-[70vh] overflow-y-auto border-t border-line">
+                  <dl className="mt-4 grid gap-3 text-[15px]">
+                    {transcript.lines.map((l, i) => (
+                      <div key={i} className="grid sm:grid-cols-[9rem_1fr] gap-x-4">
+                        <dt className="display text-lg leading-tight text-yellow sm:text-right">{l.character}</dt>
+                        <dd className="text-paper/90">{l.text}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <p className="mt-5 text-xs text-muted">Transcript from the production script, matched to the final audio.</p>
                 </div>
               </details>
             </section>
