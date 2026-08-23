@@ -53,11 +53,11 @@ export default async function Home() {
         <HeroLoop />
         <div className="absolute inset-0 bg-[url('/home/static.gif')] bg-[length:280px] opacity-[0.07] mix-blend-screen" aria-hidden />
         {/* scrims: keep the art clean on the left, darken under the copy on the right, fade into the page at the bottom */}
-        <div className="absolute inset-0 hidden lg:block bg-[linear-gradient(90deg,transparent_35%,rgba(9,9,9,.55)_55%,rgba(9,9,9,.9)_100%)]" aria-hidden />
-        <div className="absolute inset-0 bg-ink/40 lg:hidden" aria-hidden />
+        <div className="absolute inset-0 hidden lg:block bg-[linear-gradient(90deg,transparent_30%,rgba(9,9,9,.7)_52%,rgba(9,9,9,.92)_70%,rgba(9,9,9,.96)_100%)]" aria-hidden />
+        <div className="absolute inset-0 bg-ink/55 lg:hidden" aria-hidden />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/30 via-transparent to-ink" aria-hidden />
         <Container className="relative py-10 sm:py-20 lg:py-28 w-full">
-          <div className="lg:ml-auto lg:w-[52%] xl:w-[48%] text-center lg:text-left">
+          <div className="lg:ml-auto lg:w-[52%] xl:w-[48%] text-center lg:text-left [text-shadow:0_2px_18px_rgba(0,0,0,.85)]">
             <h1 className="sr-only">[REDACTED]: a horror comedy audio drama</h1>
             <Image src="/brand/logo-hero.avif" alt="" width={900} height={225} priority className="w-[min(92vw,36rem)] h-auto mx-auto lg:mx-0 drop-shadow-[0_0_40px_rgba(0,0,0,.85)]" />
             <p className="mt-4 text-sm sm:text-base font-semibold uppercase tracking-[0.22em] text-paper">A Procedural Horror Comedy</p>
@@ -280,7 +280,7 @@ export default async function Home() {
       </section>
 
       {/* ── FAN ART ── approved Tumblr pieces, pushed by the stream control server */}
-      <FanArtRail items={fanart} />
+      {!(settings?.hiddenPages ?? []).includes("/fan-art") && <FanArtRail items={fanart} />}
 
       {/* ── MERCH ── */}
       {merch.length > 0 && (

@@ -31,9 +31,9 @@ export function HeroLoop() {
 
   return (
     <>
-      <video ref={ref} className="absolute inset-0 w-full h-full object-cover object-[30%_center] lg:object-left" autoPlay muted loop playsInline poster="/video/hero-mosh-poster.jpg" aria-hidden>
-        <source src="/video/hero-mosh.webm" type="video/webm" />
-        <source src="/video/hero-mosh.mp4" type="video/mp4" />
+      <video ref={ref} className="absolute inset-0 w-full h-full object-cover object-[30%_center] lg:object-left" autoPlay muted loop playsInline poster="/video/hero-bg-poster.jpg" aria-hidden>
+        <source src="/video/hero-bg.webm" type="video/webm" />
+        <source src="/video/hero-bg.mp4" type="video/mp4" />
       </video>
       <button
         type="button"

@@ -36,6 +36,7 @@ export async function saveSettings(fd: FormData) {
     seasonNote: str(fd, "seasonNote"),
     promoEnabled: fd.get("promoEnabled") === "on",
     promoCode: str(fd, "promoCode").toUpperCase(),
+    hiddenPages: fd.getAll("hide").map(String).filter((h) => h.startsWith("/")),
     promoText: str(fd, "promoText") || "An email whenever an episode drops, plus the occasional update. Sign up and get 10% off store orders of $25 or more.",
   });
   redirect("/admin/settings?saved=1");

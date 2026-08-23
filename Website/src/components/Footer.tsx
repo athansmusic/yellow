@@ -25,7 +25,9 @@ function NavA({ href, children, ...rest }: { href: string; children: React.React
   return href.startsWith("http") ? <a href={href} target="_blank" rel="noreferrer" {...rest}>{children}</a> : href === "/discord" || href === "/ks" ? <a href={href} target="_blank" rel="noreferrer" {...rest}>{children}</a> : <Link href={href} {...rest}>{children}</Link>;
 }
 
-export function Footer() {
+export function Footer({ hidden = [] }: { hidden?: string[] }) {
+  const links = SITE_LINKS.filter((n) => !hidden.includes(n.href));
+  const showPartner = !hidden.includes("/partner");
   return (
     <footer className="relative z-10 mt-24 border-t border-line bg-ink/80">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12 grid gap-x-6 gap-y-10 grid-cols-2 lg:grid-cols-[1.3fr_0.8fr_0.8fr_1.4fr]">
@@ -48,7 +50,7 @@ export function Footer() {
         </div>
 
         <FootCol title="Site">
-          {SITE_LINKS.map((n) => (
+          {links.map((n) => (
             <NavA key={n.href} href={n.href} className="hover:text-yellow">
               {n.label}
             </NavA>
@@ -66,6 +68,7 @@ export function Footer() {
           ))}
         </FootCol>
 
+        {showPartner && (
         <div className="col-span-2 lg:col-span-1 border border-line bg-ink-2/70 p-5">
           <p className="eyebrow mb-1">Sponsors & press</p>
           <p className="display text-3xl leading-none">Partner with us</p>
@@ -74,6 +77,7 @@ export function Footer() {
             Partner with [REDACTED]
           </Link>
         </div>
+        )}
       </div>
 
       <div className="border-t border-line">

@@ -35,6 +35,7 @@ export const viewport: Viewport = { themeColor: "#090909", width: "device-width"
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const settings = await getDoc("settings").catch(() => null);
+  const hidden = settings?.hiddenPages ?? [];
   const promo = settings?.promoEnabled && settings.promoCode ? { code: settings.promoCode, text: settings.promoText } : undefined;
   return (
     <html lang="en" className={`${montserrat.variable} ${nk57.variable} ${nk57wide.variable}`}>
@@ -48,11 +49,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <div aria-hidden className="pointer-events-none fixed inset-0 z-0 bg-[url('/home/static.gif')] bg-[length:300px] opacity-[0.04] mix-blend-screen" />
         <PlayerProvider>
           <CartProvider>
-            <Header />
+            <Header hidden={hidden} />
             <main id="main" className="relative z-10 flex-1">
               {children}
             </main>
-            <Footer />
+            <Footer hidden={hidden} />
             <PlayerSpacer />
             <LiveDock />
             <AlertsPopup promo={promo} />

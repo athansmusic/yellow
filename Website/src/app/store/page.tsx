@@ -10,6 +10,7 @@ import { ShowMore } from "@/components/ShowMore";
 import { StoreNav } from "@/components/StoreNav";
 import { Container } from "@/components/ui";
 import { Arrow } from "@/components/Icons";
+import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = { title: "Store", description: "Official [REDACTED] merch: shirts, hoodies, hats, stickers, patches, flags, prints, and more. Printed to order. Free US shipping on orders $40+, flat rate worldwide.", alternates: { canonical: "/store" } };
 export const revalidate = 900;
@@ -22,6 +23,7 @@ const TRUST: [string, string][] = [
 ];
 
 export default async function StorePage({ searchParams }: { searchParams: Promise<{ c?: string; t?: string; col?: string; sort?: string }> }) {
+  await assertVisible("/store");
   const sp = await searchParams;
   const [all, featured] = await Promise.all([getProducts(), getDoc("featured").catch(() => ({ slugs: [] as string[] }))]);
 

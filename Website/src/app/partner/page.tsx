@@ -12,6 +12,7 @@ import { PlaysChart } from "@/components/partner/PlaysChart";
 import { SectionNav } from "@/components/partner/SectionNav";
 import { JsonLd, audienceJsonLd, breadcrumbJsonLd } from "@/lib/schema";
 import awards from "@/data/awards.json";
+import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
   title: "Advertise on [REDACTED]: Podcast Media Kit, Audience Stats & Sponsorship",
@@ -85,6 +86,7 @@ function Title({ label, children, muted = false, className = "" }: { label: stri
 }
 
 export default async function PartnerPage() {
+  await assertVisible("/partner");
   const [s, plays] = await Promise.all([getStats(), getDailyPlays()]);
 
   return (

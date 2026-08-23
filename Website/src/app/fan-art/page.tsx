@@ -4,6 +4,7 @@ import { getDoc } from "@/lib/content";
 import { SITE } from "@/lib/site";
 import { Container } from "@/components/ui";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
+import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
   title: "Fan Art",
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 export default async function FanArtPage() {
+  await assertVisible("/fan-art");
   const items = await getDoc("fanart").catch(() => []);
   return (
     <Container className="py-10 sm:py-16 max-w-6xl">

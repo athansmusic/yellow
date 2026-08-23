@@ -10,6 +10,7 @@ import { Container, Crumbs } from "@/components/ui";
 import { PlayButton } from "@/components/AudioPlayer";
 import { Declassify } from "@/components/Declassify";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
+import { assertVisible } from "@/lib/visibility";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -52,6 +53,7 @@ function Row({ label, children, classified = false }: { label: string; children:
 }
 
 export default async function AberrationPage({ params }: { params: Promise<{ slug: string }> }) {
+  await assertVisible("/aberrations");
   const { slug } = await params;
   const [aberrations, all] = await Promise.all([getDoc("aberrations"), getAllItems().catch(() => [] as Episode[])]);
   const a = aberrations.find((x) => x.slug === slug);

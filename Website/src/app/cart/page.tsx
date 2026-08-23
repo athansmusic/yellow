@@ -5,11 +5,13 @@ import { getDoc } from "@/lib/content";
 import { COLLECTIONS } from "@/lib/storeTaxonomy";
 import { CartView } from "@/components/CartView";
 import { Container } from "@/components/ui";
+import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = { title: "Cart", robots: { index: false } };
 export const revalidate = 900;
 
 export default async function CartPage() {
+  await assertVisible("/store");
   const [products, settings] = await Promise.all([getProducts().catch(() => []), getDoc("settings").catch(() => null)]);
   const suggestions = products.map((p) => ({ p: toCard(p), collection: COLLECTIONS.find((c) => c.match.test(p.name))?.id }));
   const promo = settings?.promoEnabled && settings.promoCode ? { code: settings.promoCode, text: settings.promoText } : null;

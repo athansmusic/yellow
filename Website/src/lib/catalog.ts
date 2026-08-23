@@ -307,22 +307,66 @@ const cachedPrintful = unstable_cache(fromPrintful, ["catalog-printful-v7"], { r
 let lastGood: Product[] | null = null;
 let inflight: Promise<Product[]> | null = null;
 
-// Requests wait this long on a cold start before falling back to the fixture. `next build` waits much longer so the
-// prerendered store pages are built from the real catalog, not the snapshot.
-const COLD_START_WAIT_MS = process.env.NEXT_PHASE === "phase-production-build" ? 180_000 : 8000;
+// Cold-start budget before falling back to the snapshot.
+const COLD_START_WAIT_MS = 8000;
+
+/**
+ * Catalog snapshot: the last real Printful catalog, written by the dev server whenever a pull succeeds and committed
+ * with the site. It replaces the old Webflow fixture as the fallback, so a cold start or a slow build still shows the
+ * real products, names, and prices (only an hour or two stale at worst). Runtime refreshes from Printful on top.
+ */
+const SNAPSHOT = path.join(process.cwd(), "src/data/catalog-snapshot.json");
+let snapshotCache: Product[] | null = null;
+function fromSnapshot(): Product[] | null {
+  if (snapshotCache) return snapshotCache;
+  try {
+    const raw = JSON.parse(fs.readFileSync(SNAPSHOT, "utf8")) as Product[];
+    if (Array.isArray(raw) && raw.length) return (snapshotCache = raw);
+  } catch {}
+  return null;
+}
+function writeSnapshot(products: Product[]) {
+  // Only where the filesystem is writable (dev); Vercel's bundle is read-only and the snapshot ships in the repo.
+  if (process.env.NODE_ENV !== "development" || products[0]?.source !== "printful") return;
+  try {
+    fs.writeFileSync(SNAPSHOT, JSON.stringify(products, null, 1) + "\n");
+  } catch {}
+}
+function fallback(): Product[] {
+  return fromSnapshot() ?? fromFixture();
+}
+
+/** Keep a serverless function alive until the background catalog pull lands (no-op outside a request). */
+async function keepAlive(p: Promise<unknown>) {
+  try {
+    const { after } = await import("next/server");
+    after(() => p.catch(() => {}));
+  } catch {
+    p.catch(() => {});
+  }
+}
 
 /**
  * Catalog with stale-while-revalidate: once a copy exists it is served immediately and refreshed in the
  * background (a full Printful pull is ~70 throttled requests and can take a minute). On a cold start we wait
- * a few seconds, then serve the fixture until the real catalog lands, rather than hanging the page.
+ * a few seconds, then serve the snapshot until the real catalog lands, rather than hanging the page.
  */
 export async function getProductsBase(): Promise<Product[]> {
-  if (!printfulEnabled()) return fromFixture();
+  if (!printfulEnabled()) return fallback();
+  // `next build`: prerender from the committed snapshot (fresh from the last dev pull) instead of ~70 Printful calls
+  // per page under Next's 60s static-generation cap. The deployed site refreshes from Printful at runtime.
+  if (process.env.NEXT_PHASE === "phase-production-build" && fromSnapshot()) return fromSnapshot()!;
   inflight ??= cachedPrintful()
-    .then((p) => (lastGood = p))
+    .then((p) => {
+      lastGood = p;
+      writeSnapshot(p);
+      return p;
+    })
     .catch((e) => {
       console.error("Printful catalog failed:", (e as Error).message);
       if (lastGood) return lastGood;
+      const snap = fromSnapshot();
+      if (snap) return snap;
       throw e;
     })
     .finally(() => (inflight = null));
@@ -330,9 +374,9 @@ export async function getProductsBase(): Promise<Product[]> {
   const timeout = new Promise<null>((r) => setTimeout(() => r(null), COLD_START_WAIT_MS));
   const p = await Promise.race([inflight, timeout]);
   if (p) return p;
-  console.warn("Printful catalog still loading; serving fixture for now");
-  inflight.catch(() => {});
-  return fromFixture();
+  console.warn("Printful catalog still loading; serving the snapshot for now");
+  void keepAlive(inflight);
+  return fallback();
 }
 
 /** Owner-written copy (src/data/store-copy.json, admin/store-copy) overlaid on top of the catalog, keyed by slug. */

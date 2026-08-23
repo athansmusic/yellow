@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { LISTEN, LISTEN_BUTTONS, MORE_NAV, NAV, SOCIAL } from "@/lib/site";
+import { LISTEN, LISTEN_BUTTONS, MORE_NAV as MORE_NAV_ALL, NAV as NAV_ALL, SOCIAL } from "@/lib/site";
 import { COLLECTIONS, TAXONOMY } from "@/lib/storeTaxonomy";
 import { useCart } from "@/lib/cart";
 import { Cart, Close, Menu, Patreon, ICONS } from "./Icons";
@@ -90,7 +90,9 @@ function Dropdown({ id, open, setOpen, active, label, href, groups, pathname }: 
   );
 }
 
-export function Header() {
+export function Header({ hidden = [] }: { hidden?: string[] }) {
+  const NAV = NAV_ALL.filter((n) => !hidden.includes(n.href));
+  const MORE_NAV = MORE_NAV_ALL.filter((n) => !hidden.includes(n.href));
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { count, ready, justAdded } = useCart();

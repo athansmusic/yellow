@@ -10,6 +10,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { SizeGuide } from "@/components/SizeGuide";
 import { Container, Crumbs } from "@/components/ui";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
+import { assertVisible } from "@/lib/visibility";
 
 export const revalidate = 900;
 
@@ -54,6 +55,7 @@ function parseFitNote(d: string): string | undefined {
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  await assertVisible("/store");
   const { slug } = await params;
   const p = await getProduct(slug);
   if (!p) notFound();

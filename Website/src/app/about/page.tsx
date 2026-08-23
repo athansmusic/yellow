@@ -9,6 +9,7 @@ import cast from "@/data/cast.json";
 import { Container, Heading, PlatformButtons } from "@/components/ui";
 import { PlayButton } from "@/components/AudioPlayer";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
+import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
   title: "About the Show",
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function About() {
+  await assertVisible("/about");
   const [{ episodes, postmortems, minisodes }, settings] = await Promise.all([getEpisodes().catch(() => ({ episodes: [], postmortems: [], minisodes: [] })), getDoc("settings").catch(() => null)]);
   const first = [...episodes].sort((a, b) => (a.season ?? 1) - (b.season ?? 1) || (a.number ?? 0) - (b.number ?? 0))[0];
   const firstDate = episodes.length ? new Date(episodes[episodes.length - 1].date) : null;

@@ -10,12 +10,12 @@ export default async function AdminLogin({ searchParams }: { searchParams: Promi
 
   return (
     <div className="max-w-md">
-      <p className="eyebrow">Admin</p>
+      <p className="eyebrow">Staff</p>
       <h1 className="display text-5xl mt-2">Sign in</h1>
-      <p className="mt-4 text-paper/85">Use your @theredactedunit.com Google account. Other accounts are turned away.</p>
+      <p className="mt-4 text-paper/85">Staff accounts only.</p>
       {error && (
         <p role="alert" className="mt-4 border border-red bg-red/10 p-3 text-sm">
-          {error === "AccessDenied" ? "That account isn't on the Redacted domain." : "Sign-in didn't go through. Try again."}
+          {error === "AccessDenied" ? "That account doesn't have access." : "Sign-in didn't go through. Try again."}
         </p>
       )}
       {configured ? (

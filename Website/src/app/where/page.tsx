@@ -10,6 +10,7 @@ import { Arrow, ICONS, type IconName } from "@/components/Icons";
 import { CopyButton, SmartLink } from "@/components/ListenLinks";
 import { EpisodePicker } from "@/components/EpisodePicker";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
+import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
   title: "Where to Listen",
@@ -54,6 +55,7 @@ function Mark({ a, size = 20 }: { a: App; size?: number }) {
 }
 
 export default async function ListenPage({ searchParams }: { searchParams: Promise<{ tab?: string; ep?: string }> }) {
+  await assertVisible("/where");
   const sp = await searchParams;
   const tab = sp.tab === "episodes" ? "episodes" : "apps";
   const { episodes, all } = await getEpisodes().catch(() => ({ episodes: [] as Episode[], all: [] as Episode[] }));

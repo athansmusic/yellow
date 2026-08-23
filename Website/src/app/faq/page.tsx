@@ -4,6 +4,7 @@ import { SITE } from "@/lib/site";
 import { QA, FAQ_GROUPS } from "@/data/faq";
 import { Container } from "@/components/ui";
 import { JsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/schema";
+import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -49,7 +50,8 @@ function Item({ x, open = false }: { x: (typeof QA)[number]; open?: boolean }) {
   );
 }
 
-export default function FAQ() {
+export default async function FAQ() {
+  await assertVisible("/faq");
   const top = QA.filter((x) => x.top);
   return (
     <Container className="py-10 sm:py-16 max-w-3xl">

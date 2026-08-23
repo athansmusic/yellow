@@ -3,6 +3,7 @@ import supporters from "@/data/supporters.json";
 import Link from "next/link";
 import { EXTERNAL } from "@/lib/site";
 import { PageHero, Section } from "@/components/ui";
+import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
   title: "Supporter Wall: Kickstarter Backers",
@@ -15,7 +16,8 @@ function letterOf(name: string) {
   return /[A-Z]/.test(c) ? c : "#";
 }
 
-export default function SupporterWall() {
+export default async function SupporterWall() {
+  await assertVisible("/supporter-wall");
   const groups = new Map<string, string[]>();
   for (const n of supporters.backers) {
     const l = letterOf(n);

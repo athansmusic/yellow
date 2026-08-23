@@ -8,6 +8,7 @@ import { Container, LinkIcons } from "@/components/ui";
 import { Reveal } from "@/components/Reveal";
 import type { IconName } from "@/components/Icons";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
+import { assertVisible } from "@/lib/visibility";
 
 export const revalidate = 3600;
 
@@ -43,6 +44,7 @@ const TEAM: { name: string; role: string; image?: string }[] = [
 const normName = (x: string) => x.toLowerCase().replace(/[^a-z]/g, "");
 
 export default async function CastPage({ searchParams }: { searchParams: Promise<{ group?: string }> }) {
+  await assertVisible("/cast");
   const { group: g } = await searchParams;
   const group: Group = (GROUPS.map((x) => x[0]) as string[]).includes(g ?? "") ? (g as Group) : "all";
   const items = await getAllItems().catch(() => [] as Episode[]);

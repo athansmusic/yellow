@@ -5,6 +5,7 @@ import { SITE } from "@/lib/site";
 import { Container } from "@/components/ui";
 import { AberrationDial } from "@/components/AberrationDial";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
+import { assertVisible } from "@/lib/visibility";
 
 export const revalidate = 3600;
 export const metadata: Metadata = {
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
 const key = (code?: string) => (code ?? "").toLowerCase().replace(/\s+/g, "");
 
 export default async function AberrationsIndex() {
+  await assertVisible("/aberrations");
   const [all, aberrations] = await Promise.all([getAllItems().catch(() => [] as Episode[]), getDoc("aberrations")]);
   const byCode = new Map(all.filter((e) => e.kind === "episode").map((e) => [key(e.code), e]));
   // Order by designation number; records without a number (Pending / Unknown) go last, by episode

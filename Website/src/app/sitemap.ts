@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getDoc } from "@/lib/content";
 import { getAllItems } from "@/lib/feed";
+import { hiddenPages, isHiddenPath } from "@/lib/visibility";
 import { getProducts } from "@/lib/catalog";
 import { SITE } from "@/lib/site";
 import cast from "@/data/cast.json";
@@ -9,17 +10,18 @@ export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = SITE.url;
-  const [like, aberrations] = await Promise.all([getDoc("like"), getDoc("aberrations")]);
-  const statics = ["", "/about", "/faq", "/where", "/episodes", "/cast", "/store", "/store-faq", "/store-terms", "/assets", "/supporter-wall", "/partner", "/privacy", "/like", ...like.map((l) => `/like/${l.slug}`), "/aberrations", ...aberrations.map((a) => `/aberrations/${a.slug}`)].map((p) => ({
+  const [like, aberrations, hidden] = await Promise.all([getDoc("like"), getDoc("aberrations"), hiddenPages()]);
+  const statics = ["", "/about", "/faq", "/where", "/episodes", "/cast", "/store", "/store-faq", "/store-terms", "/assets", "/supporter-wall", "/partner", "/privacy", "/fan-art", "/like", ...like.map((l) => `/like/${l.slug}`), "/aberrations", ...aberrations.map((a) => `/aberrations/${a.slug}`)].map((p) => ({
     url: `${base}${p}`,
     changeFrequency: (p === "" || p === "/episodes" ? "weekly" : "monthly") as "weekly" | "monthly",
     priority: p === "" ? 1 : 0.7,
   }));
   const [items, products] = await Promise.all([getAllItems().catch(() => []), getProducts().catch(() => [])]);
-  return [
+  const all = [
     ...statics,
     ...items.map((e) => ({ url: `${base}/episodes/${e.slug}`, lastModified: e.date, changeFrequency: "yearly" as const, priority: 0.6 })),
     ...products.map((p) => ({ url: `${base}/store/${p.slug}`, changeFrequency: "monthly" as const, priority: 0.5 })),
     ...cast.map((c) => ({ url: `${base}/cast/${c.slug}`, changeFrequency: "monthly" as const, priority: 0.5 })),
   ];
+  return all.filter((e) => !isHiddenPath(e.url.slice(base.length) || "/", hidden));
 }

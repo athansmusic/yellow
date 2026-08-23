@@ -1,5 +1,6 @@
 import { getDoc } from "@/lib/content";
 import { Field, Saved } from "../ui";
+import { HIDEABLE } from "@/lib/visibility";
 import { saveSettings } from "../actions";
 
 const STATUSES = [
@@ -46,6 +47,24 @@ export default async function SettingsAdmin({ searchParams }: { searchParams: Pr
             <Field label="Promo code" name="promoCode" defaultValue={s.promoCode} hint="Must also exist in Stripe (Products → Coupons → promotion code)" />
             <Field label="Pop-up text" name="promoText" defaultValue={s.promoText} />
           </div>
+        </fieldset>
+
+        <fieldset className="border border-line p-5">
+          <legend className="eyebrow px-2">Pages</legend>
+          <p className="text-sm text-muted">Tick a page to hide it. Hidden pages return a 404, disappear from every menu and the footer, and leave the sitemap. Untick to bring it back.</p>
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+            {HIDEABLE.map((h) => (
+              <li key={h.href}>
+                <label className="flex items-start gap-3 border border-line bg-ink-2/70 p-3 text-sm cursor-pointer">
+                  <input type="checkbox" name="hide" value={h.href} defaultChecked={(s.hiddenPages ?? []).includes(h.href)} className="mt-0.5 size-5 accent-yellow" />
+                  <span>
+                    <span className="font-semibold">Hide {h.label}</span>
+                    <span className="block text-xs text-muted">{h.href}{h.note ? ` · ${h.note}` : ""}</span>
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
         </fieldset>
 
         <div>

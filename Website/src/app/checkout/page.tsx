@@ -4,10 +4,12 @@ import { CheckoutClient } from "@/components/CheckoutClient";
 import { Container } from "@/components/ui";
 import { ALLOWED_COUNTRIES, COUNTRY_NAMES, regionFor } from "@/lib/shipping";
 import { SITE } from "@/lib/site";
+import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = { title: "Checkout", robots: { index: false } };
 
 export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ country?: string }> }) {
+  await assertVisible("/store");
   const { country } = await searchParams;
   const cc = (country ?? "US").toUpperCase();
   const safe = (ALLOWED_COUNTRIES as readonly string[]).includes(cc) ? cc : "US";

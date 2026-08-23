@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getDoc } from "@/lib/content";
 import { Container } from "@/components/ui";
 import { Arrow } from "@/components/Icons";
+import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
   title: "Podcasts and Shows Like REDACTED",
@@ -15,6 +16,7 @@ export const revalidate = 60;
 const KIND_LABEL: Record<string, string> = { podcast: "Podcast", tv: "TV show", film: "Film", game: "Game", book: "Book" };
 
 export default async function LikeIndex() {
+  await assertVisible("/like");
   const like = await getDoc("like");
   return (
     <Container className="py-10 sm:py-16 max-w-4xl">

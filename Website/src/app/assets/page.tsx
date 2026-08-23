@@ -8,6 +8,7 @@ import { BOILERPLATE, FACTS, LOGLINE, PALETTE, PRESS_GROUPS, PRESS_ZIP, hexToRgb
 import { Container } from "@/components/ui";
 import { CopyButton } from "@/components/ListenLinks";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
+import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
   title: "Brand Assets & Press Kit",
@@ -45,7 +46,8 @@ const RULES: { ok: boolean; text: string }[] = [
   { ok: false, text: "Don't imply we endorse or made something we didn't." },
 ];
 
-export default function AssetsPage() {
+export default async function AssetsPage() {
+  await assertVisible("/assets");
   const fact = FACTS.map(([k, v]) => `${k}: ${v}`).join("\n");
   return (
     <Container className="py-10 sm:py-16 max-w-5xl">

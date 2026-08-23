@@ -10,6 +10,7 @@ import { Container, Crumbs } from "@/components/ui";
 import { ICONS, type IconName } from "@/components/Icons";
 import { Arrow } from "@/components/Icons";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
+import { assertVisible } from "@/lib/visibility";
 
 export const revalidate = 600;
 
@@ -39,6 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 export default async function CastMember({ params }: { params: Promise<{ slug: string }> }) {
+  await assertVisible("/cast");
   const { slug } = await params;
   const idx = cast.findIndex((x) => x.slug === slug);
   const c = cast[idx] as Member | undefined;

@@ -10,6 +10,7 @@ import { Container, PlatformButtons } from "@/components/ui";
 import { PlayButton } from "@/components/AudioPlayer";
 import { StickyStart } from "@/components/StickyStart";
 import { JsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/schema";
+import { assertVisible } from "@/lib/visibility";
 
 export const dynamicParams = true;
 export const revalidate = 60;
@@ -47,6 +48,7 @@ function Points({ items, accent }: { items: string[]; accent: boolean }) {
 }
 
 export default async function LikePage({ params }: { params: Promise<{ slug: string }> }) {
+  await assertVisible("/like");
   const { slug } = await params;
   const like = await getDoc("like");
   const l = like.find((x) => x.slug === slug);

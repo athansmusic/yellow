@@ -63,7 +63,7 @@ export type LikePage = {
 export type Featured = { slugs: string[] };
 
 export type SeasonStatus = "airing" | "finale" | "break" | "finished";
-export type Settings = { seasonStatus: SeasonStatus; seasonLabel: string; seasonNote: string; promoEnabled: boolean; promoCode: string; promoText: string };
+export type Settings = { seasonStatus: SeasonStatus; seasonLabel: string; seasonNote: string; promoEnabled: boolean; promoCode: string; promoText: string; hiddenPages?: string[] };
 
 export type FanArt = { id: string; image: string; width: number; height: number; title: string; artist: string; postUrl: string; ts: number };
 export type StoreCopy = Record<string, { description?: string; artist?: string; artistUrl?: string }>;
@@ -119,7 +119,7 @@ export async function setDoc<N extends DocName>(name: N, value: Docs[N]) {
     aberrations: ["/aberrations", "/aberrations/[slug]", "/sitemap.xml"],
     like: ["/like", "/like/[slug]", "/sitemap.xml"],
     featured: ["/"],
-    settings: ["/", "/layout"],
+    settings: [["/", "layout"]],
     storeCopy: [["/store", "layout"], ["/store/[slug]", "page"]],
     fanart: ["/", "/fan-art"],
   };
