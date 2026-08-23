@@ -14,6 +14,12 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**.public.blob.vercel-storage.com" },
     ],
   },
+  async headers() {
+    return [
+      // Preview/production hosts on vercel.app must never be indexed; only the real domain is.
+      { source: "/:path*", has: [{ type: "host", value: "(.*)\.vercel\.app" }], headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
+    ];
+  },
   async redirects() {
     return [
       // Legacy Webflow URLs → new structure. Keep these forever; people share links.
