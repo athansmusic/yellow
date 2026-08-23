@@ -47,7 +47,7 @@ export default async function Home() {
   const onBreak = settings?.seasonStatus === "break";
   const returnsAt = onBreak && settings?.nextSeasonDate ? settings.nextSeasonDate : null;
   const nextLabel = settings?.nextSeasonLabel || "Season 2";
-  const CORE = ["Jamie Petronis", "Athan", "Ishani Kanetkar", "Kirsten Ria", "Devin Steffens", "Joe Cliff Thompson"];
+  const CORE = ["Jamie Petronis", "Athan", "Ishani Kanetkar", "Kirsten Ria", "Devin Steffens", "Joe Cliff Thompson", "Ash Millman"];
   const core = CORE.map((n) => cast.find((c) => c.actor === n)).filter(Boolean) as typeof cast;
 
   return (
@@ -181,7 +181,7 @@ export default async function Home() {
                 View the full cast <Arrow />
               </Link>
             </div>
-            <ul className="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4" aria-label="Core cast">
+            <ul className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4" aria-label="Core cast">
               {core.map((c, i) => (
                 <li key={c.actor}>
                   <Link href="/cast" className="group block">
@@ -195,6 +195,14 @@ export default async function Home() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link href="/cast" className="group flex h-full items-center justify-center border border-line bg-ink hover:border-yellow aspect-[4/5]">
+                  <span className="text-center px-4">
+                    <span className="display text-3xl block group-hover:text-yellow">Everyone</span>
+                    <span className="text-xs text-muted mt-1 block">{cast.length} cast &amp; crew</span>
+                  </span>
+                </Link>
+              </li>
             </ul>
           </Reveal>
         </Container>
