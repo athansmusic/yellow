@@ -182,9 +182,14 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
                   More apps
                 </Link>
                 {transcript && (
-                  <a href="#transcript" className="text-sm text-paper/80 hover:text-yellow underline underline-offset-4">
-                    Transcript
-                  </a>
+                  <>
+                    <a href="#transcript" className="text-sm text-paper/80 hover:text-yellow underline underline-offset-4">
+                      Transcript
+                    </a>
+                    <a href={readerUrl} target="_blank" rel="noreferrer" className="text-sm text-paper/80 hover:text-yellow underline underline-offset-4">
+                      Accessible reader
+                    </a>
+                  </>
                 )}
               </div>
             </div>
@@ -207,6 +212,12 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
                   </span>
                 </summary>
                 <div className="px-4 sm:px-5 pb-5 max-h-[70vh] overflow-y-auto border-t border-line">
+                  <div className="mt-4 flex flex-wrap items-center gap-3 border border-line bg-ink p-3">
+                    <a href={readerUrl} target="_blank" rel="noreferrer" className="btn btn-yellow !min-h-10 !text-base !px-4">
+                      Open the accessible reader
+                    </a>
+                    <span className="text-sm text-muted">Dyslexia-friendly font, large text, dark or paper mode, PDF download.</span>
+                  </div>
                   <dl className="mt-4 grid gap-3 text-[15px]">
                     {transcript.lines.map((l, i) => (
                       <div key={i} className="grid sm:grid-cols-[9rem_1fr] gap-x-4">
@@ -215,13 +226,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
                       </div>
                     ))}
                   </dl>
-                  <p className="mt-5 text-xs text-muted">
-                    Transcript from the production script, matched to the final audio.{" "}
-                    <a href={readerUrl} target="_blank" rel="noreferrer" className="text-yellow underline underline-offset-4">
-                      Open in the accessible reader
-                    </a>{" "}
-                    (dyslexia-friendly font, large text, dark or paper mode, PDF download).
-                  </p>
+                  <p className="mt-5 text-xs text-muted">Transcript from the production script, matched to the final audio.</p>
                 </div>
               </details>
             </section>
