@@ -10,6 +10,7 @@ const LINKS = [
   ["/admin", "Overview"],
   ["/admin/featured", "Featured products"],
   ["/admin/store-copy", "Store copy"],
+  ["/admin/transcripts", "Transcripts"],
   ["/admin/aberrations", "Aberrations"],
   ["/admin/like", "If you like…"],
   ["/admin/settings", "Settings"],
