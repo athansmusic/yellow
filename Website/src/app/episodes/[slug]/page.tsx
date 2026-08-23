@@ -218,13 +218,26 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
                     </a>
                     <span className="text-sm text-muted">Dyslexia-friendly font, large text, dark or paper mode, PDF download.</span>
                   </div>
-                  <dl className="mt-4 grid gap-3 text-[15px]">
-                    {transcript.lines.map((l, i) => (
-                      <div key={i} className="grid sm:grid-cols-[9rem_1fr] gap-x-4">
-                        <dt className="display text-lg leading-tight text-yellow sm:text-right">{l.character}</dt>
-                        <dd className="text-paper/90">{l.text}</dd>
-                      </div>
-                    ))}
+                  <dl className="mt-4 grid gap-y-1.5 text-[15px]">
+                    {transcript.lines.map((l, i) => {
+                      const cue = /^(sfx|scene|music|sound|int\.|ext\.|ambience|ambiance|transition)/i.test(l.character);
+                      const sameSpeaker = !cue && i > 0 && transcript.lines[i - 1].character === l.character && !/^(sfx|scene|music|sound)/i.test(transcript.lines[i - 1].character);
+                      if (cue)
+                        return (
+                          <div key={i} className="grid sm:grid-cols-[9rem_1fr] gap-x-4 my-2">
+                            <dt className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted sm:text-right pt-1">{l.character}</dt>
+                            <dd className="text-sm italic text-muted border-l-2 border-line pl-3">{l.text}</dd>
+                          </div>
+                        );
+                      return (
+                        <div key={i} className={`grid sm:grid-cols-[9rem_1fr] gap-x-4 ${sameSpeaker ? "" : "mt-2"}`}>
+                          <dt className={`display text-lg leading-tight text-yellow sm:text-right ${sameSpeaker ? "invisible" : ""}`} aria-hidden={sameSpeaker || undefined}>
+                            {l.character}
+                          </dt>
+                          <dd className="text-paper/90">{l.text}</dd>
+                        </div>
+                      );
+                    })}
                   </dl>
                   <p className="mt-5 text-xs text-muted">Transcript from the production script, matched to the final audio.</p>
                 </div>
