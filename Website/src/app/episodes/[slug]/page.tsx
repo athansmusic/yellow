@@ -280,7 +280,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
                     <Image src={companion.image || "/brand/showart.jpeg"} alt="" fill sizes="56px" className="object-cover" />
                   </span>
                   <span className="min-w-0">
-                    <span className="eyebrow text-yellow block">{ep.kind === "postmortem" ? "Debriefs" : "Companion Postmortem"}</span>
+                    <span className="eyebrow text-yellow block">{ep.kind === "postmortem" ? "Primary episode" : "Companion Postmortem"}</span>
                     <span className="display text-xl block group-hover:text-yellow">{companion.kind === "episode" ? `${companion.code}: ${companion.shortTitle}` : companion.shortTitle}</span>
                   </span>
                 </Link>
