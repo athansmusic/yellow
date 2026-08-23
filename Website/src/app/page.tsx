@@ -102,7 +102,7 @@ export default async function Home() {
       <AwardsStrip quotes={press} />
 
       {/* ── THIS WEEK ── the live row */}
-      <div className="border-b border-line">
+      <div className="relative z-10 border-y border-line bg-ink">
         <Container className="py-5 grid gap-4 md:grid-cols-3 md:divide-x divide-line">
           {latest && (
             <ContinueListening
@@ -110,7 +110,7 @@ export default async function Home() {
                 <div className="md:pr-6 flex items-center gap-3">
                   <PlayButton track={toTrack(latest)} size="sm" />
                   <div className="min-w-0">
-                    <p className="eyebrow text-yellow">Latest episode · {formatDate(latest.date)}</p>
+                    <p className="eyebrow text-yellow whitespace-nowrap">Latest episode · {formatDate(latest.date)}</p>
                     <Link href={`/episodes/${latest.slug}`} className="display text-xl leading-none block truncate hover:text-yellow">
                       {latest.code}: {latest.shortTitle}
                     </Link>
@@ -123,7 +123,7 @@ export default async function Home() {
             <div className="md:px-6 flex items-center gap-3">
               <PlayButton track={toTrack(latestPM)} size="sm" />
               <div className="min-w-0">
-                <p className="eyebrow">Latest Postmortem · {formatDate(latestPM.date)}</p>
+                <p className="eyebrow whitespace-nowrap">Postmortem · {formatDate(latestPM.date)}</p>
                 <Link href={`/episodes/${latestPM.slug}`} className="display text-xl leading-none block truncate hover:text-yellow">
                   {latestPM.shortTitle}
                 </Link>
