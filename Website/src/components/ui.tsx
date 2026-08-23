@@ -37,7 +37,7 @@ export function Heading({
 }
 
 /** Page hero: big title over a brand background, kept short on mobile. */
-export function PageHero({ title, eyebrow, intro, bg = "/home/hero.avif", children }: { title: ReactNode; eyebrow?: string; intro?: ReactNode; bg?: string; children?: ReactNode }) {
+export function PageHero({ title, eyebrow, intro, bg = "/home/site-bg.avif", children }: { title: ReactNode; eyebrow?: string; intro?: ReactNode; bg?: string; children?: ReactNode }) {
   return (
     <div className="relative noise overflow-hidden border-b border-line">
       <div className="absolute inset-0 bg-cover bg-center opacity-40" style={{ backgroundImage: `url(${bg})` }} aria-hidden />

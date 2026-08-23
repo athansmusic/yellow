@@ -45,7 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </a>
         <JsonLd data={siteJsonLd()} />
         {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
-        <div aria-hidden className="pointer-events-none fixed inset-0 z-0 bg-[url('/home/hero.avif')] bg-cover bg-center opacity-[0.13]" />
+        <div aria-hidden className="pointer-events-none fixed inset-0 z-0 bg-[url('/home/site-bg.avif')] bg-cover bg-center opacity-[0.13]" />
         <div aria-hidden className="pointer-events-none fixed inset-0 z-0 bg-[url('/home/static.gif')] bg-[length:300px] opacity-[0.04] mix-blend-screen" />
         <PlayerProvider>
           <CartProvider>
