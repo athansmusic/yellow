@@ -1,0 +1,76 @@
+[
+  {
+    "slug": "the-magnus-archives",
+    "name": "The Magnus Archives",
+    "title": "Podcasts like The Magnus Archives",
+    "description": "Finished The Magnus Archives and The Magnus Protocol? [REDACTED] is a horror comedy audio drama on the same network: a secret agency, a creature every week, and a mystery underneath it all. What's the same, what's different, and where to start.",
+    "about": "The Magnus Archives is Rusty Quill's horror anthology: Jonathan Sims reads statements given to the Magnus Institute about encounters with the supernatural, and over 200 episodes the statements turn out to be connected. It ran from 2016 to 2021, and its follow-up The Magnus Protocol started in 2024.",
+    "same": [
+      "Same network. [REDACTED] is on Rusty Quill, so it sits in the same feed family as Magnus and Protocol, and Rusty Quill ran the first episode as a network feed drop.",
+      "A case every episode, a mystery underneath. Magnus hides its arc inside standalone statements. [REDACTED] hides its arc inside standalone cases: each week the Unit handles one Aberration, and the season's larger story moves a little further.",
+      "An institution that deals with the impossible. The Magnus Institute files it; The [REDACTED] Unit contains it. Both shows are about the people who work there and what the job does to them.",
+      "Postmortem. If you liked the supplemental feel of the Magnus statements, Postmortem is an in-universe spin-off in the same feed where the team debriefs each episode's Aberration to their superior, The Curtain."
+    ],
+    "different": [
+      "It's funny on purpose. Magnus is dread with occasional dry relief. [REDACTED] is a workplace comedy that happens to contain monsters, closer to Brooklyn Nine-Nine or Psych in how the team talks to each other.",
+      "Full cast, full sound design, not a man at a tape recorder. Magnus is mostly one voice and a room. [REDACTED] is an ensemble with scenes, action, and produced sound.",
+      "Shorter commitment. Magnus is 200 episodes. [REDACTED] is about 30 minutes an episode, one season in so far, and new episodes come out every Friday.",
+      "American, not British. Different sensibility, different kind of bureaucracy."
+    ],
+    "quote": {
+      "text": "REDACTED is the inheritor to all your favourite spooky procedurals. Fun and sinister in equal measure, with a central mystery that grabs you by the brain and won't let go.",
+      "who": "Jonathan Sims",
+      "role": "creator of The Magnus Archives"
+    },
+    "start": "Start at Season 1, Episode 1: False Start (Part 1). The show is serialized, so go in order. If you want to test the water first, the teaser trailer is under a minute.",
+    "faq": [
+      {
+        "q": "Is [REDACTED] as scary as The Magnus Archives?",
+        "a": "It is horror, with violence, body horror, and death, but it is told with jokes and a full ensemble, so it rarely sits in dread the way Magnus does. Every episode page lists content warnings separately from the synopsis."
+      },
+      {
+        "q": "Is [REDACTED] connected to The Magnus Archives?",
+        "a": "No. Same network (Rusty Quill), different studio, different universe. Jonathan Sims has recommended it, which is as close as the connection gets."
+      }
+    ],
+    "kind": "podcast",
+    "startEpisode": "S1 E1",
+    "facts": [
+      {
+        "label": "Format",
+        "theirs": "Statements read to tape, one voice",
+        "ours": "Full-cast procedural with scenes and sound design"
+      },
+      {
+        "label": "Tone",
+        "theirs": "Dread, dry relief",
+        "ours": "Horror comedy; workplace banter with monsters"
+      },
+      {
+        "label": "Episode length",
+        "theirs": "20 to 30 minutes",
+        "ours": "About 30 minutes"
+      },
+      {
+        "label": "Run",
+        "theirs": "200 episodes, 2016 to 2021 (Protocol from 2024)",
+        "ours": "Season 1, 2025 onward; Season 2 confirmed"
+      },
+      {
+        "label": "Network",
+        "theirs": "Rusty Quill",
+        "ours": "Rusty Quill"
+      },
+      {
+        "label": "Setting",
+        "theirs": "London, the Magnus Institute",
+        "ours": "Northeastern US, The REDACTED Unit"
+      },
+      {
+        "label": "Start here",
+        "theirs": "MAG 1: Angler Fish",
+        "ours": "S1 E1: False Start (Part 1)"
+      }
+    ]
+  }
+]

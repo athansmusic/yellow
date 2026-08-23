@@ -1,0 +1,812 @@
+[
+  {
+    "character": "Jacob Kane",
+    "actor": "Jamie Petronis",
+    "image": "/cast/jamie-petronis.png",
+    "bio": "A failed actor assuming his dead twin’s identity to escape his embarrassing life circumstances. Jacob stumbles into a paranormal agency, where his struggle to do the right thing clashes with the lies keeping him alive.",
+    "links": {
+      "twitch": "https://www.twitch.tv/jamiepetronis",
+      "instagram": "https://www.instagram.com/thecellarletters/",
+      "x": "https://x.com/CellarLetters",
+      "bluesky": "https://bsky.app/profile/thecellarletters.bsky.social",
+      "web": "https://www.thecellarletters.com/"
+    },
+    "slug": "jamie-petronis",
+    "otherWork": [
+      {
+        "title": "The Cellar Letters",
+        "url": "https://www.thecellarletters.com/",
+        "note": "Creator and lead. Horror audio drama, 2020 onward."
+      },
+      {
+        "title": "WOE.BEGONE",
+        "note": "Matt / Python. 10 episodes."
+      },
+      {
+        "title": "Shadows at the Door",
+        "note": "Spencer Hodge."
+      },
+      {
+        "title": "The Silt Verses",
+        "note": "Additional voices."
+      },
+      {
+        "title": "A Voice from Darkness",
+        "note": "Aaron."
+      },
+      {
+        "title": "FanScape: A FanFiction Podcast",
+        "note": "Firebrand. 8 episodes."
+      }
+    ],
+    "about": "Jamie is a New England based actor and writer with a lifelong love of horror. Before creating The Cellar Letters in 2020 and moving into podcasting, he worked toward a career in film and television: an experience that developed his character-driven approach to audio drama.",
+    "aboutSource": {
+      "label": "theredactedunit.com/partner",
+      "url": "/partner"
+    },
+    "imdb": "https://www.imdb.com/name/nm5470769/"
+  },
+  {
+    "character": "Eli Reyes",
+    "actor": "Athan",
+    "image": "/cast/athan.png",
+    "bio": "Jacob’s closest friend and the team’s grounded tactician. Eli walks the line between loyal soldier and disillusioned leader, trying to protect his people while playing a dangerous game with the clandestine institutions giving the orders.",
+    "links": {
+      "twitch": "https://www.twitch.tv/athansmusic",
+      "spotify": "https://open.spotify.com/artist/3XCFEDx0MwDcKKTGsfGCzd",
+      "tiktok": "https://www.tiktok.com/@athansmusic",
+      "instagram": "https://www.instagram.com/athansmusic/",
+      "x": "https://x.com/athansmusic",
+      "bluesky": "https://bsky.app/profile/athansmusic.com",
+      "web": "https://athansmusic.com/"
+    },
+    "slug": "athan",
+    "otherWork": [
+      {
+        "title": "The Grotto",
+        "url": "https://thegrottopod.com/",
+        "note": "Creator. Horror audio drama."
+      },
+      {
+        "title": "Frights by Fire",
+        "note": "Co-host with Jamie Petronis."
+      },
+      {
+        "title": "WOE.BEGONE",
+        "url": "https://woebegonepod.com/",
+        "note": "Troy."
+      },
+      {
+        "title": "Englewood After Dark",
+        "note": "Composer. 50 episodes."
+      }
+    ],
+    "about": "Johnathan “Athan” Magno is a content creator, producer, and creative director focused on scripted audio drama. His work centers on character-forward storytelling and high end sound design. Prior to production, he owned an escape room and spent five years in game design, shaping immersive experiences built around team-building and tension.",
+    "aboutSource": {
+      "label": "theredactedunit.com/partner",
+      "url": "/partner"
+    },
+    "imdb": "https://www.imdb.com/name/nm16254465/"
+  },
+  {
+    "character": "Hedy Hauksdottir",
+    "actor": "Ishani Kanetkar",
+    "image": "/cast/ishani-kanetkar.png",
+    "bio": "The unit’s scholarly heart, who provides critical intelligence while field agents face supernatural dangers. When not in the archives or monitoring comms, she can be found with oversized headphones, listening to goth music while conducting research that might save lives.",
+    "links": {
+      "x": "https://x.com/ishanikanetkar",
+      "web": "https://ishanikanetkar.carrd.co/"
+    },
+    "slug": "ishani-kanetkar",
+    "otherWork": [
+      {
+        "title": "The Strange Case of Starship Iris",
+        "note": "Arkady Patel. Main cast."
+      },
+      {
+        "title": "The Godshead Incidental",
+        "note": "Imogen “Em” Chandra-Phankham. Main cast."
+      },
+      {
+        "title": "VALENCE",
+        "note": "Mahira Varma. Main cast, 20 episodes."
+      },
+      {
+        "title": "Second Star to the Left",
+        "note": "Gwendolyn Hartley. Main cast."
+      },
+      {
+        "title": "Starfall",
+        "note": "Leona. Main cast."
+      },
+      {
+        "title": "Ominous Convergence",
+        "note": "Indira Varma. Main cast."
+      },
+      {
+        "title": "Feminist Fairytales",
+        "note": "Shakunthalai."
+      },
+      {
+        "title": "Before I Forget (Again)",
+        "note": "Cielle. Main cast, 2026."
+      },
+      {
+        "title": "The Silt Verses",
+        "note": "Elgin. 7 episodes."
+      },
+      {
+        "title": "Maxine Miles",
+        "note": "Jenna Ambrose."
+      },
+      {
+        "title": "Greater Boston",
+        "note": "Lily of the Small Urban Community Garden."
+      }
+    ],
+    "about": "Ishani Kanetkar stumbled into voice acting halfway through a PhD program - and several years and a doctorate later, has completely failed to wander back out again. Among other audio drama appearances, you can hear her award-winning work as Arkady on The Strange Case of Starship Iris, as well as Em on The Godshead Incidental, Mahira on VALENCE, Gwen on Second Star to the Left, and Leona on Starfall. In her free time, she can usually be found on the internet, encouraging people to draw fanart of her characters with swords.",
+    "aboutSource": {
+      "label": "ishanikanetkar.carrd.co",
+      "url": "https://ishanikanetkar.carrd.co/"
+    },
+    "imdb": "https://www.imdb.com/name/nm11648685/"
+  },
+  {
+    "character": "Jo Valentine",
+    "actor": "Kirsten Ria",
+    "image": "/cast/kirsten-ria.png",
+    "bio": "A former aberration hunter fleeing a corrupt legacy. Wielding violence like second nature, her sharp wit and sharper weapons make her indispensable. Despite her tough exterior, she's fiercely loyal to the team that has become her chosen family.",
+    "links": {
+      "twitch": "https://www.twitch.tv/kirstenria",
+      "tiktok": "https://www.tiktok.com/@kirstenriaa",
+      "instagram": "https://www.instagram.com/ria_hunk/",
+      "x": "https://x.com/KirstenRiaa",
+      "web": "https://kirstenria.com/"
+    },
+    "slug": "kirsten-ria",
+    "otherWork": [
+      {
+        "title": "Hollowbody",
+        "note": "Mica. Video game, 2024."
+      },
+      {
+        "title": "Fracture Reshaped (Fortnite)",
+        "note": "The Herald. 2024."
+      },
+      {
+        "title": "Silent Hill Downpour in A Nutshell",
+        "note": "Anne Cunningham."
+      },
+      {
+        "title": "Scene 01: Darkness Through a Window",
+        "note": "Dannie."
+      },
+      {
+        "title": "Demons",
+        "note": "Sam."
+      },
+      {
+        "title": "Tales of New Reno",
+        "note": "Roxanne. Video game."
+      }
+    ],
+    "about": "Kirsten Ria is a versatile British Actor known for their work in the gaming and horror community.\n\nKirsten's journey in media began after earning a Bachelor's Degree in Multimedia Production in 2010. Since then, she has worked across various creative roles. Including at What Culture and as a British voice for Watch Mojo.\n\nTheir voice acting credits include Mica Holloway in Hollowbody, Nora in The Bunny Graveyard 2 and Jo Valentine in the audio drama [Redacted] showcasing their ability to bring depth and emotion to horror driven narratives. She continues to expand her portfolio, lending her voice to exciting new projects in the gaming industry.\n\nKirsten is also a strong advocate for mental health awareness and LGBTQIA+ representation, using her platform to foster a supportive and inclusive community. She highlights the importance of mental well being and works to create spaces where people can feel seen and valued.",
+    "aboutSource": {
+      "label": "IMDb",
+      "url": "https://www.imdb.com/name/nm12047412/bio/"
+    },
+    "imdb": "https://www.imdb.com/name/nm12047412/"
+  },
+  {
+    "character": "Lucas Kipp",
+    "actor": "Devin Steffens",
+    "image": "/cast/devin-steffens.png",
+    "bio": "The team’s self-taught technophile, Lucas hides deep insecurity behind nervous energy and eager helpfulness. Brilliant but riddled with self-doubt, he’s constantly trying to prove he belongs - even when he’s already holding the team together from behind the scenes.",
+    "links": {
+      "tiktok": "https://www.tiktok.com/@merlinthebard",
+      "instagram": "https://www.instagram.com/merlinthebard/",
+      "x": "https://x.com/merlin_thebard",
+      "bluesky": "https://bsky.app/profile/merlinthebard.bsky.social",
+      "web": "https://linktr.ee/merlinthebard"
+    },
+    "slug": "devin-steffens",
+    "otherWork": [
+      {
+        "title": "The Grotto",
+        "url": "https://thegrottopod.com/",
+        "note": "EMT / Nurse 2."
+      },
+      {
+        "title": "Professor Pandemonium's Peculiar Panoply",
+        "note": "Elias; also writer and editor."
+      },
+      {
+        "title": "Dead West",
+        "url": "https://shows.acast.com/dead-west",
+        "note": "Voice actor, audio editor, and sound designer."
+      }
+    ],
+    "about": "Devin was born, raised, and marinated in the good old American West, where he works to tell stories in whatever medium is of interest to him this go-round; from television to podcasts and back again.\n\nWhen he isn't sitting with spirits in ghost towns you can often find him at a local theater show or lifting heavy things in the gym. His favorite character of all time is Hellboy by Mike Mignola; because who doesn't like eldritch horrors and punching Nazis?",
+    "imdb": "https://www.imdb.com/name/nm17025778/"
+  },
+  {
+    "character": "Maxwell Clark",
+    "actor": "Joe Cliff Thompson",
+    "image": "/cast/joe-cliff-thompson.png",
+    "bio": "A battle-worn veteran with more regrets than allies. Maxwell’s sardonic edge hides a deep grief and a fierce loyalty to the team. He knows how the game is played - and when it needs to be broken.",
+    "links": {
+      "twitch": "https://www.twitch.tv/thunder_sauce",
+      "bluesky": "https://bsky.app/profile/joecliffthompson.bsky.social",
+      "web": "https://www.joecliffthompson.com/"
+    },
+    "slug": "joe-cliff-thompson",
+    "otherWork": [
+      {
+        "title": "Dr. Bob",
+        "url": "https://www.youtube.com/@Dr_Bob",
+        "note": "The voice of the SCP YouTube series."
+      },
+      {
+        "title": "System Shock (2023)",
+        "note": "Frode Skara, Greg MacLeod, Kiner Perry. Video game."
+      },
+      {
+        "title": "The Forgotten City",
+        "note": "Al Worth. Video game."
+      },
+      {
+        "title": "Levian",
+        "note": "Lunacy. 9 episodes."
+      },
+      {
+        "title": "The Kingmaker Histories",
+        "note": "Berger, additional voices."
+      },
+      {
+        "title": "Merchant of Death",
+        "note": "Tom Stone."
+      }
+    ],
+    "about": "My name may be Joe, but my voice is anything but average. Whether it's a gruff and gravelly mercenary or a falsetto cartoon platypus, you can hear my trademark sharp and clean vocal style cutting through. I'll bring the sound you're looking for. Let's go!",
+    "aboutSource": {
+      "label": "joecliffthompson.com",
+      "url": "https://www.joecliffthompson.com/"
+    },
+    "imdb": "https://www.imdb.com/name/nm4309529/"
+  },
+  {
+    "character": "Riley Fleming",
+    "actor": "Ash Millman",
+    "image": "/cast/ash-millman.png",
+    "bio": "The vibrant medical examiner who uses games and humor to balance her days of autopsies and dissections. The liveliest person in the room despite working exclusively with the dead, she finds whimsy in her macabre profession.",
+    "links": {
+      "twitch": "https://www.twitch.tv/ashmillman",
+      "instagram": "https://www.instagram.com/ashmillmann/",
+      "x": "https://x.com/ashmillman",
+      "bluesky": "https://bsky.app/profile/ashmillman.bsky.social",
+      "web": "https://www.ashmillman.co.uk/"
+    },
+    "slug": "ash-millman",
+    "otherWork": [
+      {
+        "title": "The NoSleep Podcast",
+        "url": "https://www.thenosleeppodcast.com/about/contributors/ash-millman",
+        "note": "Narrator and character voices, 2022 onward."
+      },
+      {
+        "title": "The PlayStation Access Podcast",
+        "note": "Host, until 2024."
+      },
+      {
+        "title": "WhatCulture Horror",
+        "note": "Producer. 35 episodes."
+      },
+      {
+        "title": "WhatCulture Originals",
+        "note": "Producer. 29 episodes."
+      }
+    ],
+    "about": "Ash Millman is a specialist in the horror genre, celebrating movies, games, and spooky media across the internet. If you're after a confident host and writer, an enthusiastic guest, versatile voice actor and voiceover artist, or an established social media content creator, then please get in touch at hello@ashmillman.co.uk.",
+    "aboutSource": {
+      "label": "ashmillman.co.uk",
+      "url": "https://www.ashmillman.co.uk/"
+    },
+    "imdb": "https://www.imdb.com/name/nm10450738/"
+  },
+  {
+    "character": "Evie Novak",
+    "actor": "Nichole Goodnight",
+    "image": "/cast/nichole-goodnight.png",
+    "bio": "Sisters, speed demons, and the unit’s transport team. Nyx is blunt and brash, Evie smooth and professional; both adrenaline chasers with a fierce bond and no patience for rules they didn’t write.",
+    "links": {
+      "twitch": "https://www.twitch.tv/NicholeGoodnight",
+      "x": "https://x.com/NRGoodnight"
+    },
+    "slug": "nichole-goodnight",
+    "otherWork": [
+      {
+        "title": "The NoSleep Podcast",
+        "url": "https://www.thenosleeppodcast.com/about/contributors/nichole-goodnight",
+        "note": "Narrator and voices. 171 episodes."
+      },
+      {
+        "title": "SCP Archives",
+        "note": "8 episodes."
+      },
+      {
+        "title": "Slay the Princess",
+        "note": "Princess, other voices. Video game."
+      },
+      {
+        "title": "Creepy",
+        "note": "Wolfgang. 6 episodes."
+      },
+      {
+        "title": "The White Vault",
+        "note": "Orderly."
+      },
+      {
+        "title": "Poe Evermore",
+        "note": "Frances."
+      },
+      {
+        "title": "Shadows at the Door",
+        "note": "Dani Pound."
+      }
+    ],
+    "about": "Hello! Nichole Goodnight here, from the lovely city of Rochester, New York. A little bit about me – As far as pets go, I have one hedgehog (Katamari), four cats (Egg, Toast, Oliver, and Persephone), and one fish that I’m pretty sure is immortal (Blueberry). in my spare time, I can usually be found speedrunning The Lion King on Twitch, playing games online, or reading!\n\nI’ve always had a passion for voice acting, and have worked for small projects off and on through the years. I’ve done things from small commercials, to little animated shorts on YouTube. When I was young, my mom and I used to sing together. She’s really the first inspiration I had to use my voice for things other than speaking.",
+    "aboutSource": {
+      "label": "The NoSleep Podcast",
+      "url": "https://www.thenosleeppodcast.com/about/contributors/nichole-goodnight"
+    },
+    "imdb": "https://www.imdb.com/name/nm11688397/"
+  },
+  {
+    "character": "Nyx Novak",
+    "actor": "Lev Rodriguez Shivers",
+    "image": "/cast/lev-rodriguez.png",
+    "bio": "Sisters, speed demons, and the unit’s transport team. Nyx is blunt and brash, Evie smooth and professional; both adrenaline chasers with a fierce bond and no patience for rules they didn’t write.",
+    "links": {
+      "twitch": "https://www.twitch.tv/maydayroleplay",
+      "bluesky": "https://bsky.app/profile/levrs23.bsky.social"
+    },
+    "slug": "lev-rodriguez",
+    "otherWork": [
+      {
+        "title": "Oxenfree II: Lost Signals",
+        "note": "Rex. Video game."
+      },
+      {
+        "title": "The Love Talker",
+        "note": "Ren. 8 episodes."
+      },
+      {
+        "title": "Tubular Teens with Titans",
+        "note": "Scarlett Watts. 16 episodes."
+      },
+      {
+        "title": "The Horror at Martin's Beach",
+        "note": "Ari. 10 episodes."
+      },
+      {
+        "title": "The Terra Alpha Audio Drama",
+        "note": "Dr. Katrina Shapiro."
+      },
+      {
+        "title": "Bean Sidhe",
+        "note": "Caitlin Brennan. Video game."
+      }
+    ],
+    "about": "",
+    "aboutSource": null,
+    "imdb": "https://www.imdb.com/name/nm8066622/"
+  },
+  {
+    "character": "Silas Montgomery",
+    "actor": "David Ault",
+    "image": "/cast/david-ault.png",
+    "bio": "Maxwell’s old partner who vanished mid-mission. Respected and well-liked by the team, Silas was meticulous, intelligent, and strategic. His fate remains unknown, as does his connection to a deeper conspiracy.",
+    "links": {
+      "x": "https://x.com/DavidAult",
+      "bluesky": "https://bsky.app/profile/davidault.bsky.social",
+      "web": "https://www.davidault.co.uk/"
+    },
+    "slug": "david-ault",
+    "otherWork": [
+      {
+        "title": "The NoSleep Podcast",
+        "url": "https://www.thenosleeppodcast.com/about/contributors/david-ault",
+        "note": "Featured narrator since 2014."
+      },
+      {
+        "title": "Shadows at the Door",
+        "note": "Geoffrey Troughton, Lord Henry Wotton, narrator. 34 episodes."
+      },
+      {
+        "title": "Dark Dice",
+        "note": "Iaus Innskeep. 24 episodes."
+      },
+      {
+        "title": "The Lucky Die",
+        "note": "Daechin, Valerian Bandersnatch. 21 episodes."
+      },
+      {
+        "title": "The Sprouting",
+        "note": "RT."
+      },
+      {
+        "title": "Dracula: 2004",
+        "note": "Mr. Swales."
+      }
+    ],
+    "about": "Professional male voice over UK specialist with an award-winning RP accent. As a voiceover artist, I deliver commercial voiceovers, audiobooks, e-learning narration, and audio drama. Cambridge-trained astrophysicist. Studio-quality recordings delivered on time.",
+    "aboutSource": {
+      "label": "davidault.co.uk",
+      "url": "https://www.davidault.co.uk/"
+    },
+    "imdb": "https://www.imdb.com/name/nm8598033/"
+  },
+  {
+    "character": "Control",
+    "actor": "Anusia Battersby",
+    "image": "/cast/anusia-battersby.png",
+    "bio": "The mysterious overseer of The [REDACTED] Unit who maintains strict operational standards from behind the scenes. To The [REDACTED] Unit, Control embodies the mysterious power structure they serve, deciding which cases get pursued and what resources will be allocated to the team's dangerous work.",
+    "links": {
+      "tiktok": "https://www.tiktok.com/@anusiabattersby1",
+      "instagram": "https://www.instagram.com/anusiabattersby/",
+      "x": "https://x.com/AnusiaBattersby",
+      "bluesky": "https://bsky.app/profile/anusiabattersby.bsky.social"
+    },
+    "slug": "anusia-battersby",
+    "otherWork": [
+      {
+        "title": "The Magnus Protocol",
+        "url": "https://rustyquill.com/show/the-magnus-protocol/",
+        "note": "Gwendolyn Bouchard, narrator. 45 episodes."
+      },
+      {
+        "title": "Dracula: 2004",
+        "note": "Lucy Westenra. 11 episodes."
+      },
+      {
+        "title": "The Hungry Moon",
+        "note": "Martha."
+      },
+      {
+        "title": "Twilight Meridian",
+        "note": "BBC Announcer."
+      },
+      {
+        "title": "Starlight Phineas",
+        "note": "Johnnie."
+      }
+    ],
+    "about": "I am an actor, voiceover artist, writer, TTRPG designer, and theatre-maker. I am currently working as a VEA at the Royal Exchange Theatre, as well as completing my own creative projects as a freelancer. I am interested in connecting with fellow creatives and production companies, and would love to be a part of bringing new, innovative stories to life!",
+    "imdb": "https://www.imdb.com/name/nm12672795/"
+  },
+  {
+    "character": "Eloise Thorne",
+    "actor": "Billie Hindle",
+    "image": "/cast/billie-hindle.png",
+    "bio": "Eloise serves as a remote intelligence contractor who maintains communications through an old rotary phone. Working from an undisclosed location, she monitors police dispatches, emergency channels, and civilian reports to identify potential aberrant activity and provide cases to The [REDACTED] Unit.",
+    "links": {
+      "tiktok": "https://www.tiktok.com/@billie.lauren",
+      "instagram": "https://www.instagram.com/billielaurenh/",
+      "x": "https://x.com/BillieLHindle",
+      "bluesky": "https://bsky.app/profile/billielhindle.bsky.social"
+    },
+    "slug": "billie-hindle",
+    "otherWork": [
+      {
+        "title": "The Magnus Protocol",
+        "url": "https://rustyquill.com/show/the-magnus-protocol/",
+        "note": "Alice Dyer. 50 episodes."
+      },
+      {
+        "title": "Partial Veil",
+        "note": "Rose Ellis / Nurse Rose."
+      },
+      {
+        "title": "Finding Emily",
+        "note": "2026."
+      },
+      {
+        "title": "Secrets of a Wallaby Boy",
+        "note": "Jade. 2023."
+      },
+      {
+        "title": "Doctor Who: The Queer Doctor Adventures",
+        "note": "Gigi."
+      }
+    ],
+    "about": "Billie Lauren Hindle is an actress from Preston, Lancashire, UK.\n\nShe is a Co-Founder of and the Managing Director of Octavius Theatre Company Ltd (est. 2021).\n\nShe is best known for The Magnus Protocol (2024), Finding Emily (2026), Secrets of a Wallaby Boy (2023) and Partial Veil (2024).\n\nShe is also a writer, director and producer.",
+    "aboutSource": {
+      "label": "IMDb",
+      "url": "https://www.imdb.com/name/nm14312274/bio/"
+    },
+    "imdb": "https://www.imdb.com/name/nm14312274/"
+  },
+  {
+    "character": "Ignatius",
+    "actor": "Rebecca Hansson",
+    "image": "/cast/rebecca-hansson.png",
+    "bio": "The cleanup specialists who handle the aftermath of aberration neutralization. This enigmatic pair (Couple? Siblings? Both? Eww.) approach their work with zeal and mystery in equal measure.",
+    "links": {
+      "instagram": "https://www.instagram.com/BeNotAfraidPod/",
+      "bluesky": "https://bsky.app/profile/bnapod.bsky.social"
+    },
+    "slug": "rebecca-hansson",
+    "otherWork": [
+      {
+        "title": "Be Not Afraid",
+        "note": "Enoch, Metatron, additional voices. Also writer and director. 12 episodes."
+      },
+      {
+        "title": "The Gorgon Show",
+        "note": "Britt Marie the Skogsra."
+      },
+      {
+        "title": "Wireland Presents: The Dope Show",
+        "note": "AD Dual."
+      }
+    ],
+    "about": "",
+    "aboutSource": null,
+    "imdb": "https://www.imdb.com/name/nm12677160/"
+  },
+  {
+    "character": "Ignatius",
+    "actor": "Thomas Barker",
+    "image": "/cast/thomas-barker.png",
+    "bio": "The cleanup specialists who handle the aftermath of aberration neutralization. This enigmatic pair (Couple? Siblings? Both? Eww.) approach their work with zeal and mystery in equal measure.",
+    "links": {
+      "instagram": "https://www.instagram.com/tuomas.va/",
+      "x": "https://x.com/bbominations",
+      "web": "https://linktr.ee/thomasva"
+    },
+    "slug": "thomas-barker",
+    "otherWork": [
+      {
+        "title": "Bloodrock Springs",
+        "note": "Max. 10 episodes."
+      },
+      {
+        "title": "The Strata",
+        "note": "Darrow. 8 episodes."
+      },
+      {
+        "title": "The Road of Shadows",
+        "note": "Steve, Stan, Lewis."
+      },
+      {
+        "title": "Thank Goodness It's Family",
+        "note": "Mr. Bradley."
+      },
+      {
+        "title": "Legacy of Orsinium",
+        "note": "Executioner Garrug. Video game."
+      },
+      {
+        "title": "Future Fragments",
+        "note": "Various. Video game."
+      }
+    ],
+    "about": "Thomas Barker is an actor from New Zealand, working primarily in the medium of voiceover. Beginning his career on the stage, as well as studying classical music, he now performs in a variety of genres, from audio book narration, online and radio advertising, and character work for animation and video games.",
+    "aboutSource": {
+      "label": "IMDb",
+      "url": "https://www.imdb.com/name/nm10505494/"
+    },
+    "imdb": "https://www.imdb.com/name/nm10505494/"
+  },
+  {
+    "character": "Agent Koska",
+    "actor": "Natalie Light",
+    "image": "/cast/natalie-light.png",
+    "bio": "",
+    "links": {
+      "spotify": "https://open.spotify.com/artist/633DbIYe1DmMWif5vPzpbc",
+      "tiktok": "https://www.tiktok.com/@nataliesdreaming",
+      "instagram": "https://www.instagram.com/nataliesdreaming/",
+      "bluesky": "https://bsky.app/profile/nataliesdreaming.bsky.social"
+    },
+    "slug": "natalie-light",
+    "otherWork": [
+      {
+        "title": "The Grotto",
+        "url": "https://thegrottopod.com/",
+        "note": "Lillian; also a writer on the show."
+      }
+    ],
+    "about": "Natalie Light is a multi-nothing yet selling singer, voice actress, painter and sometimes-songwriter. She is known for her work in the fast-growing fictional audio drama The Grotto, which is notable for its heavy creative use of original and cover songs in storytelling, where she is one of the writers and also voices Lillan.",
+    "imdb": "https://www.imdb.com/name/nm17023451/"
+  },
+  {
+    "character": "Sloan Summers",
+    "actor": "Lyssa Jay",
+    "image": "/cast/lyssa-jay.png",
+    "bio": "Sloan is the Foundation’s PR specialist and resident “fixer,” expertly reshaping public perception whenever aberration activity leaks into the spotlight. Armed with sharp suits and a sharper smile, she crafts convincing narratives that neutralize panic, and turns near-catastrophes into harmless anomalies.",
+    "links": {
+      "twitch": "https://www.twitch.tv/ripperonipupperoo",
+      "instagram": "https://www.instagram.com/lyssajayartcos/",
+      "x": "https://x.com/LyssaJayVA",
+      "bluesky": "https://bsky.app/profile/lyssajayva.bsky.social",
+      "web": "https://linktr.ee/lyssajayva"
+    },
+    "slug": "lyssa-jay",
+    "otherWork": [
+      {
+        "title": "The Grotto",
+        "url": "https://thegrottopod.com/",
+        "note": "Emily. 13 episodes."
+      },
+      {
+        "title": "400 Words A Horror",
+        "note": "Co-runner."
+      },
+      {
+        "title": "WOE.BEGONE",
+        "url": "https://woebegonepod.com/",
+        "note": "Charlie. 10 episodes."
+      },
+      {
+        "title": "Breathing Space: A Sci-Fi Western Audio Anthology",
+        "note": "Sister-to-All, Evri Yodel."
+      },
+      {
+        "title": "Vita Carnis",
+        "note": "Reporter 1."
+      },
+      {
+        "title": "Soul Operator",
+        "note": "Voice."
+      }
+    ],
+    "about": "",
+    "aboutSource": null,
+    "imdb": "https://www.imdb.com/name/nm15549572/"
+  },
+  {
+    "character": "Dr. Danse",
+    "actor": "Derek Moreland",
+    "image": "/cast/derek-moreland.png",
+    "bio": "",
+    "links": {},
+    "slug": "derek-moreland",
+    "otherWork": [
+      {
+        "title": "The Grotto",
+        "url": "https://thegrottopod.com/",
+        "note": "Ambrose."
+      }
+    ],
+    "about": "Amidst a long list of random life encounters, Derek’s creative work has involved filmmaking on both sides of the camera, and eventually Escape Room design and management with Athan.\n\nOutside of work, you can find Derek enjoying tabletop RPGs with friends, video gaming, reading books of all genres, and otherwise enjoying life with his wife and kids.",
+    "imdb": "https://www.imdb.com/name/nm3937346/"
+  },
+  {
+    "character": "Mars Donovan",
+    "actor": "Taylor Michaels",
+    "image": "/cast/taylor-michaels.png",
+    "bio": "A former data analyst who quit his corporate job after a close encounter with an aberration and the Foundation agents who failed to contain it. Mars now lives in a cluttered apartment filled with maps, string connections, and haphazard case files, where he operates a Youtube channel obsessing over aberration sightings that coincide with the cases of The [REDACTED] Unit.",
+    "links": {
+      "twitch": "https://www.twitch.tv/taytayheyheyva",
+      "spotify": "https://open.spotify.com/artist/1VNvMK6Cv8IZ5PzqvyeVod",
+      "instagram": "https://www.instagram.com/taytayheyheyva/",
+      "x": "https://x.com/taytayheyheyva",
+      "bluesky": "https://bsky.app/profile/taytayheyheyva.bsky.social",
+      "web": "https://linktr.ee/taylormichaels"
+    },
+    "slug": "taylor-michaels",
+    "otherWork": [
+      {
+        "title": "WOE.BEGONE",
+        "url": "https://woebegonepod.com/",
+        "note": "Chance. 20 episodes."
+      },
+      {
+        "title": "The Grotto",
+        "url": "https://thegrottopod.com/",
+        "note": "David. 10 episodes."
+      },
+      {
+        "title": "Breathing Space: A Sci-Fi Western Audio Anthology",
+        "note": "Deadlight 2, Pityr, Martie Ettal."
+      },
+      {
+        "title": "Wireland Presents: The Dope Show",
+        "note": "Blackthorne."
+      },
+      {
+        "title": "Vita Carnis",
+        "note": "News Reporter 5."
+      },
+      {
+        "title": "Soul Operator",
+        "note": "Voice."
+      }
+    ],
+    "about": "",
+    "aboutSource": null,
+    "imdb": "https://www.imdb.com/name/nm3653450/"
+  },
+  {
+    "character": "Elevator Guy",
+    "actor": "Dylan Griggs",
+    "image": "/cast/dylan-griggs.png",
+    "bio": "He’s always there. Same elevator, same time, always mid-conversation on his phone. No one knows his name, role, or department. Any attempt to engage him is quickly shut down with an annoyed, “I’m on the phone!”",
+    "links": {
+      "twitch": "https://www.twitch.tv/woebegonepod",
+      "spotify": "https://open.spotify.com/artist/1HJLoW5OwU9rU066jdNam3",
+      "x": "https://x.com/woebegonepod",
+      "bluesky": "https://bsky.app/profile/woebegonepod.bsky.social",
+      "web": "https://woebegonepod.com/"
+    },
+    "slug": "dylan-griggs",
+    "otherWork": [
+      {
+        "title": "WOE.BEGONE",
+        "url": "https://woebegonepod.com/",
+        "note": "Creator, and Mike Walters. 213 episodes."
+      },
+      {
+        "title": "The Grotto",
+        "url": "https://thegrottopod.com/",
+        "note": "Buck (EMT)."
+      },
+      {
+        "title": "Soul Operator",
+        "note": "John-Michael Cassidy."
+      },
+      {
+        "title": "Breathing Space: A Sci-Fi Western Audio Anthology",
+        "note": "Chima Baardson."
+      },
+      {
+        "title": "The Diary of Aliza Schultz",
+        "note": "Creator."
+      }
+    ],
+    "about": "",
+    "aboutSource": null,
+    "imdb": "https://www.imdb.com/name/nm14016110/"
+  },
+  {
+    "character": "Jordan Kane",
+    "actor": "Nathan Lunsford",
+    "image": "/cast/nathan-lunsford.png",
+    "bio": "Jacob’s late twin and former leader of The [REDACTED] Unit. Coldly principled and emotionally distant, Jordan sacrificed relationships for the greater good… until the secrets he kept caught up with him.",
+    "links": {
+      "twitch": "https://www.twitch.tv/horrificnathan",
+      "instagram": "https://www.instagram.com/horrificnathan/",
+      "x": "https://x.com/horrificnathan",
+      "bluesky": "https://bsky.app/profile/horrificnathan.com",
+      "web": "https://horrificnathan.com/"
+    },
+    "slug": "nathan-lunsford",
+    "otherWork": [
+      {
+        "title": "The Storage Papers",
+        "note": "Creator and producer; also Mark Anderson."
+      },
+      {
+        "title": "Phonic Fiction Fest",
+        "note": "Organizer. A 48-hour audio drama competition."
+      },
+      {
+        "title": "WOE.BEGONE",
+        "url": "https://woebegonepod.com/",
+        "note": "CANNONBALL, TV Reporter. 5 episodes."
+      },
+      {
+        "title": "The Silt Verses",
+        "note": "Charity's Date, additional voices."
+      },
+      {
+        "title": "Enthusigasm",
+        "note": "2022."
+      }
+    ],
+    "about": "",
+    "aboutSource": null,
+    "imdb": "https://www.imdb.com/name/nm12121977/"
+  }
+]

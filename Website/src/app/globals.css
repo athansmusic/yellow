@@ -1,0 +1,361 @@
+@import "tailwindcss";
+
+/* ── Brand tokens (from the Asset Guide: #FFF200 / #A21D2D / #161212) ── */
+@theme {
+  --color-ink: #090909;
+  --color-ink-2: #161212;
+  --color-ink-3: #221d1d;
+  --color-line: #2f2a2a;
+  --color-paper: #f2f0ea;
+  --color-muted: #aaa49b;
+  --color-yellow: #fff200;
+  --color-red: #a21d2d;
+  --color-red-2: #c8283a;
+
+  --font-display: var(--font-nk57), "Arial Narrow", Impact, sans-serif;
+  --font-wide: var(--font-nk57-wide), "Courier New", monospace;
+  --font-body: var(--font-montserrat), system-ui, sans-serif;
+
+  --breakpoint-xs: 30rem;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  overflow-x: clip;
+}
+
+/* Display type: condensed mono, always uppercase, tight leading */
+.display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  /* NK57 glyphs span ~1.2em (ascent 0.99em + descent 0.22em); anything tighter overlaps on wrapped lines */
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: var(--color-muted);
+}
+
+.prose-site p {
+  max-width: 62ch;
+}
+.prose-site p + p {
+  margin-top: 1em;
+}
+.prose-site a:not(.btn) {
+  color: var(--color-yellow);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.btn,
+.btn:hover {
+  text-decoration: none;
+}
+.btn-yellow,
+.btn-yellow:hover {
+  color: var(--color-ink);
+}
+.btn-ghost {
+  color: var(--color-paper);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: 1.25rem;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  border: 2px solid transparent;
+  transition: transform 120ms ease, background 120ms ease, color 120ms ease;
+  cursor: pointer;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn-yellow {
+  background: var(--color-yellow);
+  color: var(--color-ink);
+}
+.btn-yellow:hover {
+  background: #fff;
+}
+.btn-ghost {
+  border-color: var(--color-paper);
+  color: var(--color-paper);
+}
+.btn-ghost:hover {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+.btn-red {
+  background: var(--color-red);
+  color: #fff;
+}
+.btn-red:hover {
+  background: var(--color-red-2);
+}
+.btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Focus: always visible, brand yellow */
+:focus-visible {
+  outline: 3px solid var(--color-yellow);
+  outline-offset: 3px;
+}
+
+/* Form controls */
+.field {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.65rem 0.9rem;
+  background: var(--color-ink-2);
+  border: 1px solid var(--color-line);
+  color: var(--color-paper);
+  font-size: 1rem;
+}
+.field:focus {
+  border-color: var(--color-yellow);
+  outline: none;
+}
+select.field {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--color-paper) 50%),
+    linear-gradient(135deg, var(--color-paper) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 2.5rem;
+}
+
+/* Static-noise texture used on hero surfaces */
+.noise::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/home/static.gif") center/300px repeat;
+  opacity: 0.08;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Redaction bar effect for decorative text */
+.redact {
+  background: var(--color-paper);
+  color: transparent;
+  border-radius: 1px;
+  user-select: none;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -100px;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  background: var(--color-yellow);
+  color: var(--color-ink);
+  font-weight: 700;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Laurel marquee + quote rotation */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee {
+  animation: marquee 60s linear infinite;
+}
+@keyframes quote-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+.quote-in {
+  animation: quote-in 500ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee { animation: none; flex-wrap: wrap; width: auto; justify-content: center; }
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 600ms ease, transform 600ms ease;
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Hero motion: slow drift + static flicker */
+@keyframes kenburns {
+  0% { transform: scale(1.04) translate(0, 0); }
+  50% { transform: scale(1.1) translate(-1.2%, 1%); }
+  100% { transform: scale(1.04) translate(0, 0); }
+}
+.kenburns {
+  animation: kenburns 40s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes flicker {
+  0%, 100% { opacity: 0.14; }
+  8% { opacity: 0.06; }
+  9% { opacity: 0.2; }
+  10% { opacity: 0.1; }
+  30% { opacity: 0.16; }
+  52% { opacity: 0.05; }
+  53% { opacity: 0.18; }
+  70% { opacity: 0.12; }
+  86% { opacity: 0.22; }
+  87% { opacity: 0.08; }
+}
+.flicker {
+  animation: flicker 7s steps(1, end) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .kenburns, .flicker { animation: none; }
+}
+
+/* /where: brand-colored app marks go black on hover */
+.group:hover .app-mark {
+  filter: brightness(0);
+}
+
+/* Show-hero title: one line on desktop (the display font's text-wrap: balance would otherwise split it) */
+@media (min-width: 64rem) {
+  .hero-title {
+    white-space: nowrap;
+    text-wrap: nowrap;
+  }
+}
+
+/* Aberration dossiers: spoiler fields render as black bars until declassified */
+.dossier:not([data-open]) .classified {
+  position: relative;
+}
+.dossier:not([data-open]) .classified > * {
+  color: transparent;
+  background: #000;
+  border-radius: 1px;
+  user-select: none;
+  text-shadow: none;
+}
+.dossier:not([data-open]) .classified * {
+  color: transparent !important;
+}
+.dossier:not([data-open]) .classified::after {
+  content: "Redacted";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  pointer-events: none;
+}
+
+/* CRT terminal for the aberration records */
+.crt {
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 242, 0, 0.08);
+}
+.crt-text {
+  color: #f2eebf;
+  text-shadow: 0 0 6px rgba(255, 242, 0, 0.35);
+}
+.crt-scan {
+  background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 3px);
+  mix-blend-mode: overlay;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .crt-scan::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(255, 242, 0, 0.05) 50%, transparent 100%);
+    background-size: 100% 220px;
+    animation: crt-roll 6s linear infinite;
+  }
+}
+@keyframes crt-roll {
+  from { background-position: 0 -220px; }
+  to { background-position: 0 100%; }
+}
+
+/* /store grid: ShowMore hides cards past --show until expanded (they stay in the HTML) */
+[data-collapsed] > :nth-child(n + 25) {
+  display: none;
+}
+
+/* Bottom bars: stack above the audio player (when present) and clear the iPhone home indicator */
+:root {
+  --player-bar-h: 4rem;
+}
+@media (min-width: 640px) {
+  :root {
+    --player-bar-h: 4.5rem;
+  }
+}
+.bottom-bar {
+  bottom: var(--player-h, 0px);
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+}
+
+/* Akouva's mark is a bitmap: black by default (light circles), white inside .on-dark containers */
+.akouva {
+  filter: brightness(0);
+}
+.on-dark .akouva {
+  filter: brightness(0) invert(1);
+}
