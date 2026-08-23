@@ -29,7 +29,7 @@ export function AwardsStrip({ quotes }: { quotes: Quote[] }) {
         <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-ink-2 to-transparent z-10" aria-hidden />
         <div className="flex w-max gap-10 marquee group-hover:[animation-play-state:paused]">
           {[...LAURELS, ...LAURELS].map((src, k) => (
-            <Image key={k} src={src} alt="" width={64} height={64} sizes="64px" quality={70} className="h-12 sm:h-16 w-auto opacity-85 shrink-0" aria-hidden={k >= LAURELS.length} />
+            <Image key={k} src={src} alt="" width={64} height={64} sizes="64px" quality={55} className="h-12 sm:h-16 w-auto opacity-85 shrink-0" aria-hidden={k >= LAURELS.length} />
           ))}
         </div>
       </div>

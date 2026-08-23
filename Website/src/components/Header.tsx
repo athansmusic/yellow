@@ -157,7 +157,7 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
     <header className={`sticky top-0 z-50 bg-ink/95 backdrop-blur border-b border-line transition-transform duration-200 ${hideBar && !open ? "max-lg:-translate-y-full" : ""}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
         <Link href="/" className="flex items-center shrink-0" aria-label="[REDACTED] home">
-          <Image src="/brand/logo-nav.avif" alt="" width={118} height={32} sizes="118px" priority className="h-8 w-auto" />
+          <Image src="/brand/logo-nav-sm.avif" alt="" width={118} height={32} sizes="118px" quality={70} priority className="h-8 w-auto" />
         </Link>
 
         <nav ref={navRef} aria-label="Primary" className="hidden lg:block">
