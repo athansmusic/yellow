@@ -32,13 +32,13 @@ export function ThankYou({ names, className = "" }: { names: string[]; className
 
   const name = names[i] ?? names[0] ?? "every backer";
   return (
-    // Fixed height and a single clipped line so a long name never reflows the section.
-    <Link href="/supporter-wall" className={`grid grid-cols-[auto_minmax(0,1fr)] sm:grid-cols-[auto_minmax(0,1fr)_auto] items-baseline justify-center gap-x-1.5 h-7 overflow-hidden text-sm text-white/80 hover:text-white ${className}`} aria-live="off">
-      <span className="whitespace-nowrap">Thank you to</span>
-      <span className={`display text-lg text-yellow truncate transition-opacity duration-100 ${fade ? "opacity-0" : "opacity-100"}`} title={name}>
+    // Phones: three stacked lines (fixed height). Wider: one line. A long name truncates instead of reflowing.
+    <Link href="/supporter-wall" className={`block text-center sm:grid sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-baseline sm:justify-center sm:gap-x-1.5 sm:h-7 sm:text-left overflow-hidden text-sm text-white/80 hover:text-white ${className}`} aria-live="off">
+      <span className="block sm:inline whitespace-nowrap">Thank you to</span>
+      <span className={`block sm:inline display text-lg text-yellow truncate transition-opacity duration-100 ${fade ? "opacity-0" : "opacity-100"}`} title={name}>
         {name}
       </span>
-      <span className="hidden sm:inline whitespace-nowrap text-white/60">· 313% funded on Kickstarter</span>
+      <span className="block sm:inline whitespace-nowrap text-white/60 sm:before:content-['·_']">313% funded on Kickstarter</span>
     </Link>
   );
 }
