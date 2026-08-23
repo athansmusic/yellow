@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "cdn.prod.website-files.com" },
       { protocol: "https", hostname: "i.ytimg.com" },
       { protocol: "https", hostname: "**.media.tumblr.com" },
+      { protocol: "https", hostname: "**.public.blob.vercel-storage.com" },
     ],
   },
   async redirects() {

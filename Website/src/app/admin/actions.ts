@@ -12,6 +12,29 @@ async function requireAdmin() {
 }
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
+
+/**
+ * Saves an uploaded image and returns its public URL, or null when no file was chosen.
+ * Production: Vercel Blob (public). Development: public/<key>.<ext>, served by Next.
+ */
+async function storeUpload(file: FormDataEntryValue | null, key: string): Promise<string | null> {
+  if (!(file instanceof File) || file.size === 0) return null;
+  if (file.size > 4 * 1024 * 1024) throw new Error("Image is larger than 4 MB");
+  const ext = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/avif": "avif" }[file.type];
+  if (!ext) throw new Error("Use a PNG, JPEG, WebP, or AVIF image");
+  const pathname = `${key}.${ext}`;
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const { put } = await import("@vercel/blob");
+    const blob = await put(`uploads/${pathname}`, file, { access: "public", addRandomSuffix: false, allowOverwrite: true, contentType: file.type });
+    return blob.url;
+  }
+  const fs = await import("node:fs/promises");
+  const path = await import("node:path");
+  const dest = path.join(process.cwd(), "public", pathname);
+  await fs.mkdir(path.dirname(dest), { recursive: true });
+  await fs.writeFile(dest, Buffer.from(await file.arrayBuffer()));
+  return `/${pathname}`;
+}
 const lines = (fd: FormData, k: string) =>
   str(fd, k)
     .split(/\r?\n/)
@@ -80,7 +103,7 @@ export async function saveAberration(fd: FormData) {
     alsoIn: lines(fd, "alsoIn"),
     aliases: lines(fd, "aliases"),
     threat: Math.min(5, Math.max(0, Number(fd.get("threat")) || 0)) || undefined,
-    image: str(fd, "image") || undefined,
+    image: (await storeUpload(fd.get("imageFile"), `aberrations/${slug}`)) ?? (str(fd, "image") || undefined),
   };
   const all = await getDoc("aberrations");
   const rest = all.filter((x) => x.slug !== original && x.slug !== slug);

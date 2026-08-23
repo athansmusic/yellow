@@ -49,7 +49,7 @@ export function AwardsStrip({ quotes }: { quotes: Quote[] }) {
           <blockquote key={i} className="quote-in text-sm sm:text-base text-paper/90">
             “{q.quote}”
             <footer className="mt-1 text-xs text-muted">
-              – {q.who}, {q.url ? <a href={q.url} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-yellow">{q.outlet}</a> : q.outlet}
+              {q.who}, {q.url ? <a href={q.url} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-yellow">{q.outlet}</a> : q.outlet}
             </footer>
           </blockquote>
         </div>

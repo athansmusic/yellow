@@ -22,7 +22,7 @@ export default async function EditAberration({ params, searchParams }: { params:
       <h1 className="display text-5xl mt-2">{isNew ? "New aberration" : a.name}</h1>
       {saved && <Saved>Saved. Live at /aberrations/{slug} within a minute.</Saved>}
 
-      <form action={saveAberration} className="mt-8 grid gap-5">
+      <form action={saveAberration} encType="multipart/form-data" className="mt-8 grid gap-5">
         <input type="hidden" name="original" value={a.slug ?? ""} />
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Name" name="name" defaultValue={a.name} required hint="As the Unit refers to it, e.g. The Nightfisher" />
@@ -53,7 +53,16 @@ export default async function EditAberration({ params, searchParams }: { params:
         </div>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Also known as (one per line)" name="aliases" defaultValue={(a.aliases ?? []).join("\n")} rows={2} />
-          <Field label="Image path" name="image" defaultValue={a.image} hint="e.g. /aberrations/nightfisher.jpg (drop the file in public/aberrations)" />
+          <div className="grid gap-2 sm:col-span-2">
+            <span className="eyebrow">Image</span>
+            {a.image && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={a.image} alt="" className="w-40 aspect-[4/5] object-cover border border-line bg-ink-2" />
+            )}
+            <input type="file" name="imageFile" accept="image/png,image/jpeg,image/webp,image/avif" className="field !py-2 file:mr-3 file:border-0 file:bg-yellow file:text-ink file:px-3 file:py-1 file:font-semibold" />
+            <input type="hidden" name="image" value={a.image ?? ""} />
+            <span className="text-xs text-muted">PNG, JPEG, WebP, or AVIF up to 4 MB. Choosing a file replaces the current image on save.</span>
+          </div>
         </div>
         <Field label="Teaser (spoiler-free, one sentence)" name="teaser" defaultValue={a.teaser} required rows={2} />
         <Field label="Description (spoilers; blank line between paragraphs)" name="entry" defaultValue={draft(a.entry)} rows={8} />

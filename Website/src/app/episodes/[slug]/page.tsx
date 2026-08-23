@@ -45,6 +45,8 @@ function safeHtml(html: string) {
     .replace(/<script[\s\S]*?<\/script>/gi, "")
     .replace(/<style[\s\S]*?<\/style>/gi, "")
     .replace(/\son\w+="[^"]*"/gi, "")
+    // Feed copy sometimes links "example.com" without a scheme, which the browser would treat as a path on our site
+    .replace(/href="(?!https?:|mailto:|\/|#)([^"]+\.[a-z]{2,}[^"]*)"/gi, 'href="https://$1"')
     .replace(/<a\s/gi, '<a target="_blank" rel="noreferrer" ');
 }
 

@@ -74,6 +74,8 @@ type Override = {
 const overrides = overridesJson as { byName: Record<string, Override>; typeDescriptions: Record<string, string>; hiddenIds?: Record<string, string> };
 
 const cents = (s: string | number) => Math.round(Number(s) * 100);
+/** House style: no em/en dashes in copy. Printful boilerplate uses them for ranges and asides. */
+const cleanDashes = (t: string) => t.replace(/(\d)\s?[–—]\s?(\d)/g, "$1 to $2").replace(/\s?[–—]\s?/g, ", ");
 
 /** Old-store mockup gallery, keyed by the product's current slug: public/products/gallery/<slug>/NN.webp. */
 const galleryCache = new Map<string, string[]>();
@@ -213,7 +215,7 @@ async function fromPrintful(): Promise<Product[]> {
       priceMaxCents: Math.max(...prices),
       image: sp.thumbnail_url,
       images,
-      description: ov.description ?? cp?.description ?? typeDescription(sp.name, typeName),
+      description: cleanDashes(ov.description ?? cp?.description ?? typeDescription(sp.name, typeName)),
       artist: ov.artist,
       artistUrl: ov.artistUrl,
       variants,

@@ -36,8 +36,8 @@ const REGIONS = [
   ["Germany", "2.8%"],
 ];
 const DEMOS = [
-  ["Core age range", "18–44", "Over 70% of listeners"],
-  ["Peak bracket", "35–44", "25.6% of audience"],
+  ["Core age range", "18 to 44", "Over 70% of listeners"],
+  ["Peak bracket", "35 to 44", "25.6% of audience"],
   ["Male", "50.7%", "Spotify listener data"],
   ["Female", "38.8%", "Spotify listener data"],
   ["Non-binary", "2.6%", "Spotify listener data"],
@@ -101,7 +101,7 @@ export default async function PartnerPage() {
           <div className="absolute -top-24 left-1/2 -translate-x-1/4 w-[34rem] h-[34rem] rounded-full blur-3xl opacity-60" style={{ background: "radial-gradient(closest-side, rgba(255,150,0,0.45), rgba(255,60,0,0.12) 60%, transparent)" }} />
         </div>
         <Container className="relative pt-10 pb-12 sm:pt-14 sm:pb-16 text-center">
-          <p className="inline-block border border-yellow px-3 py-1 text-yellow font-light text-base sm:text-lg tracking-wide">ADVERTISE WITH US</p>
+          <h1 className="inline-block border border-yellow px-3 py-1 text-yellow font-light text-base sm:text-lg tracking-wide">ADVERTISE WITH US</h1>
           <Image src="/home/redacteded.avif" alt="[REDACTED] show art" width={260} height={260} priority className="mx-auto mt-4 size-48 sm:size-64 shadow-[0_20px_60px_rgba(0,0,0,0.6)]" />
           <p className="mt-5 text-sm sm:text-base tracking-[0.12em] uppercase">A procedural horror comedy</p>
           <p className="mt-1 text-base sm:text-lg text-paper/90">
