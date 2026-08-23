@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ScrollActiveIntoView } from "@/components/ScrollActiveIntoView";
 import { getDoc } from "@/lib/content";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,7 +21,7 @@ export const revalidate = 600;
 const SHOWS = [
   { id: "redacted", label: "REDACTED" },
   { id: "postmortem", label: "Postmortem" },
-  { id: "t7p", label: "The Seven Planes" },
+  { id: "t7p", label: "The Seven Planes", short: "Seven Planes" },
   { id: "corrupted", label: "Corrupted", soon: true },
 ] as const;
 type Show = (typeof SHOWS)[number]["id"];
@@ -91,18 +92,20 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
       <div className="border-b border-line bg-ink/60">
         <Container>
           <p className="eyebrow pt-6">Episodes</p>
-        <nav aria-label="Shows" className="flex gap-1 overflow-x-auto -mx-1 px-1 mt-1">
+        <nav id="show-tabs" aria-label="Shows" className="flex gap-1 overflow-x-auto [scrollbar-width:none] -mx-4 px-4 sm:-mx-1 sm:px-1 mt-1 snap-x">
+          <ScrollActiveIntoView id="show-tabs" />
           {SHOWS.map((t) => {
             const active = t.id === show;
             if ("soon" in t && t.soon)
               return (
-                <span key={t.id} aria-disabled="true" className="display text-2xl sm:text-3xl px-4 py-3 whitespace-nowrap [text-wrap:nowrap] border-b-4 border-transparent text-muted/60 cursor-default">
+                <span key={t.id} aria-disabled="true" className="display text-xl sm:text-3xl px-3 sm:px-4 py-3 shrink-0 whitespace-nowrap [text-wrap:nowrap] border-b-4 border-transparent text-muted/60 cursor-default">
                   {t.label} <span className="font-sans text-[10px] font-semibold uppercase tracking-wider align-middle border border-line px-1.5 py-0.5 ml-1">Coming soon</span>
                 </span>
               );
             return (
-              <Link key={t.id} href={href({ show: t.id })} aria-current={active ? "page" : undefined} className={`display text-2xl sm:text-3xl px-4 py-3 whitespace-nowrap [text-wrap:nowrap] border-b-4 ${active ? "border-yellow text-yellow" : "border-transparent text-paper hover:text-yellow"}`}>
-                {t.label}
+              <Link key={t.id} href={href({ show: t.id })} aria-current={active ? "page" : undefined} className={`display text-xl sm:text-3xl px-3 sm:px-4 py-3 shrink-0 snap-center whitespace-nowrap [text-wrap:nowrap] border-b-4 ${active ? "border-yellow text-yellow" : "border-transparent text-paper hover:text-yellow"}`}>
+                <span className="sm:hidden">{"short" in t ? t.short : t.label}</span>
+                <span className="hidden sm:inline">{t.label}</span>
               </Link>
             );
           })}
@@ -191,7 +194,7 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
                 const active = t.id === season;
                 const n = t.id === "minisodes" ? minisodes.length : (show === "postmortem" ? postmortems : episodes).filter((e) => String(e.season ?? 1) === t.id).length;
                 return (
-                  <Link key={t.id} href={href({ season: t.id })} aria-current={active ? "page" : undefined} className={`display text-lg px-3 py-1.5 border ${active ? "border-yellow text-yellow" : "border-line text-paper hover:border-paper"}`}>
+                  <Link key={t.id} href={href({ season: t.id })} scroll={false} aria-current={active ? "page" : undefined} className={`display text-lg px-3 py-1.5 border ${active ? "border-yellow text-yellow" : "border-line text-paper hover:border-paper"}`}>
                     {t.label} <span className="text-muted text-sm tabular">({n})</span>
                   </Link>
                 );
@@ -203,7 +206,7 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
           {list.length > 1 && (
             <div className="flex gap-1 text-sm" role="group" aria-label="Order">
               {(["oldest", "newest"] as const).map((o) => (
-                <Link key={o} href={href({ order: o })} aria-current={order === o ? "true" : undefined} className={`px-3 py-1.5 border ${order === o ? "border-yellow text-yellow" : "border-line text-muted hover:text-paper"}`}>
+                <Link key={o} href={href({ order: o })} scroll={false} aria-current={order === o ? "true" : undefined} className={`px-3 py-1.5 border ${order === o ? "border-yellow text-yellow" : "border-line text-muted hover:text-paper"}`}>
                   {o === "oldest" ? "Oldest first" : "Newest first"}
                 </Link>
               ))}

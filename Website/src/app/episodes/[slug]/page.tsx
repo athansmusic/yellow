@@ -193,7 +193,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
           {ep.notesHtml && !(ep.guestDirector && /guest[\s-]*directed by/i.test(ep.notesHtml) && ep.notesHtml.replace(/<[^>]+>/g, "").trim().length < 120) && (
             <section>
               <h2 className="eyebrow mb-3">Episode notes</h2>
-              <div className="prose-site text-paper/90 [&_ul]:list-disc [&_ul]:pl-5 [&_li]:my-1" dangerouslySetInnerHTML={{ __html: safeHtml(ep.notesHtml) }} />
+              <div className="prose-site text-paper/90 [overflow-wrap:anywhere] [&_a]:break-all [&_ul]:list-disc [&_ul]:pl-5 [&_li]:my-1" dangerouslySetInnerHTML={{ __html: safeHtml(ep.notesHtml) }} />
             </section>
           )}
 

@@ -43,9 +43,12 @@ export function HeroLoop() {
 
   return (
     <>
-      {/* Poster is the LCP element: a plain img, eager, high priority */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/video/hero-bg-poster.jpg" alt="" fetchPriority="high" decoding="async" className="absolute inset-0 w-full h-full object-cover object-[30%_center] lg:object-[left_60%] min-[1800px]:object-[left_75%]" aria-hidden />
+      {/* Poster is the LCP element: plain img, eager, high priority, phone-sized crop on phones */}
+      <picture>
+        <source media="(max-width: 639px)" srcSet="/video/hero-bg-poster-m.jpg" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/video/hero-bg-poster.jpg" alt="" fetchPriority="high" decoding="sync" className="absolute inset-0 w-full h-full object-cover object-[30%_center] lg:object-[left_60%] min-[1800px]:object-[left_75%]" aria-hidden />
+      </picture>
       {wantVideo && (
         <video ref={ref} className="absolute inset-0 w-full h-full object-cover object-[30%_center] lg:object-[left_60%] min-[1800px]:object-[left_75%]" autoPlay muted loop playsInline preload="auto" aria-hidden>
           <source src="/video/hero-bg.webm" type="video/webm" />

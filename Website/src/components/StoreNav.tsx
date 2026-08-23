@@ -20,8 +20,8 @@ export function StoreNav({ counts, active }: { counts: Counts; active: { categor
     <nav aria-label="Store categories" className="relative border-b border-line" onMouseLeave={() => setOpen(null)}>
       <ul className="flex flex-nowrap sm:flex-wrap gap-1 -mx-4 px-4 sm:-mx-1 sm:px-1 overflow-x-auto sm:overflow-visible [scrollbar-width:none]">
         <li>
-          <Link href="/store" aria-current={!active.category ? "page" : undefined} className={`display text-xl sm:text-2xl px-4 py-3 block whitespace-nowrap [text-wrap:nowrap] border-b-4 ${!active.category ? "border-yellow text-yellow" : "border-transparent hover:text-yellow"}`}>
-            All <span className="text-muted text-base tabular">({counts.all ?? 0})</span>
+          <Link href="/store" aria-current={!active.category ? "page" : undefined} className={`display text-xl sm:text-2xl px-3 sm:px-4 py-3 block whitespace-nowrap [text-wrap:nowrap] shrink-0 border-b-4 ${!active.category ? "border-yellow text-yellow" : "border-transparent hover:text-yellow"}`}>
+            All{" "}<span className="text-muted text-base tabular">({counts.all ?? 0})</span>
           </Link>
         </li>
         {TAXONOMY.map((cat) => {
@@ -42,9 +42,9 @@ export function StoreNav({ counts, active }: { counts: Counts; active: { categor
                     setOpen(cat.id);
                   }
                 }}
-                className={`display text-xl sm:text-2xl px-4 py-3 block whitespace-nowrap [text-wrap:nowrap] border-b-4 ${isActive ? "border-yellow text-yellow" : "border-transparent hover:text-yellow"}`}
+                className={`display text-xl sm:text-2xl px-3 sm:px-4 py-3 block whitespace-nowrap [text-wrap:nowrap] shrink-0 border-b-4 ${isActive ? "border-yellow text-yellow" : "border-transparent hover:text-yellow"}`}
               >
-                {cat.label} <span className="text-muted text-base tabular">({counts[cat.id] ?? 0})</span>
+                {cat.label}{" "}<span className="text-muted text-base tabular">({counts[cat.id] ?? 0})</span>
               </Link>
               {subs.length > 0 && (
                 <ul className={`absolute left-0 top-full z-20 min-w-56 bg-ink-2 border border-line shadow-[0_20px_40px_rgba(0,0,0,.6)] py-2 ${isOpen ? "block" : "hidden"}`} onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node) && setOpen(null)}>

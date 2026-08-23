@@ -85,6 +85,18 @@ export default async function StorePage({ searchParams }: { searchParams: Promis
             <p className="inline-block bg-yellow text-ink display text-lg px-3 py-1">Free US shipping on $40+ · flat rate worldwide</p>
           </div>
           <StoreNav counts={counts} active={{ category, sub }} />
+          {category && (
+            <nav aria-label="Subcategories" className="flex gap-2 overflow-x-auto [scrollbar-width:none] -mx-4 px-4 sm:mx-0 sm:px-0 py-3">
+              <Link href={`/store?c=${category}`} aria-current={!sub ? "page" : undefined} className={`shrink-0 px-3 py-1.5 text-sm border ${!sub ? "border-yellow text-yellow" : "border-line text-paper/85 hover:border-paper"}`}>
+                All {TAXONOMY.find((c) => c.id === category)!.label} <span className="text-muted tabular">{counts[category] ?? 0}</span>
+              </Link>
+              {TAXONOMY.find((c) => c.id === category)!.subs.filter((x) => (counts[`${category}/${x.id}`] ?? 0) > 0).map((x) => (
+                <Link key={x.id} href={`/store?c=${category}&t=${x.id}`} aria-current={sub === x.id ? "page" : undefined} className={`shrink-0 px-3 py-1.5 text-sm border ${sub === x.id ? "border-yellow text-yellow" : "border-line text-paper/85 hover:border-paper"}`}>
+                  {x.label} <span className="text-muted tabular">{counts[`${category}/${x.id}`]}</span>
+                </Link>
+              ))}
+            </nav>
+          )}
         </Container>
       </div>
 
