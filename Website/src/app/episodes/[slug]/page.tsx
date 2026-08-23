@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllItems, getItemBySlug, getNeighbours, formatDate, formatDuration, toTrack } from "@/lib/feed";
-import { getPlatformLinks, hasTranscript } from "@/lib/episodeLinks";
+import { getPlatformLinks } from "@/lib/episodeLinks";
+import { getTranscript } from "@/lib/curtain";
 import { getDoc } from "@/lib/content";
 import { ResumeBadge } from "@/components/ResumeBadge";
 import { LISTEN, SITE } from "@/lib/site";
@@ -63,13 +64,12 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const ep = await getItemBySlug(slug);
   if (!ep) notFound();
-  const transcriptSlug = ep.kind === "episode" ? ep.slug : undefined;
-  const [{ newer, older }, links, all, aberrations, transcriptOk] = await Promise.all([
+  const [{ newer, older }, links, all, aberrations, transcript] = await Promise.all([
     getNeighbours(ep),
     getPlatformLinks(ep.title),
     getAllItems().catch(() => []),
     getDoc("aberrations").catch(() => []),
-    transcriptSlug ? hasTranscript(transcriptSlug) : Promise.resolve(false),
+    ep.kind === "episode" ? getTranscript(ep.code) : Promise.resolve(null),
   ]);
   const norm = (x?: string) => (x ?? "").toLowerCase().replace(/[\s:]+/g, "");
   const stripPart = (x: string) => x.replace(/\s*\(part \d+\)\s*$/i, "");
@@ -93,7 +93,6 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
   const title = ep.kind === "episode" ? `${ep.code}: ${ep.shortTitle}` : ep.title;
   const url = `${SITE.url}/episodes/${ep.slug}`;
   const art = ep.image || "/brand/showart.jpeg";
-  const transcriptUrl = transcriptOk && transcriptSlug ? `https://www.tru.show/transcripts/redacted/${transcriptSlug}` : undefined;
   const boilerplate = new Set(["Co-created", "Executive producers", "Writing", "Music and Sound Design", "Dialogue Editing", "Show art", "Associated producers", "Concept"].map((x) => x.toLowerCase()));
   const episodeCredits = ep.credits.filter((c) => !boilerplate.has(c.label.toLowerCase()));
   const showCredits = ep.credits.filter((c) => boilerplate.has(c.label.toLowerCase()));
@@ -115,6 +114,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
     partOfSeries: { "@id": `${SITE.url}/#series` },
     ...(ep.number ? { episodeNumber: ep.number, partOfSeason: { "@type": "PodcastSeason", seasonNumber: ep.season ?? 1, name: `Season ${ep.season ?? 1}` } } : {}),
     ...(starring.length ? { actor: starring.map((s) => ({ "@type": "Person", name: s.actor })) } : {}),
+    ...(transcript ? { transcript: transcript.lines.map((l) => `${l.character}: ${l.text}`).join("\n") } : {}),
   };
 
   const NavBtn = ({ e, dir }: { e: typeof newer; dir: "prev" | "next" }) => {
@@ -180,8 +180,8 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
                 <Link href="/where" className="text-sm text-paper/80 hover:text-yellow underline underline-offset-4">
                   More apps
                 </Link>
-                {transcriptUrl && (
-                  <a href={transcriptUrl} target="_blank" rel="noreferrer" className="text-sm text-paper/80 hover:text-yellow underline underline-offset-4">
+                {transcript && (
+                  <a href="#transcript" className="text-sm text-paper/80 hover:text-yellow underline underline-offset-4">
                     Transcript
                   </a>
                 )}
@@ -193,6 +193,33 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
 
       <Container className="py-10 sm:py-14 grid gap-12 lg:grid-cols-[1fr_20rem]">
         <div className="grid gap-12 content-start">
+          {transcript && (
+            <section id="transcript" className="scroll-mt-24">
+              <details className="group border border-line bg-ink-2/70">
+                <summary className="cursor-pointer list-none p-4 sm:p-5 flex items-center justify-between gap-4">
+                  <span>
+                    <span className="eyebrow block">Transcript</span>
+                    <span className="display text-2xl">{transcript.lines.length} lines · read along</span>
+                  </span>
+                  <span aria-hidden className="text-yellow text-3xl leading-none transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <div className="px-4 sm:px-5 pb-5 max-h-[70vh] overflow-y-auto border-t border-line">
+                  <dl className="mt-4 grid gap-3 text-[15px]">
+                    {transcript.lines.map((l, i) => (
+                      <div key={i} className="grid sm:grid-cols-[9rem_1fr] gap-x-4">
+                        <dt className="display text-lg leading-tight text-yellow sm:text-right">{l.character}</dt>
+                        <dd className="text-paper/90">{l.text}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <p className="mt-5 text-xs text-muted">Transcript from the production script, matched to the final audio.</p>
+                </div>
+              </details>
+            </section>
+          )}
+
           {ep.notesHtml && !(ep.guestDirector && /guest[\s-]*directed by/i.test(ep.notesHtml) && ep.notesHtml.replace(/<[^>]+>/g, "").trim().length < 120) && (
             <section>
               <h2 className="eyebrow mb-3">Episode notes</h2>

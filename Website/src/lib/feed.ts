@@ -183,7 +183,7 @@ function parseDescription(html: string) {
 }
 
 async function fetchFeed(url: string): Promise<RawItem[]> {
-  const res = await fetch(url, { next: { revalidate: 600 }, headers: { "user-agent": "theredactedunit.com" } });
+  const res = await fetch(url, { next: { revalidate: 600, tags: ["episodes"] }, headers: { "user-agent": "theredactedunit.com" } });
   if (!res.ok) throw new Error(`Feed ${url} → ${res.status}`);
   const xml = await res.text();
   const doc = parser.parse(xml);

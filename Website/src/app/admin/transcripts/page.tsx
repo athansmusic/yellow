@@ -1,18 +1,16 @@
 import Link from "next/link";
 import { getAllItems } from "@/lib/feed";
-import { hasTranscript } from "@/lib/episodeLinks";
+import { curtainCode, hasLockedTranscript } from "@/lib/curtain";
 
 export const dynamic = "force-dynamic";
 
-/** Which episodes have a transcript on tru.show. Checked live (cached 6 h per episode). */
+/** Which episodes have a transcript locked in Curtain (cached 1 h per episode; Curtain can bust it via /api/revalidate). */
 export default async function TranscriptsAdmin() {
-  const all = (await getAllItems().catch(() => [])).filter((e) => e.kind === "episode" || e.kind === "postmortem" || e.kind === "minisode");
-  const rows = await Promise.all(all.map(async (e) => ({ e, done: await hasTranscript(e.slug) })));
+  const all = (await getAllItems().catch(() => [])).filter((e) => e.kind === "episode");
+  const rows = await Promise.all(all.map(async (e) => ({ e, done: await hasLockedTranscript(e.code) })));
   const done = rows.filter((r) => r.done).length;
   const groups: [string, typeof rows][] = [
-    ["Episodes", rows.filter((r) => r.e.kind === "episode")],
-    ["Postmortem", rows.filter((r) => r.e.kind === "postmortem")],
-    ["Minisodes", rows.filter((r) => r.e.kind === "minisode")],
+    ["Episodes", rows],
   ];
 
   return (
@@ -22,7 +20,7 @@ export default async function TranscriptsAdmin() {
         {done} of {rows.length} done
       </h1>
       <p className="mt-3 max-w-prose text-paper/85">
-        Checked against tru.show (a page counts when its title starts with &quot;Transcript for&quot;). Results refresh every 6 hours; the episode page shows the Transcript link automatically once one exists. Missing ones link to where the transcript should live.
+        Done means the transcript is <strong>locked in Curtain</strong>. Lock it there and the episode page here shows the full transcript (and tells Google) within the hour, or instantly once Curtain pings the site. Missing ones link to the episode in Curtain.
       </p>
 
       {groups.map(([label, list]) =>
@@ -38,8 +36,8 @@ export default async function TranscriptsAdmin() {
                   <Link href={`/episodes/${e.slug}`} className="min-w-0 flex-1 truncate hover:text-yellow">
                     {e.title}
                   </Link>
-                  <a href={`https://www.tru.show/transcripts/redacted/${e.slug}`} target="_blank" rel="noreferrer" className="shrink-0 text-xs text-muted underline underline-offset-4 hover:text-yellow">
-                    tru.show
+                  <a href={done ? `https://www.tru.show/transcripts/redacted/${curtainCode(e.code)}` : "https://www.opencurtain.app/transcripts"} target="_blank" rel="noreferrer" className="shrink-0 text-xs text-muted underline underline-offset-4 hover:text-yellow">
+                    {done ? "tru.show" : "Curtain"}
                   </a>
                 </li>
               ))}
