@@ -205,7 +205,7 @@ export default async function Home() {
         <Section>
           <Reveal><div className="grid gap-8 md:grid-cols-[minmax(0,18rem)_1fr] items-center">
             <Link href={`/episodes/${latest.slug}`} aria-label={`${latest.code}: ${latest.shortTitle}`} className="relative aspect-square block border border-line overflow-hidden bg-ink max-w-xs w-full mx-auto">
-              <Image src={latest.image || "/brand/showart.jpeg"} alt="" fill sizes="(min-width:768px) 18rem, 100vw" className="object-cover" />
+              <Image src={latest.image || "/brand/showart.jpeg"} alt="" fill sizes="(min-width:768px) 18rem, 20rem" className="object-cover" />
             </Link>
             <div>
               <p className="eyebrow text-yellow mb-2">Latest episode · {formatDate(latest.date)}</p>
