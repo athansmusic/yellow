@@ -102,6 +102,8 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
           ))}
           {part && <div style={{ display: "flex", marginTop: 14, color: accent, fontSize: 26, letterSpacing: 12 }}>{`( ${part} )`}</div>}
         </div>
+        {/* quiet call-to-action, bottom-right */}
+        <div style={{ position: "absolute", bottom: 48, right: 52, display: "flex", color: "#aaa49b", fontSize: 18, letterSpacing: 7 }}>LISTEN AT THEREDACTEDUNIT.COM</div>
       </div>
     ),
     {
