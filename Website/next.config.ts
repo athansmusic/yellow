@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 import legacyProducts from "./src/data/legacy-products.json";
 
 const nextConfig: NextConfig = {
+  // The episode share-card generator reads these off disk; Vercel only ships them
+  // into the function if told (public/ normally lives on the CDN, not in the bundle)
+  outputFileTracingIncludes: { "/episodes/[slug]/opengraph-image": ["./src/fonts/**", "./public/brand/logo-black.png"] },
   // Lets a production build run beside the dev server (NEXT_DIST_DIR=.next-build npx next build)
   distDir: process.env.NEXT_DIST_DIR || ".next",
   images: {

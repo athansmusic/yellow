@@ -23,9 +23,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : SITE.url),
   title: { default: `${SITE.name}: ${SITE.tagline}`, template: `%s · [REDACTED]` },
   // Under 160 characters: search results and social cards truncate past that.
-  description: "Horror comedy audio drama from Hush Studios on the Rusty Quill network. A failed actor takes his dead twin's identity and lands in a secret paranormal agency.",
+  description: "A horror comedy audio drama on the Rusty Quill network. A failing actor steals his dead twin's identity and lands in a secret paranormal agency.",
   keywords: ["REDACTED podcast", "horror comedy audio drama", "fiction podcast", "monster of the week podcast", "Rusty Quill", "Hush Studios", "Jacob Kane", "audio drama 2026"],
-  openGraph: { type: "website", siteName: "[REDACTED]", locale: "en_US", images: [{ url: "/brand/share.png", width: 1200, height: 630, alt: "[REDACTED]: a horror comedy audio drama" }] },
+  openGraph: { type: "website", siteName: "[REDACTED]", locale: "en_US", images: [{ url: "/brand/share.jpg", width: 1200, height: 630, alt: "[REDACTED]: a horror comedy audio drama" }] },
   twitter: { card: "summary_large_image", site: "@TheRedactedUnit" },
   alternates: { types: { "application/rss+xml": LISTEN.rss } },
   robots: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
