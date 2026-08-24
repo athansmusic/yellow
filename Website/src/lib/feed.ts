@@ -207,8 +207,9 @@ const fixNames = (x: string) => NAME_FIXES.reduce((acc, [re, to]) => acc.replace
 /** Cast the feed's show notes miss. Keyed by episode code; appended to the parsed starring list. */
 const STARRING_OVERRIDES: Record<string, string[]> = {
   "S1 E6": ["Taylor Michaels as Mars Donovan"], // in the episode, absent from the Acast notes
-  // S1E10's notes carry no cast block at all
+  // S1E10's notes carry no cast block at all; same for its Postmortem (keyed by slug, PMs have no code)
   "S1 E10": ["Jamie Petronis as Jacob Kane", "Ishani Kanetkar as Hedy Hauksdottir", "Devin Steffens as Lucas Kipp", "Ash Millman as Riley Fleming"],
+  "postmortem-brood": ["Lyssa Jay as Sloan Summers", "Derek Moreland as Dr. Danse", "Natalie Light as Agent Koska"],
 };
 
 function toEpisode(it: RawItem): Episode | null {
@@ -237,7 +238,7 @@ function toEpisode(it: RawItem): Episode | null {
     duration: text(it["itunes:duration"]) || undefined,
     summary: fixNames(d.summary),
     bodyHtml: fixNames(d.bodyHtml),
-    starring: [...d.starring.map(fixNames), ...(("code" in c && c.code && STARRING_OVERRIDES[c.code]) || []).filter((x) => !d.starring.includes(x))],
+    starring: [...d.starring.map(fixNames), ...(STARRING_OVERRIDES[("code" in c && c.code) || ""] ?? STARRING_OVERRIDES[c.slug] ?? []).filter((x) => !d.starring.includes(x))],
     contentWarnings: d.contentWarnings,
     guestDirector: ("code" in c && c.code && GUEST_DIRECTOR_OVERRIDES[c.code]) || d.guestDirector,
     credits: d.credits.map((cr) => ({ ...cr, value: fixNames(cr.value) })),
