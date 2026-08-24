@@ -172,7 +172,7 @@ export default async function Home() {
       {/* ── MEET TRU ── the core six */}
       {/* ── WHAT IS REDACTED ── the pitch, right after the live row so new visitors get it first */}
       <Section>
-        <Reveal><div className="grid gap-8 lg:grid-cols-[1fr_minmax(0,20rem)] items-center">
+        <Reveal><div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] items-center">
           <div className="prose-site">
             <Heading eyebrow="The show">What is [REDACTED]?</Heading>
             <p className="mt-5">
@@ -190,7 +190,7 @@ export default async function Home() {
               </Link>
             </div>
           </div>
-          <Image src="/home/skinwalker.avif" alt="" width={800} height={800} sizes="(min-width:1024px) 20rem, 60vw" className="w-full max-w-xs mx-auto lg:max-w-none h-auto" />
+          <Image src="/home/shapeshifter.avif" alt="" width={800} height={800} sizes="(min-width:1024px) 45vw, 100vw" className="w-full h-auto" />
         </div></Reveal>
       </Section>
 
