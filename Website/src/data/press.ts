@@ -7,7 +7,7 @@ export const BOILERPLATE =
   "REDACTED is a horror comedy audio drama from Hush Studios on the Rusty Quill network, created by Athan (The Grotto) and Jamie Petronis (The Cellar Letters). Each episode is a self-contained paranormal case handled by an underfunded secret agency, with the mystery of Jacob Kane's dead twin running underneath. New episodes Fridays, Postmortem debriefs Tuesdays, at theredactedunit.com and on every podcast app.";
 
 export const FACTS: [string, string][] = [
-  ["Title", "REDACTED (also written REDACTED)"],
+  ["Title", "REDACTED (also written [REDACTED])"],
   ["Format", "Scripted horror comedy audio drama, monster-of-the-week with a serialized mystery"],
   ["Created by", "Athan (Johnathan Magno) and Jamie Petronis"],
   ["Studio", "Hush Studios"],
