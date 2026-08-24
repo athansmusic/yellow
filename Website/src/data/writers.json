@@ -1,18 +1,58 @@
 [
-  { "name": "Jeffrey Reddick", "credit": "Final Destination" },
-  { "name": "Nick Lives", "credit": "Home Safety Hotline" },
-  { "name": "Trevor Henderson", "credit": "Siren Head, Scarewaves" },
-  { "name": "Crista Castro", "credit": "Fear the Spotlight" },
-  { "name": "Harlan Guthrie", "credit": "Malevolent, Deviser" },
-  { "name": "Matt Dymerski", "credit": "Psychosis, The Asylum" },
-  { "name": "KC Wayland", "credit": "We're Alive" },
-  { "name": "Xalavier Nelson Jr.", "credit": "Clickolding, El Paso Elsewhere" },
-  { "name": "Airdorf", "credit": "Faith: The Unholy Trinity" },
-  { "name": "Dylan Griggs", "credit": "WOE.BEGONE" },
-  { "name": "Chantal Ryan", "credit": "darkwebSTREAMER" },
-  { "name": "Pacific Obadiah", "credit": "SCP Archives" },
-  { "name": "Landon Whisnant", "credit": "Audistorium" },
-  { "name": "Motzie Dapul", "credit": "Hi Nay" },
-  { "name": "Ashley McAnelly", "credit": "It's All in the Cards" },
-  { "name": "Cam Collins", "credit": "Old Gods of Appalachia" }
+  {
+    "name": "Jeffrey Reddick",
+    "credit": "Final Destination"
+  },
+  {
+    "name": "Nick Lives",
+    "credit": "Home Safety Hotline"
+  },
+  {
+    "name": "Trevor Henderson",
+    "credit": "Siren Head, Scarewaves"
+  },
+  {
+    "name": "Crista Castro",
+    "credit": "Fear the Spotlight"
+  },
+  {
+    "name": "Harlan Guthrie",
+    "credit": "Malevolent, Deviser"
+  },
+  {
+    "name": "Matt Dymerski",
+    "credit": "Psychosis, The Asylum"
+  },
+  {
+    "name": "KC Wayland",
+    "credit": "We're Alive"
+  },
+  {
+    "name": "Xalavier Nelson Jr.",
+    "credit": "Clickolding, El Paso Elsewhere"
+  },
+  {
+    "name": "Airdorf",
+    "credit": "Faith: The Unholy Trinity"
+  },
+  {
+    "name": "Dylan Griggs",
+    "credit": "WOE.BEGONE"
+  },
+  {
+    "name": "Chantal Ryan",
+    "credit": "darkwebSTREAMER"
+  },
+  {
+    "name": "Pacific Obadiah",
+    "credit": "SCP Archives"
+  },
+  {
+    "name": "Ashley McAnelly",
+    "credit": "It's All in the Cards"
+  },
+  {
+    "name": "Cam Collins",
+    "credit": "Old Gods of Appalachia"
+  }
 ]

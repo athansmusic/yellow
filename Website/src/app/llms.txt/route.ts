@@ -38,7 +38,7 @@ Listen:
 
 Lead cast: Jamie Petronis (Jacob Kane), Athan (Eli Reyes), Ishani Kanetkar (Hedy Hauksdottir), Kirsten Ria (Jo Valentine), Devin Steffens (Lucas Kipp), Joe Cliff Thompson (Maxwell Clark), Ash Millman (Riley Fleming), Nichole Goodnight (Evie Novak), Lev Rodriguez Shivers (Nyx Novak), David Ault (Silas Montgomery), Anusia Battersby (Control), Billie Hindle (Eloise Thorne), Lyssa Jay (Sloan Summers), Natalie Light (Agent Koska), Nathan Lunsford (Jordan Kane).
 
-Guest writers: Jeffrey Reddick, Nick Lives, Trevor Henderson, Crista Castro, Harlan Guthrie, Matt Dymerski, KC Wayland, Xalavier Nelson Jr., Airdorf, Dylan Griggs, Chantal Ryan, Pacific Obadiah, Landon Whisnant, Motzie Dapul, Ashley McAnelly, Cam Collins.
+Guest writers: Jeffrey Reddick, Nick Lives, Trevor Henderson, Crista Castro, Harlan Guthrie, Matt Dymerski, KC Wayland, Xalavier Nelson Jr., Airdorf, Dylan Griggs, Chantal Ryan, Pacific Obadiah, Ashley McAnelly, Cam Collins.
 
 Contact: crew@theredactedunit.com
 

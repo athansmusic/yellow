@@ -69,7 +69,7 @@ const TEAM = [
 ];
 
 // The 15 guest writers shown on the original media kit, in its order (the home page uses the full list)
-const PARTNER_WRITERS = ["Jeffrey Reddick", "KC Wayland", "Trevor Henderson", "Harlan Guthrie", "Nick Lives", "Matt Dymerski", "Dylan Griggs", "Crista Castro", "Pacific Obadiah", "Cam Collins", "Xalavier Nelson Jr.", "Airdorf", "Ashley McAnelly", "Chantal Ryan", "Landon Whisnant"]
+const PARTNER_WRITERS = ["Jeffrey Reddick", "KC Wayland", "Trevor Henderson", "Harlan Guthrie", "Nick Lives", "Matt Dymerski", "Dylan Griggs", "Crista Castro", "Pacific Obadiah", "Cam Collins", "Xalavier Nelson Jr.", "Airdorf", "Ashley McAnelly", "Chantal Ryan"]
   .map((n) => writers.find((w) => w.name === n))
   .filter((w): w is (typeof writers)[number] => !!w);
 
