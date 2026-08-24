@@ -216,6 +216,8 @@ const STARRING_OVERRIDES: Record<string, string[]> = {
   // The Clickolding debrief breaks form: the guest director and both creators, as themselves
   "postmortem-clickolding": ["Xalavier Nelson Jr.", "Johnathan Magno", "Jamie Petronis"],
   "minisode-thanksgiving-intermission-bonus-scene": ["Jamie Petronis as Jacob Kane", "James Spurney as Phil the Landlord"],
+  // Credit is in the feed notes but in a format the parser misses
+  "minisode-holiday-intermission-bloopers": ["Landon Whisnant as The Bartender"],
 };
 
 function toEpisode(it: RawItem): Episode | null {
