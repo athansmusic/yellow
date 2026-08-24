@@ -54,7 +54,9 @@ export default async function CastMember({ params }: { params: Promise<{ slug: s
   const appearances = all.filter((e) => e.kind !== "trailer" && e.starring.some((s) => sameActor(s, c.actor))).sort((a, b) => +new Date(a.date) - +new Date(b.date));
   const episodes = appearances.filter((e) => e.kind === "episode" || e.kind === "minisode");
   const postmortems = appearances.filter((e) => e.kind === "postmortem");
-  const first = appearances.find((e) => e.kind === "episode") ?? appearances[0];
+  // Hard-coded debuts where the main-show preference gets it wrong
+  const FIRST_HEARD_OVERRIDES: Record<string, string> = { "lyssa-jay": "postmortem-false-start" };
+  const first = (FIRST_HEARD_OVERRIDES[c.slug] ? appearances.find((e) => e.slug === FIRST_HEARD_OVERRIDES[c.slug]) : undefined) ?? appearances.find((e) => e.kind === "episode") ?? appearances[0];
   // Extra roles from the credits beyond the listed character(s), e.g. "a Plaster Pig"
   const extraRoles = Array.from(
     new Set(
@@ -118,7 +120,7 @@ export default async function CastMember({ params }: { params: Promise<{ slug: s
                     <dt className="eyebrow">First heard in</dt>
                     <dd className="display text-3xl">
                       <Link href={`/episodes/${first.slug}`} className="hover:text-yellow">
-                        {first.kind === "episode" ? first.code : first.shortTitle}
+                        {first.kind === "episode" ? first.code : first.title}
                       </Link>
                       <span className="block font-sans text-xs text-muted normal-case tracking-normal">{formatDate(first.date)}</span>
                     </dd>
