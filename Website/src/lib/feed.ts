@@ -193,8 +193,11 @@ async function fetchFeed(url: string): Promise<RawItem[]> {
 }
 
 /** Guest directors the feed text doesn't state in the usual "guest directed by" form. Keyed by episode code. */
+/** Keyed by episode code or slug. Empty string SUPPRESSES a false parser match. */
 const GUEST_DIRECTOR_OVERRIDES: Record<string, string> = {
   "S1 E26": "Xalavier Nelson Jr.", // Clickolding: "created based on Clickolding, a narrative clicker game by Strange Scaffold"
+  // The bloopers notes promo NEXT week's episode ("guest directed by Trevor Henderson"); not this one's credit
+  "minisode-holiday-intermission-bloopers": "",
 };
 
 /** Show-notes typos and stylings that break cast matching, fixed wherever they appear. */
@@ -216,8 +219,6 @@ const STARRING_OVERRIDES: Record<string, string[]> = {
   // The Clickolding debrief breaks form: the guest director and both creators, as themselves
   "postmortem-clickolding": ["Xalavier Nelson Jr.", "Johnathan Magno", "Jamie Petronis"],
   "minisode-thanksgiving-intermission-bonus-scene": ["Jamie Petronis as Jacob Kane", "James Spurney as Phil the Landlord"],
-  // Credit is in the feed notes but in a format the parser misses
-  "minisode-holiday-intermission-bloopers": ["Landon Whisnant as The Bartender"],
 };
 
 function toEpisode(it: RawItem): Episode | null {
@@ -248,7 +249,10 @@ function toEpisode(it: RawItem): Episode | null {
     bodyHtml: fixNames(d.bodyHtml),
     starring: [...d.starring.map(fixNames), ...(STARRING_OVERRIDES[("code" in c && c.code) || ""] ?? STARRING_OVERRIDES[c.slug] ?? []).filter((x) => !d.starring.includes(x))],
     contentWarnings: d.contentWarnings,
-    guestDirector: ("code" in c && c.code && GUEST_DIRECTOR_OVERRIDES[c.code]) || d.guestDirector,
+    guestDirector: (() => {
+      const k = ("code" in c && c.code) || c.slug;
+      return k in GUEST_DIRECTOR_OVERRIDES ? GUEST_DIRECTOR_OVERRIDES[k] || undefined : d.guestDirector;
+    })(),
     credits: d.credits.map((cr) => ({ ...cr, value: fixNames(cr.value) })),
     notesHtml: fixNames(d.notesHtml),
     acastUrl: text(it.link) || undefined,
