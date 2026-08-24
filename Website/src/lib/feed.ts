@@ -200,6 +200,7 @@ const GUEST_DIRECTOR_OVERRIDES: Record<string, string> = {
 const NAME_FIXES: [RegExp, string][] = [
   [/Devin Steffins/gi, "Devin Steffens"],
   [/The Joe Cliff Thompson/gi, "Joe Cliff Thompson"],
+  [/Nathan Lundsford/gi, "Nathan Lunsford"],
 ];
 const fixNames = (x: string) => NAME_FIXES.reduce((acc, [re, to]) => acc.replace(re, to), x);
 
