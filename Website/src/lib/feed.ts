@@ -196,6 +196,11 @@ const GUEST_DIRECTOR_OVERRIDES: Record<string, string> = {
   "S1 E26": "Xalavier Nelson Jr.", // Clickolding: "created based on Clickolding, a narrative clicker game by Strange Scaffold"
 };
 
+/** Cast the feed's show notes miss. Keyed by episode code; appended to the parsed starring list. */
+const STARRING_OVERRIDES: Record<string, string[]> = {
+  "S1 E6": ["Taylor Michaels as Mars Donovan"], // in the episode, absent from the Acast notes
+};
+
 function toEpisode(it: RawItem): Episode | null {
   const title = text(it.title).trim();
   if (!title) return null;
@@ -222,7 +227,7 @@ function toEpisode(it: RawItem): Episode | null {
     duration: text(it["itunes:duration"]) || undefined,
     summary: d.summary,
     bodyHtml: d.bodyHtml,
-    starring: d.starring,
+    starring: [...d.starring, ...(("code" in c && c.code && STARRING_OVERRIDES[c.code]) || []).filter((x) => !d.starring.includes(x))],
     contentWarnings: d.contentWarnings,
     guestDirector: ("code" in c && c.code && GUEST_DIRECTOR_OVERRIDES[c.code]) || d.guestDirector,
     credits: d.credits,
