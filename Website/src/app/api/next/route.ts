@@ -6,7 +6,7 @@ export type ListenOrder = "full" | "redacted" | "postmortem";
 /**
  * Player neighbors under a listen order:
  *  - full:       REDACTED episodes + Postmortems + minisodes, by release date (no Seven Planes)
- *  - redacted:   numbered episodes only, by season/number
+ *  - redacted:   episodes and minisodes (no Postmortems), by release date
  *  - postmortem: Postmortems only, by release date
  * Also drives autoplay when an episode ends.
  */
@@ -22,7 +22,7 @@ export async function GET(req: Request) {
   const byDate = (a: Episode, b: Episode) => +new Date(a.date) - +new Date(b.date);
   let list: Episode[];
   if (order === "redacted") {
-    list = all.filter((e) => e.kind === "episode").sort((a, b) => (a.season ?? 1) - (b.season ?? 1) || (a.number ?? 0) - (b.number ?? 0));
+    list = all.filter((e) => (e.kind === "episode" || e.kind === "minisode") && !e.guid.startsWith("t7p-")).sort(byDate);
   } else if (order === "postmortem") {
     list = all.filter((e) => e.kind === "postmortem").sort(byDate);
   } else {
