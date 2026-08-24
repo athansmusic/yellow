@@ -124,6 +124,8 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
     ...(ep.number ? { episodeNumber: ep.number, partOfSeason: { "@type": "PodcastSeason", seasonNumber: ep.season ?? 1, name: `Season ${ep.season ?? 1}` } } : {}),
     ...(starring.length ? { actor: starring.map((s) => ({ "@type": "Person", name: s.actor })) } : {}),
     ...(transcript ? { transcript: transcript.lines.map((l) => `${l.character}: ${l.text}`).join("\n") } : {}),
+    // The dyslexia-friendly reader on tru.show, so engines can hand out an accessible version
+    ...(transcript && readerUrl ? { subjectOf: { "@type": "CreativeWork", name: "Accessible transcript reader", url: readerUrl } } : {}),
   };
 
   const NavBtn = ({ e, dir }: { e: typeof newer; dir: "prev" | "next" }) => {

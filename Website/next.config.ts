@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       // Preview/production hosts on vercel.app must never be indexed; only the real domain is.
-      { source: "/:path*", has: [{ type: "host", value: "(.*)\.vercel\.app" }], headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
+      { source: "/:path*", has: [{ type: "host", value: "(.*)[.]vercel[.]app" }], headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
       {
         // Baseline security headers. No CSP yet: Stripe embedded checkout, GA, Google Fonts,
         // Tumblr and Blob images make a correct one a project of its own; add report-only first.
