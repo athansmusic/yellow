@@ -59,7 +59,6 @@ export function HeroLoop() {
         type="button"
         onClick={toggle}
         aria-label={paused ? "Play background animation" : "Pause background animation"}
-        aria-pressed={paused}
         className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-10 size-9 grid place-items-center rounded-full bg-ink/60 text-paper/80 hover:text-yellow border border-line backdrop-blur"
       >
         {paused ? <Play width={14} height={14} /> : <Pause width={14} height={14} />}

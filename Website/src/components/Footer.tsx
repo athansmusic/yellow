@@ -85,10 +85,10 @@ export function Footer({ hidden = [] }: { hidden?: string[] }) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-5 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-muted">
           <div className="flex items-center gap-4">
             <a href={SITE.studio.url} target="_blank" rel="noreferrer" aria-label={SITE.studio.name} className="opacity-70 hover:opacity-100">
-              <Image src="/brand/hush.avif" alt="" width={2000} height={2000} sizes="56px" className="h-7 w-auto" />
+              <Image src="/brand/hush.avif" alt="Hush Studios" width={2000} height={2000} sizes="56px" className="h-7 w-auto" />
             </a>
             <a href={SITE.network.url} target="_blank" rel="noreferrer" aria-label={SITE.network.name} className="opacity-70 hover:opacity-100">
-              <Image src="/brand/rustyquill.png" alt="" width={1446} height={158} sizes="120px" className="h-4 sm:h-5 w-auto max-w-[120px] object-contain" />
+              <Image src="/brand/rustyquill.png" alt="Rusty Quill" width={1446} height={158} sizes="120px" className="h-4 sm:h-5 w-auto max-w-[120px] object-contain" />
             </a>
           </div>
           <nav aria-label="Legal" className="flex flex-wrap gap-x-4 gap-y-1 sm:ml-auto">

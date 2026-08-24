@@ -5,6 +5,7 @@ import { getProduct, getProducts, money, sortSizes } from "@/lib/catalog";
 import { getSizeGuide } from "@/lib/printful";
 import { COLLECTIONS, TAXONOMY, subLabel } from "@/lib/storeTaxonomy";
 import { SITE } from "@/lib/site";
+import { PRODUCTION_DAYS, US_UNDER_RATE_CENTS } from "@/lib/shipping";
 import { ProductBuy } from "@/components/ProductBuy";
 import { ProductCard } from "@/components/ProductCard";
 import { SizeGuide } from "@/components/SizeGuide";
@@ -89,12 +90,34 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     "@context": "https://schema.org",
     "@type": "Product",
     name: p.name,
-    image: p.images,
+    image: p.images.map((i) => (i.startsWith("http") ? i : `${SITE.url}${i}`)),
     description: desc.paras.join(" "),
     brand: { "@type": "Brand", name: "REDACTED" },
     ...(p.blank ? { material: p.blank } : {}),
     ...(p.artist ? { creator: { "@type": "Person", name: p.artist } } : {}),
-    offers: { "@type": "AggregateOffer", priceCurrency: "USD", lowPrice: (p.priceCents / 100).toFixed(2), highPrice: (p.priceMaxCents / 100).toFixed(2), offerCount: p.variants.length, availability: "https://schema.org/InStock", url: `${SITE.url}/store/${p.slug}` },
+    offers: {
+      "@type": "AggregateOffer",
+      priceCurrency: "USD",
+      lowPrice: (p.priceCents / 100).toFixed(2),
+      highPrice: (p.priceMaxCents / 100).toFixed(2),
+      offerCount: p.variants.length,
+      availability: "https://schema.org/InStock",
+      url: `${SITE.url}/store/${p.slug}`,
+      // Google requires shipping + returns on Product markup for merchant rich results.
+      // Facts mirror /store-terms: $5 US under $40, free at $40+; printed to order, so no
+      // change-of-mind returns (damaged/misprinted replacements are warranty, not returns).
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingRate: { "@type": "MonetaryAmount", value: (US_UNDER_RATE_CENTS / 100).toFixed(2), currency: "USD" },
+        shippingDestination: { "@type": "DefinedRegion", addressCountry: "US" },
+        deliveryTime: {
+          "@type": "ShippingDeliveryTime",
+          handlingTime: { "@type": "QuantitativeValue", minValue: PRODUCTION_DAYS[0], maxValue: PRODUCTION_DAYS[1], unitCode: "DAY" },
+          transitTime: { "@type": "QuantitativeValue", minValue: 3, maxValue: 7, unitCode: "DAY" },
+        },
+      },
+      hasMerchantReturnPolicy: { "@type": "MerchantReturnPolicy", applicableCountry: "US", returnPolicyCategory: "https://schema.org/MerchantReturnNotPermitted" },
+    },
   };
 
   return (

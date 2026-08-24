@@ -8,11 +8,15 @@ import cast from "@/data/cast.json";
 
 export const revalidate = 3600;
 
+// Static pages and products change on deploys, not on a schedule; stamp them with server start.
+const GENERATED = new Date();
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = SITE.url;
   const [like, aberrations, hidden] = await Promise.all([getDoc("like"), getDoc("aberrations"), hiddenPages()]);
   const statics = ["", "/about", "/faq", "/where", "/episodes", "/cast", "/store", "/store-faq", "/store-terms", "/assets", "/supporter-wall", "/partner", "/privacy", "/fan-art", "/bingo", "/like", ...like.map((l) => `/like/${l.slug}`), "/aberrations", ...aberrations.map((a) => `/aberrations/${a.slug}`)].map((p) => ({
     url: `${base}${p}`,
+    lastModified: GENERATED,
     changeFrequency: (p === "" || p === "/episodes" ? "weekly" : "monthly") as "weekly" | "monthly",
     priority: p === "" ? 1 : 0.7,
   }));
@@ -20,8 +24,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const all = [
     ...statics,
     ...items.map((e) => ({ url: `${base}/episodes/${e.slug}`, lastModified: e.date, changeFrequency: "yearly" as const, priority: 0.6 })),
-    ...products.map((p) => ({ url: `${base}/store/${p.slug}`, changeFrequency: "monthly" as const, priority: 0.5 })),
-    ...cast.map((c) => ({ url: `${base}/cast/${c.slug}`, changeFrequency: "monthly" as const, priority: 0.5 })),
+    ...products.map((p) => ({ url: `${base}/store/${p.slug}`, lastModified: GENERATED, changeFrequency: "monthly" as const, priority: 0.5 })),
+    ...cast.map((c) => ({ url: `${base}/cast/${c.slug}`, lastModified: GENERATED, changeFrequency: "monthly" as const, priority: 0.5 })),
   ];
   return all.filter((e) => !isHiddenPath(e.url.slice(base.length) || "/", hidden));
 }

@@ -14,7 +14,7 @@ export function siteJsonLd() {
         name: "Hush Studios",
         url: SITE.studio.url,
         email: SITE.email,
-        logo: `${SITE.url}/brand/share.png`,
+        logo: `${SITE.url}/brand/share.jpg`,
         sameAs: ["https://x.com/TheRedactedUnit", "https://bsky.app/profile/theredactedunit.com", "https://www.youtube.com/@hushstudiosofficial", "https://www.tiktok.com/@theredactedunit", "https://patreon.com/TheRedactedUnit"],
       },
       {

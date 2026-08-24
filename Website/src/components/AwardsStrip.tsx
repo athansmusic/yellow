@@ -24,7 +24,7 @@ export function AwardsStrip({ quotes }: { quotes: Quote[] }) {
   return (
     <div className="border-b border-line bg-ink-2/80 overflow-hidden">
       {/* Laurel marquee: two copies so the loop is seamless */}
-      <div className="group relative py-5" aria-label="Festival selections and awards" role="img">
+      <div className="group relative py-5" aria-label={`Festival selections and awards: ${awards.map((a) => `${a.result}, ${a.festival} ${a.year}`).join("; ")}`} role="img">
         <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-ink-2 to-transparent z-10" aria-hidden />
         <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-ink-2 to-transparent z-10" aria-hidden />
         <div className="flex w-max gap-10 marquee group-hover:[animation-play-state:paused]">

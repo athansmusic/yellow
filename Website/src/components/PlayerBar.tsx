@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { fmtTime, usePlayer } from "@/lib/player";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Close, Expand, Pause, Play, SkipNext, SkipPrev } from "./Icons";
 
 const RATES = [1, 1.25, 1.5, 2];
@@ -19,16 +19,38 @@ export function PlayerBar() {
       root.style.removeProperty("--player-h");
     };
   }, [track]);
-  // The expanded card owns the screen: lock page scroll and close on Escape
+  // The expanded card owns the screen: lock scroll, trap focus inside, Escape closes, focus returns
+  const dialogRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!expanded) return;
+    const opener = document.activeElement as HTMLElement | null;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setExpanded(false);
+    const d = dialogRef.current;
+    d?.querySelector<HTMLElement>("button, a, input")?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") return setExpanded(false);
+      if (e.key !== "Tab" || !d) return;
+      const items = Array.from(d.querySelectorAll<HTMLElement>("button, a, input")).filter((x) => !x.hasAttribute("disabled"));
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      } else if (!d.contains(document.activeElement)) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
     window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = prev;
       window.removeEventListener("keydown", onKey);
+      opener?.focus();
     };
   }, [expanded, setExpanded]);
   if (!track) return null;
@@ -69,7 +91,7 @@ export function PlayerBar() {
       {/* Expanded now-playing card */}
       {expanded && (
         <div role="dialog" aria-modal="true" aria-label="Now playing" className="fixed inset-0 z-50 grid place-items-center p-4 bg-black/80 backdrop-blur-sm" onClick={(e) => e.target === e.currentTarget && setExpanded(false)}>
-          <div className="w-full max-w-sm sm:max-w-md bg-ink-2 border border-line shadow-[0_30px_80px_rgba(0,0,0,.8)]">
+          <div ref={dialogRef} className="w-full max-w-sm sm:max-w-md bg-ink-2 border border-line shadow-[0_30px_80px_rgba(0,0,0,.8)]">
             <div className="flex items-center justify-between px-5 pt-4">
               <p className="eyebrow">Now playing</p>
               <button type="button" onClick={() => setExpanded(false)} aria-label="Collapse player" className="p-2 -m-2 text-muted hover:text-paper">
@@ -135,7 +157,7 @@ export function PlayerBar() {
           {track.image && (
             <button type="button" onClick={() => setExpanded(true)} aria-label="Expand player" className="shrink-0 group relative">
               <Image src={track.image} alt="" width={48} height={48} className="size-11 sm:size-12 object-cover bg-ink" />
-              <span className="absolute inset-0 grid place-items-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="absolute inset-0 grid place-items-center bg-black/50 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
                 <Expand width={16} height={16} />
               </span>
             </button>

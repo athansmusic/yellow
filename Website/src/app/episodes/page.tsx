@@ -145,7 +145,7 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
 
               <div>
                 <p className="eyebrow text-yellow">{intro.tag}</p>
-                <h1 className="display hero-title text-5xl lg:text-[clamp(2.5rem,3.3vw,3.75rem)] mt-1">{intro.name}</h1>
+                <h1 className="display hero-title text-5xl lg:text-[clamp(2.5rem,3.3vw,3.75rem)] mt-1"><span className="sr-only">Episodes: </span>{intro.name}</h1>
                 <p className="mt-4 text-paper/85 max-w-prose">{intro.text}</p>
                 <div className="mt-5 flex flex-wrap items-center gap-4">
                   <PlatformButtons size="sm" links={links} />

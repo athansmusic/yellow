@@ -125,7 +125,7 @@ export function SearchPanel({ initial = "", autoFocus = true, onNavigate }: { in
             className="field !pl-10 text-lg"
             role="combobox"
             aria-expanded={results.length > 0}
-            aria-controls="site-search-results"
+            aria-controls={results.length > 0 ? "site-search-results" : undefined}
             aria-activedescendant={results[cursor] ? `sr-${cursor}` : undefined}
           />
         </div>
@@ -228,7 +228,7 @@ export function SearchOverlay() {
   }, [open]);
 
   return (
-    <dialog ref={ref} onClose={() => setOpen(false)} onClick={(e) => e.target === ref.current && setOpen(false)} className="backdrop:bg-black/80 bg-ink-2 text-paper border border-line p-0 mx-auto mt-[8vh] w-[min(94vw,44rem)] shadow-[0_30px_80px_rgba(0,0,0,.8)]" aria-label="Search">
+    <dialog ref={ref} onClose={() => { setOpen(false); document.querySelector<HTMLElement>("[data-search-trigger]")?.focus(); }} onClick={(e) => e.target === ref.current && setOpen(false)} className="backdrop:bg-black/80 bg-ink-2 text-paper border border-line p-0 mx-auto mt-[8vh] w-[min(94vw,44rem)] shadow-[0_30px_80px_rgba(0,0,0,.8)]" aria-label="Search">
       <div className="p-4 sm:p-6">
         {open && <SearchPanel onNavigate={() => setOpen(false)} />}
         <p className="mt-3 text-[11px] text-muted">
@@ -242,7 +242,7 @@ export function SearchOverlay() {
 /** Header button that opens the overlay. */
 export function SearchButton({ className = "" }: { className?: string }) {
   return (
-    <button type="button" onClick={openSearch} aria-label="Search" className={className}>
+    <button data-search-trigger type="button" onClick={openSearch} aria-label="Search" className={className}>
       <SearchIcon width={22} height={22} />
     </button>
   );
