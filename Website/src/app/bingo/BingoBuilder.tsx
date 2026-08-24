@@ -61,14 +61,15 @@ export default function BingoBuilder() {
   const [subtitle, setSubtitle] = useState("");
   const [squares, setSquares] = useState<string[]>(() => Array(24).fill(""));
   const [busy, setBusy] = useState(false);
+  const [shared, setShared] = useState("");
   const cardRef = useRef<HTMLDivElement>(null);
   const t = THEMES[theme];
 
   const setSquare = (i: number, v: string) => setSquares((s) => s.map((x, j) => (j === i ? v : x)));
 
-  const download = useCallback(async () => {
-    setBusy(true);
-    try {
+  /** Paint the card to a canvas; shared by download and share. */
+  const renderCard = useCallback(async () => {
+    {
       const family = cardRef.current ? getComputedStyle(cardRef.current).fontFamily : "Arial, sans-serif";
       const img = new Image();
       img.src = t.img;
@@ -129,14 +130,51 @@ export default function BingoBuilder() {
       ctx.lineWidth = 8;
       ctx.strokeRect(pad, gy, grid, grid);
 
+      return canvas;
+    }
+  }, [t, subtitle, squares]);
+
+  const download = useCallback(async () => {
+    setBusy(true);
+    try {
+      const canvas = await renderCard();
+      if (!canvas) return;
       const a = document.createElement("a");
-      a.download = "bingo-card.png";
+      a.download = "redacted-bingo.png";
       a.href = canvas.toDataURL("image/png");
       a.click();
     } finally {
       setBusy(false);
     }
-  }, [t, subtitle, squares]);
+  }, [renderCard]);
+
+  /** Phones get the native share sheet (straight to Discord or wherever); desktop copies the image. */
+  const share = useCallback(async () => {
+    setBusy(true);
+    setShared("");
+    try {
+      const canvas = await renderCard();
+      if (!canvas) return;
+      const blob: Blob | null = await new Promise((res) => canvas.toBlob(res, "image/png"));
+      if (!blob) return;
+      const file = new File([blob], "redacted-bingo.png", { type: "image/png" });
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: "REDACTED bingo card" }).catch(() => {});
+        return;
+      }
+      if (navigator.clipboard && "write" in navigator.clipboard && typeof ClipboardItem !== "undefined") {
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+        setShared("Copied! Paste it into Discord or anywhere.");
+        return;
+      }
+      const a = document.createElement("a");
+      a.download = "redacted-bingo.png";
+      a.href = canvas.toDataURL("image/png");
+      a.click();
+    } finally {
+      setBusy(false);
+    }
+  }, [renderCard]);
 
   return (
     <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
@@ -188,13 +226,17 @@ export default function BingoBuilder() {
         </div>
 
         <div className="mt-6 flex flex-wrap items-center gap-4">
-          <button type="button" onClick={download} disabled={busy} className="btn btn-yellow disabled:opacity-60">
-            {busy ? "Rendering…" : "Download PNG"}
+          <button type="button" onClick={share} disabled={busy} className="btn btn-yellow disabled:opacity-60">
+            {busy ? "Rendering…" : "Share card"}
+          </button>
+          <button type="button" onClick={download} disabled={busy} className="btn border border-line hover:border-yellow disabled:opacity-60">
+            Download PNG
           </button>
           <button type="button" onClick={() => setSquares(Array(24).fill(""))} className="text-sm text-muted underline underline-offset-4 hover:text-yellow">
             Clear the card
           </button>
         </div>
+        {shared && <p className="mt-3 text-sm text-yellow" role="status">{shared}</p>}
       </div>
     </div>
   );
