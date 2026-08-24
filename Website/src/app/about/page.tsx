@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { Ed } from "@/components/Ed";
 import Link from "next/link";
 import { getEpisodes, toTrack } from "@/lib/feed";
 import { getDoc } from "@/lib/content";
@@ -64,15 +65,15 @@ export default async function About() {
       <div className="mt-8 grid gap-10 lg:grid-cols-[1.2fr_1fr]">
         <div className="prose-site text-lg text-paper/90">
           <p>
-            <strong>[REDACTED]</strong> is a horror comedy audio drama, a fiction podcast, from Athan (<em>The Grotto</em>) and Jamie Petronis (<em>The Cellar Letters</em>), produced by Hush Studios and released on the Rusty Quill network.
+            <Ed id="about.intro1"><strong>[REDACTED]</strong> is a horror comedy audio drama, a fiction podcast, from Athan (<em>The Grotto</em>) and Jamie Petronis (<em>The Cellar Letters</em>), produced by Hush Studios and released on the Rusty Quill network.</Ed>
           </p>
           <p>
-            The show follows Jacob Kane, a struggling actor who, desperate for a fresh start, assumes the identity of his deceased twin, Jordan. Expecting a simple accounting job, he instead finds himself accidentally inside an underfunded secret government agency called The REDACTED Unit, tasked with discreetly handling bizarre and often dangerous paranormal cases. The things the Unit handles are called <strong>Aberrations</strong>.
+            <Ed id="about.intro2">The show follows Jacob Kane, a struggling actor who, desperate for a fresh start, assumes the identity of his deceased twin, Jordan. Expecting a simple accounting job, he instead finds himself accidentally inside an underfunded secret government agency called The REDACTED Unit, tasked with discreetly handling bizarre and often dangerous paranormal cases. The things the Unit handles are called <strong>Aberrations</strong>.</Ed>
           </p>
           <p>
-            As Jacob settles into his role, he begins to unravel the unsettling truths around his brother’s death. What begins as an act of reinvention slowly becomes a descent into a web of paranormal forces, secret agendas, and moral compromise.
+            <Ed id="about.intro3">As Jacob settles into his role, he begins to unravel the unsettling truths around his brother’s death. What begins as an act of reinvention slowly becomes a descent into a web of paranormal forces, secret agendas, and moral compromise.</Ed>
           </p>
-          <p>It’s a multi-season, monster-of-the-week series: each episode is a self-contained case, and the story of Jordan’s death runs underneath all of them. If you like <em>The X-Files</em>, <em>Buffy</em>, <em>Brooklyn Nine-Nine</em>, <em>Psych</em>, or <em>The Magnus Archives</em>, this is for you.</p>
+          <p><Ed id="about.intro4">It’s a multi-season, monster-of-the-week series: each episode is a self-contained case, and the story of Jordan’s death runs underneath all of them. If you like <em>The X-Files</em>, <em>Buffy</em>, <em>Brooklyn Nine-Nine</em>, <em>Psych</em>, or <em>The Magnus Archives</em>, this is for you.</Ed></p>
         </div>
         <div>
           <Image src="/brand/showart.jpeg" alt="[REDACTED] show art" width={500} height={500} className="w-full max-w-sm border border-line" />
@@ -93,7 +94,7 @@ export default async function About() {
         </div>
         <div>
           <h2 className="eyebrow mb-2">Hear it</h2>
-          <p className="text-paper/90">Start at the beginning. The pilot is three parts, released together.</p>
+          <p className="text-paper/90"><Ed id="about.start">Start at the beginning. The pilot is three parts, released together.</Ed></p>
           <div className="mt-5 flex flex-wrap items-center gap-3">
             {first && <PlayButton track={toTrack(first)} plain label={`Play ${first.code}`} className="btn btn-yellow" />}
             <PlatformButtons links={LISTEN_BUTTONS} size="sm" />

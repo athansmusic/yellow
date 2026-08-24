@@ -194,3 +194,16 @@ export async function saveEpisodeMerch(fd: FormData) {
   await setDoc("episodeMerch", next);
   redirect(`/admin/merch?saved=1&e=${encodeURIComponent(episode)}`);
 }
+
+// ── Static text overrides (/admin/text, surfaced by the on-page pencils) ────
+export async function saveSiteText(fd: FormData) {
+  await requireAdmin();
+  const next: Record<string, string> = {};
+  for (const [key, value] of fd.entries()) {
+    if (!key.startsWith("t:")) continue;
+    const v = String(value).trim();
+    if (v) next[key.slice(2)] = v;
+  }
+  await setDoc("siteText", next);
+  redirect("/admin/text?saved=1");
+}

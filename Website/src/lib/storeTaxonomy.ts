@@ -68,6 +68,5 @@ export const COLLECTIONS: { id: string; label: string; blurb: string; match: Reg
   { id: "spatter", label: "Spatter Series", blurb: "All-over print.", match: /spatter/i },
   { id: "pride", label: "Pride Flags", blurb: "Every flag, one logo.", match: /^(?!logo).*flag/i },
   { id: "aberrant", label: "Aberrant Prints", blurb: "The monsters, framed.", match: /^(brood|chorister|shapeshifter|plaster pigs) (print|canvas)$/i },
-  { id: "car-crash", label: "Car Crash", blurb: "Jacob's big night.", match: /car crash/i },
   { id: "logo", label: "Logo", blurb: "Hats, patches, the essentials.", match: /logo/i },
 ];

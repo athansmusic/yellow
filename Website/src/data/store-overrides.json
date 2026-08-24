@@ -1,5 +1,5 @@
 {
-  "_readme": "Editorial layer over the Printful catalog. Keys in byName must match the Printful product name exactly. Fields: description, category (apparel|accessories|home), artist, tags, order (lower = earlier; unset = 500, then newest first), new (badge), hidden, slug. typeDescriptions are regex → fallback copy used when a product has no description. hiddenIds: Printful product IDs to hide from the site (value is just a note).",
+  "_readme": "Editorial layer over the Printful catalog. Keys in byName must match the Printful product name exactly. Fields: description, category (apparel|accessories|home), artist, tags, order (lower = earlier; unset = 500, then newest first), new (badge), hidden, slug. typeDescriptions are regex \u2192 fallback copy used when a product has no description. hiddenIds: Printful product IDs to hide from the site (value is just a note).",
   "typeDescriptions": {
     "hoodie": "Unisex premium pullover hoodie. Heavyweight cotton-blend fleece, double-lined hood, front pouch pocket. Printed to order.\n\nSizes run true to unisex sizing. If you're between sizes, go up.",
     "bomber": "All-over-print unisex bomber jacket. Lightweight, water-resistant outer with a soft lining, ribbed cuffs and hem. Printed to order.",
@@ -11,15 +11,15 @@
     "hat|cap": "Classic dad hat with an embroidered [REDACTED] logo. Adjustable strap, one size.",
     "mug": "11 oz glossy ceramic mug. Dishwasher and microwave safe. Printed to order.",
     "tumbler": "20 oz insulated stainless steel tumbler with a straw. Keeps drinks cold (or hot) for hours. Printed to order.",
-    "desk mat|mouse pad": "36″ × 18″ desk mat with a smooth, stitched-edge fabric top and non-slip rubber base. Printed to order.",
+    "desk mat|mouse pad": "36\u2033 \u00d7 18\u2033 desk mat with a smooth, stitched-edge fabric top and non-slip rubber base. Printed to order.",
     "puzzle": "Jigsaw puzzle printed on thick, glossy board. Ships in a printed tin. Printed to order.",
-    "journal": "Hardcover matte journal, 8″ × 5.75″, 150 lined pages with a ribbon bookmark. Printed to order.",
-    "post-it|note": "3″ × 3″ sticky note pads. Because yellow squares are the real hero of the show.",
-    "coaster": "Cork-backed coaster, 4″ square. Printed to order.",
+    "journal": "Hardcover matte journal, 8\u2033 \u00d7 5.75\u2033, 150 lined pages with a ribbon bookmark. Printed to order.",
+    "post-it|note": "3\u2033 \u00d7 3\u2033 sticky note pads. Because yellow squares are the real hero of the show.",
+    "coaster": "Cork-backed coaster, 4\u2033 square. Printed to order.",
     "bowl": "32 oz pet bowl. Food-safe, dishwasher safe. For the dog you should absolutely pet.",
     "sticker": "Kiss-cut sticker sheet. Durable vinyl with a matte finish, indoor and outdoor safe.",
-    "patch": "3″ embroidered patch with an iron-on backing.",
-    "flag": "All-over-print flag, 56″ × 34.5″, single-sided with a mirrored back. Brass grommets for hanging.",
+    "patch": "3\u2033 embroidered patch with an iron-on backing.",
+    "flag": "All-over-print flag, 56\u2033 \u00d7 34.5\u2033, single-sided with a mirrored back. Brass grommets for hanging.",
     "print|poster": "Enhanced matte paper poster. Museum-quality, archival paper. Ships rolled in a protective tube.",
     "iphone case|phone case": "Tough, matte, MagSafe-compatible iPhone case. Dual-layer for impact protection. Printed to order.",
     "crossbody bag|bag": "All-over-print utility crossbody bag with an adjustable strap and zip pockets. Printed to order."
@@ -27,15 +27,18 @@
   "byName": {
     "Eli Reyes Logo Tee": {
       "order": 1,
-      "new": true
+      "new": true,
+      "artist": "Cimejic"
     },
     "Jacob on Stage Tee": {
       "order": 2,
-      "new": true
+      "new": true,
+      "artist": "Darhak"
     },
     "Falling Eli Tee": {
       "order": 3,
-      "new": true
+      "new": true,
+      "artist": "Cimejic"
     },
     "Spatter Windbreaker": {
       "order": 4,
@@ -110,7 +113,8 @@
     },
     "Greepling Sticker Sheet": {
       "order": 102,
-      "category": "accessories"
+      "category": "accessories",
+      "artist": "Karen Neat"
     },
     "Quotes Sticker Sheet": {
       "order": 103,

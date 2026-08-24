@@ -22,6 +22,7 @@ import { Reveal } from "@/components/Reveal";
 import { EarlyAccess } from "@/components/LiveNow";
 import { ProductCard } from "@/components/ProductCard";
 import { NewsletterForm } from "@/components/NewsletterForm";
+import { Ed } from "@/components/Ed";
 import { Arrow, Discord, Patreon } from "@/components/Icons";
 
 export const revalidate = 600;
@@ -169,6 +170,30 @@ export default async function Home() {
       </div>
 
       {/* ── MEET TRU ── the core six */}
+      {/* ── WHAT IS REDACTED ── the pitch, right after the live row so new visitors get it first */}
+      <Section>
+        <Reveal><div className="grid gap-8 lg:grid-cols-[1fr_minmax(0,20rem)] items-center">
+          <div className="prose-site">
+            <Heading eyebrow="The show">What is [REDACTED]?</Heading>
+            <p className="mt-5">
+              <Ed id="home.what1">A horror comedy audio drama from Athan (<em>The Grotto</em>) and Jamie Petronis (<em>The Cellar Letters</em>), on the Rusty Quill network. Failing actor Jacob Kane takes his dead twin’s identity expecting a desk job, and lands inside The REDACTED Unit, a secret agency that quietly handles dangerous paranormal cases.</Ed>
+            </p>
+            <p>
+              <Ed id="home.what2">It’s a monster-of-the-week series: every episode is a self-contained case, with the mystery of his brother’s death running underneath. The threats have a name. Aberrations.</Ed>
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link href="/episodes" className="btn btn-yellow">
+                Episodes
+              </Link>
+              <Link href="/about" className="btn btn-ghost">
+                More about the show
+              </Link>
+            </div>
+          </div>
+          <Image src="/home/skinwalker.avif" alt="" width={800} height={800} sizes="(min-width:1024px) 20rem, 60vw" className="w-full max-w-xs mx-auto lg:max-w-none h-auto" />
+        </div></Reveal>
+      </Section>
+
       <section className="relative border-b border-line bg-ink-2/80 overflow-hidden">
         <Container className="relative py-12 sm:py-16">
           <Reveal>
@@ -238,34 +263,6 @@ export default async function Home() {
       {/* ── CATCH IT A DAY EARLY ── Thursday live on Twitch */}
       <EarlyAccess onBreak={onBreak} />
 
-      {/* ── WHAT IS REDACTED ── text beside the skinwalker art */}
-      <Section className="bg-ink-2/80 border-y border-line">
-        <Reveal><div className="grid gap-10 lg:grid-cols-2 items-center">
-          <div className="prose-site">
-            <Heading eyebrow="The show">What is [REDACTED]?</Heading>
-            <p className="mt-6">
-              REDACTED is a horror comedy audio drama from Athan (<em>The Grotto</em>) and Jamie Petronis (<em>The Cellar Letters</em>), on the Rusty Quill network.
-            </p>
-            <p>
-              The show follows Jacob (Jamie Petronis), a struggling actor who, desperate for a fresh start, assumes the identity of his deceased twin, Jordan. Expecting a simple accounting job, he instead finds himself accidentally in an underfunded secret government agency called THE REDACTED UNIT, tasked with discreetly handling bizarre and often dangerous paranormal cases.
-            </p>
-            <p>
-              As Jacob settles into his role, he begins to unravel the unsettling truths around his brother’s death. What begins as an act of reinvention slowly becomes a desperate descent into a treacherous web of paranormal forces, secret agendas, and moral compromise.
-            </p>
-            <p>This multi-season, monster-of-the-week series follows Jacob as he fights to keep his cover while facing terrifying threats known as “Aberrations.”</p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/episodes" className="btn btn-yellow">
-                Episodes
-              </Link>
-              <Link href="/about" className="btn btn-ghost">
-                More about the show
-              </Link>
-            </div>
-          </div>
-          <Image src="/home/skinwalker.avif" alt="" width={800} height={800} sizes="(min-width:1024px) 50vw, 100vw" className="w-full h-auto" />
-        </div></Reveal>
-      </Section>
-
       {/* ── GUEST WRITERS ── even list, no hierarchy */}
       <Section>
         <Reveal><div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_1fr] items-start">
@@ -293,7 +290,7 @@ export default async function Home() {
           <div>
             <p className="eyebrow !text-white/70">Join the unit</p>
             <h2 className="display text-4xl sm:text-6xl mt-1">Early. Ad-free.</h2>
-            <p className="mt-4 max-w-prose text-white/90">From $2 a month. 400+ people backed this show into existence. This is how it keeps existing.</p>
+            <p className="mt-4 max-w-prose text-white/90"><Ed id="home.patreon">From $2 a month. 400+ people backed this show into existence. This is how it keeps existing.</Ed></p>
             <ul className="mt-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wide">
               {["Early + ad-free episodes", "Bonus commentaries & debriefs", "Audience-directed decisions", "Exclusive music", "Private Discord", "Name on the wall", "Live Q&As", "Merch discounts"].map((b) => (
                 <li key={b} className="border border-white/40 px-2.5 py-1">
@@ -350,7 +347,7 @@ export default async function Home() {
         <div className="grid gap-8 lg:grid-cols-2 items-center">
           <div>
             <Heading eyebrow="Episode alerts">Know when it drops</Heading>
-            <p className="mt-4 text-paper/85 max-w-prose">An email whenever an episode drops, plus the occasional update. Sign up and get 10% off store orders of $25 or more. Unsubscribe any time.</p>
+            <p className="mt-4 text-paper/85 max-w-prose"><Ed id="home.newsletter">An email whenever an episode drops, plus the occasional update. Sign up and get 10% off store orders of $25 or more. Unsubscribe any time.</Ed></p>
           </div>
           <NewsletterForm source="website-home" />
         </div>

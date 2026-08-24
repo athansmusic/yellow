@@ -6,7 +6,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { money, sortSizes } from "@/lib/money";
 import type { Product } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
-import { COLLECTIONS } from "@/lib/storeTaxonomy";
 import { swatch } from "@/lib/swatches";
 import { priceRange } from "./ProductCard";
 
@@ -67,7 +66,6 @@ export function ProductBuy({
   const sizeOk = (s: string) => p.variants.some((v) => v.size === s && (!color || v.color === color) && v.available);
   const colorOk = (c: string) => p.variants.some((v) => v.color === c && (!size || v.size === size) && v.available);
 
-  const artistCollection = useMemo(() => COLLECTIONS.find((c) => c.match.test(p.name)), [p.name]);
 
   // Phone-only sticky bar once the buy box itself scrolls out of view, like StickyStart.
   const boxRef = useRef<HTMLDivElement>(null);
@@ -123,16 +121,16 @@ export function ProductBuy({
           {p.artist && (
             <p className="mt-1 text-sm text-muted">
               Art by{" "}
-              {p.artistUrl ? (
-                <a href={p.artistUrl} target="_blank" rel="noopener noreferrer" className="text-yellow hover:underline underline-offset-2">
-                  {p.artist}
-                </a>
-              ) : artistCollection ? (
-                <Link href={`/store?col=${artistCollection.id}`} className="text-yellow hover:underline underline-offset-2">
-                  {p.artist}
-                </Link>
-              ) : (
-                p.artist
+              <Link href={`/store?artist=${encodeURIComponent(p.artist)}`} className="text-yellow hover:underline underline-offset-2">
+                {p.artist}
+              </Link>
+              {p.artistUrl && (
+                <>
+                  {" · "}
+                  <a href={p.artistUrl} target="_blank" rel="noopener noreferrer" className="text-muted hover:text-yellow underline underline-offset-2">
+                    their site
+                  </a>
+                </>
               )}
             </p>
           )}

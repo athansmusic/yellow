@@ -23,7 +23,7 @@ const TRUST: [string, string][] = [
   ["Stripe checkout", "Cards, Apple Pay, Google Pay"],
 ];
 
-export default async function StorePage({ searchParams }: { searchParams: Promise<{ c?: string; t?: string; col?: string; sort?: string }> }) {
+export default async function StorePage({ searchParams }: { searchParams: Promise<{ c?: string; t?: string; col?: string; sort?: string; artist?: string }> }) {
   await assertVisible("/store");
   const sp = await searchParams;
   const [all, featured] = await Promise.all([getProducts(), getDoc("featured").catch(() => ({ slugs: [] as string[] }))]);
@@ -31,6 +31,8 @@ export default async function StorePage({ searchParams }: { searchParams: Promis
   const category = TAXONOMY.find((c) => c.id === sp.c)?.id as Category | undefined;
   const sub = category ? TAXONOMY.find((c) => c.id === category)!.subs.find((s) => s.id === sp.t)?.id : undefined;
   const collection = COLLECTIONS.find((c) => c.id === sp.col);
+  const artists = [...new Set(all.map((p) => p.artist).filter((a): a is string => !!a))].sort();
+  const artist = artists.find((a) => a === sp.artist);
   const sort = sp.sort === "low" || sp.sort === "high" || sp.sort === "az" || sp.sort === "new" ? sp.sort : "featured";
 
   const counts: Record<string, number> = { all: all.length };
@@ -40,15 +42,16 @@ export default async function StorePage({ searchParams }: { searchParams: Promis
   }
 
   let list = all;
-  if (collection) list = list.filter((p) => collection.match.test(p.name));
+  if (artist) list = list.filter((p) => p.artist === artist);
+  else if (collection) list = list.filter((p) => collection.match.test(p.name));
   else if (category) list = list.filter((p) => p.category === category && (!sub || p.sub === sub));
   if (sort === "low") list = [...list].sort((a, b) => a.priceCents - b.priceCents);
   if (sort === "high") list = [...list].sort((a, b) => b.priceCents - a.priceCents);
   if (sort === "az") list = [...list].sort((a, b) => a.name.localeCompare(b.name));
   if (sort === "new") list = [...list].sort((a, b) => Number(!!b.isNew) - Number(!!a.isNew) || b.id - a.id);
 
-  const title = collection ? collection.label : sub ? subLabel(category!, sub) : category ? TAXONOMY.find((c) => c.id === category)!.label : "Everything";
-  const isFront = !category && !collection;
+  const title = artist ? `Art by ${artist}` : collection ? collection.label : sub ? subLabel(category!, sub) : category ? TAXONOMY.find((c) => c.id === category)!.label : "Everything";
+  const isFront = !category && !collection && !artist;
   const collections = COLLECTIONS.map((c) => ({ ...c, items: all.filter((p) => c.match.test(p.name)) })).filter((c) => c.items.length >= 2);
 
   // Hero: admin-picked products (the same picks drive the home page rail), else the first four.
@@ -135,6 +138,25 @@ export default async function StorePage({ searchParams }: { searchParams: Promis
                       <span className="display text-lg leading-none block group-hover:text-yellow">{c.label}</span>
                       <span className="text-xs text-muted tabular">{c.items.length} items</span>
                     </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Container>
+        </section>
+      )}
+
+      {/* Shop by Artist */}
+      {isFront && artists.length > 0 && (
+        <section className="border-b border-line">
+          <Container className="py-5">
+            <p className="eyebrow mb-3">Shop by Artist</p>
+            <ul className="flex flex-wrap gap-2">
+              {artists.map((a) => (
+                <li key={a}>
+                  <Link href={`/store?artist=${encodeURIComponent(a)}`} className="inline-flex items-center gap-2 border border-line bg-ink px-3 py-1.5 text-sm hover:border-yellow hover:text-yellow">
+                    {a}
+                    <span className="text-xs text-muted tabular">{all.filter((x) => x.artist === a).length}</span>
                   </Link>
                 </li>
               ))}
