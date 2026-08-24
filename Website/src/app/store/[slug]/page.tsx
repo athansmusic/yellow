@@ -26,7 +26,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const p = await getProduct((await params).slug);
   if (!p) return {};
-  return { title: p.name, description: clip(p.description.split("\n")[0] || `${p.name}, ${money(p.priceCents)}`), alternates: { canonical: `/store/${p.slug}` }, openGraph: { images: [{ url: p.image }] } };
+  return { title: p.name, description: clip(p.description.split("\n")[0] || `${p.name}, ${money(p.priceCents)}`), alternates: { canonical: `/store/${p.slug}` }, openGraph: { siteName: "REDACTED", images: [{ url: p.image }] } };
 }
 
 /** Search snippets cut off around 160 characters. */

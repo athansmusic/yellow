@@ -36,7 +36,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: ep.title,
     description: desc.slice(0, 300),
     alternates: { canonical: `/episodes/${ep.slug}` },
-    openGraph: { title: ep.title, description: ep.summary, type: "article", publishedTime: ep.date },
+    // A page-level openGraph object replaces the layout one wholesale, so siteName must ride along
+    openGraph: { siteName: "REDACTED", title: ep.title, description: desc, type: "article", publishedTime: ep.date },
   };
 }
 

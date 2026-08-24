@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   // The episode share-card generator reads these off disk; Vercel only ships them
   // into the function if told (public/ normally lives on the CDN, not in the bundle)
   outputFileTracingIncludes: {
-    "/episodes/[slug]/opengraph-image": ["./src/fonts/**", "./public/brand/wordmark-black.png"],
+    "/episodes/[slug]/opengraph-image": ["./src/fonts/**", "./public/brand/og-bg.jpg"],
     "/cast/[slug]/opengraph-image": ["./src/fonts/**", "./public/brand/wordmark-black.png", "./public/cast/**"],
   },
   // Lets a production build run beside the dev server (NEXT_DIST_DIR=.next-build npx next build)
