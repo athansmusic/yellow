@@ -201,6 +201,7 @@ const NAME_FIXES: [RegExp, string][] = [
   [/Devin Steffins/gi, "Devin Steffens"],
   [/The Joe Cliff Thompson/gi, "Joe Cliff Thompson"],
   [/Nathan Lundsford/gi, "Nathan Lunsford"],
+  [/Zoe (?:D\.? )?Lee/gi, "Zoe D Lee"],
 ];
 const fixNames = (x: string) => NAME_FIXES.reduce((acc, [re, to]) => acc.replace(re, to), x);
 
@@ -210,6 +211,9 @@ const STARRING_OVERRIDES: Record<string, string[]> = {
   // S1E10's notes carry no cast block at all; same for its Postmortem (keyed by slug, PMs have no code)
   "S1 E10": ["Jamie Petronis as Jacob Kane", "Ishani Kanetkar as Hedy Hauksdottir", "Devin Steffens as Lucas Kipp", "Ash Millman as Riley Fleming"],
   "postmortem-brood": ["Lyssa Jay as Sloan Summers", "Derek Moreland as Dr. Danse", "Natalie Light as Agent Koska"],
+  // The Clickolding debrief breaks form: the guest director and both creators, as themselves
+  "postmortem-clickolding": ["Xalavier Nelson Jr.", "Johnathan Magno", "Jamie Petronis"],
+  "minisode-thanksgiving-intermission-bonus-scene": ["Jamie Petronis as Jacob Kane", "James Spurney as Phil the Landlord"],
 };
 
 function toEpisode(it: RawItem): Episode | null {

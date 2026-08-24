@@ -598,6 +598,44 @@
     "imdb": "https://www.imdb.com/name/nm10505494/"
   },
   {
+    "slug": "harlan-guthrie",
+    "character": "Agent Victor",
+    "actor": "Harlan Guthrie",
+    "image": "/cast/harlan-guthrie.png",
+    "bio": "",
+    "about": "Harlan Guthrie is a Canadian writer, editor, director, sound designer, musician, and voice actor. He is the sole creator and talent behind Malevolent, the Lovecraftian horror Audio Drama which is part of the Rusty Quill Network and runner up to the 2021 Discover Pods awards.\n\nAs a writer, a number of his works have been featured on the multi-award winning NoSleep Podcast and as an Audio Engineer he worked on Season 2 of The Town Whispers. His creation credits include the founding of the weekly streaming group The INVICTUS Stream as well as the Actual Play D&D podcast Dice Shame which he also edits and stars in. As a musician, he’s composed the main musical themes of Malevolent as well as wrote and recorded the musical motifs in Season 2 of Dice Shame.",
+    "otherWork": [
+      {
+        "title": "Malevolent",
+        "url": "https://www.imdb.com/title/tt21852378/",
+        "note": "Creator. Arthur Lester."
+      },
+      {
+        "title": "Deviser",
+        "url": "https://www.imdb.com/title/tt28076708/",
+        "note": "Creator."
+      },
+      {
+        "title": "WOE.BEGONE",
+        "url": "https://www.imdb.com/title/tt28069393/",
+        "note": "Sylvester August Baxter. 13 episodes."
+      }
+    ],
+    "links": {},
+    "imdb": "https://www.imdb.com/name/nm11617467/"
+  },
+  {
+    "slug": "zoe-d-lee",
+    "character": "Agent Cross",
+    "actor": "Zoe D Lee",
+    "image": "/cast/zoe-d-lee.png",
+    "bio": "",
+    "about": "Hi! My name is Zoe and I am a Taiwanese-American Voice Actor and Singer based in Texas. I've always had a passion for acting and bringing characters to life, but I started my VO journey in late 2022. When not in the booth, I can be found snuggling with my dog, terrorizing my friends with cricket noises, or just generally wreaking havoc and bringing chaos.\n\nAs a musician, I began playing violin at the age of 5. My grandparents brought home a tiny violin from Taiwan and I was hooked! I branched out into choir in 5th grade, managed to worm my way into All-State choir in High School, discovered a love for Musical Theatre, and a small hatred of music theory along the way. In the theater, I've worked with the likes of Steven Schwartz, Adam Pascal, and Steve Lutvak.",
+    "otherWork": [],
+    "links": {},
+    "imdb": "https://www.imdb.com/name/nm14515523/"
+  },
+  {
     "character": "Agent Koska",
     "actor": "Natalie Light",
     "image": "/cast/natalie-light.png",
@@ -807,5 +845,21 @@
     "about": "",
     "aboutSource": null,
     "imdb": "https://www.imdb.com/name/nm12121977/"
+  },
+  {
+    "slug": "landon-whisnant",
+    "character": "Lead Sound Designer",
+    "actor": "Landon Whisnant",
+    "image": "/team/landon-whisnant.avif",
+    "bio": "Lead Sound Designer. Writes the minisodes. Occasionally The Bartender.",
+    "about": "Landon 'Lemon' Whisnant is a sound designer, actor and writer who has had a hand in a multitude of audio dramas stretching over just about every genre. He designs REDACTED's soundscape, writes the minisodes (Audistorium), and steps on mic as The Bartender when the occasion calls.",
+    "otherWork": [
+      {
+        "title": "Audistorium",
+        "url": "https://shows.acast.com/audistorium",
+        "note": "Creator."
+      }
+    ],
+    "links": {}
   }
 ]

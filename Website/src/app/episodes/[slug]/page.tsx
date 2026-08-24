@@ -57,10 +57,12 @@ function safeHtml(html: string) {
     .replace(/\s?[\u2013\u2014]\s?/g, ", ");
 }
 
+// Feed names that differ from the cast page name (real name vs stage name)
+const CAST_ALIASES: Record<string, string> = { johnathanmagno: "athan" };
 function castFor(actor: string) {
   const norm = (x: string) => x.toLowerCase().replace(/[^a-z]/g, "");
   const a = norm(actor);
-  return cast.find((c) => norm(c.actor) === a) ?? cast.find((c) => a.startsWith(norm(c.actor)) || norm(c.actor).startsWith(a));
+  return cast.find((c) => norm(c.actor) === a) ?? cast.find((c) => c.slug === CAST_ALIASES[a]) ?? cast.find((c) => a.startsWith(norm(c.actor)) || norm(c.actor).startsWith(a));
 }
 
 export default async function EpisodePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -264,7 +266,15 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
               <ul className="grid sm:grid-cols-2 gap-x-8 border-t border-line">
                 {starring.map((s) => (
                   <li key={s.actor + s.role} className="flex items-baseline justify-between gap-4 border-b border-line py-2.5">
-                    <span className="display text-xl">{s.role ?? s.actor}</span>
+                    <span className="display text-xl">
+                      {s.role ?? (s.member ? (
+                        <Link href={`/cast/${s.member.slug}`} className="hover:text-yellow">
+                          {s.actor}
+                        </Link>
+                      ) : (
+                        s.actor
+                      ))}
+                    </span>
                     {s.role &&
                       (s.member ? (
                         <Link href={`/cast/${s.member.slug}`} className="text-sm text-yellow text-right hover:underline underline-offset-4 shrink-0">
