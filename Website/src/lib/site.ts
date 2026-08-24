@@ -79,10 +79,14 @@ export const EXTERNAL = {
   postmortemTrailerYouTubeId: "RDWCAfHyMq0",
   t7pTrailerYouTubeId: "k7JGgzqKpR0",
   newsletterApi: "https://www.opencurtain.app/api/contacts/subscribe",
+  // Aggregate-only stats feed published daily by the RedactedStats collector
+  // (Supabase Storage, public bucket). Data runs through yesterday; the
+  // collector re-verifies the last week daily, so recent days can restate.
+  statsFeed: "https://vuafrblbvvweznxrczhs.supabase.co/storage/v1/object/public/public-stats/stats.json",
+  // Legacy manual sheet: still supplies hours consumed / avg Twitch viewers,
+  // which the automated feed doesn't track.
   partnerStatsCsv:
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vRlIKfsRhRQ-fp32Z1JDBIIXapNUaL9_3Nb33UIMQ0RvxcarO0jyIOV64sf9Api20c4nK0ntjOqIcXX/pub?output=csv",
-  partnerPlaysCsv:
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRlIKfsRhRQ-fp32Z1JDBIIXapNUaL9_3Nb33UIMQ0RvxcarO0jyIOV64sf9Api20c4nK0ntjOqIcXX/pub?gid=0&single=true&output=csv",
   discordCountApi: "https://discordusers.athan-438.workers.dev/",
 };
 

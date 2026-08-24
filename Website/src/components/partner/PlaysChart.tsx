@@ -6,8 +6,8 @@ import type { PlaysSeries } from "@/lib/partnerStats";
 const SERIES = [
   { key: "apple", label: "Apple Podcasts", color: "#FFF200" },
   { key: "spotify", label: "Spotify", color: "#C87800" },
-  { key: "pocket", label: "Pocket Casts", color: "#963C00" },
-  { key: "others", label: "Others", color: "#501E00" },
+  { key: "acast", label: "Other apps", color: "#963C00" },
+  { key: "youtube", label: "YouTube", color: "#501E00" },
 ] as const;
 
 const W = 600;
@@ -23,8 +23,8 @@ export function PlaysChart({ data }: { data: PlaysSeries }) {
 
   const { paths, max, stacks } = useMemo(() => {
     const n = data.dates.length;
-    // Stack top-down in the order Apple, Spotify, Pocket, Others (each series sits on the ones after it)
-    const order = ["others", "pocket", "spotify", "apple"] as const;
+    // Stack top-down in the order Apple, Spotify, Acast apps, YouTube (each series sits on the ones after it)
+    const order = ["youtube", "acast", "spotify", "apple"] as const;
     const stacks: Record<string, number[]> = {};
     let prev = new Array(n).fill(0);
     for (const k of order) {
@@ -79,7 +79,7 @@ export function PlaysChart({ data }: { data: PlaysSeries }) {
             </g>
           );
         })}
-        {["others", "pocket", "spotify", "apple"].map((k) => {
+        {["youtube", "acast", "spotify", "apple"].map((k) => {
           const s = SERIES.find((s) => s.key === k)!;
           return <path key={k} d={paths[k]} fill={s.color} fillOpacity={0.8} stroke={s.color} strokeWidth={1} />;
         })}

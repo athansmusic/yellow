@@ -20,10 +20,32 @@ export function parseRow(line: string): string[] {
   return out;
 }
 
+/** Shape of the RedactedStats public feed (aggregate-only, updated daily,
+ * settled numbers with a 4-day delay). */
+type Feed = {
+  updated_at: string;
+  daily: { date: string; acast?: number; spotify?: number; apple?: number; youtube?: number; youtube_pm?: number; total: number }[];
+  totals: { acast: number; spotify: number; apple: number; youtube: number; youtube_pm: number; all_platforms: number };
+  followers?: { spotify?: number | null; apple?: number | null; as_of?: string | null };
+  hours?: { alltime?: { total?: number | null }; last30d?: { total?: number | null }; as_of?: string | null };
+};
+
+async function getFeed(): Promise<Feed | null> {
+  try {
+    const res = await fetch(EXTERNAL.statsFeed, { next: { revalidate: 3600 } });
+    if (!res.ok) return null;
+    return (await res.json()) as Feed;
+  } catch {
+    return null;
+  }
+}
+
 export async function getStats(): Promise<Stats> {
   const s: Stats = {};
-  // Sheet and Discord worker are independent; fetch both at once
-  const [sheet, discord] = await Promise.allSettled([
+  // The automated feed is authoritative; the legacy sheet still supplies the
+  // couple of values it doesn't track; the Discord worker is live.
+  const [feed, sheet, discord] = await Promise.allSettled([
+    getFeed(),
     fetch(EXTERNAL.partnerStatsCsv, { next: { revalidate: 3600 } }).then((r) => r.text()),
     fetch(EXTERNAL.discordCountApi, { next: { revalidate: 3600 } }).then((r) => r.json() as Promise<{ members?: number }>),
   ]);
@@ -39,49 +61,33 @@ export async function getStats(): Promise<Stats> {
       else if (/last updated/i.test(k)) s.lastUpdated = v;
     }
   }
-  // Live Discord member count; the sheet value is the fallback
+  if (feed.status === "fulfilled" && feed.value) {
+    const f = feed.value;
+    s.totalPlays = f.totals.all_platforms;
+    if (f.daily.length) s.dailyAverage = Math.round(f.totals.all_platforms / f.daily.length);
+    const fol = (f.followers?.spotify ?? 0) + (f.followers?.apple ?? 0);
+    if (fol > 0) s.followers = fol;
+    // All-time listening/watch hours (Spotify + Apple + YouTube; Acast/RSS has no duration data)
+    if (f.hours?.alltime?.total) s.hoursConsumed = Math.round(f.hours.alltime.total);
+    s.lastUpdated = new Date(f.updated_at).toLocaleDateString("en-US", { month: "long" }) + " " + new Date(f.updated_at).getFullYear();
+  }
   if (discord.status === "fulfilled" && discord.value?.members) s.discordMembers = discord.value.members;
   return s;
 }
 
-export type PlaysSeries = { dates: string[]; apple: number[]; spotify: number[]; pocket: number[]; others: number[] };
+export type PlaysSeries = { dates: string[]; apple: number[]; spotify: number[]; acast: number[]; youtube: number[] };
 
-/** Daily plays by platform from the second sheet tab. Columns 0-6 are labels/totals; day values start at column 7. */
+/** Daily plays by platform from the automated feed. YouTube includes the PM
+ * playlist; Acast is every other listening app (RSS). */
 export async function getDailyPlays(): Promise<PlaysSeries | null> {
-  try {
-    const res = await fetch(EXTERNAL.partnerPlaysCsv, { next: { revalidate: 3600 } });
-    const lines = (await res.text()).split(/\r?\n/).map(parseRow);
-    const dateRow = lines[1] ?? [];
-    const find = (name: string) => lines.find((r) => r[3]?.toLowerCase() === name.toLowerCase());
-    const total = find("Total");
-    const apple = find("Apple Podcasts");
-    const spotify = find("Spotify");
-    const pocket = find("Pocket Casts");
-    if (!total || !apple || !spotify || !pocket) return null;
-
-    // Last day with real data (the sheet is pre-filled with zeros for upcoming dates)
-    let end = 7;
-    for (let i = 7; i < total.length; i++) if (num(total[i]) > 0 && dateRow[i]) end = i + 1;
-
-    // Dates are mixed "11/9" and "11/9/2025"; normalize to ISO, inferring the year when missing
-    let year = 0;
-    let lastMonth = 0;
-    const dates: string[] = [];
-    const keep: number[] = []; // column indexes with a parseable date
-    for (let i = 7; i < end; i++) {
-      const [m, d, y] = (dateRow[i] ?? "").split("/").map((x) => parseInt(x, 10));
-      if (!m || !d) continue;
-      if (y) year = y;
-      else if (year && m < lastMonth) year += 1;
-      lastMonth = m;
-      dates.push(`${year || 2025}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`);
-      keep.push(i);
-    }
-    const col = (r: string[]) => keep.map((i) => num(r[i]));
-    const a = col(apple), s = col(spotify), p = col(pocket), t = col(total);
-    const others = t.map((v, i) => Math.max(0, v - a[i] - s[i] - p[i]));
-    return { dates, apple: a, spotify: s, pocket: p, others };
-  } catch {
-    return null;
-  }
+  const feed = await getFeed();
+  if (!feed || feed.daily.length < 2) return null;
+  const d = feed.daily;
+  return {
+    dates: d.map((r) => r.date),
+    apple: d.map((r) => r.apple ?? 0),
+    spotify: d.map((r) => r.spotify ?? 0),
+    acast: d.map((r) => r.acast ?? 0),
+    youtube: d.map((r) => (r.youtube ?? 0) + (r.youtube_pm ?? 0)),
+  };
 }
