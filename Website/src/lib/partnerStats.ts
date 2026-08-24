@@ -73,7 +73,9 @@ export async function getStats(): Promise<Stats> {
   if (feed.status === "fulfilled" && feed.value) {
     const f = feed.value;
     s.totalPlays = f.totals.all_platforms;
-    if (f.daily.length) s.dailyAverage = Math.round(f.totals.all_platforms / f.daily.length);
+    // Daily average over the last 60 days — current performance, not the lifetime mean
+    const recent = f.daily.slice(-60);
+    if (recent.length) s.dailyAverage = Math.round(recent.reduce((a, r) => a + (r.total ?? 0), 0) / recent.length);
     const fol = (f.followers?.spotify ?? 0) + (f.followers?.apple ?? 0);
     if (fol > 0) s.followers = fol;
     // All-time listening/watch hours (Spotify + Apple + YouTube; Acast/RSS has no duration data)
