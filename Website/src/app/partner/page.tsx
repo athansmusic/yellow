@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { EXTERNAL, SITE } from "@/lib/site";
 import { FACTS, LOGLINE, PRESS_ZIP } from "@/data/press";
-import { getDailyPlays, getStats } from "@/lib/partnerStats";
+import { getAudience, getDailyPlays, getStats } from "@/lib/partnerStats";
 import writers from "@/data/writers.json";
 import { Container } from "@/components/ui";
 import { Laurels } from "@/components/Laurels";
@@ -21,21 +21,22 @@ export const metadata: Metadata = {
 };
 export const revalidate = 3600;
 
-const PLATFORMS = [
+// Static fallbacks (last manual snapshot) — used only if the automated feed is unavailable.
+const PLATFORMS_FALLBACK: [string, number][] = [
   ["Spotify", 41.2],
   ["Apple Podcasts", 36.2],
   ["Pocket Casts", 6.1],
   ["Amazon Music", 1.2],
   ["Other", 15.3],
-] as const;
-const REGIONS = [
+];
+const REGIONS_FALLBACK: [string, string][] = [
   ["United States", "58.6%"],
   ["United Kingdom", "7.9%"],
   ["Canada", "7.0%"],
   ["Australia", "4.1%"],
   ["Germany", "2.8%"],
 ];
-const DEMOS = [
+const DEMOS_FALLBACK: [string, string, string][] = [
   ["Core age range", "18 to 44", "Over 70% of listeners"],
   ["Peak bracket", "35 to 44", "25.6% of audience"],
   ["Male", "50.7%", "Spotify listener data"],
@@ -87,7 +88,10 @@ function Title({ label, children, muted = false, className = "" }: { label: stri
 
 export default async function PartnerPage() {
   await assertVisible("/partner");
-  const [s, plays] = await Promise.all([getStats(), getDailyPlays()]);
+  const [s, plays, audience] = await Promise.all([getStats(), getDailyPlays(), getAudience()]);
+  const PLATFORMS = audience?.platforms ?? PLATFORMS_FALLBACK;
+  const REGIONS = audience?.regions ?? REGIONS_FALLBACK;
+  const DEMOS = audience?.demos ?? DEMOS_FALLBACK;
 
   return (
     <div className="[&_section]:scroll-mt-16">

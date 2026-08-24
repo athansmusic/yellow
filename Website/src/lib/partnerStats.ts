@@ -28,6 +28,15 @@ type Feed = {
   totals: { acast: number; spotify: number; apple: number; youtube: number; youtube_pm: number; all_platforms: number };
   followers?: { spotify?: number | null; apple?: number | null; as_of?: string | null };
   hours?: { alltime?: { total?: number | null }; last30d?: { total?: number | null }; as_of?: string | null };
+  demographics?: {
+    as_of: string;
+    age: Record<string, number>;
+    gender: Record<string, number>;
+    countries: { name: string; count: number }[];
+    country_total: number;
+  } | null;
+  ratings?: Record<string, { average: number; count: number | null; as_of: string }>;
+  acast_apps?: { apps: string[]; totals: Record<string, number> };
 };
 
 async function getFeed(): Promise<Feed | null> {
@@ -73,6 +82,59 @@ export async function getStats(): Promise<Stats> {
   }
   if (discord.status === "fulfilled" && discord.value?.members) s.discordMembers = discord.value.members;
   return s;
+}
+
+export type Audience = {
+  /** Top 4 listening sources + "Other", as [name, percent] */
+  platforms: [string, number][];
+  /** Top regions as [country, "NN.N%"] */
+  regions: [string, string][];
+  /** Demo tiles as [label, value, note] */
+  demos: [string, string, string][];
+  asOf: string;
+};
+
+// Listening apps that are counted as their own platform, not under Acast
+const PLATFORM_APPS = new Set(["Spotify", "Apple Podcasts", "YouTube"]);
+const AGE_18_44 = ["18-22", "23-27", "28-34", "35-44"];
+
+/** Live audience data from the automated feed; null if unavailable (callers keep a static fallback). */
+export async function getAudience(): Promise<Audience | null> {
+  const f = await getFeed();
+  if (!f?.demographics || !f.acast_apps) return null;
+
+  // Platform breakdown: the four headline platforms plus every other Acast
+  // listening app, top 4 shown, everything else folded into "Other".
+  const entries: [string, number][] = [
+    ["Spotify", f.totals.spotify],
+    ["Apple Podcasts", f.totals.apple],
+    ["YouTube", f.totals.youtube + f.totals.youtube_pm],
+    ...Object.entries(f.acast_apps.totals).filter(([name]) => !PLATFORM_APPS.has(name)) as [string, number][],
+  ];
+  entries.sort((a, b) => b[1] - a[1]);
+  const grand = entries.reduce((a, [, v]) => a + v, 0);
+  const top = entries.slice(0, 4);
+  const other = grand - top.reduce((a, [, v]) => a + v, 0);
+  const pct = (v: number) => Math.round((v / grand) * 1000) / 10;
+  const platforms: [string, number][] = [...top.map(([n, v]) => [n, pct(v)] as [string, number]), ["Other", pct(other)]];
+
+  const d = f.demographics;
+  const regions: [string, string][] = d.countries.slice(0, 5).map((c) => [c.name, `${((c.count / d.country_total) * 100).toFixed(1)}%`]);
+
+  const ageTotal = Object.values(d.age).reduce((a, v) => a + v, 0);
+  const genderTotal = Object.values(d.gender).reduce((a, v) => a + v, 0);
+  const agePct = (buckets: string[]) => (buckets.reduce((a, b) => a + (d.age[b] ?? 0), 0) / ageTotal) * 100;
+  const peak = Object.entries(d.age).sort((a, b) => b[1] - a[1])[0];
+  const gPct = (g: string) => ((d.gender[g] ?? 0) / genderTotal) * 100;
+  const demos: [string, string, string][] = [
+    ["Core age range", "18 to 44", `${agePct(AGE_18_44).toFixed(0)}% of listeners`],
+    ["Peak bracket", peak ? peak[0].replace("60-150", "60+") : "n/a", peak ? `${((peak[1] / ageTotal) * 100).toFixed(1)}% of audience` : ""],
+    ["Male", `${gPct("MALE").toFixed(1)}%`, "Spotify listener data"],
+    ["Female", `${gPct("FEMALE").toFixed(1)}%`, "Spotify listener data"],
+    ["Non-binary", `${gPct("NON_BINARY").toFixed(1)}%`, "Spotify listener data"],
+  ];
+
+  return { platforms, regions, demos, asOf: d.as_of };
 }
 
 export type PlaysSeries = { dates: string[]; apple: number[]; spotify: number[]; acast: number[]; youtube: number[] };
