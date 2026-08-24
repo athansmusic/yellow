@@ -4,7 +4,7 @@ import { SITE } from "@/lib/site";
 import { QA, FAQ_GROUPS } from "@/data/faq";
 import { Container } from "@/components/ui";
 import { JsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/schema";
-import { assertVisible } from "@/lib/visibility";
+import { assertVisible, hiddenPages } from "@/lib/visibility";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -20,7 +20,8 @@ const slug = (s: string) =>
     .replace(/^-+|-+$/g, "")
     .slice(0, 60);
 
-function Item({ x, open = false }: { x: (typeof QA)[number]; open?: boolean }) {
+function Item({ x, open = false, hidden = [] }: { x: (typeof QA)[number]; open?: boolean; hidden?: string[] }) {
+  const linkHidden = x.link && !x.link.href.startsWith("http") && hidden.some((h) => x.link!.href === h || x.link!.href.startsWith(h + "/"));
   return (
     <details id={slug(x.q)} open={open} className="group border-b border-line scroll-mt-24">
       <summary className="cursor-pointer list-none py-4 flex items-start justify-between gap-4">
@@ -31,7 +32,7 @@ function Item({ x, open = false }: { x: (typeof QA)[number]; open?: boolean }) {
       </summary>
       <div className="pb-5 text-paper/85 text-[15px] max-w-prose">
         {x.a}
-        {x.link && (
+        {x.link && !linkHidden && (
           <>
             {" "}
             {x.link.href.startsWith("http") ? (
@@ -52,6 +53,7 @@ function Item({ x, open = false }: { x: (typeof QA)[number]; open?: boolean }) {
 
 export default async function FAQ() {
   await assertVisible("/faq");
+  const hidden = await hiddenPages().catch(() => []);
   const top = QA.filter((x) => x.top);
   return (
     <Container className="py-10 sm:py-16 max-w-3xl">
@@ -75,7 +77,7 @@ export default async function FAQ() {
           <h2 className="eyebrow mb-1">Start here</h2>
           <div className="border-t border-line">
             {top.map((x) => (
-              <Item key={x.q} x={x} open />
+              <Item key={x.q} x={x} open hidden={hidden} />
             ))}
           </div>
         </section>
@@ -89,7 +91,7 @@ export default async function FAQ() {
             <h2 className="display text-3xl mb-1">{g.label}</h2>
             <div className="border-t border-line">
               {items.map((x) => (
-                <Item key={x.q} x={x} />
+                <Item key={x.q} x={x} hidden={hidden} />
               ))}
             </div>
           </section>

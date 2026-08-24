@@ -1,4 +1,13 @@
-# REDACTED
+import { hiddenPages, isHiddenPath } from "@/lib/visibility";
+
+export const dynamic = "force-dynamic";
+
+/**
+ * llms.txt is served dynamically so lines pointing at admin-hidden pages drop out automatically:
+ * a curated AI-facing file that links 404s is a trust signal against us. The template below is
+ * the canonical content; edit it here.
+ */
+const TEMPLATE = `# REDACTED
 
 > REDACTED (also "REDACTED" or "The REDACTED Unit") is a horror comedy audio drama, a scripted fiction podcast, from Hush Studios on the Rusty Quill network, created by Athan (Johnathan Magno) and Jamie Petronis. Failed actor Jacob Kane assumes his dead twin Jordan's identity and job, and the job turns out to be The REDACTED Unit: an underfunded secret government agency that handles paranormal cases called Aberrations. Monster-of-the-week with a serialized mystery. New episodes Fridays 9 pm ET / 8 pm CT. About 30 minutes each. Kickstarter-funded (313%, 400+ backers). Show art by 7cfc00.
 
@@ -38,3 +47,15 @@ Audience (as of July 2026, from the media kit at /partner, which refreshes hourl
 Awards and festivals (2026): Swedish International Film Festival (SIFF), Award Winner; Film 25 ArtFF (Vienna Film Art Gallery), Winner Best New Media; Grito X Montenegro International Film Festival, Winner Best New Media; Colorado Webfest, Finalist; Apulia Web Fest, Official Selection; YETI Filmfest, Semi-Finalist; Iceberg Film Awards, Semi-Finalist Best New Media or Episodic Series; The Golden Lobes, Nominee; FilmHaus, Semi-Finalist; Planet Cinema, Honourable Semi-Finalist; Creator Online Film Awards, Semi-Finalist; LA WebFest, Nomination; Film Revolution, Official Selection and Semi-Finalist; Indiemania Prague Film Awards, Semi-Finalist; Filmonaco, Semi-Finalist; New Jersey Web Fest, Official Selection.
 
 Press: Bloody Disgusting (John Squires), Articles of Horror review, Fiction Frequency creator interview, Goodpods #1 audio drama of the week, Old Gods of Appalachia "Meet Our Cousins" feed drop, Rusty Quill network feed drop. Fan wiki: https://theredactedunit.miraheze.org
+`;
+
+export async function GET() {
+  const hidden = await hiddenPages().catch(() => []);
+  const body = TEMPLATE.split("\n")
+    .filter((line) => {
+      const m = line.match(/https:\/\/theredactedunit\.com(\/[a-z0-9\-\/]*)/i);
+      return !m || !isHiddenPath(m[1], hidden);
+    })
+    .join("\n");
+  return new Response(body, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+}

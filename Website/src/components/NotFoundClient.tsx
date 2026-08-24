@@ -26,14 +26,14 @@ function wordsFrom(path: string) {
     .trim() ?? "";
 }
 
-export function NotFoundClient() {
+export function NotFoundClient({ hidden = [] }: { hidden?: string[] }) {
   const pathname = usePathname() ?? "";
   const q = wordsFrom(pathname);
   const subject = encodeURIComponent(`Broken link: ${SITE.url}${pathname}`);
   return (
     <>
       <p className="mt-4 text-paper/85">
-        This page doesn&apos;t exist, or it&apos;s been classified.
+        This page doesn&apos;t exist, or it&apos;s been REDACTED.
         {pathname && (
           <>
             {" "}
@@ -50,7 +50,7 @@ export function NotFoundClient() {
       <div className="mt-8">
         <p className="eyebrow mb-3">Or try one of these</p>
         <ul className="flex flex-wrap justify-center gap-2">
-          {POPULAR.map(([href, label]) => (
+          {POPULAR.filter(([h]) => !hidden.includes(h)).map(([href, label]) => (
             <li key={href}>
               <Link href={href} className="btn btn-ghost !min-h-10 !text-base !px-4">
                 {label}
