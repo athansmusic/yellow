@@ -9,7 +9,7 @@ import { Close, Expand, Pause, Play, SkipNext, SkipPrev } from "./Icons";
 const RATES = [1, 1.25, 1.5, 2];
 
 export function PlayerBar() {
-  const { track, playing, time, duration, rate, neighbors, expanded, setExpanded, jump, toggle, seek, skip, setRate, close } = usePlayer();
+  const { track, playing, time, duration, rate, neighbors, order, setOrder, expanded, setExpanded, jump, toggle, seek, skip, setRate, close } = usePlayer();
   // Other bottom bars (sticky add-to-cart, StickyStart) sit on top of the player via --player-h.
   useEffect(() => {
     const root = document.documentElement;
@@ -129,6 +129,21 @@ export function PlayerBar() {
                   +30
                 </button>
                 {jumpBtn("next", "size-11 grid place-items-center text-paper hover:text-yellow", 22)}
+              </div>
+              {/* Listen order: what prev/next and autoplay walk through */}
+              <div className="mt-5 flex justify-center" role="radiogroup" aria-label="Listen order">
+                {([["full", "FULL SHOW"], ["redacted", "REDACTED"], ["postmortem", "POSTMORTEM"]] as const).map(([id, label]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    role="radio"
+                    aria-checked={order === id}
+                    onClick={() => setOrder(id)}
+                    className={`px-3 py-1.5 text-[11px] font-bold tracking-wider border ${order === id ? "border-yellow text-yellow" : "border-line text-muted hover:text-paper"} -ml-px first:ml-0`}
+                  >
+                    {label}
+                  </button>
+                ))}
               </div>
               <div className="mt-4 flex items-center justify-center gap-4 text-xs">
                 <button type="button" onClick={() => setRate(RATES[(RATES.indexOf(rate) + 1) % RATES.length])} aria-label={`Playback speed ${rate}x, change`} className="min-w-12 h-8 px-2 grid place-items-center border border-line font-bold tabular hover:border-yellow">

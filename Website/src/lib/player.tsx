@@ -19,6 +19,9 @@ type PlayerCtx = {
   rate: number;
   /** Neighboring episodes of the current track (for prev/next buttons); null while unknown. */
   neighbors: { prev: Track | null; next: Track | null };
+  /** Listen order: full show by release date, or one strand. Persisted. */
+  order: "full" | "redacted" | "postmortem";
+  setOrder: (o: "full" | "redacted" | "postmortem") => void;
   expanded: boolean;
   setExpanded: (v: boolean) => void;
   jump: (dir: "prev" | "next") => void;
@@ -53,6 +56,19 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [positions, setPositions] = useState<Record<string, { t: number; d: number }>>({});
   const [neighbors, setNeighbors] = useState<{ prev: Track | null; next: Track | null }>({ prev: null, next: null });
   const [expanded, setExpanded] = useState(false);
+  const [order, setOrderState] = useState<"full" | "redacted" | "postmortem">("full");
+  useEffect(() => {
+    try {
+      const o = localStorage.getItem("player-order");
+      if (o === "full" || o === "redacted" || o === "postmortem") setOrderState(o);
+    } catch {}
+  }, []);
+  const setOrder = useCallback((o: "full" | "redacted" | "postmortem") => {
+    setOrderState(o);
+    try {
+      localStorage.setItem("player-order", o);
+    } catch {}
+  }, []);
 
   // Create the single <audio> element once, on the client
   useEffect(() => {
@@ -81,7 +97,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       try {
         const cur = JSON.parse(localStorage.getItem(LAST_KEY) ?? "null") as Track | null;
         if (!cur) return;
-        const r = await fetch(`/api/next?guid=${encodeURIComponent(cur.id)}`);
+        const ord = (() => {
+          try {
+            return localStorage.getItem("player-order") ?? "full";
+          } catch {
+            return "full";
+          }
+        })();
+        const r = await fetch(`/api/next?guid=${encodeURIComponent(cur.id)}&order=${ord}`);
         const { next } = (await r.json()) as { next: Track | null };
         if (next) {
           a.src = next.src;
@@ -113,7 +136,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setNeighbors({ prev: null, next: null });
     if (!track) return;
     let dead = false;
-    fetch(`/api/next?guid=${encodeURIComponent(track.id)}`)
+    fetch(`/api/next?guid=${encodeURIComponent(track.id)}&order=${order}`)
       .then((r) => r.json())
       .then((d: { prev: Track | null; next: Track | null }) => {
         if (!dead) setNeighbors({ prev: d.prev ?? null, next: d.next ?? null });
@@ -122,7 +145,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     return () => {
       dead = true;
     };
-  }, [track]);
+  }, [track, order]);
 
   // Persist position every few seconds
   useEffect(() => {
@@ -231,8 +254,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo<PlayerCtx>(
-    () => ({ track, playing, time, duration, rate, neighbors, expanded, setExpanded, jump, load, toggle, seek, skip, setRate, close, progressFor }),
-    [track, playing, time, duration, rate, neighbors, expanded, jump, load, toggle, seek, skip, setRate, close, progressFor],
+    () => ({ track, playing, time, duration, rate, neighbors, order, setOrder, expanded, setExpanded, jump, load, toggle, seek, skip, setRate, close, progressFor }),
+    [track, playing, time, duration, rate, neighbors, order, setOrder, expanded, jump, load, toggle, seek, skip, setRate, close, progressFor],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

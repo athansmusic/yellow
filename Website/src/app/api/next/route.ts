@@ -1,32 +1,47 @@
 import { NextResponse } from "next/server";
 import { getAllItems, type Episode } from "@/lib/feed";
 
+export type ListenOrder = "full" | "redacted" | "postmortem";
+
 /**
- * Neighbors of an episode for the player: `next` (also used for autoplay when one ends) and
- * `prev`. Episodes walk season/number; Postmortems and minisodes walk their own kind by date.
+ * Player neighbors under a listen order:
+ *  - full:       REDACTED episodes + Postmortems + minisodes, by release date (no Seven Planes)
+ *  - redacted:   numbered episodes only, by season/number
+ *  - postmortem: Postmortems only, by release date
+ * Also drives autoplay when an episode ends.
  */
 export async function GET(req: Request) {
-  const guid = new URL(req.url).searchParams.get("guid");
+  const url = new URL(req.url);
+  const guid = url.searchParams.get("guid");
+  const order = (url.searchParams.get("order") as ListenOrder) || "full";
   if (!guid) return NextResponse.json({ next: null, prev: null });
   const all = await getAllItems().catch(() => []);
   const cur = all.find((e) => e.guid === guid);
   if (!cur) return NextResponse.json({ next: null, prev: null });
 
-  let next: Episode | undefined;
-  let prev: Episode | undefined;
-  if (cur.kind === "episode") {
-    const ep = (delta: number) => all.find((e) => e.kind === "episode" && (e.season ?? 1) === (cur.season ?? 1) && e.number === (cur.number ?? 0) + delta);
-    next = ep(1);
-    prev = ep(-1);
-  } else if (cur.kind === "postmortem" || cur.kind === "minisode") {
-    // Same kind, ordered by date
-    const same = all.filter((e) => e.kind === cur.kind).sort((a, b) => +new Date(a.date) - +new Date(b.date));
-    const i = same.findIndex((e) => e.guid === cur.guid);
-    if (i >= 0) {
-      next = same[i + 1];
-      prev = same[i - 1];
-    }
+  const byDate = (a: Episode, b: Episode) => +new Date(a.date) - +new Date(b.date);
+  let list: Episode[];
+  if (order === "redacted") {
+    list = all.filter((e) => e.kind === "episode").sort((a, b) => (a.season ?? 1) - (b.season ?? 1) || (a.number ?? 0) - (b.number ?? 0));
+  } else if (order === "postmortem") {
+    list = all.filter((e) => e.kind === "postmortem").sort(byDate);
+  } else {
+    list = all.filter((e) => (e.kind === "episode" || e.kind === "postmortem" || e.kind === "minisode") && !e.guid.startsWith("t7p-")).sort(byDate);
   }
+
+  const i = list.findIndex((e) => e.guid === cur.guid);
+  let prev: Episode | undefined;
+  let next: Episode | undefined;
+  if (i >= 0) {
+    prev = list[i - 1];
+    next = list[i + 1];
+  } else {
+    // Current track isn't part of this order (e.g. a minisode while in REDACTED mode):
+    // bridge by release date so play continues into the selected order.
+    prev = [...list].reverse().find((e) => +new Date(e.date) < +new Date(cur.date));
+    next = list.find((e) => +new Date(e.date) > +new Date(cur.date));
+  }
+
   const pack = (e?: Episode) =>
     e ? { id: e.guid, title: e.kind === "episode" ? `${e.code}: ${e.shortTitle}` : e.title, subtitle: "REDACTED", src: e.audioUrl, image: e.image || "/brand/showart.jpeg", href: `/episodes/${e.slug}` } : null;
   return NextResponse.json({ next: pack(next), prev: pack(prev) });
