@@ -132,7 +132,8 @@ function parseDescription(html: string) {
   // Starring: every <li> before the credits
   let starring = Array.from(main.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi))
     .map((m) => stripTags(m[1]).trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .filter((x) => !/^https?:\/\//i.test(x));
   // Some episodes list the cast as plain <p> lines after "Starring:" instead of a <ul>
   if (!starring.length) {
     const m = main.match(/<p[^>]*>\s*(?:<strong>)?\s*Starring\s*:?\s*(?:<\/strong>)?\s*<\/p>([\s\S]*?)(?=<p[^>]*>\s*(?:<strong>)?\s*Content warnings?|-Information on REDACTED-|$)/i);
@@ -207,6 +208,7 @@ const fixNames = (x: string) => NAME_FIXES.reduce((acc, [re, to]) => acc.replace
 
 /** Cast the feed's show notes miss. Keyed by episode code; appended to the parsed starring list. */
 const STARRING_OVERRIDES: Record<string, string[]> = {
+  "S1 E2": ["Landon Whisnant as The Teejmeister"],
   "S1 E6": ["Taylor Michaels as Mars Donovan"], // in the episode, absent from the Acast notes
   // S1E10's notes carry no cast block at all; same for its Postmortem (keyed by slug, PMs have no code)
   "S1 E10": ["Jamie Petronis as Jacob Kane", "Ishani Kanetkar as Hedy Hauksdottir", "Devin Steffens as Lucas Kipp", "Ash Millman as Riley Fleming"],
