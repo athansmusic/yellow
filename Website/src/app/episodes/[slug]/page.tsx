@@ -10,6 +10,8 @@ import { ResumeBadge } from "@/components/ResumeBadge";
 import { LISTEN, SITE } from "@/lib/site";
 import cast from "@/data/cast.json";
 import { PlayButton } from "@/components/AudioPlayer";
+import { getProducts, toCard } from "@/lib/catalog";
+import { ProductCard } from "@/components/ProductCard";
 import { Container, Crumbs, PlatformButtons } from "@/components/ui";
 import { Arrow } from "@/components/Icons";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
@@ -64,13 +66,16 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const ep = await getItemBySlug(slug);
   if (!ep) notFound();
-  const [{ newer, older }, links, all, aberrations, transcript] = await Promise.all([
+  const [{ newer, older }, links, all, aberrations, transcript, merchDoc] = await Promise.all([
     getNeighbours(ep),
     getPlatformLinks(ep.title),
     getAllItems().catch(() => []),
     getDoc("aberrations").catch(() => []),
     ep.kind === "episode" ? getTranscript(ep.code) : ep.kind === "postmortem" ? getPostmortemTranscript(ep.shortTitle) : Promise.resolve(null),
+    getDoc("episodeMerch").catch(() => ({}) as Record<string, string[]>),
   ]);
+  const merchSlugs = merchDoc[ep.slug] ?? [];
+  const merch = merchSlugs.length ? (await getProducts().catch(() => [])).filter((p) => merchSlugs.includes(p.slug)).map(toCard) : [];
   const norm = (x?: string) => (x ?? "").toLowerCase().replace(/[\s:]+/g, "");
   const stripPart = (x: string) => x.replace(/\s*\(part \d+\)\s*$/i, "");
   // Companion Postmortem for an episode, or the episode a Postmortem debriefs
@@ -285,6 +290,19 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
               <p className="px-4 pb-4 text-paper/85">{ep.contentWarnings ?? "None listed for this one beyond the usual: horror, violence, language."}</p>
             </details>
           </section>
+
+          {merch.length > 0 && (
+            <section aria-label="Based on this episode">
+              <h2 className="display text-3xl">Based on this episode</h2>
+              <ul className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {merch.map((p) => (
+                  <li key={p.slug}>
+                    <ProductCard p={p} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
 
         </div>

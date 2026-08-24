@@ -180,3 +180,17 @@ export async function saveStoreCopy(fd: FormData) {
   await setDoc("storeCopy", copy);
   redirect("/admin/store-copy?saved=1");
 }
+
+// ── Episode merch ("Items based on this episode" on episode pages) ──────────
+export async function saveEpisodeMerch(fd: FormData) {
+  await requireAdmin();
+  const episode = str(fd, "episode");
+  if (!episode) redirect("/admin/merch");
+  const slugs = fd.getAll("product").map(String).filter(Boolean);
+  const all = await getDoc("episodeMerch");
+  const next = { ...all };
+  if (slugs.length) next[episode] = slugs;
+  else delete next[episode];
+  await setDoc("episodeMerch", next);
+  redirect(`/admin/merch?saved=1&e=${encodeURIComponent(episode)}`);
+}
