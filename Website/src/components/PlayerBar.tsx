@@ -206,6 +206,9 @@ export function PlayerBar() {
             >
               {rate}×
             </button>
+            <button type="button" onClick={() => setExpanded(true)} aria-label="Expand player" className="size-10 grid place-items-center text-muted hover:text-yellow">
+              <Expand width={18} height={18} />
+            </button>
             <button type="button" onClick={close} aria-label="Close player" className="size-10 grid place-items-center text-muted hover:text-paper">
               <Close width={18} height={18} />
             </button>

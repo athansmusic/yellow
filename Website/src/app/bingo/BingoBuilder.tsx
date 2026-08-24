@@ -148,7 +148,7 @@ export default function BingoBuilder() {
     }
   }, [renderCard]);
 
-  /** Phones get the native share sheet (straight to Discord or wherever); desktop copies the image. */
+  /** Copies the card straight to the clipboard (falls back to download where unsupported). */
   const share = useCallback(async () => {
     setBusy(true);
     setShared("");
@@ -157,11 +157,6 @@ export default function BingoBuilder() {
       if (!canvas) return;
       const blob: Blob | null = await new Promise((res) => canvas.toBlob(res, "image/png"));
       if (!blob) return;
-      const file = new File([blob], "redacted-bingo.png", { type: "image/png" });
-      if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: "REDACTED bingo card" }).catch(() => {});
-        return;
-      }
       if (navigator.clipboard && "write" in navigator.clipboard && typeof ClipboardItem !== "undefined") {
         await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
         setShared("Copied! Paste it into Discord or anywhere.");
@@ -227,7 +222,7 @@ export default function BingoBuilder() {
 
         <div className="mt-6 flex flex-wrap items-center gap-4">
           <button type="button" onClick={share} disabled={busy} className="btn btn-yellow disabled:opacity-60">
-            {busy ? "Rendering…" : "Share card"}
+            {busy ? "Rendering…" : "Copy card"}
           </button>
           <button type="button" onClick={download} disabled={busy} className="btn border border-line hover:border-yellow disabled:opacity-60">
             Download PNG
