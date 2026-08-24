@@ -8,7 +8,6 @@ import { money } from "@/lib/money";
 import type { CardProduct } from "@/lib/catalog";
 import { ALLOWED_COUNTRIES, COUNTRY_NAMES, FREE_US_THRESHOLD_CENTS, shippingFor } from "@/lib/shipping";
 import { ProductCard } from "./ProductCard";
-import { CopyButton } from "./ListenLinks";
 import { Arrow, Close } from "./Icons";
 
 const COUNTRY_KEY = "tru-ship-country";
@@ -16,7 +15,6 @@ const COUNTRY_KEY = "tru-ship-country";
 type Props = {
   /** Lean catalog for the "you might also like" row (server-provided). */
   suggestions: { p: CardProduct; collection?: string }[];
-  promo?: { code: string; text: string } | null;
 };
 
 function Skeleton() {
@@ -38,7 +36,7 @@ function Skeleton() {
   );
 }
 
-export function CartView({ suggestions, promo }: Props) {
+export function CartView({ suggestions }: Props) {
   const { lines, subtotalCents, setQty, remove, add, ready } = useCart();
   const [country, setCountry] = useState("US");
   const [editCountry, setEditCountry] = useState(false);
@@ -211,17 +209,8 @@ export function CartView({ suggestions, promo }: Props) {
             Checkout <Arrow />
           </Link>
 
-          {/* Promo */}
-          <p className="mt-3 text-xs text-muted">
-            {promo ? (
-              <>
-                Have a code? Add it at checkout.{" "}
-                <span className="text-paper">{promo.code}</span> <CopyButton text={promo.code} label="copy" className="underline underline-offset-4 hover:text-yellow" /> takes 10% off $25+.
-              </>
-            ) : (
-              "Have a code? Add it under the order summary at checkout."
-            )}
-          </p>
+          {/* Where codes go (the code itself is the newsletter's reward, never shown here) */}
+          <p className="mt-3 text-xs text-muted">Have a code? Add it under the order summary at checkout.</p>
 
           {/* Trust row */}
           <ul className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] uppercase tracking-wider text-muted" aria-label="Payment methods">

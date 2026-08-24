@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { EXTERNAL } from "@/lib/site";
+import { getDoc } from "@/lib/content";
 
 export const runtime = "nodejs";
 
@@ -30,7 +31,11 @@ export async function POST(req: Request) {
     });
     const data = (await r.json().catch(() => ({}))) as { error?: string };
     if (!r.ok) return NextResponse.json({ error: data.error ?? "Something went wrong. Please try again." }, { status: r.status });
-    return NextResponse.json({ ok: true });
+    // The store code is the signup reward: it only ever travels in this response,
+    // never in page HTML, so view-source does not hand it out.
+    const settings = await getDoc("settings").catch(() => null);
+    const promoCode = settings?.promoEnabled && settings.promoCode ? settings.promoCode : undefined;
+    return NextResponse.json({ ok: true, promoCode });
   } catch (e) {
     console.error("subscribe proxy failed", e);
     return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 502 });

@@ -36,7 +36,7 @@ export const viewport: Viewport = { themeColor: "#090909", width: "device-width"
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const settings = await getDoc("settings").catch(() => null);
   const hidden = settings?.hiddenPages ?? [];
-  const promo = settings?.promoEnabled && settings.promoCode ? { code: settings.promoCode, text: settings.promoText } : undefined;
+  const promoText = settings?.promoEnabled && settings.promoCode ? settings.promoText : undefined;
   return (
     <html lang="en" className={`${montserrat.variable} ${nk57.variable} ${nk57wide.variable}`}>
       <body className="min-h-dvh flex flex-col">
@@ -57,7 +57,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Footer hidden={hidden} />
             <PlayerSpacer />
             <LiveDock />
-            <AlertsPopup promo={promo} />
+            <AlertsPopup promoText={promoText} />
             <SearchOverlay />
             <PlayerBar />
           </CartProvider>

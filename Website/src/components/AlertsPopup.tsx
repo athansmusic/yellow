@@ -14,7 +14,7 @@ const COOLDOWN_DAYS = 30;
  * at most once a month, never after they've subscribed, and never on store checkout or admin pages.
  * When a promo code is set in Site settings, subscribing reveals it.
  */
-export function AlertsPopup({ promo }: { promo?: { code: string; text: string } }) {
+export function AlertsPopup({ promoText }: { promoText?: string }) {
   const pathname = usePathname();
   const ref = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
@@ -88,14 +88,14 @@ export function AlertsPopup({ promo }: { promo?: { code: string; text: string } 
           </div>
         ) : (
           <>
-            <p className="mt-3 text-paper/85">{promo ? promo.text : "An email whenever an episode drops, plus the occasional update. Sign up and get 10% off store orders of $25 or more. Unsubscribe any time."}</p>
+            <p className="mt-3 text-paper/85">{promoText ? promoText : "An email whenever an episode drops, plus the occasional update. Sign up and get 10% off store orders of $25 or more. Unsubscribe any time."}</p>
             <div className="mt-5">
               <NewsletterForm
                 compact
                 source="website-popup"
-                onSuccess={() => {
+                onSuccess={(promoCode) => {
                   localStorage.setItem(DONE_KEY, "1");
-                  if (promo?.code) setCode(promo.code);
+                  if (promoCode) setCode(promoCode);
                   else setTimeout(close, 1800);
                 }}
               />

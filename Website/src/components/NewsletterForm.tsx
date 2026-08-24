@@ -3,9 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 
-/** `promo` (from Site settings) is revealed after a successful signup. */
-export function NewsletterForm({ compact = false, onSuccess, source = "website", promo }: { compact?: boolean; onSuccess?: () => void; source?: string; promo?: { code: string } | null }) {
+/** On success the API returns the store promo code (when one is enabled); it is revealed here and passed to onSuccess. */
+export function NewsletterForm({ compact = false, onSuccess, source = "website" }: { compact?: boolean; onSuccess?: (promoCode?: string) => void; source?: string }) {
   const [state, setState] = useState<"idle" | "busy" | "ok" | "err">("idle");
+  const [code, setCode] = useState<string | undefined>();
   const [msg, setMsg] = useState("");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -26,13 +27,15 @@ export function NewsletterForm({ compact = false, onSuccess, source = "website",
         }),
       });
       if (res.ok) {
+        const d = (await res.json().catch(() => ({}))) as { promoCode?: string };
         setState("ok");
+        setCode(d.promoCode);
         setMsg("You're in! Keep an eye on your inbox.");
         form.reset();
         try {
           localStorage.setItem("alerts-subscribed", "1");
         } catch {}
-        onSuccess?.();
+        onSuccess?.(d.promoCode);
       } else {
         const d = (await res.json().catch(() => ({}))) as { error?: string };
         setState("err");
@@ -44,12 +47,12 @@ export function NewsletterForm({ compact = false, onSuccess, source = "website",
     }
   }
 
-  if (state === "ok" && promo?.code) {
+  if (state === "ok" && code) {
     return (
       <div role="status" className="border border-yellow/60 bg-yellow/5 p-5">
         <p className="display text-2xl">You&apos;re in.</p>
         <p className="mt-1 text-paper/85">Your store code: 10% off orders of $25 or more.</p>
-        <p className="mt-3 display text-4xl text-yellow tracking-wider select-all">{promo.code}</p>
+        <p className="mt-3 display text-4xl text-yellow tracking-wider select-all">{code}</p>
         <p className="mt-2 text-xs text-muted">Enter it in the promo code box at checkout. It&apos;s in your welcome email too.</p>
         <Link href="/store" className="btn btn-yellow mt-5">
           Go to the store
