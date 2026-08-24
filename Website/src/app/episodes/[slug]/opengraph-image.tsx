@@ -16,9 +16,9 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
   const { slug } = await params;
   const ep = await getItemBySlug(slug).catch(() => undefined);
   const pm = ep?.kind === "postmortem";
-  const [anton, nk57, tplBuf] = await Promise.all([
-    fs.readFile(path.join(process.cwd(), "src/fonts/Anton.ttf")),
-    fs.readFile(path.join(process.cwd(), "src/fonts/NK57MonospaceCdEb.otf")),
+  const [bold, xbold, tplBuf] = await Promise.all([
+    fs.readFile(path.join(process.cwd(), "src/fonts/Montserrat-Bold.ttf")),
+    fs.readFile(path.join(process.cwd(), "src/fonts/Montserrat-ExtraBold.ttf")),
     fs.readFile(path.join(process.cwd(), pm ? "public/brand/og-tpl-postmortem.jpg" : "public/brand/og-tpl-redacted.jpg")),
   ]);
   const tpl = `data:image/jpeg;base64,${tplBuf.toString("base64")}`;
@@ -51,29 +51,29 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
   const barFg = pm ? ink : yellow;
 
   // Anton sizing for the title bar (single line, bar hugs the text)
-  const fontSize = Math.max(34, Math.min(64, Math.floor(560 / (title.length * 0.52))));
+  const fontSize = Math.max(30, Math.min(58, Math.floor(560 / (title.length * 0.72))));
 
   return new ImageResponse(
     (
-      <div style={{ width: "100%", height: "100%", display: "flex", position: "relative", background: pm ? "#090708" : yellow, fontFamily: "NK57" }}>
+      <div style={{ width: "100%", height: "100%", display: "flex", position: "relative", background: pm ? "#090708" : yellow, fontFamily: "Montserrat" }}>
         <img src={tpl} alt="" style={{ position: "absolute", inset: 0, width: 1200, height: 630 }} />
         {/* season / episode line with flanking rules */}
         <div style={{ position: "absolute", top: 48, left: 60, right: 60, display: "flex", alignItems: "center", gap: 26 }}>
           <div style={{ flex: 1, height: 2, background: labelColor, display: "flex" }} />
-          <div style={{ display: "flex", color: labelColor, fontSize: 19, fontWeight: 800, letterSpacing: 8, whiteSpace: "pre" }}>{label}</div>
+          <div style={{ display: "flex", color: labelColor, fontSize: 19, fontWeight: 700, letterSpacing: 8, whiteSpace: "pre" }}>{label}</div>
           <div style={{ flex: 1, height: 2, background: labelColor, display: "flex" }} />
         </div>
         {/* title bar */}
         <div style={{ position: "absolute", top: 372, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
-          <div style={{ display: "flex", background: barBg, color: barFg, fontFamily: "Anton", fontSize, lineHeight: 1, padding: "18px 44px 22px", letterSpacing: 1 }}>{title}</div>
+          <div style={{ display: "flex", background: barBg, color: barFg, fontWeight: 800, fontSize, lineHeight: 1, padding: "20px 44px 24px", letterSpacing: 2 }}>{title}</div>
         </div>
       </div>
     ),
     {
       ...size,
       fonts: [
-        { name: "Anton", data: anton, style: "normal", weight: 400 },
-        { name: "NK57", data: nk57, style: "normal", weight: 800 },
+        { name: "Montserrat", data: bold, style: "normal", weight: 700 },
+        { name: "Montserrat", data: xbold, style: "normal", weight: 800 },
       ],
     },
   );
