@@ -130,6 +130,24 @@ export const Pause = (p: P) => (
   </svg>
 );
 
+export const SkipPrev = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M6 4h2v16H6V4Zm14 0v16L9 12l11-8Z" />
+  </svg>
+);
+
+export const SkipNext = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M16 4h2v16h-2V4ZM4 4l11 8-11 8V4Z" />
+  </svg>
+);
+
+export const Expand = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M4 14h2v4h4v2H4v-6Zm16-4h-2V6h-4V4h6v6Z" />
+  </svg>
+);
+
 export const Search = (p: P) => (
   <svg {...base(p)} fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
     <circle cx="11" cy="11" r="7" />

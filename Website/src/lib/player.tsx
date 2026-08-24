@@ -17,6 +17,11 @@ type PlayerCtx = {
   time: number;
   duration: number;
   rate: number;
+  /** Neighboring episodes of the current track (for prev/next buttons); null while unknown. */
+  neighbors: { prev: Track | null; next: Track | null };
+  expanded: boolean;
+  setExpanded: (v: boolean) => void;
+  jump: (dir: "prev" | "next") => void;
   load: (t: Track, autoplay?: boolean) => void;
   toggle: (t?: Track) => void;
   seek: (s: number) => void;
@@ -46,6 +51,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [duration, setDuration] = useState(0);
   const [rate, setRateState] = useState(1);
   const [positions, setPositions] = useState<Record<string, { t: number; d: number }>>({});
+  const [neighbors, setNeighbors] = useState<{ prev: Track | null; next: Track | null }>({ prev: null, next: null });
+  const [expanded, setExpanded] = useState(false);
 
   // Create the single <audio> element once, on the client
   useEffect(() => {
@@ -100,6 +107,22 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       a.removeEventListener("ended", onEnd);
     };
   }, []);
+
+  // Know the surrounding episodes so the bar can offer prev/next
+  useEffect(() => {
+    setNeighbors({ prev: null, next: null });
+    if (!track) return;
+    let dead = false;
+    fetch(`/api/next?guid=${encodeURIComponent(track.id)}`)
+      .then((r) => r.json())
+      .then((d: { prev: Track | null; next: Track | null }) => {
+        if (!dead) setNeighbors({ prev: d.prev ?? null, next: d.next ?? null });
+      })
+      .catch(() => {});
+    return () => {
+      dead = true;
+    };
+  }, [track]);
 
   // Persist position every few seconds
   useEffect(() => {
@@ -177,10 +200,27 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const close = useCallback(() => {
     audio.current?.pause();
     setTrack(null);
+    setExpanded(false);
     try {
       localStorage.removeItem(LAST_KEY);
     } catch {}
   }, []);
+  const jump = useCallback(
+    (dir: "prev" | "next") => {
+      const t = neighbors[dir];
+      if (t) load(t, true);
+    },
+    [neighbors, load],
+  );
+  const jumpRef = useRef(jump);
+  jumpRef.current = jump;
+
+  // Lock-screen / hardware prev-next follow the neighbor list
+  useEffect(() => {
+    if (!("mediaSession" in navigator)) return;
+    navigator.mediaSession.setActionHandler("previoustrack", neighbors.prev ? () => jumpRef.current("prev") : null);
+    navigator.mediaSession.setActionHandler("nexttrack", neighbors.next ? () => jumpRef.current("next") : null);
+  }, [neighbors]);
   const progressFor = useCallback(
     (id: string) => {
       if (track?.id === id && duration) return time / duration;
@@ -190,7 +230,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     [positions, track?.id, time, duration],
   );
 
-  const value = useMemo<PlayerCtx>(() => ({ track, playing, time, duration, rate, load, toggle, seek, skip, setRate, close, progressFor }), [track, playing, time, duration, rate, load, toggle, seek, skip, setRate, close, progressFor]);
+  const value = useMemo<PlayerCtx>(
+    () => ({ track, playing, time, duration, rate, neighbors, expanded, setExpanded, jump, load, toggle, seek, skip, setRate, close, progressFor }),
+    [track, playing, time, duration, rate, neighbors, expanded, jump, load, toggle, seek, skip, setRate, close, progressFor],
+  );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
