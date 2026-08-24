@@ -207,6 +207,11 @@ select.field {
 }
 
 /* Laurel marquee + quote rotation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }

@@ -5,6 +5,7 @@ import { SITE } from "@/lib/site";
 import { Container } from "@/components/ui";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
 import { assertVisible } from "@/lib/visibility";
+import { FanArtHero } from "@/components/FanArtHero";
 
 export const metadata: Metadata = {
   title: "Fan Art",
@@ -33,6 +34,8 @@ export default async function FanArtPage() {
       <p className="mt-4 text-lg text-paper/90 max-w-prose">
         Everything here was posted to Tumblr with the tag <strong className="text-paper">#the redacted unit</strong>. Tap a piece to see the original post and the artist. Want yours here? Tag it. Don&apos;t want it shown? Add <strong className="text-paper">#keep redacted</strong> and it stays off the stream and the site.
       </p>
+
+      {items.length > 0 && <FanArtHero items={items.slice(0, 8)} />}
 
       {items.length === 0 ? (
         <p className="mt-12 text-muted">Nothing approved yet. Check back after the next stream.</p>
