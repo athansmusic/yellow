@@ -10,7 +10,7 @@ import { assertVisible } from "@/lib/visibility";
 export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Aberrations",
-  description: "The [REDACTED] Unit's records: every aberration the team has encountered, by designation and classification (physical, spatial, cognitive, quantum, temporal), with the episodes they appear in.",
+  description: "The REDACTED Unit's records: every aberration the team has encountered, by designation and classification (physical, spatial, cognitive, quantum, temporal), with the episodes they appear in.",
   alternates: { canonical: "/aberrations" },
 };
 
@@ -35,7 +35,7 @@ export default async function AberrationsIndex() {
   return (
     <Container className="py-10 sm:py-16">
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", url: SITE.url }, { name: "Aberrations", url: `${SITE.url}/aberrations` }])} />
-      <JsonLd data={{ "@context": "https://schema.org", "@type": "ItemList", name: "Aberrations in [REDACTED]", itemListElement: items.map((a, i) => ({ "@type": "ListItem", position: i + 1, name: a.name, url: `${SITE.url}/aberrations/${a.slug}` })) }} />
+      <JsonLd data={{ "@context": "https://schema.org", "@type": "ItemList", name: "Aberrations in REDACTED", itemListElement: items.map((a, i) => ({ "@type": "ListItem", position: i + 1, name: a.name, url: `${SITE.url}/aberrations/${a.slug}` })) }} />
 
       <p className="eyebrow">CRT records</p>
       <h1 className="display text-5xl sm:text-7xl mt-2">Aberrations</h1>

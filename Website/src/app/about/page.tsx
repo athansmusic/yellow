@@ -14,7 +14,7 @@ import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
   title: "About the Show",
-  description: "What [REDACTED] is: a horror comedy audio drama (fiction podcast) from Hush Studios on the Rusty Quill network, created by Athan and Jamie Petronis. The premise, who makes it, how it started, and where to listen.",
+  description: "What REDACTED is: a horror comedy audio drama (fiction podcast) from Hush Studios on the Rusty Quill network, created by Athan and Jamie Petronis. The premise, who makes it, how it started, and where to listen.",
   alternates: { canonical: "/about" },
 };
 export const revalidate = 3600;
@@ -46,8 +46,8 @@ export default async function About() {
   makers.push({ slug: "landon-whisnant", name: "Landon Whisnant", image: "/team/landon-whisnant.avif", about: "Landon 'Lemon' Whisnant is a sound designer, actor and writer that has had a hand in a multitude of audio dramas stretching over just about every genre.", role: "Lead Sound Designer", href: "/cast?group=team" });
 
   const facts: [string, React.ReactNode][] = [
-    ["Title", "[REDACTED] (also written REDACTED)"],
-    ["Format", "Scripted horror comedy audio drama: a case every episode, a serialized mystery underneath"],
+    ["Title", "REDACTED (also written REDACTED)"],
+    ["Format", "Scripted horror comedy audio drama in a procedural format: a case per episode, with a main through line"],
     ["Episode length", "About 30 minutes"],
     ["Schedule", "New episodes Fridays, 9 pm ET / 8 pm CT; Postmortem debriefs Tuesdays"],
     ["Setting", "Vaguely northeastern US, vaguely now"],
@@ -59,13 +59,13 @@ export default async function About() {
     <Container className="py-10 sm:py-16 max-w-5xl">
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", url: SITE.url }, { name: "About", url: `${SITE.url}/about` }])} />
       <Heading as="h1" eyebrow="About the show" size="xl">
-        What is [REDACTED]?
+        What is REDACTED (also written [REDACTED])?
       </Heading>
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1.2fr_1fr]">
         <div className="prose-site text-lg text-paper/90">
           <p>
-            <Ed id="about.intro1"><strong>[REDACTED]</strong> is a horror comedy audio drama, a fiction podcast, from Athan (<em>The Grotto</em>) and Jamie Petronis (<em>The Cellar Letters</em>), produced by Hush Studios and released on the Rusty Quill network.</Ed>
+            <Ed id="about.intro1"><strong>REDACTED</strong> is a horror comedy audio drama, a fiction podcast, from Athan (<em>The Grotto</em>) and Jamie Petronis (<em>The Cellar Letters</em>), produced by Hush Studios and released on the Rusty Quill network.</Ed>
           </p>
           <p>
             <Ed id="about.intro2">The show follows Jacob Kane, a struggling actor who, desperate for a fresh start, assumes the identity of his deceased twin, Jordan. Expecting a simple accounting job, he instead finds himself accidentally inside an underfunded secret government agency called The REDACTED Unit, tasked with discreetly handling bizarre and often dangerous paranormal cases. The things the Unit handles are called <strong>Aberrations</strong>.</Ed>
@@ -76,7 +76,7 @@ export default async function About() {
           <p><Ed id="about.intro4">It’s a multi-season, monster-of-the-week series: each episode is a self-contained case, and the story of Jordan’s death runs underneath all of them. If you like <em>The X-Files</em>, <em>Buffy</em>, <em>Brooklyn Nine-Nine</em>, <em>Psych</em>, or <em>The Magnus Archives</em>, this is for you.</Ed></p>
         </div>
         <div>
-          <Image src="/brand/showart.jpeg" alt="[REDACTED] show art" width={500} height={500} className="w-full max-w-sm border border-line" />
+          <Image src="/brand/showart.jpeg" alt="REDACTED show art" width={500} height={500} className="w-full max-w-sm border border-line" />
         </div>
       </div>
 
@@ -85,7 +85,7 @@ export default async function About() {
         <div className="aspect-video bg-black border border-line">
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${EXTERNAL.trailerYouTubeId}?rel=0&modestbranding=1&color=white`}
-            title="[REDACTED] teaser trailer"
+            title="REDACTED teaser trailer"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
             loading="lazy"
@@ -145,7 +145,7 @@ export default async function About() {
         <div>
           <h2 className="display text-3xl mb-2">How it started</h2>
           <p className="text-paper/85 max-w-prose">
-            [REDACTED] was funded on Kickstarter in May 2025, finishing at 313% with more than 400 backers. The first three episodes were released together on {firstDate ? firstDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "November 8, 2025"}, and new episodes have dropped every Friday since. Everyone who backed it is on the{" "}
+            REDACTED was funded on Kickstarter in May 2025, finishing at 313% with more than 400 backers. The first three episodes were released together on {firstDate ? firstDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "November 8, 2025"}, and new episodes have dropped every Friday since. Everyone who backed it is on the{" "}
             <Link href="/supporter-wall" className="text-yellow underline underline-offset-4">
               supporter wall
             </Link>

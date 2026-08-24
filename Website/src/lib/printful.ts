@@ -145,7 +145,7 @@ export async function createOrder(input: {
     recipient: input.recipient,
     items: input.items,
     packing_slip: input.packingSlipMessage
-      ? { email: "crew@theredactedunit.com", message: input.packingSlipMessage, store_name: "[REDACTED] Store" }
+      ? { email: "crew@theredactedunit.com", message: input.packingSlipMessage, store_name: "REDACTED Store" }
       : undefined,
   };
   return pf<PFOrder>(`/orders?confirm=${input.confirm === false ? "false" : "true"}`, {

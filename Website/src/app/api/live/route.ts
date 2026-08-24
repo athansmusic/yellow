@@ -27,7 +27,7 @@ async function appToken(id: string, secret: string) {
 export async function GET(req: Request) {
   // Dev only: /api/live?preview=1 fakes a live stream so the dock can be checked without streaming
   if (process.env.NODE_ENV !== "production" && new URL(req.url).searchParams.get("preview")) {
-    return NextResponse.json({ configured: true, live: true, title: "[REDACTED] S2E1 premiere (preview)", startedAt: new Date().toISOString(), viewers: 117, channel: CHANNEL } satisfies Live);
+    return NextResponse.json({ configured: true, live: true, title: "REDACTED S2E1 premiere (preview)", startedAt: new Date().toISOString(), viewers: 117, channel: CHANNEL } satisfies Live);
   }
   const id = process.env.TWITCH_CLIENT_ID;
   const secret = process.env.TWITCH_CLIENT_SECRET;

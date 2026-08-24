@@ -33,7 +33,7 @@ export function Footer({ hidden = [] }: { hidden?: string[] }) {
     <footer className="relative z-10 mt-24 border-t border-line bg-ink/80">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12 grid gap-x-6 gap-y-10 grid-cols-2 lg:grid-cols-[1.3fr_0.8fr_0.8fr_1.4fr]">
         <div className="col-span-2 lg:col-span-1">
-          <Image src="/brand/logo-nav.avif" alt="[REDACTED]" width={180} height={48} className="h-9 w-auto" />
+          <Image src="/brand/logo-nav.avif" alt="REDACTED" width={180} height={48} className="h-9 w-auto" />
           <p className="mt-4 text-sm text-muted max-w-xs">A horror comedy audio drama. New episodes {SITE.schedule}.</p>
           <div className="mt-5 flex gap-1 -ml-2">
             {SOCIAL.map((s) => {
@@ -75,7 +75,7 @@ export function Footer({ hidden = [] }: { hidden?: string[] }) {
           <p className="display text-3xl leading-none">Partner with us</p>
           <p className="mt-2 text-sm text-muted">Host-read sponsorships, in-universe placements, and press resources.</p>
           <Link href="/partner" className="btn btn-yellow mt-4 !min-h-10 !text-lg">
-            Partner with [REDACTED]
+            Partner with REDACTED
           </Link>
         </div>
         )}

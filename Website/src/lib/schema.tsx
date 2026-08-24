@@ -20,7 +20,7 @@ export function siteJsonLd() {
       {
         "@type": "PodcastSeries",
         "@id": `${SITE.url}/#series`,
-        name: "[REDACTED]",
+        name: "REDACTED",
         alternateName: ["REDACTED", "The REDACTED Unit", "REDACTED podcast"],
         url: SITE.url,
         image: `${SITE.url}/brand/showart.jpeg`,
@@ -42,7 +42,7 @@ export function siteJsonLd() {
         "@type": "WebSite",
         "@id": `${SITE.url}/#website`,
         url: SITE.url,
-        name: "[REDACTED]",
+        name: "REDACTED",
         publisher: { "@id": `${SITE.url}/#org` },
       },
     ],
@@ -57,7 +57,7 @@ export function audienceJsonLd(s: { totalPlays?: number; dailyAverage?: number; 
     "@context": "https://schema.org",
     "@type": "PodcastSeries",
     "@id": `${SITE.url}/#series`,
-    name: "[REDACTED]",
+    name: "REDACTED",
     url: SITE.url,
     interactionStatistic: [stat("ListenAction", s.totalPlays, "Total plays"), stat("ListenAction", s.dailyAverage, "Average daily plays"), stat("FollowAction", s.followers, "Apple Podcasts and Spotify followers"), stat("JoinAction", s.discordMembers, "Discord members")].filter(Boolean),
     audience: {

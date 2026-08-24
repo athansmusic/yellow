@@ -38,7 +38,7 @@ export function TrailerButton({ id, className = "" }: { id: string; className?: 
           </button>
         </div>
         <div className="aspect-video bg-black">
-          <iframe ref={frame} title="[REDACTED] trailer" allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen className="w-full h-full" />
+          <iframe ref={frame} title="REDACTED trailer" allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen className="w-full h-full" />
         </div>
       </dialog>
     </>

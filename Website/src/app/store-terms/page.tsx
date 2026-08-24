@@ -8,7 +8,7 @@ import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Store Terms, Returns & Refunds",
-  description: "Terms of sale, returns, refunds, replacements, and promo code rules for the official [REDACTED] store. Everything is printed to order.",
+  description: "Terms of sale, returns, refunds, replacements, and promo code rules for the official REDACTED store. Everything is printed to order.",
   alternates: { canonical: "/store-terms" },
 };
 
@@ -84,7 +84,7 @@ export default function StoreTerms() {
 
         <div className="prose-site max-w-prose">
           <p className="text-paper/85">
-            These terms cover purchases from the official [REDACTED] store at {host}/store, run by {SITE.studio.name}. Buying something means you agree to them. Questions:{" "}
+            These terms cover purchases from the official REDACTED store at {host}/store, run by {SITE.studio.name}. Buying something means you agree to them. Questions:{" "}
             <a href={`mailto:${SITE.email}?subject=Store`}>{SITE.email}</a>.
           </p>
 

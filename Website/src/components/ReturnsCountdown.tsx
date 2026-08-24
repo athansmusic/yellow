@@ -34,7 +34,7 @@ export function ReturnsCountdown({ to, label, compact = false }: { to: string; l
 
   return (
     <div>
-      <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-paper/70">{out ? `${label} is here` : `[REDACTED] returns in`}</p>
+      <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-paper/70">{out ? `${label} is here` : `REDACTED returns in`}</p>
       {!out && (
         <div className="mt-3 flex gap-3 sm:gap-5" aria-label={`Time until ${label}`}>
           {(

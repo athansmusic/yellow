@@ -76,7 +76,7 @@ export async function POST(req: Request) {
       externalId,
       recipient,
       items: items.map((i) => ({ sync_variant_id: i.v, quantity: i.q })),
-      packingSlipMessage: "Thanks for supporting [REDACTED].",
+      packingSlipMessage: "Thanks for supporting REDACTED.",
       // PRINTFUL_ORDER_CONFIRM=false leaves orders as drafts in Printful (used for test runs)
       confirm: process.env.PRINTFUL_ORDER_CONFIRM !== "false",
     });

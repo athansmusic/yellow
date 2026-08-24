@@ -156,7 +156,7 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
   return (
     <header className={`sticky top-0 z-50 bg-ink/95 backdrop-blur border-b border-line transition-transform duration-200 ${hideBar && !open ? "max-lg:-translate-y-full" : ""}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center shrink-0" aria-label="[REDACTED] home">
+        <Link href="/" className="flex items-center shrink-0" aria-label="REDACTED home">
           <Image src="/brand/logo-nav-hd.png" alt="" width={351} height={96} priority unoptimized className="h-8 w-auto" />
         </Link>
 
@@ -252,7 +252,7 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
           className={`absolute right-0 top-0 h-full w-[min(22rem,88vw)] bg-ink-2 border-l border-line flex flex-col transition-transform duration-200 ${open ? "translate-x-0" : "translate-x-full"}`}
         >
           <div className="h-16 px-4 flex items-center justify-between border-b border-line">
-            <Image src="/brand/logo-nav.avif" alt="[REDACTED]" width={150} height={40} className="h-7 w-auto" />
+            <Image src="/brand/logo-nav.avif" alt="REDACTED" width={150} height={40} className="h-7 w-auto" />
             <button type="button" onClick={() => setOpen(false)} aria-label="Close menu" className="p-2 hover:text-yellow">
               <Close width={24} height={24} />
             </button>

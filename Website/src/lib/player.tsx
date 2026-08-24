@@ -146,7 +146,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     if (!track || !("mediaSession" in navigator)) return;
     navigator.mediaSession.metadata = new MediaMetadata({
       title: track.title,
-      artist: "[REDACTED]",
+      artist: "REDACTED",
       album: track.subtitle,
       artwork: track.image ? [{ src: track.image, sizes: "512x512", type: "image/jpeg" }] : [],
     });

@@ -6,7 +6,7 @@ import cast from "@/data/cast.json";
 export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "[REDACTED] cast";
+export const alt = "REDACTED cast";
 
 export default async function OG({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -21,7 +21,7 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
       <div style={{ width: "100%", height: "100%", display: "flex", background: "#090909", color: "#f2f0ea", fontFamily: "NK57" }}>
         {portrait && <img src={portrait} alt="" style={{ width: 504, height: 630, objectFit: "cover", objectPosition: "top" }} />}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: 56, background: "linear-gradient(90deg,#090909,#161212)" }}>
-          <div style={{ fontSize: 28, color: "#fff200", letterSpacing: 2, textTransform: "uppercase" }}>{c?.character ?? "[REDACTED]"}</div>
+          <div style={{ fontSize: 28, color: "#fff200", letterSpacing: 2, textTransform: "uppercase" }}>{c?.character ?? "REDACTED"}</div>
           <div style={{ fontSize: 88, lineHeight: 0.95, textTransform: "uppercase", marginTop: 8 }}>{c?.actor ?? "Cast"}</div>
           <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 40 }}>
             <div style={{ width: 160, height: 44, background: "#fff200", display: "flex", alignItems: "center", justifyContent: "center" }}>

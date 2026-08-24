@@ -7,7 +7,7 @@ import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
   title: "Podcasts and Shows Like REDACTED",
-  description: "Came here from another show? What [REDACTED] shares with the podcasts and TV you already like, what's different, and where to start.",
+  description: "Came here from another show? What REDACTED shares with the podcasts and TV you already like, what's different, and where to start.",
   alternates: { canonical: "/like" },
 };
 
@@ -21,8 +21,8 @@ export default async function LikeIndex() {
   return (
     <Container className="py-10 sm:py-16 max-w-4xl">
       <p className="eyebrow">If you like…</p>
-      <h1 className="display text-5xl sm:text-7xl mt-2">Podcasts and shows like [REDACTED]</h1>
-      <p className="mt-5 text-lg text-paper/90 max-w-prose">Honest comparisons, one at a time: what [REDACTED] shares with something you already love, what it doesn&apos;t, and where to start if that&apos;s where you&apos;re coming from.</p>
+      <h1 className="display text-5xl sm:text-7xl mt-2">Podcasts and shows like REDACTED</h1>
+      <p className="mt-5 text-lg text-paper/90 max-w-prose">Honest comparisons, one at a time: what REDACTED shares with something you already love, what it doesn&apos;t, and where to start if that&apos;s where you&apos;re coming from.</p>
       <ul className="mt-10 grid gap-4 sm:grid-cols-2">
         {like.map((l) => (
           <li key={l.slug}>

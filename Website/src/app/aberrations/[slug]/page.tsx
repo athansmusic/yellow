@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!a) return {};
   return {
     title: `${a.name} · ${a.designation} · Aberration`,
-    description: `${a.teaser || `${a.name}, designation ${a.designation}, an aberration from the horror comedy podcast [REDACTED].`} From ${a.episodeCode.replace(" ", "")}.`,
+    description: `${a.teaser || `${a.name}, designation ${a.designation}, an aberration from the horror comedy podcast REDACTED.`} From ${a.episodeCode.replace(" ", "")}.`,
     alternates: { canonical: `/aberrations/${a.slug}` },
   };
 }
@@ -83,7 +83,7 @@ export default async function AberrationPage({ params }: { params: Promise<{ slu
                 <Image src={a.image} alt={a.name} fill priority sizes="(min-width:768px) 18rem, 100vw" className="object-cover" />
               ) : (
                 <div className="absolute inset-0 grid place-items-center">
-                  <span className="display text-4xl text-paper/40">[REDACTED]</span>
+                  <span className="display text-4xl text-paper/40">REDACTED</span>
                 </div>
               )}
             </div>

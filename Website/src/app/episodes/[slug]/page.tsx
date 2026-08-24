@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const ep = await getItemBySlug(slug);
   if (!ep) return {};
-  const desc = `${ep.summary} [REDACTED] ${ep.kind === "episode" ? ep.code : ep.kind}, ${formatDate(ep.date)}. Listen, see the cast, content warnings, and transcript.`;
+  const desc = `${ep.summary} REDACTED ${ep.kind === "episode" ? ep.code : ep.kind}, ${formatDate(ep.date)}. Listen, see the cast, content warnings, and transcript.`;
   return {
     title: ep.title,
     description: desc.slice(0, 300),
@@ -152,7 +152,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <Crumbs items={[{ label: "Episodes", href: `/episodes?${KIND_QUERY[ep.kind]}` }, { label: ep.kind === "episode" ? ep.code ?? ep.title : KIND_LABEL[ep.kind] }]} />
             <div className="flex gap-2">
-              <ShareButton title={`${title} · [REDACTED]`} text={ep.summary} path={`/episodes/${ep.slug}`} />
+              <ShareButton title={`${title} · REDACTED`} text={ep.summary} path={`/episodes/${ep.slug}`} />
               <nav aria-label="Episode navigation" className="flex gap-2">
                 <NavBtn e={older} dir="prev" />
                 <NavBtn e={newer} dir="next" />
@@ -181,7 +181,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
               </div>
               {ep.summary && <p className="mt-4 text-lg text-paper/85 max-w-prose">{ep.summary}</p>}
               <div className="mt-6 flex flex-wrap items-center gap-6">
-                <PlayButton track={{ id: ep.guid, title, subtitle: "[REDACTED]", src: ep.audioUrl, image: art, href: `/episodes/${ep.slug}` }} size="lg" />
+                <PlayButton track={{ id: ep.guid, title, subtitle: "REDACTED", src: ep.audioUrl, image: art, href: `/episodes/${ep.slug}` }} size="lg" />
                 <PlatformButtons links={platforms} size="sm" />
                 <Link href="/where" className="text-sm text-paper/80 hover:text-yellow underline underline-offset-4">
                   More apps

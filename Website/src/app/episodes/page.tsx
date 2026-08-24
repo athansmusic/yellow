@@ -13,7 +13,7 @@ import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Episodes",
-  description: "Every episode of [REDACTED]: Season 1, minisodes, Postmortem debriefs, and The Seven Planes. Listen on the site, with content warnings and transcripts.",
+  description: "Every episode of REDACTED: Season 1, minisodes, Postmortem debriefs, and The Seven Planes. Listen on the site, with content warnings and transcripts.",
   alternates: { canonical: "/episodes" },
 };
 export const revalidate = 600;
@@ -26,7 +26,7 @@ const SHOWS = [
 ] as const;
 type Show = (typeof SHOWS)[number]["id"];
 
-const track = (e: Episode) => ({ id: e.guid, title: e.kind === "episode" ? `${e.code}: ${e.shortTitle}` : e.title, subtitle: e.guid.startsWith("t7p-") ? "The Seven Planes" : "[REDACTED]", src: e.audioUrl, image: e.image || "/brand/showart.jpeg", href: e.guid.startsWith("t7p-") ? `/${e.slug}` : `/episodes/${e.slug}` });
+const track = (e: Episode) => ({ id: e.guid, title: e.kind === "episode" ? `${e.code}: ${e.shortTitle}` : e.title, subtitle: e.guid.startsWith("t7p-") ? "The Seven Planes" : "REDACTED", src: e.audioUrl, image: e.image || "/brand/showart.jpeg", href: e.guid.startsWith("t7p-") ? `/${e.slug}` : `/episodes/${e.slug}` });
 const pageHref = (e: Episode) => (e.guid.startsWith("t7p-") ? `/episodes?show=t7p` : `/episodes/${e.slug}`);
 
 export default async function EpisodesPage({ searchParams }: { searchParams: Promise<{ show?: string; season?: string; order?: string; tab?: string }> }) {
@@ -77,7 +77,7 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
   const itemList = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "[REDACTED] Season 1",
+    name: "REDACTED Season 1",
     itemListOrder: "https://schema.org/ItemListOrderAscending",
     numberOfItems: season1.length,
     itemListElement: [...season1].sort((a, b) => (a.number ?? 0) - (b.number ?? 0)).map((e, i) => ({ "@type": "ListItem", position: i + 1, name: `${e.code}: ${e.shortTitle}`, url: `${SITE.url}/episodes/${e.slug}` })),
@@ -118,10 +118,10 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
       {(() => {
         const intro =
           show === "postmortem"
-            ? { name: "[REDACTED] Postmortem", tag: "In-universe spin-off", text: "Postmortem is an in-universe spin-off series, detailing the aberrations featured in each episode as the team debriefs their findings to The Curtain. Starring Lyssa Jay, Derek Moreland, Natalie Light, and Athan.", trailer: EXTERNAL.postmortemTrailerYouTubeId, schedule: <>Postmortems Tuesdays 9/8c</>, countdown: onBreak ? null : <Countdown to="postmortem" prefix="Next in" /> }
+            ? { name: "REDACTED Postmortem", tag: "In-universe spin-off", text: "Postmortem is an in-universe spin-off series, detailing the aberrations featured in each episode as the team debriefs their findings to The Curtain. Starring Lyssa Jay, Derek Moreland, Natalie Light, and Athan.", trailer: EXTERNAL.postmortemTrailerYouTubeId, schedule: <>Postmortems Tuesdays 9/8c</>, countdown: onBreak ? null : <Countdown to="postmortem" prefix="Next in" /> }
             : show === "t7p"
               ? { name: "The Seven Planes", tag: "Analog horror · by Landon Whisnant", text: "A collection of analog horror tapes chronicling the history of a strange world filled with even stranger inhabitants. Created by Landon Whisnant.", trailer: EXTERNAL.t7pTrailerYouTubeId, schedule: null, countdown: null }
-              : { name: "[REDACTED]", tag: "A Procedural Horror Comedy", text: "Following the death of his twin, failing actor Jacob Kane assumes his late brother's life in hopes of a fresh start. Instead he finds himself working within The REDACTED Unit, a covert agency tasked with containing impossible creatures and phenomena.", trailer: EXTERNAL.trailerYouTubeId, schedule: <>Episodes {SITE.schedule}</>, countdown: onBreak ? null : <Countdown prefix="Next in" /> };
+              : { name: "REDACTED", tag: "A Procedural Horror Comedy", text: "Following the death of his twin, failing actor Jacob Kane assumes his late brother's life in hopes of a fresh start. Instead he finds himself working within The REDACTED Unit, a covert agency tasked with containing impossible creatures and phenomena.", trailer: EXTERNAL.trailerYouTubeId, schedule: <>Episodes {SITE.schedule}</>, countdown: onBreak ? null : <Countdown prefix="Next in" /> };
         const links = show === "t7p"
           ? [
               { name: "Spotify", href: T7P_LISTEN.spotify, icon: "spotify" as const },

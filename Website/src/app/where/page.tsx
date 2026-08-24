@@ -14,7 +14,7 @@ import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
   title: "Where to Listen",
-  description: "Listen to [REDACTED] free on Apple Podcasts, Spotify, Akouva, YouTube, Overcast, Pocket Casts, Amazon Music, and every other podcast app, or right here on the site. Per-episode links for each app.",
+  description: "Listen to REDACTED free on Apple Podcasts, Spotify, Akouva, YouTube, Overcast, Pocket Casts, Amazon Music, and every other podcast app, or right here on the site. Per-episode links for each app.",
   alternates: { canonical: "/where" },
 };
 export const revalidate = 600;
@@ -70,7 +70,7 @@ export default async function ListenPage({ searchParams }: { searchParams: Promi
       <div className="grid gap-10 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] items-start">
         {/* Side: show art + schedule */}
         <div className="order-2 lg:order-1 min-w-0 lg:sticky lg:top-24 text-center lg:text-left">
-          <Image src="/brand/showart.jpeg" alt="[REDACTED] show art" width={500} height={500} priority className="w-full max-w-[16rem] lg:max-w-full mx-auto lg:mx-0 border border-line" />
+          <Image src="/brand/showart.jpeg" alt="REDACTED show art" width={500} height={500} priority className="w-full max-w-[16rem] lg:max-w-full mx-auto lg:mx-0 border border-line" />
           <p className="mt-4 text-sm text-paper/85">
             New episodes {SITE.schedule}. Free everywhere.
           </p>
@@ -79,7 +79,7 @@ export default async function ListenPage({ searchParams }: { searchParams: Promi
           </Link>
           <div className="mt-6 border border-line bg-ink-2/70 p-4 text-left">
             <p className="eyebrow mb-1">Patreon supporters</p>
-            <p className="text-xs text-paper/80">Your early, ad-free feed is a private RSS link. In Patreon, open the [REDACTED] page, go to Membership and then Podcast, and tap the app you use; it adds the feed for you.</p>
+            <p className="text-xs text-paper/80">Your early, ad-free feed is a private RSS link. In Patreon, open the REDACTED page, go to Membership and then Podcast, and tap the app you use; it adds the feed for you.</p>
             <a href={LISTEN.patreon} target="_blank" rel="noreferrer" className="mt-2 inline-block text-xs text-yellow underline underline-offset-2">
               Open Patreon
             </a>
@@ -88,7 +88,7 @@ export default async function ListenPage({ searchParams }: { searchParams: Promi
 
         <div className="order-1 lg:order-2 min-w-0 text-center lg:text-left">
           <p className="eyebrow">Where to listen</p>
-          <h1 className="display text-5xl sm:text-6xl mt-1">Listen to [REDACTED] on any app</h1>
+          <h1 className="display text-5xl sm:text-6xl mt-1">Listen to REDACTED on any app</h1>
 
           <nav aria-label="Listen sections" className="mt-6 flex justify-center lg:justify-start gap-1 border-b border-line mb-6 overflow-x-auto [scrollbar-width:none]">
             {(["apps", "episodes"] as const).map((id) => (

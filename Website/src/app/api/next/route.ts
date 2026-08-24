@@ -28,6 +28,6 @@ export async function GET(req: Request) {
     }
   }
   const pack = (e?: Episode) =>
-    e ? { id: e.guid, title: e.kind === "episode" ? `${e.code}: ${e.shortTitle}` : e.title, subtitle: "[REDACTED]", src: e.audioUrl, image: e.image || "/brand/showart.jpeg", href: `/episodes/${e.slug}` } : null;
+    e ? { id: e.guid, title: e.kind === "episode" ? `${e.code}: ${e.shortTitle}` : e.title, subtitle: "REDACTED", src: e.audioUrl, image: e.image || "/brand/showart.jpeg", href: `/episodes/${e.slug}` } : null;
   return NextResponse.json({ next: pack(next), prev: pack(prev) });
 }

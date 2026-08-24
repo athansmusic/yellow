@@ -91,7 +91,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     name: p.name,
     image: p.images,
     description: desc.paras.join(" "),
-    brand: { "@type": "Brand", name: "[REDACTED]" },
+    brand: { "@type": "Brand", name: "REDACTED" },
     ...(p.blank ? { material: p.blank } : {}),
     ...(p.artist ? { creator: { "@type": "Person", name: p.artist } } : {}),
     offers: { "@type": "AggregateOffer", priceCurrency: "USD", lowPrice: (p.priceCents / 100).toFixed(2), highPrice: (p.priceMaxCents / 100).toFixed(2), offerCount: p.variants.length, availability: "https://schema.org/InStock", url: `${SITE.url}/store/${p.slug}` },

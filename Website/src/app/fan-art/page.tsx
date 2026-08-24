@@ -9,7 +9,7 @@ import { FanArtHero } from "@/components/FanArtHero";
 
 export const metadata: Metadata = {
   title: "Fan Art",
-  description: "Fan art of [REDACTED] from Tumblr, credited to the artists. Tag your own #the redacted unit to be featured.",
+  description: "Fan art of REDACTED from Tumblr, credited to the artists. Tag your own #the redacted unit to be featured.",
   alternates: { canonical: "/fan-art" },
 };
 export const revalidate = 300;
@@ -24,7 +24,7 @@ export default async function FanArtPage() {
         data={{
           "@context": "https://schema.org",
           "@type": "ImageGallery",
-          name: "[REDACTED] fan art",
+          name: "REDACTED fan art",
           url: `${SITE.url}/fan-art`,
           image: items.slice(0, 50).map((i) => ({ "@type": "ImageObject", contentUrl: i.image, name: i.title || `Fan art by ${i.artist}`, creator: { "@type": "Person", name: i.artist }, url: i.postUrl })),
         }}

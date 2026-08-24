@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title: l.title, description: l.description, alternates: { canonical: `/like/${l.slug}` } };
 }
 
-/** "Same network. [REDACTED] is on Rusty Quill…" -> ["Same network.", "[REDACTED] is on Rusty Quill…"] */
+/** "Same network. REDACTED is on Rusty Quill…" -> ["Same network.", "REDACTED is on Rusty Quill…"] */
 function split(point: string): [string, string] {
   const m = point.match(/^(.{3,80}?[.!?])\s+([\s\S]+)$/);
   return m ? [m[1], m[2]] : [point, ""];
@@ -65,7 +65,7 @@ export default async function LikePage({ params }: { params: Promise<{ slug: str
       <JsonLd data={faqJsonLd(l.faq)} />
 
       <p className="eyebrow">If you like {l.name}</p>
-      <h1 className="display text-5xl sm:text-7xl mt-2">[REDACTED], for fans of {l.name}</h1>
+      <h1 className="display text-5xl sm:text-7xl mt-2">REDACTED, for fans of {l.name}</h1>
       <p className="mt-5 text-lg text-paper/90 max-w-prose">{l.description}</p>
 
       {/* Start block: trailer beside the play button */}
@@ -73,7 +73,7 @@ export default async function LikePage({ params }: { params: Promise<{ slug: str
         <div className="aspect-video bg-black border border-line">
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${EXTERNAL.trailerYouTubeId}?rel=0&modestbranding=1&color=white`}
-            title="[REDACTED] teaser trailer"
+            title="REDACTED teaser trailer"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
             loading="lazy"
@@ -120,7 +120,7 @@ export default async function LikePage({ params }: { params: Promise<{ slug: str
                     <tr className="text-left">
                       <th className="py-2 pr-4 w-32"></th>
                       <th className="py-2 pr-4 display text-xl font-normal">{l.name}</th>
-                      <th className="py-2 display text-xl font-normal">[REDACTED]</th>
+                      <th className="py-2 display text-xl font-normal">REDACTED</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -140,7 +140,7 @@ export default async function LikePage({ params }: { params: Promise<{ slug: str
           )}
 
           <section>
-            <h2 className="eyebrow mb-4">What [REDACTED] has in common</h2>
+            <h2 className="eyebrow mb-4">What REDACTED has in common</h2>
             <Points items={l.same} accent />
           </section>
 
@@ -165,7 +165,7 @@ export default async function LikePage({ params }: { params: Promise<{ slug: str
         </div>
 
         <aside className="lg:sticky lg:top-24 grid gap-4">
-          <Image src="/brand/showart.jpeg" alt="[REDACTED] show art" width={500} height={500} className="w-full border border-line" />
+          <Image src="/brand/showart.jpeg" alt="REDACTED show art" width={500} height={500} className="w-full border border-line" />
           <p className="text-sm text-paper/85">A horror comedy audio drama from Hush Studios on the Rusty Quill network. New episodes Fridays 9/8c.</p>
           <Link href="/about" className="text-sm text-yellow underline underline-offset-4">
             About the show

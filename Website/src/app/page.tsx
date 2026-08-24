@@ -63,7 +63,7 @@ export default async function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-ink/30 via-transparent to-ink" aria-hidden />
         <Container className="relative py-10 sm:py-20 lg:py-28 w-full">
           <div className="lg:ml-auto lg:w-[52%] xl:w-[48%] text-center lg:text-left [text-shadow:0_2px_18px_rgba(0,0,0,.85)]">
-            <h1 className="sr-only">[REDACTED]: a horror comedy audio drama</h1>
+            <h1 className="sr-only">REDACTED: a horror comedy audio drama</h1>
             <Image src="/brand/logo-hero.avif" alt="" width={900} height={225} priority className="w-[min(92vw,36rem)] h-auto mx-auto lg:mx-0 drop-shadow-[0_0_40px_rgba(0,0,0,.85)]" />
             <p className="mt-4 text-sm sm:text-base font-semibold uppercase tracking-[0.22em] text-paper">A Procedural Horror Comedy</p>
             {settings && settings.seasonStatus !== "airing" && (
@@ -174,7 +174,7 @@ export default async function Home() {
       <Section>
         <Reveal><div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] items-center">
           <div className="prose-site">
-            <Heading eyebrow="The show">What is [REDACTED]?</Heading>
+            <Heading eyebrow="The show">What is REDACTED?</Heading>
             <p className="mt-5">
               <Ed id="home.what1">A horror comedy audio drama from Athan (<em>The Grotto</em>) and Jamie Petronis (<em>The Cellar Letters</em>), on the Rusty Quill network. Failing actor Jacob Kane takes his dead twin’s identity expecting a desk job, and lands inside The REDACTED Unit, a secret agency that quietly handles dangerous paranormal cases.</Ed>
             </p>
@@ -269,7 +269,7 @@ export default async function Home() {
           <div>
             <Heading eyebrow="Featuring">Guest writers</Heading>
             <p className="mt-4 text-paper/85">
-              In addition to core episodes, each season of [REDACTED] features multiple guest writers, prominent in the film, gaming, and audio drama space, who write, design, and direct the aberration that Jacob and the team face.
+              In addition to core episodes, each season of REDACTED features multiple guest writers, prominent in the film, gaming, and audio drama space, who write, design, and direct the aberration that Jacob and the team face.
             </p>
           </div>
           <ul className="grid gap-px bg-line border border-line sm:grid-cols-2 lg:grid-cols-4">
@@ -336,7 +336,7 @@ export default async function Home() {
         <Reveal>
           <Heading eyebrow="More from REDACTED">Spin-offs</Heading>
           <div className="mt-8 grid gap-6 md:grid-cols-2">
-            <SpinOff href="/episodes?show=postmortem" img="/home/postmortem.avif" title="[REDACTED] Postmortem" text="Postmortem is an in-universe spin-off series, detailing the aberrations featured in each episode as the team debriefs their findings to The Curtain. Starring Lyssa Jay, Derek Moreland, Natalie Light, and Athan." cta={`${postmortems.length} episodes`} />
+            <SpinOff href="/episodes?show=postmortem" img="/home/postmortem.avif" title="REDACTED Postmortem" text="Postmortem is an in-universe spin-off series, detailing the aberrations featured in each episode as the team debriefs their findings to The Curtain. Starring Lyssa Jay, Derek Moreland, Natalie Light, and Athan." cta={`${postmortems.length} episodes`} />
             <SpinOff href="/episodes?show=t7p" img="/spinoffs/t7p-art.jpeg" title="The Seven Planes" text="A collection of analog horror tapes chronicling the history of a strange world filled with even stranger inhabitants. Created by Landon Whisnant." cta={`${t7pCount} episodes`} />
           </div>
         </Reveal>

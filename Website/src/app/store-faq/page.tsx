@@ -9,7 +9,7 @@ import { JsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Store FAQ & Shipping",
-  description: "How the [REDACTED] store works: printed to order, production and delivery times by region, shipping costs, tracking, cancellations, customs, sizing, and what to do if something arrives damaged.",
+  description: "How the REDACTED store works: printed to order, production and delivery times by region, shipping costs, tracking, cancellations, customs, sizing, and what to do if something arrives damaged.",
   alternates: { canonical: "/store-faq" },
 };
 export const revalidate = 300;

@@ -8,7 +8,7 @@ import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
   title: "FAQ",
-  description: "Answers about [REDACTED]: what it is, where to start, when episodes release, content warnings, transcripts, Patreon, the store, and how to contact the team.",
+  description: "Answers about REDACTED: what it is, where to start, when episodes release, content warnings, transcripts, Patreon, the store, and how to contact the team.",
   alternates: { canonical: "/faq" },
 };
 
@@ -59,7 +59,7 @@ export default async function FAQ() {
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", url: SITE.url }, { name: "FAQ", url: `${SITE.url}/faq` }])} />
 
       <p className="eyebrow">Questions</p>
-      <h1 className="display text-5xl sm:text-7xl mt-2">[REDACTED] FAQ</h1>
+      <h1 className="display text-5xl sm:text-7xl mt-2">REDACTED FAQ</h1>
       <p className="mt-4 text-lg text-paper/90">The questions we get most, in our own words. Tap one to open it.</p>
 
       <nav aria-label="Jump to" className="mt-6 flex flex-wrap gap-2">

@@ -308,7 +308,7 @@ export async function getSevenPlanes(): Promise<{ description: string; image: st
 /** Player track for an episode (handles Seven Planes items, whose guids start with "t7p-"). */
 export function toTrack(e: Episode) {
   const t7p = e.guid.startsWith("t7p-");
-  return { id: e.guid, title: e.kind === "episode" ? `${e.code}: ${e.shortTitle}` : e.title, subtitle: t7p ? "The Seven Planes" : "[REDACTED]", src: e.audioUrl, image: e.image || "/brand/showart.jpeg", href: t7p ? "/episodes?show=t7p" : `/episodes/${e.slug}` };
+  return { id: e.guid, title: e.kind === "episode" ? `${e.code}: ${e.shortTitle}` : e.title, subtitle: t7p ? "The Seven Planes" : "REDACTED", src: e.audioUrl, image: e.image || "/brand/showart.jpeg", href: t7p ? "/episodes?show=t7p" : `/episodes/${e.slug}` };
 }
 
 export function formatDate(iso: string) {

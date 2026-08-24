@@ -6,7 +6,7 @@ import { getItemBySlug, formatDate } from "@/lib/feed";
 export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "[REDACTED] episode";
+export const alt = "REDACTED episode";
 
 export default async function OG({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -22,7 +22,7 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
   } catch {}
 
   const kind = ep?.kind === "episode" ? ep.code : ep?.kind === "postmortem" ? "Postmortem" : ep?.kind === "minisode" ? "Minisode" : "Episode";
-  const title = ep ? (ep.kind === "episode" ? ep.shortTitle : ep.shortTitle) : "[REDACTED]";
+  const title = ep ? (ep.kind === "episode" ? ep.shortTitle : ep.shortTitle) : "REDACTED";
   const titleSize = title.length > 26 ? 64 : title.length > 16 ? 80 : 96;
 
   return new ImageResponse(

@@ -1,5 +1,5 @@
 export const SITE = {
-  name: "[REDACTED]",
+  name: "REDACTED",
   tagline: "A Horror Comedy Audio Show",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://theredactedunit.com",
   email: "crew@theredactedunit.com",

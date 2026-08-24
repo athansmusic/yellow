@@ -12,7 +12,7 @@ import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
   title: "Brand Assets & Press Kit",
-  description: "Logo pack, show art, laurels, colors, fonts, boilerplate, and usage rules for [REDACTED]. Free for press and non-commercial fan use.",
+  description: "Logo pack, show art, laurels, colors, fonts, boilerplate, and usage rules for REDACTED. Free for press and non-commercial fan use.",
   alternates: { canonical: "/assets" },
 };
 
@@ -38,7 +38,7 @@ const RULES: { ok: boolean; text: string }[] = [
   { ok: true, text: "Use the mark or the wordmark as supplied, in yellow, white, or black." },
   { ok: true, text: "Keep clear space around the logo at least the height of one bracket." },
   { ok: true, text: "Minimum size: 24px tall on screen, 10mm in print." },
-  { ok: true, text: "Write the title as [REDACTED] or REDACTED. Brackets are always the same color as the word." },
+  { ok: true, text: "Write the title as REDACTED or REDACTED. Brackets are always the same color as the word." },
   { ok: true, text: "Fan art, edits, cosplay, and non-commercial use with a credit are welcome." },
   { ok: false, text: "Don't recolor, stretch, rotate, outline, or add effects to the logo." },
   { ok: false, text: "Don't put the yellow mark on yellow, or the black mark on dark backgrounds." },
@@ -54,7 +54,7 @@ export default async function AssetsPage() {
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", url: SITE.url }, { name: "Assets", url: `${SITE.url}/assets` }])} />
       <p className="eyebrow">Press and brand</p>
       <h1 className="display text-5xl sm:text-7xl mt-2">Assets</h1>
-      <p className="mt-4 text-lg text-paper/90 max-w-prose">Everything you need to write about, stream, or make things for [REDACTED]. Take what you need; the only ask is that the logo stays as it is.</p>
+      <p className="mt-4 text-lg text-paper/90 max-w-prose">Everything you need to write about, stream, or make things for REDACTED. Take what you need; the only ask is that the logo stays as it is.</p>
       <div className="mt-6 flex flex-wrap items-center gap-4">
         <a href={`/press/${PRESS_ZIP}`} download className="btn btn-yellow">
           Download everything ({sizeOf(PRESS_ZIP)})

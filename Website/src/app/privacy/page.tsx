@@ -6,7 +6,7 @@ import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "What [REDACTED] collects (email alerts, store orders, analytics), who processes it, what stays in your browser, and how to unsubscribe or have your data deleted.",
+  description: "What REDACTED collects (email alerts, store orders, analytics), who processes it, what stays in your browser, and how to unsubscribe or have your data deleted.",
   alternates: { canonical: "/privacy" },
 };
 
@@ -103,7 +103,7 @@ export default function Privacy() {
         </nav>
 
         <div className="prose-site text-paper/90 max-w-prose">
-          <p>This policy covers {SITE.url.replace(/^https?:\/\//, "")} and the official [REDACTED] store. It explains what we collect, why, who handles it, and what you can do about it. We don't build profiles and we don't sell data.</p>
+          <p>This policy covers {SITE.url.replace(/^https?:\/\//, "")} and the official REDACTED store. It explains what we collect, why, who handles it, and what you can do about it. We don't build profiles and we don't sell data.</p>
 
           <H2 id="collect">What we collect</H2>
           <ul className="list-disc pl-5 my-3 grid gap-1">

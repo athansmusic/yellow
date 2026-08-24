@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!c) return {};
   return {
     title: `${c.actor} (${c.character})`,
-    description: `${c.actor} plays ${c.character} in [REDACTED], the horror comedy audio drama from Hush Studios. Bio, roles, and links.`,
+    description: `${c.actor} plays ${c.character} in REDACTED, the horror comedy audio drama from Hush Studios. Bio, roles, and links.`,
     alternates: { canonical: `/cast/${c.slug}` },
   };
 }
@@ -72,7 +72,7 @@ export default async function CastMember({ params }: { params: Promise<{ slug: s
     "@id": `${SITE.url}/cast/${c.slug}`,
     name: c.actor,
     image: `${SITE.url}${c.image}`,
-    description: c.about || `${c.actor} plays ${c.character} in [REDACTED].`,
+    description: c.about || `${c.actor} plays ${c.character} in REDACTED.`,
     url: `${SITE.url}/cast/${c.slug}`,
     sameAs: links.map(([, v]) => v),
     performerIn: [{ "@id": `${SITE.url}/#series` }, ...episodes.slice(0, 10).map((e) => ({ "@type": "PodcastEpisode", name: e.kind === "episode" ? `${e.code}: ${e.shortTitle}` : e.title, url: `${SITE.url}/episodes/${e.slug}` }))],

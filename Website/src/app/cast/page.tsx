@@ -14,7 +14,7 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Cast of REDACTED",
-  description: "The cast of [REDACTED]: who plays Jacob Kane, Eli Reyes, Hedy, Jo Valentine, Lucas Kipp, Maxwell Clark, Control, and the rest of The Redacted Unit, with bios and links.",
+  description: "The cast of REDACTED: who plays Jacob Kane, Eli Reyes, Hedy, Jo Valentine, Lucas Kipp, Maxwell Clark, Control, and the rest of The Redacted Unit, with bios and links.",
   alternates: { canonical: "/cast" },
 };
 
@@ -87,8 +87,8 @@ export default async function CastPage({ searchParams }: { searchParams: Promise
   const people = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "[REDACTED] cast",
-    itemListElement: cast.map((c, i) => ({ "@type": "ListItem", position: i + 1, item: { "@type": "Person", name: c.actor, url: `${SITE.url}/cast/${c.slug}`, performerIn: { "@type": "PodcastSeries", name: "[REDACTED]" }, description: `${c.character} in [REDACTED]` } })),
+    name: "REDACTED cast",
+    itemListElement: cast.map((c, i) => ({ "@type": "ListItem", position: i + 1, item: { "@type": "Person", name: c.actor, url: `${SITE.url}/cast/${c.slug}`, performerIn: { "@type": "PodcastSeries", name: "REDACTED" }, description: `${c.character} in REDACTED` } })),
   };
 
   return (
@@ -100,7 +100,7 @@ export default async function CastPage({ searchParams }: { searchParams: Promise
         <Container className="py-10 sm:py-14">
           <p className="eyebrow">Meet the cast</p>
           <h1 className="display text-5xl sm:text-7xl mt-1">
-            Cast of [REDACTED]
+            Cast of REDACTED
           </h1>
           <nav aria-label="Filter cast" className="mt-6 flex flex-wrap gap-2">
             {GROUPS.map(([id, label]) => {

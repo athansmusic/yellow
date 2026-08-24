@@ -15,8 +15,8 @@ import awards from "@/data/awards.json";
 import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
-  title: "Advertise on [REDACTED]: Media Kit & Sponsorship",
-  description: "Media kit for [REDACTED], the horror comedy audio drama on the Rusty Quill Network: 1.4M+ plays, daily listens by platform, listener demographics, festival awards, press kit downloads, and host-read sponsorship options.",
+  title: "Advertise on REDACTED: Media Kit & Sponsorship",
+  description: "Media kit for REDACTED, the horror comedy audio drama on the Rusty Quill Network: 1.4M+ plays, daily listens by platform, listener demographics, festival awards, press kit downloads, and host-read sponsorship options.",
   alternates: { canonical: "/partner" },
 };
 export const revalidate = 3600;
@@ -102,7 +102,7 @@ export default async function PartnerPage() {
         </div>
         <Container className="relative pt-10 pb-12 sm:pt-14 sm:pb-16 text-center">
           <h1 className="inline-block border border-yellow px-3 py-1 text-yellow font-light text-base sm:text-lg tracking-wide">ADVERTISE WITH US</h1>
-          <Image src="/home/redacteded.avif" alt="[REDACTED] show art" width={260} height={260} priority className="mx-auto mt-4 size-48 sm:size-64 shadow-[0_20px_60px_rgba(0,0,0,0.6)]" />
+          <Image src="/home/redacteded.avif" alt="REDACTED show art" width={260} height={260} priority className="mx-auto mt-4 size-48 sm:size-64 shadow-[0_20px_60px_rgba(0,0,0,0.6)]" />
           <p className="mt-5 text-sm sm:text-base tracking-[0.12em] uppercase">A procedural horror comedy</p>
           <p className="mt-1 text-base sm:text-lg text-paper/90">
             On the <a href={SITE.network.url} target="_blank" rel="noreferrer" className="font-bold hover:text-yellow">Rusty Quill Network</a> · New episodes every Friday, 9/8c
@@ -140,7 +140,7 @@ export default async function PartnerPage() {
           <div className="aspect-video w-full bg-ink-2 border border-line">
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${EXTERNAL.trailerYouTubeId}?rel=0&modestbranding=1&color=white`}
-              title="[REDACTED] teaser trailer"
+              title="REDACTED teaser trailer"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
               loading="lazy"
@@ -207,12 +207,12 @@ export default async function PartnerPage() {
       {/* THE SHOW */}
       <section id="redacted" className="bg-[#0c0c0c] border-y border-line">
         <Container className="py-14 sm:py-20">
-          <Title label="The show">What is [REDACTED]?</Title>
+          <Title label="The show">What is REDACTED?</Title>
 
           <div className="mt-10 grid gap-10 lg:grid-cols-[1.1fr_1fr]">
             <div>
               <p className="text-[17px] font-light leading-relaxed text-paper/75 max-w-[62ch]">
-                REDACTED is a new procedural horror comedy from Athan (The Grotto) and Jamie Petronis (The Cellar Letters) on the Rusty Quill Network (The Magnus Archives). Following the death of his twin, failing actor Jacob Kane assumes his late-brother&apos;s life in hopes of a fresh start. Instead of finding stability, Jacob finds himself working within The [REDACTED] Unit, a covert agency tasked with containing impossible creatures and phenomena. As he becomes entangled with paranormal forces and secret agendas, Jacob begins to discover a sense of belonging in a place he never expected.
+                REDACTED is a new procedural horror comedy from Athan (The Grotto) and Jamie Petronis (The Cellar Letters) on the Rusty Quill Network (The Magnus Archives). Following the death of his twin, failing actor Jacob Kane assumes his late-brother&apos;s life in hopes of a fresh start. Instead of finding stability, Jacob finds himself working within The REDACTED Unit, a covert agency tasked with containing impossible creatures and phenomena. As he becomes entangled with paranormal forces and secret agendas, Jacob begins to discover a sense of belonging in a place he never expected.
               </p>
 
               <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.2em] text-paper/50">Sounds like</p>
@@ -325,7 +325,7 @@ export default async function PartnerPage() {
         <Container className="py-14 sm:py-20">
           <Title label="Special episodes">Guest writers</Title>
           <p className="mt-6 max-w-[600px] text-[15px] font-light leading-relaxed text-paper/55">
-            In addition to core episodes, each season of [REDACTED] features multiple Guest Directors. These guests are prominent in the film, gaming, and audio drama space, and will feature on an episode to write, design, and direct the aberration that Jacob and team faces.
+            In addition to core episodes, each season of REDACTED features multiple Guest Directors. These guests are prominent in the film, gaming, and audio drama space, and will feature on an episode to write, design, and direct the aberration that Jacob and team faces.
           </p>
           <ul className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 border-t border-l border-white/10">
             {PARTNER_WRITERS.map((w) => (
@@ -348,7 +348,7 @@ export default async function PartnerPage() {
             {OPTIONS.map((o) => (
               <div key={o.t} className="border border-white/10 bg-ink/40 p-7">
                 <h3 className="font-extrabold uppercase text-2xl tracking-tight">{o.t}</h3>
-                <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-yellow">[REDACTED] · All episodes</p>
+                <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-yellow">REDACTED · All episodes</p>
                 <p className="mt-5 text-sm text-paper/85">{o.d}</p>
                 <ul className="mt-6 border-t border-white/10 pt-5 grid gap-2 text-xs text-paper/60">
                   {o.pts.map((p) => (
@@ -365,7 +365,7 @@ export default async function PartnerPage() {
           <div className="mt-4 border border-yellow/50 bg-yellow/[0.03] p-7 flex flex-col md:flex-row md:items-center gap-6">
             <div className="flex-1">
               <h3 className="font-extrabold uppercase text-2xl tracking-tight text-yellow">In-universe integration</h3>
-              <p className="mt-2 text-sm text-paper/75 max-w-[60ch]">Depending on brand fit, we&apos;re open to weaving sponsor messaging directly into the [REDACTED] world: an in-universe ad placement.</p>
+              <p className="mt-2 text-sm text-paper/75 max-w-[60ch]">Depending on brand fit, we&apos;re open to weaving sponsor messaging directly into the REDACTED world: an in-universe ad placement.</p>
             </div>
             <a href={mailto} className="btn btn-yellow shrink-0">
               Let&apos;s talk
