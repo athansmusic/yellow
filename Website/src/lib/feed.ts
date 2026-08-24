@@ -196,6 +196,13 @@ const GUEST_DIRECTOR_OVERRIDES: Record<string, string> = {
   "S1 E26": "Xalavier Nelson Jr.", // Clickolding: "created based on Clickolding, a narrative clicker game by Strange Scaffold"
 };
 
+/** Show-notes typos and stylings that break cast matching, fixed wherever they appear. */
+const NAME_FIXES: [RegExp, string][] = [
+  [/Devin Steffins/gi, "Devin Steffens"],
+  [/The Joe Cliff Thompson/gi, "Joe Cliff Thompson"],
+];
+const fixNames = (x: string) => NAME_FIXES.reduce((acc, [re, to]) => acc.replace(re, to), x);
+
 /** Cast the feed's show notes miss. Keyed by episode code; appended to the parsed starring list. */
 const STARRING_OVERRIDES: Record<string, string[]> = {
   "S1 E6": ["Taylor Michaels as Mars Donovan"], // in the episode, absent from the Acast notes
@@ -225,13 +232,13 @@ function toEpisode(it: RawItem): Episode | null {
     audioUrl,
     image,
     duration: text(it["itunes:duration"]) || undefined,
-    summary: d.summary,
-    bodyHtml: d.bodyHtml,
-    starring: [...d.starring, ...(("code" in c && c.code && STARRING_OVERRIDES[c.code]) || []).filter((x) => !d.starring.includes(x))],
+    summary: fixNames(d.summary),
+    bodyHtml: fixNames(d.bodyHtml),
+    starring: [...d.starring.map(fixNames), ...(("code" in c && c.code && STARRING_OVERRIDES[c.code]) || []).filter((x) => !d.starring.includes(x))],
     contentWarnings: d.contentWarnings,
     guestDirector: ("code" in c && c.code && GUEST_DIRECTOR_OVERRIDES[c.code]) || d.guestDirector,
-    credits: d.credits,
-    notesHtml: d.notesHtml,
+    credits: d.credits.map((cr) => ({ ...cr, value: fixNames(cr.value) })),
+    notesHtml: fixNames(d.notesHtml),
     acastUrl: text(it.link) || undefined,
     guid: text(it.guid) || title,
   };
