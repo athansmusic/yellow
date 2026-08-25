@@ -31,18 +31,31 @@ export default function CorruptedPage() {
           <source src="/corrupted/hero.mp4" type="video/mp4" />
         </video>
         <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(140,22,31,0)_35%,rgba(140,22,31,.72)_68%,#8c161f_100%)]" />
+        {/* A portrait viewport crops into the darkest part of the art; black type needs more red under it. */}
+        <div aria-hidden className="absolute inset-0 sm:hidden bg-[linear-gradient(to_bottom,rgba(140,22,31,0)_18%,rgba(140,22,31,.72)_48%,#8c161f_82%)]" />
 
         <div className="relative mx-auto w-full max-w-5xl px-5 pb-14 text-center">
           <FileStatus />
-          <Image src="/corrupted/wordmark-black.png" alt="CORRUPTED" width={1843} height={384} priority className="mt-6 w-full max-w-3xl mx-auto h-auto" />
-          <p className="mt-7 mx-auto max-w-2xl text-[17px] font-medium leading-relaxed text-[#0a0708]">
+          <Image
+            src="/corrupted/wordmark-black.png"
+            alt="CORRUPTED"
+            width={1843}
+            height={384}
+            priority
+            className="mt-6 w-full max-w-3xl mx-auto h-auto"
+            style={{ filter: "drop-shadow(0 0 5px #a21d2d) drop-shadow(0 0 16px #a21d2d) drop-shadow(0 0 34px rgba(162,29,45,.8))" }}
+          />
+          <p
+            className="mt-7 mx-auto max-w-2xl text-[17px] font-medium leading-relaxed text-[#0a0708]"
+            style={{ textShadow: "0 0 6px #a21d2d, 0 0 16px #a21d2d, 0 0 30px rgba(162,29,45,.75)" }}
+          >
             A horror anthology set in the REDACTED universe.
           </p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
             <a href="#notify" className="inline-block bg-[#0a0708] text-[#f6ecee] px-7 py-4 text-xs font-bold uppercase tracking-[.2em] hover:bg-[#f6ecee] hover:text-[#0a0708] transition-colors">
               Notify me when it drops
             </a>
-            <a href="#trailer" className="inline-block border-2 border-[#0a0708] px-7 py-4 text-xs font-bold uppercase tracking-[.2em] text-[#0a0708] hover:bg-[#0a0708] hover:text-[#f6ecee] transition-colors">
+            <a href="#trailer" className="inline-block border-2 border-[#0a0708] bg-[#8c161f] px-7 py-4 text-xs font-bold uppercase tracking-[.2em] text-[#0a0708] hover:bg-[#0a0708] hover:text-[#f6ecee] transition-colors">
               Trailer
             </a>
           </div>
