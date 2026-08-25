@@ -114,7 +114,7 @@ export default async function ContributorPage({ params }: { params: Promise<{ sl
             {/* Hero credit card */}
             {hero && (
               <div>
-                <p className="eyebrow mb-2">Wrote this episode</p>
+                <p className="eyebrow mb-2">Guest directed</p>
                 <Link href={`/episodes/${hero.slug}`} className="group flex items-center gap-4 border border-line bg-ink p-3 hover:border-yellow">
                   <span className="relative size-16 shrink-0 overflow-hidden bg-ink-3">
                     <Image src={hero.image || "/brand/showart.jpeg"} alt="" fill sizes="64px" className="object-cover" />

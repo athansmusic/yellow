@@ -19,7 +19,20 @@ export const metadata: Metadata = {
 export default async function ContributorsPage() {
   const people = await getContributors();
   const visible = people.filter((c) => !c.hidden && !c.empty);
-  const writers = visible.filter((c) => c.roles.includes("writer"));
+  // Guest directors run in the order their episodes aired. A writer whose episode has not
+  // landed yet has nothing in `wrote`, so there is no date to sort on: those tail the list and
+  // say so on the card rather than showing an empty credit line.
+  const aired = (c: { wrote: { date: string }[] }) => c.wrote[0]?.date ?? "";
+  const writers = visible
+    .filter((c) => c.roles.includes("writer"))
+    .sort((a, b) => {
+      const da = aired(a);
+      const db = aired(b);
+      if (!da && !db) return a.name.localeCompare(b.name);
+      if (!da) return 1;
+      if (!db) return -1;
+      return +new Date(da) - +new Date(db);
+    });
   const artists = visible.filter((c) => c.roles.includes("artist"));
   const castList = cast as { slug: string; actor: string; character: string; image: string }[];
 
@@ -91,7 +104,7 @@ export default async function ContributorsPage() {
                   <span className="min-w-0">
                     <span className="display text-xl block leading-none group-hover:text-yellow">{c.name}</span>
                     {c.knownFor.length > 0 && <span className="block text-xs text-muted mt-1 truncate">{c.knownFor.join(" \u00b7 ")}</span>}
-                    <span className="block text-[11px] tracking-wider mt-1 text-yellow">{ep ? ep.code : ""}</span>
+                    <span className={`block text-[11px] tracking-wider mt-1 ${ep ? "text-yellow" : "text-muted"}`}>{ep ? ep.code : "Coming soon"}</span>
                   </span>
                 </Link>
               </li>
