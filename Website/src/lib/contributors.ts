@@ -100,6 +100,8 @@ export async function getContributors(): Promise<Contributor[]> {
     if (entry?.photo) c.photo = entry.photo;
     c.art = entry?.art ?? [];
     c.works = entry?.works ?? [];
+    // Entered work wins: the chips become the real credits instead of repeating them
+    if (c.works.length) c.knownFor = c.works.map((w) => w.title);
     c.socials = entry?.socials ?? {};
     c.empty = c.art.length === 0 && !c.bio;
   }
