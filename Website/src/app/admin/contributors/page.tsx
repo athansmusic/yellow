@@ -1,16 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getDoc, type Contributors } from "@/lib/content";
+import { getDoc, SOCIAL_KEYS, type Contributors } from "@/lib/content";
 import { slugify } from "@/lib/feed";
 import cast from "@/data/cast.json";
 import writers from "@/data/writers.json";
 import overrides from "@/data/store-overrides.json";
-import { addContributorArt, removeContributorArt, saveContributorBio, toggleContributorHidden, saveContributorPhoto, removeContributorPhoto } from "../actions";
+import { addContributorArt, removeContributorArt, saveContributorBio, toggleContributorHidden, saveContributorPhoto, removeContributorPhoto, addContributorWork, removeContributorWork, saveContributorSocials } from "../actions";
 import { Saved } from "../ui";
 
 export const dynamic = "force-dynamic";
 
 type Person = { slug: string; name: string; roles: string[]; note: string };
+
+const SOCIAL_LABELS_PLACEHOLDER: Record<string, string> = { website: "Website", instagram: "Instagram", tiktok: "TikTok", twitter: "Twitter / X", youtube: "YouTube", imdb: "IMDb" };
 
 /** Everyone who makes the show: cast, guest writers, store artists. A person can hold several roles. */
 function roster(): Person[] {
@@ -32,8 +34,8 @@ function roster(): Person[] {
   return [...map.values()].filter((x) => x.roles.some((r) => r !== "Cast")).sort((a, b) => a.name.localeCompare(b.name));
 }
 
-export default async function ContributorsAdmin({ searchParams }: { searchParams: Promise<{ p?: string; saved?: string; removed?: string }> }) {
-  const { p, saved, removed } = await searchParams;
+export default async function ContributorsAdmin({ searchParams }: { searchParams: Promise<{ p?: string; saved?: string; removed?: string; err?: string }> }) {
+  const { p, saved, removed, err } = await searchParams;
   const doc = await getDoc("contributors").catch(() => ({}) as Contributors);
   const people = roster();
   const selected = people.find((x) => x.slug === p);
@@ -50,6 +52,7 @@ export default async function ContributorsAdmin({ searchParams }: { searchParams
       </p>
       {saved && <Saved>Saved.</Saved>}
       {removed && <Saved>Removed.</Saved>}
+      {err && <p className="mt-4 border border-red bg-red/10 px-4 py-3 text-sm text-paper">{err}</p>}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,18rem)_1fr] items-start">
         {/* Roster */}
@@ -162,6 +165,69 @@ export default async function ContributorsAdmin({ searchParams }: { searchParams
                 </button>
               </form>
             </section>
+
+            {/* Other work */}
+            <section>
+              <p className="eyebrow mb-3">Other work</p>
+              {(entry?.works ?? []).length > 0 ? (
+                <ul className="grid gap-2 mb-4">
+                  {(entry?.works ?? []).map((w) => (
+                    <li key={w.id} className="flex items-baseline justify-between gap-4 border border-line bg-ink-2/70 p-3">
+                      <span className="min-w-0">
+                        <span className="display text-lg block leading-none">{w.title}</span>
+                        {w.note && <span className="block text-xs text-muted mt-1">{w.note}</span>}
+                        {w.url && <span className="block text-xs text-yellow mt-1 truncate">{w.url}</span>}
+                      </span>
+                      <form action={removeContributorWork} className="shrink-0">
+                        <input type="hidden" name="slug" value={selected.slug} />
+                        <input type="hidden" name="id" value={w.id} />
+                        <button type="submit" className="text-[11px] text-muted underline underline-offset-4 hover:text-red">
+                          Remove
+                        </button>
+                      </form>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted mb-4">Nothing yet.</p>
+              )}
+              <form action={addContributorWork} className="border border-line p-4 grid gap-2 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+                <input type="hidden" name="slug" value={selected.slug} />
+                <label className="block">
+                  <span className="text-xs text-muted">Title</span>
+                  <input type="text" name="workTitle" required placeholder="Malevolent" className="field mt-1" />
+                </label>
+                <label className="block">
+                  <span className="text-xs text-muted">Note (optional)</span>
+                  <input type="text" name="workNote" placeholder="Creator. Arthur Lester." className="field mt-1" />
+                </label>
+                <button type="submit" className="btn btn-yellow">
+                  Add
+                </button>
+                <label className="block sm:col-span-3">
+                  <span className="text-xs text-muted">Link (optional)</span>
+                  <input type="url" name="workUrl" placeholder="https://" className="field mt-1" />
+                </label>
+              </form>
+            </section>
+
+            {/* Socials */}
+            <form action={saveContributorSocials} className="border border-line p-4">
+              <p className="eyebrow">Find them</p>
+              <p className="text-xs text-muted mt-0.5">Full URLs. Anything left blank is not shown.</p>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                <input type="hidden" name="slug" value={selected.slug} />
+                {SOCIAL_KEYS.map((k) => (
+                  <label key={k} className="block">
+                    <span className="text-xs text-muted">{SOCIAL_LABELS_PLACEHOLDER[k]}</span>
+                    <input type="url" name={`social:${k}`} defaultValue={entry?.socials?.[k] ?? ""} placeholder="https://" className="field mt-1" />
+                  </label>
+                ))}
+              </div>
+              <button type="submit" className="btn btn-yellow mt-4">
+                Save links
+              </button>
+            </form>
 
             {/* Description (not for artists) */}
             {wantsBio && (

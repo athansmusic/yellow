@@ -1,6 +1,6 @@
 import "server-only";
 import { getAllItems, slugify, type Episode } from "./feed";
-import { getDoc, type ContributorArt } from "./content";
+import { getDoc, type ContributorArt, type ContributorWork, type ContributorSocials } from "./content";
 import castJson from "@/data/cast.json";
 import writersJson from "@/data/writers.json";
 import overridesJson from "@/data/store-overrides.json";
@@ -22,6 +22,10 @@ export type Contributor = {
   bio: string;
   /** Owner-uploaded raw art pieces. */
   art: ContributorArt[];
+  /** Owner-entered other work, with optional links. */
+  works: ContributorWork[];
+  /** Only the filled-in socials. */
+  socials: ContributorSocials;
   /** Hidden from the public directory and their own page (admin toggle). */
   hidden: boolean;
   /** Nothing filled in yet: no art pieces and no description, so nothing to show. */
@@ -56,7 +60,7 @@ export async function getContributors(): Promise<Contributor[]> {
     const slug = slugify(name);
     let c = map.get(slug);
     if (!c) {
-      c = { slug, name, roles: [], knownFor: [], wrote: [], productCount: 0, bio: "", art: [], hidden: false, empty: true };
+      c = { slug, name, roles: [], knownFor: [], wrote: [], productCount: 0, bio: "", art: [], works: [], socials: {}, hidden: false, empty: true };
       map.set(slug, c);
     }
     return c;
@@ -90,11 +94,13 @@ export async function getContributors(): Promise<Contributor[]> {
 
   // Owner-managed art and descriptions
   for (const c of map.values()) {
-    const entry = (doc as Record<string, { bio?: string; art?: ContributorArt[]; hidden?: boolean; photo?: string }>)[c.slug];
+    const entry = (doc as Record<string, { bio?: string; art?: ContributorArt[]; hidden?: boolean; photo?: string; works?: ContributorWork[]; socials?: ContributorSocials }>)[c.slug];
     c.bio = entry?.bio ?? "";
     c.hidden = !!entry?.hidden;
     if (entry?.photo) c.photo = entry.photo;
     c.art = entry?.art ?? [];
+    c.works = entry?.works ?? [];
+    c.socials = entry?.socials ?? {};
     c.empty = c.art.length === 0 && !c.bio;
   }
 

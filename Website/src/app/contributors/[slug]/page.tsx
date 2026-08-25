@@ -12,6 +12,7 @@ import { SITE } from "@/lib/site";
 export const revalidate = 3600;
 
 const ROLE_LABEL = { writer: "Guest writer", artist: "Artist", cast: "Cast" } as const;
+const SOCIAL_LABEL: Record<string, string> = { website: "Website", instagram: "Instagram", tiktok: "TikTok", twitter: "Twitter / X", youtube: "YouTube", imdb: "IMDb" };
 
 export async function generateStaticParams() {
   return (await getContributors().catch(() => [])).map((c) => ({ slug: c.slug }));
@@ -159,6 +160,34 @@ export default async function ContributorPage({ params }: { params: Promise<{ sl
             </section>
           )}
 
+          {/* Other work */}
+          {c.works.length > 0 && (
+            <section>
+              <h2 className="eyebrow mb-3">Other work</h2>
+              <ul className="grid sm:grid-cols-2 gap-3">
+                {c.works.map((w) => {
+                  const inner = (
+                    <>
+                      <span className="display text-xl block leading-none">{w.title}</span>
+                      {w.note && <span className="block text-sm text-muted mt-1.5">{w.note}</span>}
+                    </>
+                  );
+                  return (
+                    <li key={w.id} className="border border-line border-l-2 border-l-red bg-ink-2/60 p-4">
+                      {w.url ? (
+                        <a href={w.url} target="_blank" rel="noreferrer" className="block hover:text-yellow">
+                          {inner}
+                        </a>
+                      ) : (
+                        inner
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          )}
+
           {/* Episodes written */}
           {c.wrote.length > 0 && (
             <section>
@@ -198,6 +227,23 @@ export default async function ContributorPage({ params }: { params: Promise<{ sl
               ))}
             </dl>
           </div>
+
+          {Object.keys(c.socials).length > 0 && (
+            <div className="border border-line bg-ink-2/60 p-4">
+              <p className="eyebrow mb-3">Find them</p>
+              <ul className="flex flex-wrap gap-2">
+                {Object.entries(c.socials).map(([k, url]) =>
+                  url ? (
+                    <li key={k}>
+                      <a href={url} target="_blank" rel="noreferrer" className="inline-block border border-line px-3 py-1.5 text-xs uppercase tracking-wider hover:border-yellow hover:text-yellow">
+                        {SOCIAL_LABEL[k] ?? k}
+                      </a>
+                    </li>
+                  ) : null,
+                )}
+              </ul>
+            </div>
+          )}
 
           {others.length > 0 && (
             <div className="border border-line bg-ink-2/60 p-4">

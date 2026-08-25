@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { auth, isAdminEmail, signIn, signOut } from "@/auth";
-import { getDoc, setDoc, LIKE_KINDS, type Aberration, type LikeKind, type LikePage, type SeasonStatus, type StoreCopy } from "@/lib/content";
+import { getDoc, setDoc, LIKE_KINDS, SOCIAL_KEYS, type Aberration, type LikeKind, type LikePage, type SeasonStatus, type StoreCopy } from "@/lib/content";
 import { slugify } from "@/lib/feed";
 
 async function requireAdmin() {
@@ -19,9 +19,10 @@ const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
  */
 async function storeUpload(file: FormDataEntryValue | null, key: string): Promise<string | null> {
   if (!(file instanceof File) || file.size === 0) return null;
-  if (file.size > 4 * 1024 * 1024) throw new Error("Image is larger than 4 MB");
+  if (file.size > 12 * 1024 * 1024) throw new Error("That image is over 12 MB. Export it smaller and try again.");
   const ext = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/avif": "avif" }[file.type];
-  if (!ext) throw new Error("Use a PNG, JPEG, WebP, or AVIF image");
+  // iPhone photos are HEIC by default and browsers cannot display them
+  if (!ext) throw new Error(file.type === "image/heic" || file.type === "image/heif" ? "That is an iPhone HEIC photo. Export or screenshot it as JPEG and try again." : "Use a PNG, JPEG, WebP, or AVIF image.");
   const pathname = `${key}.${ext}`;
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     const { put } = await import("@vercel/blob");
@@ -215,7 +216,12 @@ export async function addContributorArt(fd: FormData) {
   const slug = str(fd, "slug");
   if (!slug) redirect("/admin/contributors");
   const id = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
-  const url = await storeUpload(fd.get("artFile"), `contributors/${slug}/${id}`);
+  let url: string | null = null;
+  try {
+    url = await storeUpload(fd.get("artFile"), `contributors/${slug}/${id}`);
+  } catch (e) {
+    redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&err=${encodeURIComponent((e as Error).message)}`);
+  }
   if (url) {
     const all = await getDoc("contributors");
     const person = all[slug] ?? {};
@@ -259,7 +265,12 @@ export async function toggleContributorHidden(fd: FormData) {
 export async function saveContributorPhoto(fd: FormData) {
   await requireAdmin();
   const slug = str(fd, "slug");
-  const url = await storeUpload(fd.get("photoFile"), `contributors/${slug}-photo`);
+  let url: string | null = null;
+  try {
+    url = await storeUpload(fd.get("photoFile"), `contributors/${slug}-photo`);
+  } catch (e) {
+    redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&err=${encodeURIComponent((e as Error).message)}`);
+  }
   if (url) {
     const all = await getDoc("contributors");
     await setDoc("contributors", { ...all, [slug]: { ...(all[slug] ?? {}), photo: url } });
@@ -274,4 +285,41 @@ export async function removeContributorPhoto(fd: FormData) {
   const person = all[slug];
   if (person) await setDoc("contributors", { ...all, [slug]: { ...person, photo: undefined } });
   redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&removed=1`);
+}
+
+// ── Contributors: other work and social links ──────────────────────────────
+export async function addContributorWork(fd: FormData) {
+  await requireAdmin();
+  const slug = str(fd, "slug");
+  const title = str(fd, "workTitle");
+  if (slug && title) {
+    const all = await getDoc("contributors");
+    const person = all[slug] ?? {};
+    const work = { id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`, title, note: str(fd, "workNote") || undefined, url: str(fd, "workUrl") || undefined };
+    await setDoc("contributors", { ...all, [slug]: { ...person, works: [...(person.works ?? []), work] } });
+  }
+  redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&saved=1`);
+}
+
+export async function removeContributorWork(fd: FormData) {
+  await requireAdmin();
+  const slug = str(fd, "slug");
+  const id = str(fd, "id");
+  const all = await getDoc("contributors");
+  const person = all[slug];
+  if (person?.works) await setDoc("contributors", { ...all, [slug]: { ...person, works: person.works.filter((w) => w.id !== id) } });
+  redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&removed=1`);
+}
+
+export async function saveContributorSocials(fd: FormData) {
+  await requireAdmin();
+  const slug = str(fd, "slug");
+  const socials: Record<string, string> = {};
+  for (const k of SOCIAL_KEYS) {
+    const v = str(fd, `social:${k}`);
+    if (v) socials[k] = v;
+  }
+  const all = await getDoc("contributors");
+  await setDoc("contributors", { ...all, [slug]: { ...(all[slug] ?? {}), socials } });
+  redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&saved=1`);
 }
