@@ -4,6 +4,7 @@ import { getDoc, type ContributorArt, type ContributorWork, type ContributorSoci
 import castJson from "@/data/cast.json";
 import writersJson from "@/data/writers.json";
 import overridesJson from "@/data/store-overrides.json";
+import infoJson from "@/data/contributor-info.json";
 
 export type ContributorRole = "writer" | "artist" | "cast";
 
@@ -41,6 +42,9 @@ type WriterRow = { name: string; credit: string };
 const cast = castJson as CastRow[];
 const writers = writersJson as WriterRow[];
 const byName = (overridesJson as { byName: Record<string, { artist?: string }> }).byName;
+type InfoRow = { bio?: string; socials?: Record<string, string>; works?: { title: string; note?: string; url?: string }[] };
+/** Committed research: owner-approved words and official links, overridden by anything set in admin. */
+const info = infoJson as Record<string, InfoRow>;
 
 function productCounts(): Record<string, number> {
   const counts: Record<string, number> = {};
@@ -95,15 +99,16 @@ export async function getContributors(): Promise<Contributor[]> {
   // Owner-managed art and descriptions
   for (const c of map.values()) {
     const entry = (doc as Record<string, { bio?: string; art?: ContributorArt[]; hidden?: boolean; photo?: string; works?: ContributorWork[]; socials?: ContributorSocials }>)[c.slug];
-    c.bio = entry?.bio ?? "";
+    const base = info[c.slug];
+    c.bio = entry?.bio ?? base?.bio ?? "";
     c.hidden = !!entry?.hidden;
     if (entry?.photo) c.photo = entry.photo;
     c.art = entry?.art ?? [];
-    c.works = entry?.works ?? [];
+    c.works = entry?.works?.length ? entry.works : (base?.works ?? []).map((w, i) => ({ id: `info-${i}`, ...w }));
     // Entered work wins: the chips become the real credits instead of repeating them
     if (c.works.length) c.knownFor = c.works.map((w) => w.title);
-    c.socials = entry?.socials ?? {};
-    c.empty = c.art.length === 0 && !c.bio;
+    c.socials = Object.keys(entry?.socials ?? {}).length ? entry!.socials! : (base?.socials ?? {});
+    c.empty = c.art.length === 0 && !c.bio && c.works.length === 0;
   }
 
   return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));

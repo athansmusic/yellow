@@ -5,6 +5,7 @@ import { slugify } from "@/lib/feed";
 import cast from "@/data/cast.json";
 import writers from "@/data/writers.json";
 import overrides from "@/data/store-overrides.json";
+import info from "@/data/contributor-info.json";
 import { attachContributorArt, attachContributorPhoto, removeContributorArt, saveContributorDetails, toggleContributorHidden, removeContributorPhoto, addContributorWork, removeContributorWork } from "../actions";
 import { Saved } from "../ui";
 import { BlobUpload } from "@/components/admin/BlobUpload";
@@ -42,6 +43,10 @@ export default async function ContributorsAdmin({ searchParams }: { searchParams
   const selected = people.find((x) => x.slug === p);
   const entry = selected ? doc[selected.slug] : undefined;
   const art = entry?.art ?? [];
+  // Committed research shows as the starting value so editing never looks like a blank slate
+  const base = (info as Record<string, { bio?: string; socials?: Record<string, string> }>)[selected?.slug ?? ""] ?? {};
+  const bioValue = entry?.bio ?? base.bio ?? "";
+  const socialValue = (k: string) => entry?.socials?.[k as keyof NonNullable<typeof entry>["socials"]] ?? base.socials?.[k] ?? "";
   const wantsBio = !!selected;
 
   return (
@@ -207,7 +212,7 @@ export default async function ContributorsAdmin({ searchParams }: { searchParams
               <label className="block">
                 <span className="eyebrow">Description</span>
                 <span className="block text-xs text-muted mt-0.5">Your words. Blank leaves the page showing [ REDACTED ].</span>
-                <textarea name="bio" defaultValue={entry?.bio ?? ""} rows={5} className="field mt-2 w-full" />
+                <textarea name="bio" defaultValue={bioValue} rows={5} className="field mt-2 w-full" />
               </label>
               <div>
                 <p className="eyebrow">Find them</p>
@@ -216,7 +221,7 @@ export default async function ContributorsAdmin({ searchParams }: { searchParams
                   {SOCIAL_KEYS.map((k) => (
                     <label key={k} className="block">
                       <span className="text-xs text-muted">{SOCIAL_LABELS_PLACEHOLDER[k]}</span>
-                      <input type="text" name={`social:${k}`} defaultValue={entry?.socials?.[k] ?? ""} placeholder="instagram.com/name" className="field mt-1" />
+                      <input type="text" name={`social:${k}`} defaultValue={socialValue(k)} placeholder="instagram.com/name" className="field mt-1" />
                     </label>
                   ))}
                 </div>

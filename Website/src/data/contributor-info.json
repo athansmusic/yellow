@@ -1,0 +1,124 @@
+{
+  "airdorf": {
+    "bio": "Airdorf is the developer of the FAITH series, as well as games such as The Wind, Extra Ordinary, Earl's Day Off. He is a graduate of Texas A&M University, with a Master's degree in Visualization, and has been part of the games industry since 2014.",
+    "socials": {
+      "website": "https://airdorf.itch.io/",
+      "twitter": "https://x.com/Airdorf"
+    },
+    "works": [
+      { "title": "FAITH: The Unholy Trinity", "url": "https://store.steampowered.com/app/1179080/FAITH_The_Unholy_Trinity/" },
+      { "title": "The Wind", "url": "https://airdorf.itch.io/" },
+      { "title": "Earl's Day Off", "url": "https://airdorf.itch.io/" }
+    ]
+  },
+  "cam-collins": {
+    "bio": "Cam Collins is a native of Wise, Virginia, where she cut her teeth on the creepy folklore of the region. A lover of all things that go bump in the night and dyed-in-the-wool spooky bitch, Cam also produced and co-hosted Appalachian Arcana, a podcast featuring regional stories of folklore, true crime, cryptids and other general weirdness. She worked as a graphic designer and programmer in her life before OGoA, and holds degrees in English (BA, University of Virginia at Wise) and Speech Communication (MA, University of Georgia). Cam currently resides in Bristol, TN/VA, with her partner and their cats, dog, and snake.",
+    "socials": {
+      "website": "https://www.oldgodsofappalachia.com/",
+      "bluesky": "https://bsky.app/profile/oldgodspod.bsky.social",
+      "instagram": "https://www.instagram.com/oldgodsofappalachia"
+    },
+    "works": [{ "title": "Old Gods of Appalachia", "url": "https://www.oldgodsofappalachia.com/" }]
+  },
+  "chantal-ryan": {
+    "bio": "Chantal Ryan primarily focuses on disruptive thinking and avant-garde development processes in order to push project and medium boundaries past the status quo and into truly ground-breaking creative territory. Her work has been featured across 100+ publications and showcases including the New York Times, Tribeca Festival, the ABC News.",
+    "socials": {
+      "website": "https://linktr.ee/chantalryan",
+      "bluesky": "https://bsky.app/profile/thoughtrise.bsky.social"
+    },
+    "works": [{ "title": "darkwebSTREAMER", "url": "https://store.steampowered.com/app/1424180/darkwebSTREAMER/" }]
+  },
+  "harlan-guthrie": {
+    "socials": {
+      "website": "https://linktr.ee/harlanguthrie",
+      "instagram": "https://www.instagram.com/theharlanguthrie/",
+      "bluesky": "https://bsky.app/profile/malevolent.ca",
+      "imdb": "https://www.imdb.com/name/nm11617467/"
+    },
+    "works": [
+      { "title": "Malevolent", "url": "https://www.malevolent.ca/" },
+      { "title": "Deviser", "url": "https://rustyquill.com/show/deviser/" },
+      { "title": "Dice Shame", "url": "https://linktr.ee/harlanguthrie" }
+    ]
+  },
+  "jeffrey-reddick": {
+    "socials": {
+      "twitter": "https://x.com/JeffreyaReddick",
+      "imdb": "https://www.imdb.com/name/nm0714695/"
+    },
+    "works": [
+      { "title": "Final Destination", "note": "Creator.", "url": "https://www.imdb.com/title/tt0195714/" },
+      { "title": "Day of the Dead", "note": "Writer.", "url": "https://www.imdb.com/title/tt0489018/" },
+      { "title": "Don't Look Back", "note": "Writer and director.", "url": "https://www.imdb.com/title/tt10084996/" }
+    ]
+  },
+  "nick-lives": {
+    "bio": "Nick is an award-winning independent game developer of 11+ years, having served as the lead writer, artist and \"marketing guy\" on cult hits such as Home Safety Hotline, We Need To Go Deeper, Doodle Date and more. Nick's work has been praised across his career as \"imaginative\", \"wildly funny\" and \"twisted\" by outlets such as NPR, Kotaku and Bloody Disgusting, among others. Nick has also voyaged into other creative endeavors through the years such as writing for comedy websites and acting/puppeteering at terrible fantasy theme parks. In his free time, Nick enjoys watching the worst films ever put to celluloid and spending time with his cosplaying actress wife Kortney and their two pet gremlins.",
+    "socials": {
+      "website": "https://nightsignalentertainment.itch.io/",
+      "twitter": "https://x.com/SlickNickLives",
+      "youtube": "https://www.youtube.com/channel/UCPr1S4y5usbF0XXATbCBObA"
+    },
+    "works": [
+      { "title": "Home Safety Hotline", "url": "https://store.steampowered.com/app/2434350/Home_Safety_Hotline/" },
+      { "title": "We Need To Go Deeper", "url": "https://store.steampowered.com/app/307110/We_Need_To_Go_Deeper/" },
+      { "title": "Doodle Date", "url": "https://nightsignalentertainment.itch.io/" }
+    ]
+  },
+  "pacific-obadiah": {
+    "socials": { "website": "https://www.pacificobadiah.com/" },
+    "works": [
+      { "title": "SCP Archives", "url": "https://www.pacificobadiah.com/scp-archives/" },
+      { "title": "Mayfair Watchers Society", "url": "https://www.pacificobadiah.com/" },
+      { "title": "Dead Space: Deep Cover", "url": "https://www.pacificobadiah.com/" }
+    ]
+  },
+  "xalavier-nelson-jr": {
+    "bio": "Xalavier Nelson Jr. is a BAFTA-nominated studio head, writer, actor, and Forbes 30 under 30 luminary, with over 100 titles under his belt, including I Am Your Beast, Magic: The Gathering, Borderlands 4, and El Paso, Elsewhere. He also makes strides in a storytelling career outside of game development, with releases such as the cult hit comic Sherlock Holmes Hunts the Moth Man and a starring voice role in the upcoming Clive Barker's Hellraiser: Revival.",
+    "socials": {
+      "website": "https://www.strangescaffold.com/",
+      "tiktok": "https://www.tiktok.com/@writnelson"
+    },
+    "works": [
+      { "title": "Clickolding", "url": "https://store.steampowered.com/app/2649180/Clickolding/" },
+      { "title": "El Paso, Elsewhere", "url": "https://store.steampowered.com/app/1523780/El_Paso_Elsewhere/" },
+      { "title": "I Am Your Beast", "url": "https://store.steampowered.com/app/2183360/I_Am_Your_Beast/" }
+    ]
+  },
+  "kc-wayland": {
+    "socials": {
+      "website": "https://www.waylandproductions.com/",
+      "imdb": "https://www.imdb.com/name/nm1347769/"
+    },
+    "works": [
+      { "title": "We're Alive", "url": "https://www.waylandproductions.com/were-alive-a-story-of-survival/" },
+      { "title": "We're Alive: Descendants", "url": "https://www.waylandproductions.com/" },
+      { "title": "We're Alive: Archive", "url": "https://www.waylandproductions.com/were-alive-archive/" }
+    ]
+  },
+  "matt-dymerski": {
+    "socials": { "website": "https://mattdymerski.com/" },
+    "works": [
+      { "title": "Psychosis", "url": "https://mattdymerski.com/" },
+      { "title": "The Asylum", "url": "https://mattdymerski.com/" }
+    ]
+  },
+  "crista-castro": {
+    "bio": "I'm an Art Director from TV Animation who founded an indie game studio and created the first game published by Blumhouse Games. I approach design as a process of finding efficient, elegant solutions that serve the overall vision.",
+    "socials": {
+      "website": "https://cozygamepals.com/",
+      "twitter": "https://x.com/cozygamepals"
+    },
+    "works": [{ "title": "Fear the Spotlight", "url": "https://store.steampowered.com/app/2178420/Fear_the_Spotlight/" }]
+  },
+  "ashley-mcanelly": {
+    "works": [{ "title": "It's All in the Cards", "url": "https://itsallinthecardspodcast.buzzsprout.com/" }]
+  },
+  "dylan-griggs": {
+    "socials": {
+      "website": "https://woebegonepod.com/",
+      "twitter": "https://twitter.com/WOEBEGONEPOD"
+    },
+    "works": [{ "title": "WOE.BEGONE", "url": "https://woebegonepod.com/" }]
+  }
+}
