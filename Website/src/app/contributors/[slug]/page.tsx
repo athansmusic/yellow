@@ -12,7 +12,7 @@ import { SITE } from "@/lib/site";
 export const revalidate = 3600;
 
 const ROLE_LABEL = { writer: "Guest writer", artist: "Artist", cast: "Cast" } as const;
-const SOCIAL_LABEL: Record<string, string> = { website: "Website", instagram: "Instagram", tiktok: "TikTok", twitter: "Twitter / X", youtube: "YouTube", imdb: "IMDb" };
+const SOCIAL_LABEL: Record<string, string> = { website: "Website", instagram: "Instagram", bluesky: "Bluesky", tiktok: "TikTok", twitter: "Twitter / X", youtube: "YouTube", imdb: "IMDb" };
 
 export async function generateStaticParams() {
   return (await getContributors().catch(() => [])).map((c) => ({ slug: c.slug }));

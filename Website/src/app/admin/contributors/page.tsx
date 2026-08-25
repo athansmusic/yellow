@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 type Person = { slug: string; name: string; roles: string[]; note: string };
 
-const SOCIAL_LABELS_PLACEHOLDER: Record<string, string> = { website: "Website", instagram: "Instagram", tiktok: "TikTok", twitter: "Twitter / X", youtube: "YouTube", imdb: "IMDb" };
+const SOCIAL_LABELS_PLACEHOLDER: Record<string, string> = { website: "Website", instagram: "Instagram", bluesky: "Bluesky", tiktok: "TikTok", twitter: "Twitter / X", youtube: "YouTube", imdb: "IMDb" };
 
 /** Everyone who makes the show: cast, guest writers, store artists. A person can hold several roles. */
 function roster(): Person[] {

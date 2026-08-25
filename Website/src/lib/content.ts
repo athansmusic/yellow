@@ -79,7 +79,7 @@ export type SiteText = Record<string, string>;
 export type ContributorArt = { id: string; url: string; title: string };
 export type ContributorWork = { id: string; title: string; note?: string; url?: string };
 /** Only the keys with a value are shown. */
-export const SOCIAL_KEYS = ["website", "instagram", "tiktok", "twitter", "youtube", "imdb"] as const;
+export const SOCIAL_KEYS = ["website", "instagram", "bluesky", "tiktok", "twitter", "youtube", "imdb"] as const;
 export type ContributorSocials = Partial<Record<(typeof SOCIAL_KEYS)[number], string>>;
 export type Contributors = Record<string, { bio?: string; art?: ContributorArt[]; hidden?: boolean; photo?: string; works?: ContributorWork[]; socials?: ContributorSocials }>;
 export type FanArt = { id: string; image: string; width: number; height: number; title: string; artist: string; postUrl: string; ts: number };
