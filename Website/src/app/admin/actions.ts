@@ -13,6 +13,8 @@ async function requireAdmin() {
 }
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
+/** Accepts "instagram.com/x", "@x" is left alone; adds https:// when a scheme is missing. */
+const asUrl = (v: string) => (!v ? "" : /^https?:\/\//i.test(v) ? v : `https://${v.replace(/^\/+/, "")}`);
 
 /**
  * Saves an uploaded image and returns its public URL, or null when no file was chosen.
@@ -296,7 +298,7 @@ export async function addContributorWork(fd: FormData) {
   if (slug && title) {
     const all = await getDoc("contributors");
     const person = all[slug] ?? {};
-    const work = { id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`, title, note: str(fd, "workNote") || undefined, url: str(fd, "workUrl") || undefined };
+    const work = { id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`, title, note: str(fd, "workNote") || undefined, url: asUrl(str(fd, "workUrl")) || undefined };
     await setDoc("contributors", { ...all, [slug]: { ...person, works: [...(person.works ?? []), work] } });
   }
   redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&saved=1`);
@@ -317,7 +319,7 @@ export async function saveContributorSocials(fd: FormData) {
   const slug = str(fd, "slug");
   const socials: Record<string, string> = {};
   for (const k of SOCIAL_KEYS) {
-    const v = str(fd, `social:${k}`);
+    const v = asUrl(str(fd, `social:${k}`));
     if (v) socials[k] = v;
   }
   const all = await getDoc("contributors");
@@ -355,7 +357,7 @@ export async function saveContributorDetails(fd: FormData) {
   const slug = str(fd, "slug");
   const socials: Record<string, string> = {};
   for (const k of SOCIAL_KEYS) {
-    const v = str(fd, `social:${k}`);
+    const v = asUrl(str(fd, `social:${k}`));
     if (v) socials[k] = v;
   }
   const bio = str(fd, "bio");

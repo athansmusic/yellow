@@ -196,7 +196,7 @@ export default async function ContributorsAdmin({ searchParams }: { searchParams
                 </button>
                 <label className="block sm:col-span-3">
                   <span className="text-xs text-muted">Link (optional)</span>
-                  <input type="url" name="workUrl" placeholder="https://" className="field mt-1" />
+                  <input type="text" name="workUrl" placeholder="example.com/thing" className="field mt-1" />
                 </label>
               </form>
             </section>
@@ -216,7 +216,7 @@ export default async function ContributorsAdmin({ searchParams }: { searchParams
                   {SOCIAL_KEYS.map((k) => (
                     <label key={k} className="block">
                       <span className="text-xs text-muted">{SOCIAL_LABELS_PLACEHOLDER[k]}</span>
-                      <input type="url" name={`social:${k}`} defaultValue={entry?.socials?.[k] ?? ""} placeholder="https://" className="field mt-1" />
+                      <input type="text" name={`social:${k}`} defaultValue={entry?.socials?.[k] ?? ""} placeholder="instagram.com/name" className="field mt-1" />
                     </label>
                   ))}
                 </div>
