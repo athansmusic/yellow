@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getContributors } from "@/lib/contributors";
-import { getProducts } from "@/lib/catalog";
 import { Container } from "@/components/ui";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
 import { SITE } from "@/lib/site";
@@ -18,19 +17,14 @@ export const metadata: Metadata = {
 };
 
 export default async function ContributorsPage() {
-  const [people, products] = await Promise.all([getContributors(), getProducts().catch(() => [])]);
+  const people = await getContributors();
   const visible = people.filter((c) => !c.hidden && !c.empty);
   const writers = visible.filter((c) => c.roles.includes("writer"));
-  const credited = writers.filter((c) => c.wrote.length > 0);
-  const pending = writers.filter((c) => c.wrote.length === 0);
   const artists = visible.filter((c) => c.roles.includes("artist"));
   const castList = cast as { slug: string; actor: string; character: string; image: string }[];
 
-  /** Four tiles for an artist: their uploaded art first, then their product shots. */
-  const tilesFor = (name: string, uploaded: { url: string }[]) => {
-    const shots = products.filter((p) => p.artist === name).map((p) => p.image);
-    return [...uploaded.map((a) => a.url), ...shots].slice(0, 4);
-  };
+  /** Tiles are the artist's own pieces; merch mockups are not their art. */
+  const tilesFor = (uploaded: { url: string }[]) => uploaded.map((a) => a.url).slice(0, 4);
 
   return (
     <Container className="py-10 sm:py-16">
@@ -80,35 +74,29 @@ export default async function ContributorsPage() {
           <span className="text-xs text-muted tabular">{writers.length}</span>
         </div>
         <ul className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {credited.map((c) => {
+          {writers.map((c) => {
             const ep = c.wrote[0];
             return (
               <li key={c.slug}>
                 <Link href={`/contributors/${c.slug}`} className="group flex h-full items-center gap-4 border border-line bg-ink-2/60 p-3 hover:border-yellow">
                   <span className="relative size-16 shrink-0 overflow-hidden bg-ink">
-                    <Image src={ep.image || "/brand/showart.jpeg"} alt="" fill sizes="64px" className="object-cover" />
+                    {c.photo ? (
+                      <Image src={c.photo} alt="" fill sizes="64px" className="object-cover object-top" />
+                    ) : (
+                      <span className="absolute inset-0 grid place-items-center text-muted" aria-hidden>
+                        &#9646;
+                      </span>
+                    )}
                   </span>
                   <span className="min-w-0">
                     <span className="display text-xl block leading-none group-hover:text-yellow">{c.name}</span>
-                    {c.knownFor.length > 0 && <span className="block text-xs text-muted mt-1 truncate">{c.knownFor.join(" · ")}</span>}
-                    <span className="block text-[11px] text-yellow tracking-wider mt-1">{ep.code}</span>
+                    {c.knownFor.length > 0 && <span className="block text-xs text-muted mt-1 truncate">{c.knownFor.join(" \u00b7 ")}</span>}
+                    <span className="block text-[11px] tracking-wider mt-1 text-yellow">{ep ? ep.code : ""}</span>
                   </span>
                 </Link>
               </li>
             );
           })}
-          {pending.map((c) => (
-            <li key={c.slug} className="flex h-full items-center gap-4 border border-line border-dashed bg-ink-2/30 p-3">
-              <span className="size-16 shrink-0 grid place-items-center bg-ink text-muted" aria-hidden>
-                ▮
-              </span>
-              <span className="min-w-0">
-                <span className="display text-xl block leading-none text-paper/80">{c.name}</span>
-                {c.knownFor.length > 0 && <span className="block text-xs text-muted mt-1 truncate">{c.knownFor.join(" · ")}</span>}
-                <span className="block text-[11px] text-muted tracking-wider mt-1">Unannounced</span>
-              </span>
-            </li>
-          ))}
         </ul>
       </section>
 
@@ -120,7 +108,7 @@ export default async function ContributorsPage() {
         </div>
         <ul className="mt-6 grid sm:grid-cols-2 gap-4">
           {artists.map((c) => {
-            const tiles = tilesFor(c.name, c.art);
+            const tiles = tilesFor(c.art);
             return (
               <li key={c.slug}>
                 <Link href={`/contributors/${c.slug}`} className="group block border border-line bg-ink-2/60 hover:border-yellow">
@@ -136,7 +124,7 @@ export default async function ContributorsPage() {
                   <span className="flex items-baseline justify-between gap-3 p-3">
                     <span className="display text-2xl leading-none group-hover:text-yellow">{c.name}</span>
                     <span className="text-xs text-muted shrink-0">
-                      {c.productCount > 0 ? `${c.productCount} product${c.productCount === 1 ? "" : "s"}` : "Cover art"}
+                      {c.art.length > 0 ? `${c.art.length} piece${c.art.length === 1 ? "" : "s"}` : ""}
                     </span>
                   </span>
                 </Link>
