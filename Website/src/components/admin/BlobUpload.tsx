@@ -1,6 +1,7 @@
 "use client";
 
 import { upload } from "@vercel/blob/client";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 /**
@@ -20,6 +21,7 @@ export function BlobUpload({
   withTitle?: boolean;
   label?: string;
 }) {
+  const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -42,6 +44,8 @@ export function BlobUpload({
       out.set("title", String(data.get("title") ?? ""));
       await action(out);
       form.reset();
+      // The action revalidates on the server; the page still has to be told to re-render
+      router.refresh();
     } catch (err) {
       setError((err as Error).message || "Upload failed.");
     } finally {
