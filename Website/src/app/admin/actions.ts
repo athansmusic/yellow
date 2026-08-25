@@ -329,12 +329,13 @@ export async function saveContributorSocials(fd: FormData) {
 export async function attachContributorArt(fd: FormData) {
   await requireAdmin();
   const slug = str(fd, "slug");
-  const url = str(fd, "url");
-  if (!slug || !url) return;
+  const urls = fd.getAll("url").map(String).filter(Boolean);
+  if (!slug || !urls.length) return;
+  const title = str(fd, "title");
   const all = await getDoc("contributors");
   const person = all[slug] ?? {};
-  const art = [...(person.art ?? []), { id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`, url, title: str(fd, "title") }];
-  await setDoc("contributors", { ...all, [slug]: { ...person, art } });
+  const added = urls.map((url, i) => ({ id: `${Date.now().toString(36)}${i}${Math.random().toString(36).slice(2, 6)}`, url, title: urls.length === 1 ? title : "" }));
+  await setDoc("contributors", { ...all, [slug]: { ...person, art: [...(person.art ?? []), ...added] } });
   revalidatePath("/admin/contributors");
 }
 
@@ -346,4 +347,19 @@ export async function attachContributorPhoto(fd: FormData) {
   const all = await getDoc("contributors");
   await setDoc("contributors", { ...all, [slug]: { ...(all[slug] ?? {}), photo: url } });
   revalidatePath("/admin/contributors");
+}
+
+/** Description and social links in one save, so the button does what it says. */
+export async function saveContributorDetails(fd: FormData) {
+  await requireAdmin();
+  const slug = str(fd, "slug");
+  const socials: Record<string, string> = {};
+  for (const k of SOCIAL_KEYS) {
+    const v = str(fd, `social:${k}`);
+    if (v) socials[k] = v;
+  }
+  const bio = str(fd, "bio");
+  const all = await getDoc("contributors");
+  await setDoc("contributors", { ...all, [slug]: { ...(all[slug] ?? {}), bio: bio || undefined, socials } });
+  redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&saved=1`);
 }

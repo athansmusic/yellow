@@ -5,7 +5,7 @@ import { slugify } from "@/lib/feed";
 import cast from "@/data/cast.json";
 import writers from "@/data/writers.json";
 import overrides from "@/data/store-overrides.json";
-import { attachContributorArt, attachContributorPhoto, removeContributorArt, saveContributorBio, toggleContributorHidden, removeContributorPhoto, addContributorWork, removeContributorWork, saveContributorSocials } from "../actions";
+import { attachContributorArt, attachContributorPhoto, removeContributorArt, saveContributorDetails, toggleContributorHidden, removeContributorPhoto, addContributorWork, removeContributorWork } from "../actions";
 import { Saved } from "../ui";
 import { BlobUpload } from "@/components/admin/BlobUpload";
 
@@ -152,7 +152,7 @@ export default async function ContributorsAdmin({ searchParams }: { searchParams
 
               <div className="mt-5 border border-line p-4">
                 <p className="eyebrow mb-2">Add a piece</p>
-                <BlobUpload slug={selected.slug} kind="art" action={attachContributorArt} withTitle label="Upload" />
+                <BlobUpload slug={selected.slug} kind="art" action={attachContributorArt} withTitle multiple label="Upload" />
               </div>
             </section>
 
@@ -201,38 +201,32 @@ export default async function ContributorsAdmin({ searchParams }: { searchParams
               </form>
             </section>
 
-            {/* Socials */}
-            <form action={saveContributorSocials} className="border border-line p-4">
-              <p className="eyebrow">Find them</p>
-              <p className="text-xs text-muted mt-0.5">Full URLs. Anything left blank is not shown.</p>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                <input type="hidden" name="slug" value={selected.slug} />
-                {SOCIAL_KEYS.map((k) => (
-                  <label key={k} className="block">
-                    <span className="text-xs text-muted">{SOCIAL_LABELS_PLACEHOLDER[k]}</span>
-                    <input type="url" name={`social:${k}`} defaultValue={entry?.socials?.[k] ?? ""} placeholder="https://" className="field mt-1" />
-                  </label>
-                ))}
+            {/* Description and links save together */}
+            <form action={saveContributorDetails} className="border border-line p-4 grid gap-5">
+              <input type="hidden" name="slug" value={selected.slug} />
+              <label className="block">
+                <span className="eyebrow">Description</span>
+                <span className="block text-xs text-muted mt-0.5">Your words. Blank leaves the page showing [ REDACTED ].</span>
+                <textarea name="bio" defaultValue={entry?.bio ?? ""} rows={5} className="field mt-2 w-full" />
+              </label>
+              <div>
+                <p className="eyebrow">Find them</p>
+                <p className="text-xs text-muted mt-0.5">Full URLs. Anything left blank is not shown.</p>
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  {SOCIAL_KEYS.map((k) => (
+                    <label key={k} className="block">
+                      <span className="text-xs text-muted">{SOCIAL_LABELS_PLACEHOLDER[k]}</span>
+                      <input type="url" name={`social:${k}`} defaultValue={entry?.socials?.[k] ?? ""} placeholder="https://" className="field mt-1" />
+                    </label>
+                  ))}
+                </div>
               </div>
-              <button type="submit" className="btn btn-yellow mt-4">
-                Save links
-              </button>
-            </form>
-
-            {/* Description (not for artists) */}
-            {wantsBio && (
-              <form action={saveContributorBio} className="border border-line p-4">
-                <input type="hidden" name="slug" value={selected.slug} />
-                <label className="block">
-                  <span className="eyebrow">Description</span>
-                  <span className="block text-xs text-muted mt-0.5">Your words. Blank leaves the page showing [ REDACTED ].</span>
-                  <textarea name="bio" defaultValue={entry?.bio ?? ""} rows={5} className="field mt-2 w-full" />
-                </label>
-                <button type="submit" className="btn btn-yellow mt-3">
-                  Save description
+              <div>
+                <button type="submit" className="btn btn-yellow">
+                  Save description and links
                 </button>
-              </form>
-            )}
+              </div>
+            </form>
           </div>
         )}
       </div>
