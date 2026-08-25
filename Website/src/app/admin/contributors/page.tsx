@@ -39,15 +39,14 @@ export default async function ContributorsAdmin({ searchParams }: { searchParams
   const selected = people.find((x) => x.slug === p);
   const entry = selected ? doc[selected.slug] : undefined;
   const art = entry?.art ?? [];
-  // Descriptions are for writers; artists are credited by their work alone
-  const wantsBio = !!selected && !(selected.roles.length === 1 && selected.roles[0] === "Artist");
+  const wantsBio = !!selected;
 
   return (
     <div>
       <p className="eyebrow">People</p>
       <h1 className="display text-5xl mt-2">Contributors</h1>
       <p className="mt-3 max-w-prose text-paper/85">
-        Guest writers and artists. Add the raw art pieces for each person and they appear on their page. Writers can carry a description; artists are credited by the work itself.
+        Guest writers and artists. Add the raw art pieces for each person and a description, and they appear on their page.
       </p>
       {saved && <Saved>Saved.</Saved>}
       {removed && <Saved>Removed.</Saved>}
@@ -140,7 +139,7 @@ export default async function ContributorsAdmin({ searchParams }: { searchParams
                 <input type="hidden" name="slug" value={selected.slug} />
                 <label className="block">
                   <span className="eyebrow">Description</span>
-                  <span className="block text-xs text-muted mt-0.5">Your words. Blank leaves the page showing STATEMENT WITHHELD.</span>
+                  <span className="block text-xs text-muted mt-0.5">Your words. Blank leaves the page showing [ REDACTED ].</span>
                   <textarea name="bio" defaultValue={entry?.bio ?? ""} rows={5} className="field mt-2 w-full" />
                 </label>
                 <button type="submit" className="btn btn-yellow mt-3">

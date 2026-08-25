@@ -141,7 +141,7 @@ export default async function ContributorPage({ params }: { params: Promise<{ sl
             {c.bio ? (
               <p className="text-paper/90 max-w-prose whitespace-pre-line">{c.bio}</p>
             ) : (
-              <p className="border border-line bg-ink-2/60 px-4 py-6 text-center text-sm uppercase tracking-[.25em] text-muted">[ Statement withheld ]</p>
+              <p className="border border-line bg-ink-2/60 px-4 py-6 text-center text-sm uppercase tracking-[.25em] text-muted">[ REDACTED ]</p>
             )}
           </section>
 
