@@ -42,7 +42,7 @@ type WriterRow = { name: string; credit: string };
 const cast = castJson as CastRow[];
 const writers = writersJson as WriterRow[];
 const byName = (overridesJson as { byName: Record<string, { artist?: string }> }).byName;
-type InfoRow = { bio?: string; socials?: Record<string, string>; works?: { title: string; note?: string; url?: string }[] };
+type InfoRow = { bio?: string; photo?: string; socials?: Record<string, string>; works?: { title: string; note?: string; url?: string }[] };
 /** Committed research: owner-approved words and official links, overridden by anything set in admin. */
 const info = infoJson as Record<string, InfoRow>;
 
@@ -103,6 +103,7 @@ export async function getContributors(): Promise<Contributor[]> {
     c.bio = entry?.bio ?? base?.bio ?? "";
     c.hidden = !!entry?.hidden;
     if (entry?.photo) c.photo = entry.photo;
+    else if (base?.photo) c.photo = base.photo;
     c.art = entry?.art ?? [];
     c.works = entry?.works?.length ? entry.works : (base?.works ?? []).map((w, i) => ({ id: `info-${i}`, ...w }));
     // Entered work wins: the chips become the real credits instead of repeating them
