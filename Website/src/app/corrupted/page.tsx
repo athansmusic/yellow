@@ -9,10 +9,11 @@ import { CorruptedSignup, FileStatus, Grain, RedactedSlots, Stamp, TearDefs, Tra
  * root is load-bearing — globals.css keys the red header/footer treatment off `body:has(#corrupted)`.
  */
 export const metadata: Metadata = {
-  title: "CORRUPTED",
-  description: "A horror anthology set in the REDACTED universe.",
+  // absolute: the site template appends " · REDACTED", and this title stands on its own.
+  title: { absolute: "CORRUPTED: A horror anthology" },
+  description: "CORRUPTED is a horror anthology series set in the REDACTED universe.",
   alternates: { canonical: "/corrupted" },
-  openGraph: { siteName: "REDACTED", title: "CORRUPTED" },
+  openGraph: { siteName: "REDACTED", title: "CORRUPTED: A horror anthology" },
 };
 
 export default function CorruptedPage() {
@@ -23,7 +24,12 @@ export default function CorruptedPage() {
 
       {/* Hero: the key art, with the type sat under the figure rather than across it */}
       <section className="relative z-10 min-h-[92svh] flex items-end overflow-hidden">
-        <Image src="/corrupted/hero.jpg" alt="" fill priority sizes="100vw" className="object-cover object-top" />
+        {/* The still paints first and is what reduced-motion clients keep; the loop layers over it.
+            Both anchor bottom so the crop eats the top of the frame, never the foot of the art. */}
+        <Image src="/corrupted/hero-still.jpg" alt="" fill priority sizes="100vw" className="object-cover object-bottom" />
+        <video aria-hidden autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-cover object-bottom motion-reduce:hidden">
+          <source src="/corrupted/hero.mp4" type="video/mp4" />
+        </video>
         <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(140,22,31,0)_35%,rgba(140,22,31,.72)_68%,#8c161f_100%)]" />
 
         <div className="relative mx-auto w-full max-w-5xl px-5 pb-14 text-center">
