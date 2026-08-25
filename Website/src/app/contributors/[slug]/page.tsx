@@ -28,8 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${c.name} (${role})`,
     description: `${c.name}, ${role.toLowerCase()} on REDACTED${ep ? `, wrote ${ep.code}: ${ep.shortTitle}` : ""}${c.knownFor.length ? `. Known for ${c.knownFor.join(", ")}.` : "."}`,
     alternates: { canonical: `/contributors/${c.slug}` },
-    openGraph: { siteName: "REDACTED" },
-  };
+    };
 }
 
 export default async function ContributorPage({ params }: { params: Promise<{ slug: string }> }) {

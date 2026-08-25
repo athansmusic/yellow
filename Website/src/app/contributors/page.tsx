@@ -13,7 +13,6 @@ export const metadata: Metadata = {
   title: "Contributors",
   description: "The cast, guest writers, and artists that help bring REDACTED to life.",
   alternates: { canonical: "/contributors" },
-  openGraph: { siteName: "REDACTED" },
 };
 
 export default async function ContributorsPage() {

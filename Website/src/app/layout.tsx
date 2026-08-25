@@ -25,6 +25,9 @@ export const metadata: Metadata = {
   // Under 160 characters: search results and social cards truncate past that.
   description: "A horror comedy podcast on the Rusty Quill network. A failing actor steals his dead twin's identity and lands in a secret paranormal agency.",
   keywords: ["REDACTED podcast", "horror comedy audio drama", "fiction podcast", "monster of the week podcast", "Rusty Quill", "Hush Studios", "Jacob Kane", "audio drama 2026"],
+  // Declaring openGraph on a page REPLACES this whole object, images included: a page that
+  // wants a different title must either re-declare images or ship its own opengraph-image file,
+  // or it will share with no card at all.
   openGraph: { type: "website", siteName: "REDACTED", locale: "en_US", images: [{ url: "/brand/share.jpg", width: 1200, height: 630, alt: "REDACTED: a horror comedy audio drama" }] },
   twitter: { card: "summary_large_image", site: "@TheRedactedUnit" },
   alternates: { types: { "application/rss+xml": LISTEN.rss } },
