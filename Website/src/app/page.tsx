@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getEpisodes, getSevenPlanes, formatDate, formatDuration, toTrack, type Episode } from "@/lib/feed";
+import { getEpisodes, getSevenPlanes, formatDate, formatDuration, toTrack, type Episode, slugify } from "@/lib/feed";
 import { getProducts } from "@/lib/catalog";
 import { getDoc } from "@/lib/content";
 import { ContinueListening } from "@/components/ContinueListening";
@@ -274,9 +274,11 @@ export default async function Home() {
           </div>
           <ul className="grid gap-px bg-line border border-line sm:grid-cols-2 lg:grid-cols-4">
             {writers.map((w) => (
-              <li key={w.name} className="bg-ink p-4">
-                <p className="display text-2xl leading-none">{w.name}</p>
-                <p className="text-xs text-yellow mt-1">{w.credit}</p>
+              <li key={w.name} className="bg-ink">
+                <Link href={`/contributors/${slugify(w.name)}`} className="group block h-full p-4 hover:bg-ink-2">
+                  <p className="display text-2xl leading-none group-hover:text-yellow">{w.name}</p>
+                  <p className="text-xs text-yellow mt-1">{w.credit}</p>
+                </Link>
               </li>
             ))}
           </ul>
