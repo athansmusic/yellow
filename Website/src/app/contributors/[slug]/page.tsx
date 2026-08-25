@@ -36,7 +36,8 @@ export default async function ContributorPage({ params }: { params: Promise<{ sl
   const c = await getContributor(slug);
   if (!c || c.hidden || c.empty || (c.roles.length === 1 && c.roles[0] === "cast")) notFound();
   const all = await getContributors();
-  const others = all.filter((x) => !x.hidden && !x.empty && x.roles.includes("writer") && x.slug !== c.slug && x.wrote.length > 0).slice(0, 4);
+  const isWriterPage = c.roles.includes("writer");
+  const others = all.filter((x) => !x.hidden && !x.empty && x.slug !== c.slug && (isWriterPage ? x.roles.includes("writer") && x.wrote.length > 0 : x.roles.includes("artist"))).slice(0, 4);
   const hero = c.wrote[0];
   const primaryRole = c.roles.includes("writer") ? "Guest writer" : "Artist";
   const first = c.name.split(" ")[0].toUpperCase();
@@ -247,13 +248,13 @@ export default async function ContributorPage({ params }: { params: Promise<{ sl
 
           {others.length > 0 && (
             <div className="border border-line bg-ink-2/60 p-4">
-              <p className="eyebrow mb-3">Other guest writers</p>
+              <p className="eyebrow mb-3">{isWriterPage ? "Other guest writers" : "Other artists"}</p>
               <ul className="grid gap-2">
                 {others.map((o) => (
                   <li key={o.slug}>
                     <Link href={`/contributors/${o.slug}`} className="flex items-baseline justify-between gap-3 hover:text-yellow">
                       <span className="display text-lg truncate">{o.name}</span>
-                      <span className="text-xs text-muted shrink-0">{o.wrote[0]?.code}</span>
+                      <span className="text-xs text-muted shrink-0">{isWriterPage ? o.wrote[0]?.code : o.productCount ? `${o.productCount} product${o.productCount === 1 ? "" : "s"}` : ""}</span>
                     </Link>
                   </li>
                 ))}
