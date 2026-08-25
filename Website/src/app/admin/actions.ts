@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { auth, isAdminEmail, signIn, signOut } from "@/auth";
 import { getDoc, setDoc, LIKE_KINDS, SOCIAL_KEYS, type Aberration, type LikeKind, type LikePage, type SeasonStatus, type StoreCopy } from "@/lib/content";
 import { slugify } from "@/lib/feed";
@@ -322,4 +323,27 @@ export async function saveContributorSocials(fd: FormData) {
   const all = await getDoc("contributors");
   await setDoc("contributors", { ...all, [slug]: { ...(all[slug] ?? {}), socials } });
   redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&saved=1`);
+}
+
+// ── Contributors: attach files the browser uploaded straight to Blob ───────
+export async function attachContributorArt(fd: FormData) {
+  await requireAdmin();
+  const slug = str(fd, "slug");
+  const url = str(fd, "url");
+  if (!slug || !url) return;
+  const all = await getDoc("contributors");
+  const person = all[slug] ?? {};
+  const art = [...(person.art ?? []), { id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`, url, title: str(fd, "title") }];
+  await setDoc("contributors", { ...all, [slug]: { ...person, art } });
+  revalidatePath("/admin/contributors");
+}
+
+export async function attachContributorPhoto(fd: FormData) {
+  await requireAdmin();
+  const slug = str(fd, "slug");
+  const url = str(fd, "url");
+  if (!slug || !url) return;
+  const all = await getDoc("contributors");
+  await setDoc("contributors", { ...all, [slug]: { ...(all[slug] ?? {}), photo: url } });
+  revalidatePath("/admin/contributors");
 }

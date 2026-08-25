@@ -5,8 +5,9 @@ import { slugify } from "@/lib/feed";
 import cast from "@/data/cast.json";
 import writers from "@/data/writers.json";
 import overrides from "@/data/store-overrides.json";
-import { addContributorArt, removeContributorArt, saveContributorBio, toggleContributorHidden, saveContributorPhoto, removeContributorPhoto, addContributorWork, removeContributorWork, saveContributorSocials } from "../actions";
+import { attachContributorArt, attachContributorPhoto, removeContributorArt, saveContributorBio, toggleContributorHidden, removeContributorPhoto, addContributorWork, removeContributorWork, saveContributorSocials } from "../actions";
 import { Saved } from "../ui";
+import { BlobUpload } from "@/components/admin/BlobUpload";
 
 export const dynamic = "force-dynamic";
 
@@ -108,13 +109,9 @@ export default async function ContributorsAdmin({ searchParams }: { searchParams
               <div>
                 <p className="eyebrow">Profile photo</p>
                 <p className="text-xs text-muted mt-0.5">Shown as their ID photo. Without one the page reads NO PHOTO ON FILE.</p>
-                <form action={saveContributorPhoto} className="mt-2 flex flex-wrap items-center gap-2">
-                  <input type="hidden" name="slug" value={selected.slug} />
-                  <input type="file" name="photoFile" required accept="image/png,image/jpeg,image/webp,image/avif" className="field !py-2 file:mr-3 file:border-0 file:bg-yellow file:text-ink file:px-3 file:py-1 file:font-semibold" />
-                  <button type="submit" className="btn btn-yellow">
-                    {entry?.photo ? "Replace" : "Upload"}
-                  </button>
-                </form>
+                <div className="mt-2">
+                  <BlobUpload slug={selected.slug} kind="photo" action={attachContributorPhoto} label={entry?.photo ? "Replace" : "Upload"} />
+                </div>
                 {entry?.photo && (
                   <form action={removeContributorPhoto} className="mt-2">
                     <input type="hidden" name="slug" value={selected.slug} />
@@ -153,17 +150,10 @@ export default async function ContributorsAdmin({ searchParams }: { searchParams
                 <p className="text-sm text-muted">No art yet.</p>
               )}
 
-              <form action={addContributorArt} className="mt-5 border border-line p-4 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
-                <input type="hidden" name="slug" value={selected.slug} />
-                <label className="block">
-                  <span className="eyebrow">Add a piece</span>
-                  <input type="file" name="artFile" required accept="image/png,image/jpeg,image/webp,image/avif" className="field !py-2 mt-1 file:mr-3 file:border-0 file:bg-yellow file:text-ink file:px-3 file:py-1 file:font-semibold" />
-                  <input type="text" name="title" placeholder="Title (optional)" className="field mt-2" />
-                </label>
-                <button type="submit" className="btn btn-yellow">
-                  Upload
-                </button>
-              </form>
+              <div className="mt-5 border border-line p-4">
+                <p className="eyebrow mb-2">Add a piece</p>
+                <BlobUpload slug={selected.slug} kind="art" action={attachContributorArt} withTitle label="Upload" />
+              </div>
             </section>
 
             {/* Other work */}
