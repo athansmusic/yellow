@@ -183,8 +183,11 @@ function parseDescription(html: string) {
   return { bodyHtml: clean, summary, starring, contentWarnings, credits, notesHtml, guestDirector };
 }
 
-async function fetchFeed(url: string): Promise<RawItem[]> {
-  const res = await fetch(url, { next: { revalidate: 600, tags: ["episodes"] }, headers: { "user-agent": "theredactedunit.com" } });
+async function fetchFeed(url: string, fresh = false): Promise<RawItem[]> {
+  const init: RequestInit & { next?: { revalidate: number; tags: string[] } } = { headers: { "user-agent": "theredactedunit.com" } };
+  if (fresh) init.cache = "no-store";
+  else init.next = { revalidate: 600, tags: ["episodes"] };
+  const res = await fetch(url, init);
   if (!res.ok) throw new Error(`Feed ${url} → ${res.status}`);
   const xml = await res.text();
   const doc = parser.parse(xml);
@@ -262,8 +265,8 @@ function toEpisode(it: RawItem): Episode | null {
   };
 }
 
-export async function getAllItems(): Promise<Episode[]> {
-  const items = await fetchFeed(FEEDS.redacted);
+export async function getAllItems(fresh = false): Promise<Episode[]> {
+  const items = await fetchFeed(FEEDS.redacted, fresh);
   return items
     .map(toEpisode)
     .filter((e): e is Episode => !!e)
@@ -282,9 +285,17 @@ export async function getEpisodes() {
   };
 }
 
+/** Our slugs are kebab-case; anything else is a bot or a typo and never earns an uncached read. */
+const SLUG_SHAPE = /^[a-z0-9][a-z0-9-]{2,80}$/;
+
 export async function getItemBySlug(slug: string): Promise<Episode | undefined> {
-  const all = await getAllItems();
-  return all.find((e) => e.slug === slug);
+  const hit = (await getAllItems()).find((e) => e.slug === slug);
+  if (hit || !SLUG_SHAPE.test(slug)) return hit;
+  // An episode that went live minutes ago is not in the cached feed yet, and notFound() would be
+  // cached for the whole revalidate window — so the page would stay missing long after it published.
+  // One uncached read on the miss path costs nothing on the hot path and makes a new episode appear
+  // the moment its URL is first opened.
+  return (await getAllItems(true)).find((e) => e.slug === slug);
 }
 
 /** Neighbours of the same kind, for prev/next navigation. */
