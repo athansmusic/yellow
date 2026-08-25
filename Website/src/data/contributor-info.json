@@ -239,5 +239,19 @@
         "title": "Scarewaves"
       }
     ]
+  },
+  "7cfc00": {
+    "photo": "/contributors/7cfc00.jpg",
+    "socials": {
+      "instagram": "https://www.instagram.com/7cfc00art/"
+    },
+    "art": [
+      {
+        "title": "REDACTED show art",
+        "url": "/contributors/art/7cfc00-showart.jpg"
+      }
+    ],
+    "name": "7cfc00",
+    "role": "artist"
   }
 }

@@ -42,7 +42,7 @@ type WriterRow = { name: string; credit: string };
 const cast = castJson as CastRow[];
 const writers = writersJson as WriterRow[];
 const byName = (overridesJson as { byName: Record<string, { artist?: string }> }).byName;
-type InfoRow = { bio?: string; photo?: string; socials?: Record<string, string>; works?: { title: string; note?: string; url?: string }[] };
+type InfoRow = { name?: string; role?: ContributorRole; bio?: string; photo?: string; socials?: Record<string, string>; works?: { title: string; note?: string; url?: string }[]; art?: { title: string; url: string }[] };
 /** Committed research: owner-approved words and official links, overridden by anything set in admin. */
 const info = infoJson as Record<string, InfoRow>;
 
@@ -85,6 +85,13 @@ export async function getContributors(): Promise<Contributor[]> {
     c.productCount = n;
   }
 
+  // Declared in the committed research and nowhere else (an artist with no store products)
+  for (const [slug, row] of Object.entries(info)) {
+    if (!row.role || map.has(slug)) continue;
+    const c = touch(row.name ?? slug);
+    if (!c.roles.includes(row.role)) c.roles.push(row.role);
+  }
+
   // Cast: link, never duplicate — the cast page stays their acting home
   for (const m of cast) {
     const slug = slugify(m.actor);
@@ -104,7 +111,7 @@ export async function getContributors(): Promise<Contributor[]> {
     c.hidden = !!entry?.hidden;
     if (entry?.photo) c.photo = entry.photo;
     else if (base?.photo) c.photo = base.photo;
-    c.art = entry?.art ?? [];
+    c.art = entry?.art?.length ? entry.art : (base?.art ?? []).map((a, i) => ({ id: `info-art-${i}`, ...a }));
     c.works = entry?.works?.length ? entry.works : (base?.works ?? []).map((w, i) => ({ id: `info-${i}`, ...w }));
     // Entered work wins: the chips become the real credits instead of repeating them
     if (c.works.length) c.knownFor = c.works.map((w) => w.title);
