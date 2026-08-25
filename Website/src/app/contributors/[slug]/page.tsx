@@ -89,7 +89,7 @@ export default async function ContributorPage({ params }: { params: Promise<{ sl
                   <p className="eyebrow">Known for</p>
                   <ul className="mt-2 flex flex-wrap gap-2">
                     {c.knownFor.map((k) => (
-                      <li key={k} className="border border-line bg-ink px-3 py-1.5 text-sm uppercase tracking-wider">
+                      <li key={k} className="border border-line bg-ink px-3 py-1.5 text-sm tracking-wider">
                         {k}
                       </li>
                     ))}
@@ -164,7 +164,7 @@ export default async function ContributorPage({ params }: { params: Promise<{ sl
                 {c.works.map((w) => {
                   const inner = (
                     <>
-                      <span className="display text-xl block leading-none">{w.title}</span>
+                      <span className="display text-xl block leading-none" style={{ textTransform: "none" }}>{w.title}</span>
                       {w.note && <span className="block text-sm text-muted mt-1.5">{w.note}</span>}
                     </>
                   );

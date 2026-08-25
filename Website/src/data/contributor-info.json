@@ -37,7 +37,7 @@
     "works": [
       {
         "title": "darkwebSTREAMER",
-        "url": "https://store.steampowered.com/app/1424180/darkwebSTREAMER/"
+        "url": "https://store.steampowered.com/app/2151810/darkwebSTREAMER/"
       }
     ],
     "photo": "/contributors/chantal-ryan.jpg"
@@ -80,11 +80,6 @@
         "title": "Day of the Dead",
         "note": "Writer.",
         "url": "https://www.imdb.com/title/tt0489018/"
-      },
-      {
-        "title": "Don't Look Back",
-        "note": "Writer and director.",
-        "url": "https://www.imdb.com/title/tt10084996/"
       }
     ],
     "photo": "/contributors/jeffrey-reddick.jpg",
@@ -116,15 +111,15 @@
     "works": [
       {
         "title": "SCP Archives",
-        "url": "https://www.pacificobadiah.com/scp-archives/"
+        "url": "https://bloody-disgusting.com/podcasts/scp-archives/"
       },
       {
         "title": "Mayfair Watchers Society",
-        "url": "https://www.pacificobadiah.com/"
+        "url": "https://bloody-disgusting.com/podcasts/mayfair-watchers-society/"
       },
       {
         "title": "Dead Space: Deep Cover",
-        "url": "https://www.pacificobadiah.com/"
+        "url": "https://bloody-disgusting.com/podcasts/dead-space-deep-cover/"
       }
     ],
     "photo": "/contributors/pacific-obadiah.jpg",
@@ -138,12 +133,16 @@
     },
     "works": [
       {
-        "title": "Clickolding",
-        "url": "https://store.steampowered.com/app/2649180/Clickolding/"
+        "title": "CLICKOLDING",
+        "url": "https://store.steampowered.com/app/3011440/CLICKOLDING/"
       },
       {
         "title": "El Paso, Elsewhere",
-        "url": "https://store.steampowered.com/app/1523780/El_Paso_Elsewhere/"
+        "url": "https://store.steampowered.com/app/1546310/El_Paso_Elsewhere/"
+      },
+      {
+        "title": "I Am Your Beast",
+        "url": "https://store.steampowered.com/app/1876590/I_Am_Your_Beast"
       },
       {
         "title": "Truck-kun is Supporting Me from Another World?!",
@@ -200,7 +199,7 @@
     "works": [
       {
         "title": "Fear the Spotlight",
-        "url": "https://store.steampowered.com/app/2178420/Fear_the_Spotlight/"
+        "url": "https://store.steampowered.com/app/1959390/Fear_the_Spotlight/"
       }
     ],
     "photo": "/contributors/crista-castro.jpg"
@@ -227,5 +226,18 @@
       }
     ],
     "bio": "Dylan Griggs (He/Him) is a musician and audiodrama showrunner based out of Kentucky. He pretends to be a cowboy in his spare time and owns 5 cowboy hats. Check out his shows WOE.BEGONE and The Diary Of Aliza Schultz. He also wrote the theme song for Tiny Terrors."
+  },
+  "trevor-henderson": {
+    "works": [
+      {
+        "title": "Siren Head"
+      },
+      {
+        "title": "Cartoon Cat"
+      },
+      {
+        "title": "Scarewaves"
+      }
+    ]
   }
 }
