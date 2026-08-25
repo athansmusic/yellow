@@ -7,6 +7,7 @@ export default async function AdminHome() {
   const storeCopyCount = Object.keys(storeCopy).length;
   const cards = [
     { href: "/admin/featured", t: "Featured products", d: `${featured.slugs.length} of 4 picked for the home page rail.` },
+    { href: "/admin/contributors", t: "Contributors", d: "Art pieces and descriptions for cast, writers, and artists." },
     { href: "/admin/text", t: "Static text", d: "Rewrite the fixed lines on the site without a deploy." },
     { href: "/admin/merch", t: "Episode merch", d: "Tag episodes with products for a Based on this episode strip." },
     { href: "/admin/store-copy", t: "Store copy", d: `${storeCopyCount} product${storeCopyCount === 1 ? "" : "s"} have custom copy.` },

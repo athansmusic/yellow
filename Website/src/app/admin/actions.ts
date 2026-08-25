@@ -207,3 +207,51 @@ export async function saveSiteText(fd: FormData) {
   await setDoc("siteText", next);
   redirect("/admin/text?saved=1");
 }
+
+
+// ── Contributors: art pieces and (writers only) descriptions ───────────────
+export async function addContributorArt(fd: FormData) {
+  await requireAdmin();
+  const slug = str(fd, "slug");
+  if (!slug) redirect("/admin/contributors");
+  const id = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+  const url = await storeUpload(fd.get("artFile"), `contributors/${slug}/${id}`);
+  if (url) {
+    const all = await getDoc("contributors");
+    const person = all[slug] ?? {};
+    const art = [...(person.art ?? []), { id, url, title: str(fd, "title") }];
+    await setDoc("contributors", { ...all, [slug]: { ...person, art } });
+  }
+  redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&saved=1`);
+}
+
+export async function removeContributorArt(fd: FormData) {
+  await requireAdmin();
+  const slug = str(fd, "slug");
+  const id = str(fd, "id");
+  const all = await getDoc("contributors");
+  const person = all[slug];
+  if (person?.art) {
+    await setDoc("contributors", { ...all, [slug]: { ...person, art: person.art.filter((a) => a.id !== id) } });
+  }
+  redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&removed=1`);
+}
+
+export async function saveContributorBio(fd: FormData) {
+  await requireAdmin();
+  const slug = str(fd, "slug");
+  const bio = str(fd, "bio");
+  const all = await getDoc("contributors");
+  const person = all[slug] ?? {};
+  await setDoc("contributors", { ...all, [slug]: { ...person, bio: bio || undefined } });
+  redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&saved=1`);
+}
+
+export async function toggleContributorHidden(fd: FormData) {
+  await requireAdmin();
+  const slug = str(fd, "slug");
+  const all = await getDoc("contributors");
+  const person = all[slug] ?? {};
+  await setDoc("contributors", { ...all, [slug]: { ...person, hidden: !person.hidden } });
+  redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&saved=1`);
+}

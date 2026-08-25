@@ -10,6 +10,7 @@ import seedStoreCopy from "@/data/store-copy.json";
 import seedFanart from "@/data/fanart.json";
 import seedEpisodeMerch from "@/data/episode-merch.json";
 import seedSiteText from "@/data/site-text.json";
+import seedContributors from "@/data/contributors.json";
 
 /**
  * Editable site content. The JSON files in src/data are the seed and the local-dev store;
@@ -74,9 +75,12 @@ export type Settings = { seasonStatus: SeasonStatus; seasonLabel: string; season
 export type EpisodeMerch = Record<string, string[]>;
 /** Id -> owner-written override for a piece of static site copy (see src/lib/site-text.ts). */
 export type SiteText = Record<string, string>;
+/** Art pieces and owner-written descriptions per contributor, keyed by person slug. */
+export type ContributorArt = { id: string; url: string; title: string };
+export type Contributors = Record<string, { bio?: string; art?: ContributorArt[]; hidden?: boolean }>;
 export type FanArt = { id: string; image: string; width: number; height: number; title: string; artist: string; postUrl: string; ts: number };
 export type StoreCopy = Record<string, { description?: string; artist?: string; artistUrl?: string }>;
-type Docs = { aberrations: Aberration[]; like: LikePage[]; featured: Featured; settings: Settings; storeCopy: StoreCopy; fanart: FanArt[]; episodeMerch: EpisodeMerch; siteText: SiteText };
+type Docs = { aberrations: Aberration[]; like: LikePage[]; featured: Featured; settings: Settings; storeCopy: StoreCopy; fanart: FanArt[]; episodeMerch: EpisodeMerch; siteText: SiteText; contributors: Contributors };
 export type DocName = keyof Docs;
 
 const FILES: Record<DocName, string> = {
@@ -88,9 +92,10 @@ const FILES: Record<DocName, string> = {
   fanart: "src/data/fanart.json",
   episodeMerch: "src/data/episode-merch.json",
   siteText: "src/data/site-text.json",
+  contributors: "src/data/contributors.json",
 };
 // Committed JSON is the seed everywhere; in prod it is what you get until a doc has been saved to Blob once.
-const SEEDS: Docs = { aberrations: seedAberrations as Aberration[], like: seedLike as LikePage[], featured: seedFeatured as Featured, settings: seedSettings as Settings, storeCopy: seedStoreCopy as StoreCopy, fanart: seedFanart as FanArt[], episodeMerch: seedEpisodeMerch as EpisodeMerch, siteText: seedSiteText as SiteText };
+const SEEDS: Docs = { aberrations: seedAberrations as Aberration[], like: seedLike as LikePage[], featured: seedFeatured as Featured, settings: seedSettings as Settings, storeCopy: seedStoreCopy as StoreCopy, fanart: seedFanart as FanArt[], episodeMerch: seedEpisodeMerch as EpisodeMerch, siteText: seedSiteText as SiteText, contributors: seedContributors as Contributors };
 
 const useBlob = () => !!process.env.BLOB_READ_WRITE_TOKEN;
 const blobKey = (name: DocName) => `content/${name}.json`;
@@ -152,6 +157,7 @@ export async function setDoc<N extends DocName>(name: N, value: Docs[N]) {
     fanart: ["/", "/fan-art"],
     episodeMerch: [["/episodes/[slug]", "page"]],
     siteText: [["/", "layout"]],
+    contributors: [["/cast/[slug]", "page"], "/cast"],
   };
   for (const p of paths[name]) {
     if (Array.isArray(p)) revalidatePath(p[0], p[1]);

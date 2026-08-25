@@ -62,6 +62,7 @@ export const MORE_NAV = [
   { label: "Where to listen", href: "/where" },
   { label: "Aberrations", href: "/aberrations" },
   { label: "If you like…", href: "/like" },
+  { label: "Contributors", href: "/contributors" },
   { label: "Fan art", href: "/fan-art" },
   { label: "About", href: "/about" },
   { label: "Bingo", href: "/bingo" },
