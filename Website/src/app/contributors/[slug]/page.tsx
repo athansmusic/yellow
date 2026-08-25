@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getContributor, getContributors } from "@/lib/contributors";
 import { formatDate, formatDuration, toTrack } from "@/lib/feed";
 import { PlayButton } from "@/components/AudioPlayer";
+import { ArtLightbox } from "@/components/ArtLightbox";
 import { Container, Crumbs } from "@/components/ui";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
 import { SITE } from "@/lib/site";
@@ -147,17 +148,11 @@ export default async function ContributorPage({ params }: { params: Promise<{ sl
           {/* Art pieces */}
           {c.art.length > 0 && (
             <section>
-              <h2 className="eyebrow mb-3">Art</h2>
-              <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {c.art.map((a) => (
-                  <li key={a.id} className="border border-line bg-ink-2/70">
-                    <span className="relative block aspect-square bg-ink">
-                      <Image src={a.url} alt={a.title || `Art by ${c.name}`} fill sizes="(min-width:640px) 20vw, 45vw" className="object-contain" />
-                    </span>
-                    {a.title && <span className="block p-2 text-xs text-paper/85 truncate">{a.title}</span>}
-                  </li>
-                ))}
-              </ul>
+              <div className="flex items-baseline justify-between gap-4 mb-3">
+                <h2 className="eyebrow">Art</h2>
+                <span className="text-xs text-muted tabular">{c.art.length}</span>
+              </div>
+              <ArtLightbox pieces={c.art} artist={c.name} />
             </section>
           )}
 
