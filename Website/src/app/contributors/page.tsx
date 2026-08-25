@@ -12,7 +12,7 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Contributors",
-  description: "Everyone who makes REDACTED: the cast, the guest writers behind individual cases, and the artists whose work fills the store.",
+  description: "The cast, guest writers, and artists that help bring REDACTED to life.",
   alternates: { canonical: "/contributors" },
   openGraph: { siteName: "REDACTED" },
 };
@@ -35,10 +35,9 @@ export default async function ContributorsPage() {
   return (
     <Container className="py-10 sm:py-16">
       <JsonLd data={breadcrumbJsonLd([{ name: "Contributors", url: `${SITE.url}/contributors` }])} />
-      <p className="eyebrow">Everyone who makes it</p>
       <h1 className="display text-5xl sm:text-7xl mt-2">Contributors</h1>
       <p className="mt-4 text-lg text-paper/90 max-w-prose">
-        The cast who play them, the guest writers behind individual cases, and the artists whose work ends up on the walls and the merch.
+        The cast, guest writers, and artists that help bring REDACTED to life.
       </p>
 
       <nav className="mt-8 flex flex-wrap gap-2 text-sm" aria-label="Sections">
@@ -69,7 +68,6 @@ export default async function ContributorsPage() {
           </span>
           <span className="min-w-0">
             <span className="display text-2xl block leading-none group-hover:text-yellow">Meet the cast</span>
-            <span className="block text-sm text-muted mt-1">{castList.length} actors, their characters, and every episode they are in.</span>
           </span>
           <span className="ml-auto text-yellow text-sm shrink-0">Full cast →</span>
         </Link>
@@ -81,7 +79,6 @@ export default async function ContributorsPage() {
           <h2 className="display text-3xl">Guest writers</h2>
           <span className="text-xs text-muted tabular">{writers.length}</span>
         </div>
-        <p className="mt-3 text-sm text-muted max-w-prose">Each season, guest writers design and direct the aberration the team faces.</p>
         <ul className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {credited.map((c) => {
             const ep = c.wrote[0];
