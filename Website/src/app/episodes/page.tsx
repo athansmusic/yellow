@@ -22,7 +22,7 @@ const SHOWS = [
   { id: "redacted", label: "REDACTED" },
   { id: "postmortem", label: "Postmortem" },
   { id: "t7p", label: "The Seven Planes", short: "Seven Planes" },
-  { id: "corrupted", label: "Corrupted", soon: true },
+  { id: "corrupted", label: "CORRUPTED", soon: true, href: "/corrupted" },
 ] as const;
 type Show = (typeof SHOWS)[number]["id"];
 
@@ -96,12 +96,24 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
           <ScrollActiveIntoView id="show-tabs" />
           {SHOWS.map((t) => {
             const active = t.id === show;
-            if ("soon" in t && t.soon)
-              return (
-                <span key={t.id} aria-disabled="true" className="display text-xl sm:text-3xl px-3 sm:px-4 py-3 shrink-0 whitespace-nowrap [text-wrap:nowrap] border-b-4 border-transparent text-muted/60 cursor-default">
+            if ("soon" in t && t.soon) {
+              const soonCls = "display text-xl sm:text-3xl px-3 sm:px-4 py-3 shrink-0 whitespace-nowrap [text-wrap:nowrap] border-b-4 border-transparent text-muted/60";
+              const soonInner = (
+                <>
                   {t.label} <span className="font-sans text-[10px] font-semibold uppercase tracking-wider align-middle border border-line px-1.5 py-0.5 ml-1">Coming soon</span>
+                </>
+              );
+              // A show that has a teaser page of its own is a real link; the rest stay inert.
+              return "href" in t && t.href ? (
+                <Link key={t.id} href={t.href} className={`${soonCls} hover:text-yellow transition-colors`}>
+                  {soonInner}
+                </Link>
+              ) : (
+                <span key={t.id} aria-disabled="true" className={`${soonCls} cursor-default`}>
+                  {soonInner}
                 </span>
               );
+            }
             return (
               <Link key={t.id} href={href({ show: t.id })} aria-current={active ? "page" : undefined} className={`display text-xl sm:text-3xl px-3 sm:px-4 py-3 shrink-0 snap-center whitespace-nowrap [text-wrap:nowrap] border-b-4 ${active ? "border-yellow text-yellow" : "border-transparent text-paper hover:text-yellow"}`}>
                 <span className="sm:hidden">{"short" in t ? t.short : t.label}</span>
@@ -219,7 +231,7 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
 
         {show === "corrupted" ? (
           <div className="py-16 text-center">
-            <p className="display text-5xl text-muted/60">Corrupted</p>
+            <p className="display text-5xl text-muted/60">CORRUPTED</p>
             <p className="mt-2 text-muted">Coming soon.</p>
           </div>
         ) : list.length === 0 ? (

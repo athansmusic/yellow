@@ -17,7 +17,8 @@ function NavA({ href, children, ...rest }: { href: string; children: React.React
   return href === "/discord" || href === "/ks" ? <a href={href} target="_blank" rel="noreferrer" {...rest}>{children}</a> : <Link href={href} {...rest}>{children}</Link>;
 }
 
-type MenuLink = { label: string; href: string; soon?: boolean };
+/** `soon` badges the link; `teaser` means it still has a page worth visiting. */
+type MenuLink = { label: string; href: string; soon?: boolean; teaser?: boolean };
 type MenuGroup = { title?: string; links: readonly MenuLink[] };
 
 /** Hover/click menus for the main nav. Keys are the NAV hrefs. */
@@ -29,7 +30,7 @@ const MENUS: Record<string, MenuGroup[]> = {
         { label: "REDACTED", href: "/episodes?show=redacted" },
         { label: "Postmortem", href: "/episodes?show=postmortem" },
         { label: "The Seven Planes", href: "/episodes?show=t7p" },
-        { label: "Corrupted", href: "/episodes?show=corrupted", soon: true },
+        { label: "CORRUPTED", href: "/corrupted", soon: true, teaser: true },
       ],
     },
     { title: "Also", links: [{ label: "Where to listen", href: "/where" }] },
@@ -70,13 +71,14 @@ function Dropdown({ id, open, setOpen, active, label, href, groups, pathname }: 
                 const on = pathname === l.href;
                 return (
                   <li key={l.href}>
-                    {l.soon ? (
+                    {l.soon && !l.teaser ? (
                       <span className="block px-4 py-1.5 text-sm text-muted whitespace-nowrap">
                         {l.label} <span className="text-[10px] uppercase tracking-wider">soon</span>
                       </span>
                     ) : (
                       <Link href={l.href} className={`block px-4 py-1.5 text-sm whitespace-nowrap hover:bg-ink-3 hover:text-yellow ${on ? "text-yellow" : ""}`}>
                         {l.label}
+                        {l.soon && <span className="text-[10px] uppercase tracking-wider text-muted"> soon</span>}
                       </Link>
                     )}
                   </li>

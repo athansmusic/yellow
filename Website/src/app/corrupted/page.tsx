@@ -3,8 +3,7 @@ import Image from "next/image";
 import { CorruptedSignup, FileStatus, Grain, RedactedSlots, Stamp, TearDefs, Trailer } from "./parts";
 
 /**
- * CORRUPTED: the spin-off's own landing page. Deliberately not the show's design language, and
- * deliberately unpublished: no nav entry, no sitemap, noindex, reachable only by URL until launch.
+ * CORRUPTED: the spin-off's own landing page. Deliberately not the show's design language.
  *
  * Palette comes straight off the key art: ground #8c161f, marks in the art's black. The id on the
  * root is load-bearing — globals.css keys the red header/footer treatment off `body:has(#corrupted)`.
@@ -13,7 +12,6 @@ export const metadata: Metadata = {
   title: "CORRUPTED",
   description: "A horror anthology set in the REDACTED universe.",
   alternates: { canonical: "/corrupted" },
-  robots: { index: false, follow: false },
   openGraph: { siteName: "REDACTED", title: "CORRUPTED" },
 };
 
