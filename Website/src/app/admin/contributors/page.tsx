@@ -5,7 +5,7 @@ import { slugify } from "@/lib/feed";
 import cast from "@/data/cast.json";
 import writers from "@/data/writers.json";
 import overrides from "@/data/store-overrides.json";
-import { addContributorArt, removeContributorArt, saveContributorBio, toggleContributorHidden } from "../actions";
+import { addContributorArt, removeContributorArt, saveContributorBio, toggleContributorHidden, saveContributorPhoto, removeContributorPhoto } from "../actions";
 import { Saved } from "../ui";
 
 export const dynamic = "force-dynamic";
@@ -92,6 +92,36 @@ export default async function ContributorsAdmin({ searchParams }: { searchParams
                 <span className="block text-xs text-muted mt-1 text-right">{entry?.hidden ? "Hidden: their page 404s and they leave the directory." : "Visible on the contributors page."}</span>
               </form>
             </div>
+
+            {/* Profile photo */}
+            <section className="border border-line p-4 grid gap-3 sm:grid-cols-[auto_1fr] sm:items-start">
+              <span className="relative block w-28 aspect-[3/4] border border-line bg-ink overflow-hidden">
+                {entry?.photo ? (
+                  <Image src={entry.photo} alt="" fill sizes="112px" className="object-cover object-top" />
+                ) : (
+                  <span className="absolute inset-0 grid place-items-center text-muted text-xs uppercase tracking-wider text-center px-2">No photo</span>
+                )}
+              </span>
+              <div>
+                <p className="eyebrow">Profile photo</p>
+                <p className="text-xs text-muted mt-0.5">Shown as their ID photo. Without one the page reads NO PHOTO ON FILE.</p>
+                <form action={saveContributorPhoto} className="mt-2 flex flex-wrap items-center gap-2">
+                  <input type="hidden" name="slug" value={selected.slug} />
+                  <input type="file" name="photoFile" required accept="image/png,image/jpeg,image/webp,image/avif" className="field !py-2 file:mr-3 file:border-0 file:bg-yellow file:text-ink file:px-3 file:py-1 file:font-semibold" />
+                  <button type="submit" className="btn btn-yellow">
+                    {entry?.photo ? "Replace" : "Upload"}
+                  </button>
+                </form>
+                {entry?.photo && (
+                  <form action={removeContributorPhoto} className="mt-2">
+                    <input type="hidden" name="slug" value={selected.slug} />
+                    <button type="submit" className="text-xs text-muted underline underline-offset-4 hover:text-red">
+                      Remove photo
+                    </button>
+                  </form>
+                )}
+              </div>
+            </section>
 
             {/* Art */}
             <section>

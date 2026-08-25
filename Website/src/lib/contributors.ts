@@ -92,9 +92,10 @@ export async function getContributors(): Promise<Contributor[]> {
 
   // Owner-managed art and descriptions
   for (const c of map.values()) {
-    const entry = (doc as Record<string, { bio?: string; art?: ContributorArt[]; hidden?: boolean }>)[c.slug];
+    const entry = (doc as Record<string, { bio?: string; art?: ContributorArt[]; hidden?: boolean; photo?: string }>)[c.slug];
     c.bio = entry?.bio ?? "";
     c.hidden = !!entry?.hidden;
+    if (entry?.photo) c.photo = entry.photo;
     c.art = entry?.art ?? [];
     const ep = c.wrote[0]?.number;
     c.empty = c.art.length === 0 && !c.bio;

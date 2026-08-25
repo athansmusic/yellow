@@ -77,7 +77,7 @@ export type EpisodeMerch = Record<string, string[]>;
 export type SiteText = Record<string, string>;
 /** Art pieces and owner-written descriptions per contributor, keyed by person slug. */
 export type ContributorArt = { id: string; url: string; title: string };
-export type Contributors = Record<string, { bio?: string; art?: ContributorArt[]; hidden?: boolean }>;
+export type Contributors = Record<string, { bio?: string; art?: ContributorArt[]; hidden?: boolean; photo?: string }>;
 export type FanArt = { id: string; image: string; width: number; height: number; title: string; artist: string; postUrl: string; ts: number };
 export type StoreCopy = Record<string, { description?: string; artist?: string; artistUrl?: string }>;
 type Docs = { aberrations: Aberration[]; like: LikePage[]; featured: Featured; settings: Settings; storeCopy: StoreCopy; fanart: FanArt[]; episodeMerch: EpisodeMerch; siteText: SiteText; contributors: Contributors };

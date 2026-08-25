@@ -255,3 +255,23 @@ export async function toggleContributorHidden(fd: FormData) {
   await setDoc("contributors", { ...all, [slug]: { ...person, hidden: !person.hidden } });
   redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&saved=1`);
 }
+
+export async function saveContributorPhoto(fd: FormData) {
+  await requireAdmin();
+  const slug = str(fd, "slug");
+  const url = await storeUpload(fd.get("photoFile"), `contributors/${slug}-photo`);
+  if (url) {
+    const all = await getDoc("contributors");
+    await setDoc("contributors", { ...all, [slug]: { ...(all[slug] ?? {}), photo: url } });
+  }
+  redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&saved=1`);
+}
+
+export async function removeContributorPhoto(fd: FormData) {
+  await requireAdmin();
+  const slug = str(fd, "slug");
+  const all = await getDoc("contributors");
+  const person = all[slug];
+  if (person) await setDoc("contributors", { ...all, [slug]: { ...person, photo: undefined } });
+  redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&removed=1`);
+}
