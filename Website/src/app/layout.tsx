@@ -14,6 +14,7 @@ import { PlayerProvider } from "@/lib/player";
 import { SITE, LISTEN } from "@/lib/site";
 import { JsonLd, siteJsonLd } from "@/lib/schema";
 import { Analytics, CookieConsent } from "@/components/CookieConsent";
+import { ReviewNudge } from "@/components/ReviewNudge";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-montserrat", display: "swap", weight: ["400", "500", "600", "700"] });
 const nk57 = localFont({ src: "../fonts/NK57MonospaceCdEb.otf", variable: "--font-nk57", display: "swap", weight: "800" });
@@ -66,6 +67,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <AlertsPopup promoText={promoText} />
             <SearchOverlay />
             <PlayerBar />
+            <ReviewNudge />
           </CartProvider>
         </PlayerProvider>
       </body>

@@ -30,6 +30,11 @@ type PlayerCtx = {
   seek: (s: number) => void;
   skip: (delta: number) => void;
   setRate: (r: number) => void;
+  /** 0..1. iOS ignores writes to audio.volume, so the UI hides the slider on touch. */
+  volume: number;
+  muted: boolean;
+  setVolume: (v: number) => void;
+  toggleMute: () => void;
   close: () => void;
   progressFor: (id: string) => number; // 0..1 from saved position
 };
@@ -37,6 +42,8 @@ type PlayerCtx = {
 const Ctx = createContext<PlayerCtx | null>(null);
 const POS_KEY = "tru-player-pos";
 const LAST_KEY = "tru-player-last";
+const VOL_KEY = "tru-player-volume";
+const MUTE_KEY = "tru-player-muted";
 
 function readPos(): Record<string, { t: number; d: number }> {
   try {
@@ -57,11 +64,45 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [neighbors, setNeighbors] = useState<{ prev: Track | null; next: Track | null }>({ prev: null, next: null });
   const [expanded, setExpanded] = useState(false);
   const [order, setOrderState] = useState<"full" | "redacted" | "postmortem">("full");
+  const [volume, setVolumeState] = useState(1);
+  const [muted, setMutedState] = useState(false);
   useEffect(() => {
     try {
       const o = localStorage.getItem("player-order");
       if (o === "full" || o === "redacted" || o === "postmortem") setOrderState(o);
+      const v = Number(localStorage.getItem(VOL_KEY));
+      if (Number.isFinite(v) && v >= 0 && v <= 1) setVolumeState(v);
+      setMutedState(localStorage.getItem(MUTE_KEY) === "1");
     } catch {}
+  }, []);
+
+  // Push level/mute onto the element whenever either changes, including right after it is created.
+  useEffect(() => {
+    const a = audio.current;
+    if (!a) return;
+    a.volume = volume;
+    a.muted = muted;
+  }, [volume, muted, track]);
+
+  const setVolume = useCallback((v: number) => {
+    const clamped = Math.min(1, Math.max(0, v));
+    setVolumeState(clamped);
+    // Dragging up from silence is an unmute; nobody expects to do it in two steps.
+    if (clamped > 0) setMutedState(false);
+    try {
+      localStorage.setItem(VOL_KEY, String(clamped));
+      if (clamped > 0) localStorage.setItem(MUTE_KEY, "0");
+    } catch {}
+  }, []);
+
+  const toggleMute = useCallback(() => {
+    setMutedState((m) => {
+      const next = !m;
+      try {
+        localStorage.setItem(MUTE_KEY, next ? "1" : "0");
+      } catch {}
+      return next;
+    });
   }, []);
   const setOrder = useCallback((o: "full" | "redacted" | "postmortem") => {
     setOrderState(o);
@@ -254,8 +295,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo<PlayerCtx>(
-    () => ({ track, playing, time, duration, rate, neighbors, order, setOrder, expanded, setExpanded, jump, load, toggle, seek, skip, setRate, close, progressFor }),
-    [track, playing, time, duration, rate, neighbors, order, setOrder, expanded, jump, load, toggle, seek, skip, setRate, close, progressFor],
+    () => ({ track, playing, time, duration, rate, neighbors, order, setOrder, expanded, setExpanded, jump, load, toggle, seek, skip, setRate, close, progressFor, volume, muted, setVolume, toggleMute }),
+    [track, playing, time, duration, rate, neighbors, order, setOrder, expanded, jump, load, toggle, seek, skip, setRate, close, progressFor, volume, muted, setVolume, toggleMute],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

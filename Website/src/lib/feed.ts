@@ -222,6 +222,7 @@ const STARRING_OVERRIDES: Record<string, string[]> = {
   "postmortem-brood": ["Lyssa Jay as Sloan Summers", "Derek Moreland as Dr. Danse", "Natalie Light as Agent Koska"],
   // The Clickolding debrief breaks form: the guest director and both creators, as themselves
   "postmortem-clickolding": ["Xalavier Nelson Jr.", "Johnathan Magno", "Jamie Petronis"],
+  "postmortem-prodigy-part-1": ["Jamie Petronis as Jacob Kane"],
   "minisode-thanksgiving-intermission-bonus-scene": ["Jamie Petronis as Jacob Kane", "James Spurney as Phil the Landlord"],
 };
 

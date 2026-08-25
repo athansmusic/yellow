@@ -4,12 +4,43 @@ import Image from "next/image";
 import Link from "next/link";
 import { fmtTime, usePlayer } from "@/lib/player";
 import { useEffect, useRef } from "react";
-import { Close, Expand, Pause, Play, SkipNext, SkipPrev } from "./Icons";
+import { Close, Expand, Pause, Play, SkipNext, SkipPrev, Speaker } from "./Icons";
 
 const RATES = [1, 1.25, 1.5, 2];
 
+/**
+ * Volume lives behind sm: iOS ignores writes to audio.volume entirely — the hardware keys own it —
+ * so a slider there would be a control that visibly does nothing.
+ */
+function Volume({ volume, muted, setVolume, toggleMute, className = "" }: { volume: number; muted: boolean; setVolume: (v: number) => void; toggleMute: () => void; className?: string }) {
+  const level = muted ? 0 : volume;
+  return (
+    <div className={`hidden sm:flex items-center gap-2 ${className}`}>
+      <button
+        type="button"
+        onClick={toggleMute}
+        aria-label={muted ? "Unmute" : "Mute"}
+        aria-pressed={muted}
+        className="size-9 grid place-items-center text-muted hover:text-yellow"
+      >
+        <Speaker width={18} height={18} off={level === 0} />
+      </button>
+      <input
+        type="range"
+        min={0}
+        max={1}
+        step={0.05}
+        value={level}
+        onChange={(e) => setVolume(Number(e.target.value))}
+        aria-label="Volume"
+        className="w-20 accent-yellow cursor-pointer"
+      />
+    </div>
+  );
+}
+
 export function PlayerBar() {
-  const { track, playing, time, duration, rate, neighbors, order, setOrder, expanded, setExpanded, jump, toggle, seek, skip, setRate, close } = usePlayer();
+  const { track, playing, time, duration, rate, neighbors, order, setOrder, expanded, setExpanded, jump, toggle, seek, skip, setRate, close, volume, muted, setVolume, toggleMute } = usePlayer();
   // Other bottom bars (sticky add-to-cart, StickyStart) sit on top of the player via --player-h.
   useEffect(() => {
     const root = document.documentElement;
@@ -92,6 +123,9 @@ export function PlayerBar() {
       {expanded && (
         <div role="dialog" aria-modal="true" aria-label="Now playing" className="fixed inset-0 z-50 grid place-items-center p-4 bg-black/80 backdrop-blur-sm" onClick={(e) => e.target === e.currentTarget && setExpanded(false)}>
           <div ref={dialogRef} className="w-full max-w-sm sm:max-w-md bg-ink-2 border border-line shadow-[0_30px_80px_rgba(0,0,0,.8)]">
+            {/* The review nudge portals in here when the card is open: it is z-40 and this dialog
+                is z-50, and the dialog traps focus, so floating it above would be unreachable. */}
+            <div id="player-nudge-slot" />
             <div className="flex items-center justify-between px-5 pt-4">
               <p className="eyebrow">Now playing</p>
               <button type="button" onClick={() => setExpanded(false)} aria-label="Collapse player" className="p-2 -m-2 text-muted hover:text-paper">
@@ -146,6 +180,7 @@ export function PlayerBar() {
                 ))}
               </div>
               <div className="mt-4 flex items-center justify-center gap-4 text-xs">
+                <Volume volume={volume} muted={muted} setVolume={setVolume} toggleMute={toggleMute} className="mr-1" />
                 <button type="button" onClick={() => setRate(RATES[(RATES.indexOf(rate) + 1) % RATES.length])} aria-label={`Playback speed ${rate}x, change`} className="min-w-12 h-8 px-2 grid place-items-center border border-line font-bold tabular hover:border-yellow">
                   {rate}×
                 </button>
@@ -198,6 +233,7 @@ export function PlayerBar() {
               +30
             </button>
             {jumpBtn("next", "hidden xs:grid size-9 sm:size-10 place-items-center text-muted hover:text-yellow", 18)}
+            <Volume volume={volume} muted={muted} setVolume={setVolume} toggleMute={toggleMute} className="mr-1" />
             <button
               type="button"
               onClick={() => setRate(RATES[(RATES.indexOf(rate) + 1) % RATES.length])}

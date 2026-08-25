@@ -142,6 +142,17 @@ export const SkipNext = (p: P) => (
   </svg>
 );
 
+export const Speaker = ({ off, ...p }: P & { off?: boolean }) => (
+  <svg {...base(p)}>
+    <path d="M4 9v6h4l5 4V5L8 9H4Z" />
+    {off ? (
+      <path d="M16.5 9.5l4 4m0-4l-4 4" stroke="currentColor" strokeWidth={2} fill="none" strokeLinecap="round" />
+    ) : (
+      <path d="M16.5 8.5a5 5 0 0 1 0 7m2.5-9.5a8 8 0 0 1 0 12" stroke="currentColor" strokeWidth={2} fill="none" strokeLinecap="round" />
+    )}
+  </svg>
+);
+
 export const Expand = (p: P) => (
   <svg {...base(p)}>
     <path d="M4 14h2v4h4v2H4v-6Zm16-4h-2V6h-4V4h6v6Z" />
