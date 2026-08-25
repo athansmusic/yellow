@@ -69,10 +69,7 @@ export default async function ContributorPage({ params }: { params: Promise<{ sl
                   </span>
                 )}
               </div>
-              <p className="mt-2 flex items-center justify-between text-[10px] uppercase tracking-[.2em] text-muted">
-                <span>{c.photo ? "ID photo" : "No photo on file"}</span>
-                <span className="text-red">{c.fileNo}</span>
-              </p>
+              <p className="mt-2 text-[10px] uppercase tracking-[.2em] text-muted">{c.photo ? "ID photo" : "No photo on file"}</p>
             </div>
 
             {/* Name block */}
@@ -191,10 +188,7 @@ export default async function ContributorPage({ params }: { params: Promise<{ sl
         {/* Record rail */}
         <aside className="grid gap-4 content-start">
           <div className="border border-line bg-ink-2/60">
-            <p className="flex items-center justify-between px-4 py-3 border-b border-line text-[11px] uppercase tracking-[.18em] text-muted">
-              <span>Contributor record</span>
-              <span className="text-red">{c.fileNo}</span>
-            </p>
+            <p className="px-4 py-3 border-b border-line text-[11px] uppercase tracking-[.18em] text-muted">Contributor record</p>
             <dl>
               {record.map(([k, v]) => (
                 <div key={k} className="flex items-center justify-between gap-4 px-4 py-3 border-b border-line/60 last:border-0">

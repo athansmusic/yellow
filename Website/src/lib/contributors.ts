@@ -11,8 +11,6 @@ export type Contributor = {
   slug: string;
   name: string;
   roles: ContributorRole[];
-  /** GW-09 style dossier number, derived from role and first credit. */
-  fileNo: string;
   photo?: string;
   /** "Siren Head, Scarewaves" -> chips */
   knownFor: string[];
@@ -58,7 +56,7 @@ export async function getContributors(): Promise<Contributor[]> {
     const slug = slugify(name);
     let c = map.get(slug);
     if (!c) {
-      c = { slug, name, roles: [], fileNo: "", knownFor: [], wrote: [], productCount: 0, bio: "", art: [], hidden: false, empty: true };
+      c = { slug, name, roles: [], knownFor: [], wrote: [], productCount: 0, bio: "", art: [], hidden: false, empty: true };
       map.set(slug, c);
     }
     return c;
@@ -97,9 +95,7 @@ export async function getContributors(): Promise<Contributor[]> {
     c.hidden = !!entry?.hidden;
     if (entry?.photo) c.photo = entry.photo;
     c.art = entry?.art ?? [];
-    const ep = c.wrote[0]?.number;
     c.empty = c.art.length === 0 && !c.bio;
-    c.fileNo = c.roles.includes("writer") ? `GW-${String(ep ?? map.size).padStart(2, "0")}` : `AR-${String(c.productCount).padStart(2, "0")}`;
   }
 
   return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
