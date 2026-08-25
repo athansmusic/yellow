@@ -206,6 +206,7 @@ const NAME_FIXES: [RegExp, string][] = [
   [/The Joe Cliff Thompson/gi, "Joe Cliff Thompson"],
   [/Nathan Lundsford/gi, "Nathan Lunsford"],
   [/Zoe (?:D\.? )?Lee/gi, "Zoe D Lee"],
+  [/Ashley McAnnelly/gi, "Ashley McAnelly"],
 ];
 const fixNames = (x: string) => NAME_FIXES.reduce((acc, [re, to]) => acc.replace(re, to), x);
 
@@ -251,7 +252,8 @@ function toEpisode(it: RawItem): Episode | null {
     contentWarnings: d.contentWarnings,
     guestDirector: (() => {
       const k = ("code" in c && c.code) || c.slug;
-      return k in GUEST_DIRECTOR_OVERRIDES ? GUEST_DIRECTOR_OVERRIDES[k] || undefined : d.guestDirector;
+      const gd = k in GUEST_DIRECTOR_OVERRIDES ? GUEST_DIRECTOR_OVERRIDES[k] || undefined : d.guestDirector;
+      return gd ? fixNames(gd) : undefined;
     })(),
     credits: d.credits.map((cr) => ({ ...cr, value: fixNames(cr.value) })),
     notesHtml: fixNames(d.notesHtml),
