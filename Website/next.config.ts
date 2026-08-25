@@ -21,6 +21,9 @@ const nextConfig: NextConfig = {
     ],
   },
   poweredByHeader: false,
+  // Server actions cap request bodies at 1 MB by default, which silently kills
+  // any real-sized image upload before the handler runs.
+  experimental: { serverActions: { bodySizeLimit: "12mb" } },
   async headers() {
     return [
       // Preview/production hosts on vercel.app must never be indexed; only the real domain is.
