@@ -84,13 +84,14 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const ep = await getItemBySlug(slug);
   if (!ep) notFound();
-  const [{ newer, older }, links, all, aberrations, transcript, merchDoc] = await Promise.all([
+  const [{ newer, older }, links, all, aberrations, transcript, merchDoc, cm] = await Promise.all([
     getNeighbours(ep),
     getPlatformLinks(ep.title),
     getAllItems().catch(() => []),
     getDoc("aberrations").catch(() => []),
     ep.kind === "episode" ? getTranscript(ep.code) : ep.kind === "postmortem" ? getPostmortemTranscript(ep.shortTitle) : Promise.resolve(null),
     getDoc("episodeMerch").catch(() => ({}) as Record<string, string[]>),
+    getEpisodeMeta(ep.kind, ep.code, ep.shortTitle).catch(() => null),
   ]);
   const merchSlugs = merchDoc[ep.slug] ?? [];
   // The lede is the feed's, which is Curtain's description by way of Acast.
@@ -121,6 +122,14 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
   const readerUrl = transcript ? `https://www.tru.show/transcripts/${ep.kind === "postmortem" ? "postmortem" : "redacted"}/s${transcript.episode.season}e${transcript.episode.number}` : undefined;
   const boilerplate = new Set(["Co-created", "Executive producers", "Writing", "Music and Sound Design", "Dialogue Editing", "Show art", "Associated producers", "Concept"].map((x) => x.toLowerCase()));
   const episodeCredits = ep.credits.filter((c) => !boilerplate.has(c.label.toLowerCase()));
+  // Curtain's per-episode writer joins the credits, right before the
+  // associate producers (owner-specified position). No writer set: no row.
+  if (cm?.writer) {
+    const at = episodeCredits.findIndex((c) => c.label.toLowerCase().startsWith("associate"));
+    const row = { label: "Written by", value: cm.writer };
+    if (at >= 0) episodeCredits.splice(at, 0, row);
+    else episodeCredits.push(row);
+  }
   const showCredits = ep.credits.filter((c) => boilerplate.has(c.label.toLowerCase()));
   const starring = ep.starring.map((s) => {
     const [actor, role] = s.split(/\s+as\s+/i);

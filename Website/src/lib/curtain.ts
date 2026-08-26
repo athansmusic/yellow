@@ -83,7 +83,7 @@ export async function hasLockedTranscript(code?: string | null): Promise<boolean
   return (await getTranscript(code)) !== null;
 }
 
-export type EpisodeMeta = { code: string; title: string; description: string | null; meta_description: string | null };
+export type EpisodeMeta = { code: string; title: string; description: string | null; meta_description: string | null; writer?: string | null };
 
 /**
  * Curtain owns each episode's meta description; it never reaches Acast, so the feed cannot carry it.
