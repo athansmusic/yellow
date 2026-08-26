@@ -82,3 +82,38 @@ export async function getTranscript(code?: string | null): Promise<Transcript | 
 export async function hasLockedTranscript(code?: string | null): Promise<boolean> {
   return (await getTranscript(code)) !== null;
 }
+
+export type EpisodeMeta = { code: string; title: string; description: string | null; meta_description: string | null };
+
+/**
+ * Curtain owns each episode's meta description; it never reaches Acast, so the feed cannot carry it.
+ * One request per show, indexed by both keys the site needs: main episodes resolve by code, and
+ * Postmortem items only know their title. Tagged "episodes", so the same revalidate ping that picks
+ * up a publish also picks up an edit here.
+ */
+async function metaIndex(showSlug: string): Promise<Map<string, EpisodeMeta>> {
+  const map = new Map<string, EpisodeMeta>();
+  try {
+    const res = await fetch(`${CURTAIN}/api/public/episode-meta?slug=${showSlug}`, { next: { revalidate: 3600, tags: ["episodes"] } });
+    if (!res.ok) return map;
+    const data = (await res.json()) as { episodes?: EpisodeMeta[] };
+    for (const e of data.episodes ?? []) {
+      if (e.code) map.set(e.code, e);
+      if (e.title) map.set(`t:${normTitle(e.title)}`, e);
+    }
+  } catch {
+    /* Curtain down: the site falls back to the description it derives from the feed */
+  }
+  return map;
+}
+
+export async function getEpisodeMeta(kind: string, code?: string | null, title?: string | null): Promise<EpisodeMeta | null> {
+  if (kind === "episode") {
+    const c = curtainCode(code);
+    return c ? ((await metaIndex(SHOW_SLUG)).get(c) ?? null) : null;
+  }
+  if (kind === "postmortem" && title) {
+    return (await metaIndex("postmortem")).get(`t:${normTitle(title)}`) ?? null;
+  }
+  return null;
+}

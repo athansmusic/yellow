@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllItems, getItemBySlug, getNeighbours, formatDate, formatDuration, toTrack } from "@/lib/feed";
 import { getPlatformLinks } from "@/lib/episodeLinks";
-import { getPostmortemTranscript, getTranscript } from "@/lib/curtain";
+import { getEpisodeMeta, getPostmortemTranscript, getTranscript } from "@/lib/curtain";
 import { getDoc } from "@/lib/content";
 import { ResumeBadge } from "@/components/ResumeBadge";
 import { LISTEN, SITE } from "@/lib/site";
@@ -31,7 +31,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const ep = await getItemBySlug(slug);
   if (!ep) return {};
-  const desc = `${ep.summary} REDACTED ${ep.kind === "episode" ? ep.code : ep.kind}, ${formatDate(ep.date)}. Listen, see the cast, content warnings, and transcript.`;
+  // Curtain owns the meta description. It never reaches Acast, so it cannot come from the
+  // feed; when it is blank the derived sentence stands in. The old tail promised a
+  // transcript most episodes do not have yet, so it is gone either way.
+  const cm = await getEpisodeMeta(ep.kind, ep.code, ep.shortTitle);
+  const desc = cm?.meta_description?.trim() || `${ep.summary} REDACTED ${ep.kind === "episode" ? ep.code : ep.kind}, ${formatDate(ep.date)}. Listen, see the cast and content warnings.`;
   return {
     title: ep.title,
     description: desc.slice(0, 300),
@@ -78,6 +82,8 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
     getDoc("episodeMerch").catch(() => ({}) as Record<string, string[]>),
   ]);
   const merchSlugs = merchDoc[ep.slug] ?? [];
+  // The lede is the feed's, which is Curtain's description by way of Acast.
+  const summary = ep.summary;
   const merch = merchSlugs.length ? (await getProducts().catch(() => [])).filter((p) => merchSlugs.includes(p.slug)).map(toCard) : [];
   const norm = (x?: string) => (x ?? "").toLowerCase().replace(/[\s:]+/g, "");
   const stripPart = (x: string) => x.replace(/\s*\(part \d+\)\s*$/i, "");
@@ -117,7 +123,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
     name: title,
     url,
     datePublished: ep.date,
-    description: ep.summary,
+    description: summary,
     image: art.startsWith("http") ? art : `${SITE.url}${art}`,
     associatedMedia: { "@type": "MediaObject", contentUrl: ep.audioUrl, encodingFormat: "audio/mpeg" },
     partOfSeries: { "@id": `${SITE.url}/#series` },
@@ -157,7 +163,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <Crumbs items={[{ label: "Episodes", href: `/episodes?${KIND_QUERY[ep.kind]}` }, { label: ep.kind === "episode" ? ep.code ?? ep.title : KIND_LABEL[ep.kind] }]} />
             <div className="flex gap-2">
-              <ShareButton title={`${title} · REDACTED`} text={ep.summary} path={`/episodes/${ep.slug}`} />
+              <ShareButton title={`${title} · REDACTED`} text={summary} path={`/episodes/${ep.slug}`} />
               <nav aria-label="Episode navigation" className="flex gap-2">
                 <NavBtn e={older} dir="prev" />
                 <NavBtn e={newer} dir="next" />
@@ -184,7 +190,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
                 )}
                 <ResumeBadge id={ep.guid} />
               </div>
-              {ep.summary && <p className="mt-4 text-lg text-paper/85 max-w-prose">{ep.summary}</p>}
+              {summary && <p className="mt-4 text-lg text-paper/85 max-w-prose">{summary}</p>}
               <div className="mt-6 flex flex-wrap items-center gap-6">
                 <PlayButton track={{ id: ep.guid, title, subtitle: "REDACTED", src: ep.audioUrl, image: art, href: `/episodes/${ep.slug}` }} size="lg" />
                 <PlatformButtons links={platforms} size="sm" />

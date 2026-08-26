@@ -112,19 +112,34 @@ function stripTags(html: string): string {
     .trim();
 }
 
-/** Remove the "-Information on REDACTED-" boilerplate Acast appends to every episode. */
+/**
+ * The marker that separates an episode's own notes from the standing credits block.
+ *
+ * Old Acast copy used "-Information on REDACTED-". The feed has since moved to the standing line
+ * "REDACTED is a horror-comedy audio drama on the Rusty Quill Network." — with or without wrapping
+ * dashes, so they are optional here. Both forms have to parse: the back catalogue is not being
+ * rewritten, so the two coexist in the feed indefinitely.
+ *
+ * This was live-broken before: no item in the feed still carried the old marker, so nothing split,
+ * credits never parsed, and the whole footer (Rusty Quill line, website links) was being swallowed
+ * into each episode's content warnings.
+ */
+const CREDITS_MARK = String.raw`(?:-+\s*Information on REDACTED\s*-+|-*\s*REDACTED is a horror[-\s]?comedy audio drama on the Rusty Quill Network\.?\s*-*)`;
+const CREDITS_RE = new RegExp(CREDITS_MARK, "i");
+
+/** Remove the standing credits boilerplate Acast appends to every episode. */
 function stripBoilerplate(html: string): string {
   let h = html;
-  h = h.replace(/<p[^>]*>\s*-+\s*Information on REDACTED\s*-+\s*<\/p>[\s\S]*$/i, "");
-  h = h.replace(/-+\s*Information on REDACTED\s*-+[\s\S]*$/i, "");
+  h = h.replace(new RegExp(`<p[^>]*>\\s*${CREDITS_MARK}\\s*<\\/p>[\\s\\S]*$`, "i"), "");
+  h = h.replace(new RegExp(`${CREDITS_MARK}[\\s\\S]*$`, "i"), "");
   h = h.replace(/<hr\s*\/?>[\s\S]*$/i, "");
   h = h.replace(/<p[^>]*>\s*Hosted on Acast[\s\S]*$/i, "");
   return h.trim();
 }
 
 function parseDescription(html: string) {
-  // Split off the "-Information on REDACTED-" tail; it carries the credits.
-  const splitAt = html.search(/-+\s*Information on REDACTED\s*-+/i);
+  // Split off the credits tail; it carries the credits.
+  const splitAt = html.search(CREDITS_RE);
   const main = splitAt >= 0 ? html.slice(0, splitAt) : html;
   const tail = splitAt >= 0 ? html.slice(splitAt) : "";
   const clean = stripBoilerplate(html);
@@ -136,7 +151,7 @@ function parseDescription(html: string) {
     .filter((x) => !/^https?:\/\//i.test(x));
   // Some episodes list the cast as plain <p> lines after "Starring:" instead of a <ul>
   if (!starring.length) {
-    const m = main.match(/<p[^>]*>\s*(?:<strong>)?\s*Starring\s*:?\s*(?:<\/strong>)?\s*<\/p>([\s\S]*?)(?=<p[^>]*>\s*(?:<strong>)?\s*Content warnings?|-Information on REDACTED-|$)/i);
+    const m = main.match(/<p[^>]*>\s*(?:<strong>)?\s*Starring\s*:?\s*(?:<\/strong>)?\s*<\/p>([\s\S]*?)(?=<p[^>]*>\s*(?:<strong>)?\s*Content warnings?|-+\s*(?:Information on REDACTED|REDACTED is a horror)|$)/i);
     if (m) {
       starring = Array.from(m[1].matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi))
         .map((x) => stripTags(x[1]).trim())
@@ -159,7 +174,10 @@ function parseDescription(html: string) {
   const paras = Array.from(notesSrc.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)).map((m) => m[1].trim()).filter((p) => {
     const t = stripTags(p);
     if (!t) return false;
+    // Both the old and new phrasings of the "read it on the site" line; on the episode page
+    // itself that paragraph is a link back to where the reader already is.
     if (/this episode on our website/i.test(t)) return false;
+    if (/theredactedunit\.com\/episodes\//i.test(t)) return false;
     if (/content warnings and episode details can be found below/i.test(t)) return false;
     return true;
   });
