@@ -17,7 +17,11 @@ import { Arrow } from "@/components/Icons";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
 import { ShareButton } from "@/components/ShareButton";
 
-export const revalidate = 600;
+// An hour, not ten minutes: freshness comes from events now — Petra pings /api/revalidate on
+// publish, and Curtain has a button for edits made straight in Acast. The timer is only the
+// safety net for a ping that never arrives, and at 600s it was rebuilding pages constantly
+// (1.5-4s for whoever hit an expired one, against 0.16s on a cache hit).
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   try {

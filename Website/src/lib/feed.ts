@@ -232,7 +232,7 @@ async function fetchFeed(url: string, fresh = false): Promise<RawItem[]> {
   // a no-store fetch under that throws at render time, turning a would-be 404 into a 500. A
   // distinct short-lived cache entry gets the same freshness; Acast ignores the extra param.
   const init: RequestInit & { next?: { revalidate: number; tags?: string[] } } = { headers: { "user-agent": "theredactedunit.com" } };
-  init.next = fresh ? { revalidate: 30 } : { revalidate: 600, tags: ["episodes"] };
+  init.next = fresh ? { revalidate: 30 } : { revalidate: 3600, tags: ["episodes"] };
   const res = await fetch(fresh ? `${url}${url.includes("?") ? "&" : "?"}fresh=1` : url, init);
   if (!res.ok) throw new Error(`Feed ${url} → ${res.status}`);
   const xml = await res.text();
