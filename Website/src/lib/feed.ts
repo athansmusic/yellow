@@ -151,7 +151,7 @@ function parseDescription(html: string) {
     .filter((x) => !/^https?:\/\//i.test(x));
   // Some episodes list the cast as plain <p> lines after "Starring:" instead of a <ul>
   if (!starring.length) {
-    const m = main.match(/<p[^>]*>\s*(?:<strong>)?\s*Starring\s*:?\s*(?:<\/strong>)?\s*<\/p>([\s\S]*?)(?=<p[^>]*>\s*(?:<strong>)?\s*Content warnings?|-+\s*(?:Information on REDACTED|REDACTED is a horror)|$)/i);
+    const m = main.match(/<p[^>]*>\s*(?:<br\s*\/?>\s*)*(?:<strong>)?\s*Starring\s*:?\s*(?:<\/strong>)?\s*:?\s*<\/p>([\s\S]*?)(?=<p[^>]*>\s*(?:<strong>)?\s*Content warnings?|-+\s*(?:Information on REDACTED|REDACTED is a horror)|$)/i);
     if (m) {
       starring = Array.from(m[1].matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi))
         .map((x) => stripTags(x[1]).trim())
@@ -161,7 +161,7 @@ function parseDescription(html: string) {
 
   // Content warnings: text after the "Content warnings:" heading (any case, optional <strong>)
   let contentWarnings: string | undefined;
-  const cwIdx = main.search(/<p[^>]*>\s*(<strong>)?\s*Content warnings?\s*:?\s*(<\/strong>)?\s*<\/p>/i);
+  const cwIdx = main.search(/<p[^>]*>\s*(?:<br\s*\/?>\s*)*(<strong>)?\s*Content warnings?\s*:?\s*(<\/strong>)?\s*:?\s*<\/p>/i);
   let notesSrc = main;
   if (cwIdx >= 0) {
     const after = main.slice(cwIdx).replace(/^<p[^>]*>[\s\S]*?<\/p>/i, "");
