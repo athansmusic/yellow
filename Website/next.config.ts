@@ -51,6 +51,11 @@ const nextConfig: NextConfig = {
       // Postmortem lives on the Episodes page now (its own page duplicated the tab)
       { source: "/postmortem", destination: "/episodes?show=postmortem", permanent: true },
       { source: "/t7p", destination: "/episodes?show=t7p", permanent: true },
+      // A Bluesky post went out linking postmortem-s1e25. Postmortem carries its own numbering,
+      // so S1E25 there is the 25th Postmortem — Loose Ends — not main-show S1E25 (Prodigy Part 2).
+      // Petra built the slug as if it were a main-show code. Aliased by hand: the two numbering
+      // schemes collide, so a generic s{n}e{n} rule would send people to the wrong episode.
+      { source: "/episodes/postmortem-s1e25", destination: "/episodes/postmortem-loose-ends", permanent: true },
       { source: "/utility-pages/privacy-policy", destination: "/privacy", permanent: true },
       { source: "/asset-guide", destination: "/assets", permanent: true },
       { source: "/team", destination: "/cast", permanent: true },
