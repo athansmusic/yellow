@@ -67,6 +67,13 @@ function safeHtml(html: string) {
 
 // Feed names that differ from the cast page name (real name vs stage name)
 const CAST_ALIASES: Record<string, string> = { johnathanmagno: "athan" };
+// Guest actors with no cast page: their credit links out instead, same style.
+const GUEST_ACTOR_LINKS: Record<string, string> = {
+  pixelvixx: "https://www.twitch.tv/pixelvixx",
+};
+function guestLinkFor(actor: string) {
+  return GUEST_ACTOR_LINKS[actor.toLowerCase().replace(/[^a-z]/g, "")];
+}
 function castFor(actor: string) {
   const norm = (x: string) => x.toLowerCase().replace(/[^a-z]/g, "");
   const a = norm(actor);
@@ -117,7 +124,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
   const showCredits = ep.credits.filter((c) => boilerplate.has(c.label.toLowerCase()));
   const starring = ep.starring.map((s) => {
     const [actor, role] = s.split(/\s+as\s+/i);
-    return { actor: actor.trim(), role: role?.trim(), member: castFor(actor.trim()) };
+    return { actor: actor.trim(), role: role?.trim(), member: castFor(actor.trim()), guestLink: guestLinkFor(actor.trim()) };
   });
 
   const jsonLd = {
@@ -292,6 +299,10 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
                         <Link href={`/cast/${s.member.slug}`} className="text-sm text-yellow text-right hover:underline underline-offset-4 shrink-0">
                           {s.actor}
                         </Link>
+                      ) : s.guestLink ? (
+                        <a href={s.guestLink} target="_blank" rel="noopener noreferrer" className="text-sm text-yellow text-right hover:underline underline-offset-4 shrink-0">
+                          {s.actor}
+                        </a>
                       ) : (
                         <span className="text-sm text-muted text-right shrink-0">{s.actor}</span>
                       ))}
