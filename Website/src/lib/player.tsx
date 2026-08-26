@@ -70,7 +70,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     try {
       const o = localStorage.getItem("player-order");
       if (o === "full" || o === "redacted" || o === "postmortem") setOrderState(o);
-      const v = Number(localStorage.getItem(VOL_KEY));
+      // Number(null) is 0, so reading an absent key straight through starts every new
+      // visitor silent. Absent or empty has to mean "leave the default alone".
+      const raw = localStorage.getItem(VOL_KEY);
+      const v = raw === null || raw === "" ? NaN : Number(raw);
       if (Number.isFinite(v) && v >= 0 && v <= 1) setVolumeState(v);
       setMutedState(localStorage.getItem(MUTE_KEY) === "1");
     } catch {}
