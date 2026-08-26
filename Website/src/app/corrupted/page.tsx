@@ -36,15 +36,19 @@ export default function CorruptedPage() {
 
         <div className="relative mx-auto w-full max-w-5xl px-5 pb-14 text-center">
           <FileStatus />
-          <Image
-            src="/corrupted/wordmark-black.png"
-            alt="CORRUPTED"
-            width={1843}
-            height={384}
-            priority
-            className="mt-6 w-full max-w-3xl mx-auto h-auto"
-            style={{ filter: "drop-shadow(0 0 5px #a21d2d) drop-shadow(0 0 16px #a21d2d) drop-shadow(0 0 34px rgba(162,29,45,.8))" }}
-          />
+          {/* The wordmark is the page's title, so it carries the H1. Preflight strips h1's own
+              size and margins, so wrapping the image changes nothing visually. */}
+          <h1 className="mt-6">
+            <Image
+              src="/corrupted/wordmark-black.png"
+              alt="CORRUPTED"
+              width={1843}
+              height={384}
+              priority
+              className="w-full max-w-3xl mx-auto h-auto"
+              style={{ filter: "drop-shadow(0 0 5px #a21d2d) drop-shadow(0 0 16px #a21d2d) drop-shadow(0 0 34px rgba(162,29,45,.8))" }}
+            />
+          </h1>
           <p
             className="mt-7 mx-auto max-w-2xl text-[17px] font-medium leading-relaxed text-[#0a0708]"
             style={{ textShadow: "0 0 6px #a21d2d, 0 0 16px #a21d2d, 0 0 30px rgba(162,29,45,.75)" }}

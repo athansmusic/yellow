@@ -5,6 +5,7 @@ import { hiddenPages, isHiddenPath } from "@/lib/visibility";
 import { getProducts } from "@/lib/catalog";
 import { SITE } from "@/lib/site";
 import cast from "@/data/cast.json";
+import { getContributors } from "@/lib/contributors";
 
 export const revalidate = 3600;
 
@@ -13,8 +14,10 @@ const GENERATED = new Date();
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = SITE.url;
-  const [like, aberrations, hidden] = await Promise.all([getDoc("like"), getDoc("aberrations"), hiddenPages()]);
-  const statics = ["", "/about", "/faq", "/where", "/episodes", "/corrupted", "/cast", "/store", "/store-faq", "/store-terms", "/assets", "/supporter-wall", "/partner", "/privacy", "/fan-art", "/bingo", "/like", ...like.map((l) => `/like/${l.slug}`), "/aberrations", ...aberrations.map((a) => `/aberrations/${a.slug}`)].map((p) => ({
+  const [like, aberrations, hidden, contributors] = await Promise.all([getDoc("like"), getDoc("aberrations"), hiddenPages(), getContributors().catch(() => [])]);
+  // Same filter the directory uses, so the sitemap never advertises a person the site won't link to.
+  const people = contributors.filter((c) => !c.hidden && !c.empty);
+  const statics = ["", "/about", "/faq", "/where", "/episodes", "/corrupted", "/cast", "/store", "/store-faq", "/store-terms", "/assets", "/supporter-wall", "/partner", "/privacy", "/fan-art", "/bingo", "/like", ...like.map((l) => `/like/${l.slug}`), "/aberrations", ...aberrations.map((a) => `/aberrations/${a.slug}`), "/contributors", ...people.map((c) => `/contributors/${c.slug}`)].map((p) => ({
     url: `${base}${p}`,
     lastModified: GENERATED,
     changeFrequency: (p === "" || p === "/episodes" ? "weekly" : "monthly") as "weekly" | "monthly",
