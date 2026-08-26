@@ -184,10 +184,12 @@ function parseDescription(html: string) {
 }
 
 async function fetchFeed(url: string, fresh = false): Promise<RawItem[]> {
-  const init: RequestInit & { next?: { revalidate: number; tags: string[] } } = { headers: { "user-agent": "theredactedunit.com" } };
-  if (fresh) init.cache = "no-store";
-  else init.next = { revalidate: 600, tags: ["episodes"] };
-  const res = await fetch(url, init);
+  // The fresh read must NOT use cache:"no-store" — this route sets `export const revalidate`, and
+  // a no-store fetch under that throws at render time, turning a would-be 404 into a 500. A
+  // distinct short-lived cache entry gets the same freshness; Acast ignores the extra param.
+  const init: RequestInit & { next?: { revalidate: number; tags?: string[] } } = { headers: { "user-agent": "theredactedunit.com" } };
+  init.next = fresh ? { revalidate: 30 } : { revalidate: 600, tags: ["episodes"] };
+  const res = await fetch(fresh ? `${url}${url.includes("?") ? "&" : "?"}fresh=1` : url, init);
   if (!res.ok) throw new Error(`Feed ${url} → ${res.status}`);
   const xml = await res.text();
   const doc = parser.parse(xml);
@@ -293,10 +295,14 @@ export async function getItemBySlug(slug: string): Promise<Episode | undefined> 
   const hit = (await getAllItems()).find((e) => e.slug === slug);
   if (hit || !SLUG_SHAPE.test(slug)) return hit;
   // An episode that went live minutes ago is not in the cached feed yet, and notFound() would be
-  // cached for the whole revalidate window — so the page would stay missing long after it published.
-  // One uncached read on the miss path costs nothing on the hot path and makes a new episode appear
-  // the moment its URL is first opened.
-  return (await getAllItems(true)).find((e) => e.slug === slug);
+  // cached for the whole revalidate window — so the page would stay missing long after it
+  // published. A near-fresh read on the miss path fixes that. Never let it throw: a failure here
+  // must degrade to "not found", never to a 500 on every unknown slug.
+  try {
+    return (await getAllItems(true)).find((e) => e.slug === slug);
+  } catch {
+    return undefined;
+  }
 }
 
 /** Neighbours of the same kind, for prev/next navigation. */
