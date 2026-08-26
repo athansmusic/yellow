@@ -45,7 +45,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     description: desc.slice(0, 300),
     alternates: { canonical: `/episodes/${ep.slug}` },
     // A page-level openGraph object replaces the layout one wholesale, so siteName must ride along
-    openGraph: { siteName: "REDACTED", title: ep.title, description: desc, type: "article", publishedTime: ep.date },
+    // The root title template (%s · REDACTED) does not apply to OpenGraph,
+    // so share cards were getting the bare 22-char episode code. Brand-first
+    // here; the <title> keeps its keyword-first suffix form.
+    openGraph: { siteName: "REDACTED", title: `REDACTED ${ep.title}`, description: desc, type: "article", publishedTime: ep.date },
   };
 }
 
