@@ -165,11 +165,19 @@ function parseDescription(html: string) {
   let notesSrc = main;
   if (cwIdx >= 0) {
     const after = main.slice(cwIdx).replace(/^<p[^>]*>[\s\S]*?<\/p>/i, "");
-    contentWarnings = stripTags(after).split("\n").map((l) => l.trim()).filter(Boolean).join(" ") || undefined;
+    contentWarnings =
+      stripTags(after)
+        .split("\n")
+        .map((l) => l.trim())
+        .filter(Boolean)
+        // The self-link paragraph ('Episode Details') sits inside this span; it is not a warning.
+        .filter((l) => !/^(episode details|this episode on our website|companion postmortem|main episode)\b/i.test(l))
+        .filter((l) => !/theredactedunit\.com/i.test(l))
+        .join(" ") || undefined;
     notesSrc = main.slice(0, cwIdx);
   }
   // Notes: paragraphs before Starring, minus the self-link and the "warnings below" line
-  const starIdx = notesSrc.search(/<p[^>]*>\s*(<strong>)?\s*Starring\s*:?/i);
+  const starIdx = notesSrc.search(/<p[^>]*>\s*(?:<br\s*\/?>\s*)*(?:<strong>)?\s*Starring\s*:?/i);
   if (starIdx >= 0) notesSrc = notesSrc.slice(0, starIdx);
   const paras = Array.from(notesSrc.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)).map((m) => m[1].trim()).filter((p) => {
     const t = stripTags(p);
@@ -193,6 +201,24 @@ function parseDescription(html: string) {
   }
   const concept = tail.match(/<em>\s*Concept by\s*([^<]+)<\/em>/i);
   if (concept) credits.push({ label: "Concept", value: concept[1].trim() });
+
+  // Newer episodes write credits as plain paragraphs — "Writing: A, B" and "Created by A and B" —
+  // with no <strong> at all, so the bold pass above finds nothing. Link lines (Website, Discord,
+  // Support the show) share the "Label: value" shape and are excluded by the href test.
+  if (!credits.length) {
+    for (const m of tail.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)) {
+      if (/https?:|<a\s/i.test(m[1])) continue;
+      const line = stripTags(m[1]).replace(/\s+/g, " ").trim();
+      if (!line || CREDITS_RE.test(line)) continue;
+      const colon = line.match(/^([A-Za-z][A-Za-z&/ ]{2,40}?)\s*:\s*(.+)$/);
+      const by = line.match(/^([A-Za-z][A-Za-z&/ ]{2,40}?)\s+by\s+(.+)$/i);
+      const hit = colon ?? by;
+      if (!hit) continue;
+      const label = hit[1].trim();
+      const value = hit[2].trim();
+      if (label && value) credits.push({ label, value });
+    }
+  }
 
   // Guest director: "This episode was Guest Directed by Trevor Henderson" / "guest directed by Ashley McAnnelly, creator of..."
   const gd = stripTags(clean).match(/guest[\s-]*directed by\s+([A-Z][^.,;:\n(]{2,60}?)(?=\s*(?:[.,;:(\n]|\bcreator\b|\byou can\b|\bcontent warnings?\b|\bstarring\b|\bhttps?:|$))/i);
