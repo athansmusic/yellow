@@ -30,7 +30,7 @@ export default function JoinPage() {
 
       <div className="relative mt-8">
         <h1 className="display text-5xl sm:text-7xl leading-[0.95]">
-          JOIN THE <span className="text-yellow">[REDACTED]</span> UNIT
+          JOIN THE <span className="text-yellow">REDACTED</span> UNIT
         </h1>
         {/* stamp */}
         <span
@@ -42,7 +42,7 @@ export default function JoinPage() {
       </div>
 
       <p className="mt-6 text-lg text-paper/85 max-w-prose">
-        As a member of THE [REDACTED] UNIT, you listen to ad-free episodes
+        As a member of THE REDACTED UNIT, you listen to ad-free episodes
         early, get behind-the-scenes access, and receive exclusive bonus
         content and shows on release day. Your membership directly supports
         the ongoing production of REDACTED — and helps us make more of the
