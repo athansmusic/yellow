@@ -1,6 +1,6 @@
 "use client";
 
-import Script from "next/script";
+import { useEffect, useRef } from "react";
 
 /**
  * SupportingCast membership widget, re-skinned from the old Webflow embed.
@@ -10,6 +10,33 @@ import Script from "next/script";
  * Montserrat is already the site body font, so the widget inherits it.
  */
 export function SupportingCastWidget() {
+  const hostRef = useRef<HTMLDivElement>(null);
+
+  // The widget script scans for its mount when it executes, and React
+  // hydration must never see the foreign DOM it injects (error #418
+  // wiped the whole widget when the cached script won the race). So the
+  // mount div is created OUTSIDE React's tree, and the script is added
+  // only after the mount exists - fresh each time, so client-side
+  // navigation back to this page re-initializes it.
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host || host.querySelector("#supportingcast-widget")) return;
+    const mount = document.createElement("div");
+    mount.id = "supportingcast-widget";
+    mount.setAttribute("data-initial-view", "shop");
+    mount.setAttribute("data-menu-visible", "false");
+    mount.setAttribute(
+      "data-publishable-key",
+      "wpk_I8kt6WweVJg8cAvL8AtzisBdsdlW9T7eH6zEY38R5ubOaIxrQa6yqYV7BOS24w5sSk5FKSgLbbsDTnq7tmv5lR3vELNcRUlCbvN",
+    );
+    host.appendChild(mount);
+    document.querySelector('script[src*="sc-widget.js"]')?.remove();
+    const script = document.createElement("script");
+    script.src = "https://hushstudios.supportingcast.fm/js/sc-widget.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
   return (
     <>
       <style
@@ -181,13 +208,7 @@ export function SupportingCastWidget() {
 `,
         }}
       />
-      <div
-        id="supportingcast-widget"
-        data-initial-view="shop"
-        data-menu-visible="false"
-        data-publishable-key="wpk_I8kt6WweVJg8cAvL8AtzisBdsdlW9T7eH6zEY38R5ubOaIxrQa6yqYV7BOS24w5sSk5FKSgLbbsDTnq7tmv5lR3vELNcRUlCbvN"
-      />
-      <Script src="https://hushstudios.supportingcast.fm/js/sc-widget.js" strategy="afterInteractive" />
+      <div ref={hostRef} />
     </>
   );
 }
