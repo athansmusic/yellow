@@ -12,6 +12,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+const BENEFITS: { n: string; title: string; body: string }[] = [
+  { n: "01", title: "Early, ad-free episodes", body: "Every episode before the public feed, with no ads. The story, uninterrupted." },
+  { n: "02", title: "CORRUPTED", body: "Enjoy our double length monthly anthology horror series, CORRUPTED, a month early, ad-free." },
+  { n: "03", title: "Direct support", body: "Your membership funds the ongoing production of REDACTED, and helps us make more of the stories you love." },
+];
+
 export default function JoinPage() {
   return (
     <Container className="py-16">
@@ -25,6 +31,19 @@ export default function JoinPage() {
         ongoing production of REDACTED, and helps us create more of the
         stories you love!
       </p>
+      {/* Benefits - owner's copy, verbatim */}
+      <ul className="mt-12 grid sm:grid-cols-3 border-t border-l border-line">
+        {BENEFITS.map((b) => (
+          <li key={b.n} className="border-b border-r border-line p-5 sm:p-6">
+            <div className="flex items-baseline gap-3">
+              <span className="font-wide text-sm text-muted">{b.n}</span>
+              <h2 className="display text-2xl uppercase">{b.title}</h2>
+            </div>
+            <p className="mt-2 text-sm text-muted leading-relaxed">{b.body}</p>
+          </li>
+        ))}
+      </ul>
+
       <div className="mt-12">
         <SupportingCastWidget />
       </div>
