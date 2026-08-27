@@ -26,10 +26,7 @@ export default function JoinPage() {
   return (
     <Container className="py-16">
       {/* ---- intake header ---- */}
-      <div className="flex items-baseline justify-between gap-6 border-b border-line pb-3">
-        <p className="eyebrow text-yellow">Membership · Personnel intake</p>
-        <p className="font-wide text-xs text-muted tracking-widest whitespace-nowrap">FILE // TRU-MEM-001</p>
-      </div>
+      <p className="eyebrow text-yellow border-b border-line pb-3">Membership</p>
 
       <div className="relative mt-8">
         <h1 className="display text-5xl sm:text-7xl leading-[0.95]">
@@ -77,14 +74,10 @@ export default function JoinPage() {
 
       {/* ---- the widget: tiers as clearance levels ---- */}
       <section className="mt-14">
-        <div className="flex items-baseline justify-between gap-6 border-b border-line pb-3 mb-8">
-          <h2 className="eyebrow text-yellow">Select clearance level</h2>
-          <p className="font-wide text-xs text-muted tracking-widest whitespace-nowrap">AUTHORIZATION REQUIRED</p>
-        </div>
+        <h2 className="eyebrow text-yellow border-b border-line pb-3 mb-8">Select clearance level</h2>
         <SupportingCastWidget />
         <p className="mt-6 text-xs text-muted">
-          Clearance processed by Supporting Cast. Cancel anytime — no
-          debriefing required.
+          Membership is handled by Supporting Cast. Cancel anytime.
         </p>
       </section>
     </Container>
