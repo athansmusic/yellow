@@ -30,14 +30,7 @@ export default function JoinPage() {
 
       <div className="relative mt-8">
         <h1 className="display text-5xl sm:text-7xl leading-[0.95]">
-          JOIN THE{" "}
-          <span
-            className="redact transition-colors duration-300 hover:bg-transparent hover:text-yellow cursor-help"
-            title="Declassified."
-          >
-            [REDACTED]
-          </span>{" "}
-          UNIT
+          JOIN THE <span className="text-yellow">[REDACTED]</span> UNIT
         </h1>
         {/* stamp */}
         <span
