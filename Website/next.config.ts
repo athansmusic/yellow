@@ -59,6 +59,9 @@ const nextConfig: NextConfig = {
       { source: "/utility-pages/privacy-policy", destination: "/privacy", permanent: true },
       { source: "/asset-guide", destination: "/assets", permanent: true },
       { source: "/team", destination: "/cast", permanent: true },
+      // TEMPORARY: memberships live on Patreon until the Supporting Cast page
+      // (staged at /join-preview, noindexed) launches. Remove this to go live.
+      { source: "/join", destination: "https://patreon.com/theredactedunit", permanent: false },
       { source: "/discord", destination: "https://discord.gg/MKtCk4fBXt", permanent: false },
       { source: "/ks", destination: "https://www.kickstarter.com/projects/theredactedunit/redacted-a-procedural-horror-audio-drama", permanent: false },
     ];

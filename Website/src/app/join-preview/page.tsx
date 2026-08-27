@@ -6,6 +6,8 @@ import { SupportingCastWidget } from "./SupportingCastWidget";
  * Supporting Cast membership. All copy on this page is the owner's, from
  * the original Webflow build - per the standing rule, Claude adds no
  * public-facing prose here. UNLISTED: no nav, no sitemap, noindex.
+ * Staged here while /join temporarily redirects to Patreon (next.config.ts);
+ * at launch, move this back to /join and drop that redirect.
  */
 export const metadata: Metadata = {
   title: "Join the Unit",
