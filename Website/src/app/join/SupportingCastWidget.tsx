@@ -33,9 +33,25 @@ export function SupportingCastWidget() {
   letter-spacing: 0.03em !important;
   font-weight: 700 !important;
 }
-#supportingcast-widget .sc-subscription-plan-benefits li,
+/* Benefits are the selling copy - readable paper, not footnote gray */
+#supportingcast-widget .sc-subscription-plan-benefits li {
+  color: rgba(242, 240, 234, 0.92) !important;
+}
 #supportingcast-widget .sc-subscription-plan-benefits-prefix {
-  color: var(--color-muted) !important;
+  color: rgba(242, 240, 234, 0.78) !important;
+}
+/* The annual-savings pill shipped near-black-on-ink at 9px - make it the
+   yellow callout it is meant to be, at a legible size */
+#supportingcast-widget .sc-subscription-price-savings-pill,
+#supportingcast-widget .sc-subscription-price-savings-pill * {
+  background: var(--color-yellow) !important;
+  color: var(--color-ink) !important;
+  font-size: 12px !important;
+  line-height: 1.3 !important;
+}
+#supportingcast-widget .sc-subscription-price-savings-pill {
+  padding: 3px 8px !important;
+  border-radius: 0 !important;
 }
 #supportingcast-widget .sc-subscription-plan-price,
 #supportingcast-widget .sc-subscription-plan-price span {
@@ -43,7 +59,7 @@ export function SupportingCastWidget() {
 }
 #supportingcast-widget .sc-subscription-plan-pwyw-minimum-price {
   font-size: 1rem !important; font-weight: 600 !important; opacity: 1 !important;
-  color: var(--color-muted) !important;
+  color: rgba(242, 240, 234, 0.92) !important;
 }
 
 /* Best value chip: red on paper, like the site's accent chips */
