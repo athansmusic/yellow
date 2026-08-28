@@ -8,7 +8,6 @@ import { createPortal } from "react-dom";
 import { LISTEN, LISTEN_BUTTONS, MORE_NAV as MORE_NAV_ALL, NAV as NAV_ALL, SOCIAL } from "@/lib/site";
 import { COLLECTIONS, TAXONOMY } from "@/lib/storeTaxonomy";
 import { useCart } from "@/lib/cart";
-import { useMember } from "@/lib/member";
 import { Cart, Close, Discord, Menu, Patreon, ICONS } from "./Icons";
 import { SearchButton, openSearch } from "./SiteSearch";
 
@@ -99,7 +98,6 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { count, ready, justAdded } = useCart();
-  const member = useMember();
   const panelRef = useRef<HTMLDivElement>(null);
   // The header's backdrop-blur makes it the containing block for fixed children, so the drawer portals to <body>.
   const [mounted, setMounted] = useState(false);
@@ -192,21 +190,9 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
           <a href="/discord" target="_blank" rel="noreferrer" className="hidden lg:inline-flex items-center gap-2 display text-xl px-3 py-1.5 bg-[#5865F2] text-white border border-[#5865F2] hover:bg-[#4752C4] hover:border-[#4752C4] transition-colors">
             <Discord width={16} height={16} /> Discord
           </a>
-          {/* Signed-in members see themselves here instead of the Patreon prompt: it is the only
-              place on the site that tells you your membership is actually live. */}
-          {member?.signedIn ? (
-            <Link
-              href="/account"
-              title="Account"
-              className="hidden lg:inline-flex items-center gap-2 display text-xl px-3 py-1.5 mr-2 text-yellow border border-yellow/70 hover:bg-yellow hover:text-ink transition-colors max-w-48"
-            >
-              <span className="truncate">{member.name ?? "Account"}</span>
-            </Link>
-          ) : (
-            <a href={LISTEN.patreon} target="_blank" rel="noreferrer" className="hidden lg:inline-flex items-center gap-2 display text-xl px-3 py-1.5 mr-2 text-yellow border border-yellow/70 hover:bg-yellow hover:text-ink transition-colors">
-              <Patreon width={16} height={16} /> Patreon
-            </a>
-          )}
+          <a href={LISTEN.patreon} target="_blank" rel="noreferrer" className="hidden lg:inline-flex items-center gap-2 display text-xl px-3 py-1.5 mr-2 text-yellow border border-yellow/70 hover:bg-yellow hover:text-ink transition-colors">
+            <Patreon width={16} height={16} /> Patreon
+          </a>
 
           <SearchButton className="p-2 text-paper hover:text-yellow" />
           <Link

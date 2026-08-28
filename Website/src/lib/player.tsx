@@ -31,14 +31,6 @@ type PlayerCtx = {
   skip: (delta: number) => void;
   setRate: (r: number) => void;
   /** 0..1. iOS ignores writes to audio.volume, so the UI hides the slider on touch. */
-  /**
-   * Hand the player a foreign <audio> to drive instead of its own — Supporting Cast's player
-   * creates a real audio element for entitled members, and the bar becomes its face. Pass null
-   * to go back to ours. Everything else (positions, prev/next, speed, volume) is unchanged.
-   */
-  adoptAudio: (el: HTMLAudioElement | null) => void;
-  /** True while a foreign element is driving playback. */
-  adopted: boolean;
   volume: number;
   muted: boolean;
   setVolume: (v: number) => void;
@@ -72,9 +64,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [neighbors, setNeighbors] = useState<{ prev: Track | null; next: Track | null }>({ prev: null, next: null });
   const [expanded, setExpanded] = useState(false);
   const [order, setOrderState] = useState<"full" | "redacted" | "postmortem">("full");
-  // null = the player owns its element. Set, and the binding effect below re-runs against
-  // the foreign one; its owner is responsible for creating and destroying it.
-  const [external, setExternal] = useState<HTMLAudioElement | null>(null);
   const [volume, setVolumeState] = useState(1);
   const [muted, setMutedState] = useState(false);
   useEffect(() => {
@@ -125,26 +114,23 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     } catch {}
   }, []);
 
-  // Bind to the element we are driving: ours by default, or an adopted one. Re-runs on swap.
+  // Create the single <audio> element once, on the client
   useEffect(() => {
-    const a = external ?? new Audio();
-    if (!external) a.preload = "metadata";
+    const a = new Audio();
+    a.preload = "metadata";
     audio.current = a;
     setPositions(readPos());
-    // Restore last track (paused) so the bar comes back after a reload. Only for our own element:
-    // an adopted one already has its source, chosen by whoever owns it.
-    if (!external) {
-      try {
-        const last = localStorage.getItem(LAST_KEY);
-        if (last) {
-          const t = JSON.parse(last) as Track;
-          a.src = t.src;
-          const p = readPos()[t.id];
-          if (p?.t) a.addEventListener("loadedmetadata", () => (a.currentTime = p.t), { once: true });
-          setTrack(t);
-        }
-      } catch {}
-    }
+    // Restore last track (paused) so the bar comes back after a reload
+    try {
+      const last = localStorage.getItem(LAST_KEY);
+      if (last) {
+        const t = JSON.parse(last) as Track;
+        a.src = t.src;
+        const p = readPos()[t.id];
+        if (p?.t) a.addEventListener("loadedmetadata", () => (a.currentTime = p.t), { once: true });
+        setTrack(t);
+      }
+    } catch {}
     const onT = () => setTime(a.currentTime);
     const onD = () => setDuration(a.duration || 0);
     const onP = () => setPlaying(true);
@@ -179,8 +165,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     a.addEventListener("pause", onPa);
     a.addEventListener("ended", onEnd);
     return () => {
-      // Never tear down a foreign element — its owner does that.
-      if (!external) a.pause();
+      a.pause();
       a.removeEventListener("timeupdate", onT);
       a.removeEventListener("loadedmetadata", onD);
       a.removeEventListener("durationchange", onD);
@@ -188,17 +173,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       a.removeEventListener("pause", onPa);
       a.removeEventListener("ended", onEnd);
     };
-  }, [external]);
-
-  // Adopting mid-playback should not leave the old element running underneath.
-  const adoptAudio = useCallback((el: HTMLAudioElement | null) => {
-    setExternal((prev) => {
-      if (prev === el) return prev;
-      try {
-        audio.current?.pause();
-      } catch {}
-      return el;
-    });
   }, []);
 
   // Know the surrounding episodes so the bar can offer prev/next
@@ -324,8 +298,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo<PlayerCtx>(
-    () => ({ track, playing, time, duration, rate, neighbors, order, setOrder, expanded, setExpanded, jump, load, toggle, seek, skip, setRate, close, progressFor, volume, muted, setVolume, toggleMute, adoptAudio, adopted: !!external }),
-    [track, playing, time, duration, rate, neighbors, order, setOrder, expanded, jump, load, toggle, seek, skip, setRate, close, progressFor, volume, muted, setVolume, toggleMute, adoptAudio, external],
+    () => ({ track, playing, time, duration, rate, neighbors, order, setOrder, expanded, setExpanded, jump, load, toggle, seek, skip, setRate, close, progressFor, volume, muted, setVolume, toggleMute }),
+    [track, playing, time, duration, rate, neighbors, order, setOrder, expanded, jump, load, toggle, seek, skip, setRate, close, progressFor, volume, muted, setVolume, toggleMute],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

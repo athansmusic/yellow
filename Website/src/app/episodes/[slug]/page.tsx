@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { getAllItems, getItemBySlug, getNeighbours, formatDate, formatDuration, toTrack } from "@/lib/feed";
 import { getPlatformLinks } from "@/lib/episodeLinks";
 import { getEpisodeMeta, getPostmortemTranscript, getTranscript } from "@/lib/curtain";
-import { MemberAudio } from "@/components/MemberAudio";
 import { getDoc } from "@/lib/content";
 import { ResumeBadge } from "@/components/ResumeBadge";
 import { LISTEN, SITE } from "@/lib/site";
@@ -173,14 +172,9 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
     );
   };
 
-  // Signed-in members hear the ad-free cut through Supporting Cast's player, driven by our bar.
-  // Everyone else never mounts it and keeps the public audio.
-  const privateGuid = (await getEpisodeMeta(ep.kind, ep.code, ep.shortTitle))?.privateEpisodeId;
-
   return (
     <article>
       <JsonLd data={jsonLd} />
-      {privateGuid && <MemberAudio episodeGuid={privateGuid} />}
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", url: SITE.url }, { name: "Episodes", url: `${SITE.url}/episodes` }, { name: title, url }])} />
 
       {/* Header band: blurred cover behind, cover + title in front */}
