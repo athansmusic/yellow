@@ -8,7 +8,7 @@ import { getEpisodeMeta, getPostmortemTranscript, getTranscript } from "@/lib/cu
 import { MemberAudio } from "@/components/MemberAudio";
 import { privateGuidFor } from "@/lib/private-episodes";
 import { earlySlugs, getEarlyEpisode, getEarlyEpisodes } from "@/lib/early";
-import { EarlyGate } from "@/components/EarlyGate";
+import { EarlyProvider, EarlyTop, EarlyBelow } from "@/components/EarlyGate";
 import { getDoc } from "@/lib/content";
 import { ResumeBadge } from "@/components/ResumeBadge";
 import { LISTEN, SITE } from "@/lib/site";
@@ -206,7 +206,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
   // Everyone else never mounts it and keeps the public audio.
   const privateGuid = privateGuidFor(slug);
 
-  return (
+  const body = (
     <article>
       <JsonLd data={jsonLd} />
       {privateGuid && <MemberAudio episodeGuid={privateGuid} trackId={ep.guid} />}
@@ -250,8 +250,9 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
               </div>
               {!locked && summary && <p className="mt-4 text-lg text-paper/85 max-w-prose">{summary}</p>}
               {locked ? (
-                /* No public file and no platform links yet — the member's copy is the only copy. */
-                <EarlyGate slug={ep.slug} guid={ep.guid} title={title} image={art} />
+                /* No public file and no platform links yet — the member's copy is the only copy.
+                   Cast and warnings are NOT here: they belong in the lower grid, same as always. */
+                <EarlyTop guid={ep.guid} title={title} image={art} />
               ) : (
               <div className="mt-6 flex flex-wrap items-center gap-6">
                 <PlayButton track={{ id: ep.guid, title, subtitle: "REDACTED", src: ep.audioUrl, image: art, href: `/episodes/${ep.slug}` }} size="lg" />
@@ -278,6 +279,8 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
 
       <Container className="py-10 sm:py-14 grid gap-12 lg:grid-cols-[1fr_20rem]">
         <div className="grid gap-12 content-start">
+          {/* A member's notes, cast and warnings, in the same slots the published page uses. */}
+          {locked && <EarlyBelow />}
           {transcript && (
             <section id="transcript" className="scroll-mt-24">
               <details className="group border border-line bg-ink-2/70">
@@ -465,4 +468,8 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
       </Container>
     </article>
   );
+
+  // One fetch feeds both halves, so the page cannot show a member their cast while still offering
+  // them the join pitch. Wrapping rather than nesting keeps the article itself server-rendered.
+  return locked ? <EarlyProvider slug={ep.slug}>{body}</EarlyProvider> : body;
 }
