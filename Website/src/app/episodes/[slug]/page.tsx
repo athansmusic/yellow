@@ -7,6 +7,8 @@ import { getPlatformLinks } from "@/lib/episodeLinks";
 import { getEpisodeMeta, getPostmortemTranscript, getTranscript } from "@/lib/curtain";
 import { MemberAudio } from "@/components/MemberAudio";
 import { privateGuidFor } from "@/lib/private-episodes";
+import { earlySlugs, getEarlyEpisode } from "@/lib/early";
+import { EarlyEpisode } from "./EarlyEpisode";
 import { getDoc } from "@/lib/content";
 import { ResumeBadge } from "@/components/ResumeBadge";
 import { LISTEN, SITE } from "@/lib/site";
@@ -27,7 +29,11 @@ export const revalidate = 3600;
 
 export async function generateStaticParams() {
   try {
-    return (await getAllItems()).map((e) => ({ slug: e.slug }));
+    const published = (await getAllItems()).map((e) => ({ slug: e.slug }));
+    // Members get an episode days before the public feed does, and until now the link they were
+    // sent had no page to land on.
+    const early = (await earlySlugs()).map((slug) => ({ slug }));
+    return [...published, ...early];
   } catch {
     return [];
   }
@@ -36,7 +42,19 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const ep = await getItemBySlug(slug);
-  if (!ep) return {};
+  if (!ep) {
+    const early = await getEarlyEpisode(slug);
+    if (!early) return {};
+    // No description anywhere, including the share card: the synopsis is the thing being held
+    // back. noindex because this page is a join pitch today and a real episode next week — the
+    // published version is what belongs in a search result.
+    return {
+      title: early.title,
+      robots: { index: false, follow: true },
+      alternates: { canonical: `/episodes/${early.slug}` },
+      openGraph: { siteName: "REDACTED", title: `REDACTED ${early.title}`, type: "article" },
+    };
+  }
   // Curtain owns the meta description. It never reaches Acast, so it cannot come from the
   // feed; when it is blank the derived sentence stands in. The old tail promised a
   // transcript most episodes do not have yet, so it is gone either way.
@@ -88,7 +106,11 @@ function castFor(actor: string) {
 export default async function EpisodePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const ep = await getItemBySlug(slug);
-  if (!ep) notFound();
+  if (!ep) {
+    const early = await getEarlyEpisode(slug);
+    if (early) return <EarlyEpisode early={early} />;
+    notFound();
+  }
   const [{ newer, older }, links, all, aberrations, transcript, merchDoc, cm] = await Promise.all([
     getNeighbours(ep),
     getPlatformLinks(ep.title),
