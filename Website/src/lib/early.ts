@@ -40,6 +40,9 @@ function toEpisode(m: EpisodeMeta, kind: "episode" | "postmortem"): Episode | nu
   return episodeFromParts({
     title: full,
     descHtml: parts.join(""),
+    // The release date IS the Acast schedule; Curtain sets it. Without it toEpisode falls back to
+    // the epoch and the page announced itself as coming out in 1970.
+    publishedAt: m.publish_at ?? null,
     // Their id on the members' feed, so the play button and MemberAudio agree on which track the
     // adopted element carries. Falls back to the checked-in map for episodes published before
     // Curtain started recording it.

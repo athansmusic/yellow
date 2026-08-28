@@ -94,6 +94,8 @@ export type EpisodeMeta = {
   content_warnings?: string | null;
   /** The episode's id on the members' feed, for Supporting Cast's player. Grants nothing. */
   private_episode_id?: string | null;
+  /** When Acast is scheduled to make it public — the release date for an episode not out yet. */
+  publish_at?: string | null;
 };
 
 /**

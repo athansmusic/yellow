@@ -5,7 +5,8 @@ import Link from "next/link";
 import { liveToken } from "@/lib/member";
 import { PlayButton } from "@/components/AudioPlayer";
 
-type Unlocked = { title: string; summary: string; notesHtml: string; contentWarnings: string; starring: string[] };
+type Star = { actor: string; role?: string; member?: { slug: string } | null; guestLink?: string };
+type Unlocked = { title: string; summary: string; notesHtml: string; contentWarnings: string; starring: Star[] };
 
 /**
  * What sits where the synopsis and cast would be, on an episode that members can hear and nobody
@@ -75,21 +76,47 @@ export function EarlyGate({
             dangerouslySetInnerHTML={{ __html: unlocked.notesHtml }}
           />
         )}
+
+        {/* Same markup as the episode page's own Starring section, so a member sees the list they
+            will see next week rather than a plain-text stand-in for it. */}
         {unlocked.starring.length > 0 && (
-          <div className="mt-6">
-            <p className="eyebrow text-yellow">Starring</p>
-            <ul className="mt-2 grid gap-1 text-paper/85">
-              {unlocked.starring.map((line) => (
-                <li key={line}>{line}</li>
+          <section className="mt-10">
+            <h2 className="eyebrow mb-3">Starring</h2>
+            <ul className="grid sm:grid-cols-2 gap-x-8 border-t border-line">
+              {unlocked.starring.map((s) => (
+                <li key={s.actor + (s.role ?? "")} className="flex items-baseline justify-between gap-4 border-b border-line py-2.5">
+                  <span className="display text-xl">
+                    {s.role ?? (s.member ? (
+                      <Link href={`/cast/${s.member.slug}`} className="hover:text-yellow">{s.actor}</Link>
+                    ) : (
+                      s.actor
+                    ))}
+                  </span>
+                  {s.role &&
+                    (s.member ? (
+                      <Link href={`/cast/${s.member.slug}`} className="text-sm text-yellow text-right hover:underline underline-offset-4 shrink-0">{s.actor}</Link>
+                    ) : s.guestLink ? (
+                      <a href={s.guestLink} target="_blank" rel="noopener noreferrer" className="text-sm text-yellow text-right hover:underline underline-offset-4 shrink-0">{s.actor}</a>
+                    ) : (
+                      <span className="text-sm text-muted text-right shrink-0">{s.actor}</span>
+                    ))}
+                </li>
               ))}
             </ul>
-          </div>
+          </section>
         )}
+
+        {/* And the page's own content-warnings block, collapsed the same way. */}
         {unlocked.contentWarnings && (
-          <div className="mt-6">
-            <p className="eyebrow text-yellow">Content warnings</p>
-            <p className="mt-2 text-paper/85 max-w-prose">{unlocked.contentWarnings}</p>
-          </div>
+          <section className="mt-10">
+            <details className="group border border-line bg-ink-2/70">
+              <summary className="cursor-pointer list-none p-4 flex items-center justify-between display text-2xl">
+                Content warnings
+                <span aria-hidden className="text-yellow text-3xl leading-none transition-transform group-open:rotate-45">+</span>
+              </summary>
+              <p className="px-4 pb-4 text-paper/85">{unlocked.contentWarnings}</p>
+            </details>
+          </section>
         )}
       </div>
     );

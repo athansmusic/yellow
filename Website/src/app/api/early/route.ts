@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { privateGuidFor } from "@/lib/private-episodes";
 import { getEarlyEpisode } from "@/lib/early";
+import { resolveStarring } from "@/lib/starring";
 
 /**
  * The synopsis for an early episode, for members only.
@@ -59,7 +60,9 @@ export async function GET(req: Request) {
         summary: ep?.summary ?? "",
         notesHtml: ep?.notesHtml ?? "",
         contentWarnings: ep?.contentWarnings ?? "",
-        starring: ep?.starring ?? [],
+        // Resolved here, with the same helper the episode page uses, so the member's cast list is
+        // the same list with the same links rather than a plain-text imitation of it.
+        starring: resolveStarring(ep?.starring ?? []),
       },
       // Entitlement is per-listener; nothing here may be held in a shared cache.
       { headers: { "Cache-Control": "private, no-store" } },
