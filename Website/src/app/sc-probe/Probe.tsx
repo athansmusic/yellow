@@ -116,6 +116,10 @@ export function Probe() {
           say(`    audio host: ${it.enclosureHost}`);
         });
         if (j.uuidsInFirstItem?.length) say(`  uuids seen in item 1: ${j.uuidsInFirstItem.join(", ")}`);
+        (j.trail ?? []).forEach((t: Record<string, unknown>) =>
+          say(`  fetched ${t.url} -> ${t.status} ${t.type} ${t.bytes}b`),
+        );
+        if (j.head) say(`  body starts: ${j.head}`);
         if (j.step) say(`  stopped at: ${j.step} ${j.status ?? ""}`);
       } catch (e) {
         say(`server probe failed: ${(e as Error).message}`);

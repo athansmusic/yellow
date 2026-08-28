@@ -39,13 +39,41 @@ export async function POST(req: Request) {
   const rss = feed?.tokenized_setup_url || feed?.url;
   if (!rss) return NextResponse.json({ step: "no rss url on the feed record" }, { status: 200 });
 
-  const rssRes = await fetch(rss, { cache: "no-store", headers: { "user-agent": "theredactedunit.com" } });
-  if (!rssRes.ok) {
-    return NextResponse.json({ step: "rss", status: rssRes.status }, { status: 200 });
-  }
-  const xml = await rssRes.text();
+  // tokenized_setup_url is the SETUP PAGE, not the feed: it came back 200 with zero items.
+  // The real feed is a /content/<token>.rss link inside it (same shape as the itpc:// link on
+  // their listen page). Fetch, and if it is HTML, follow through to the .rss it names.
+  const trail: { url: string; status: number; type: string; bytes: number }[] = [];
+  const grab = async (u: string) => {
+    const r = await fetch(u, { cache: "no-store", headers: { "user-agent": "theredactedunit.com" } });
+    const body = await r.text();
+    trail.push({
+      url: new URL(u).pathname.slice(0, 28),
+      status: r.status,
+      type: (r.headers.get("content-type") ?? "").split(";")[0],
+      bytes: body.length,
+    });
+    return { ok: r.ok, body };
+  };
 
-  const items = xml.split("<item>").slice(1);
+  let got = await grab(rss);
+  if (got.ok && !/<item[\s>]/i.test(got.body)) {
+    const link =
+      first(got.body, /href="((?:https?:)?\/\/[^"]*\/content\/[^"]+\.rss)"/i) ||
+      first(got.body, /(?:itpc|feed|https?):\/\/([^"'\s]*\/content\/[^"'\s]+\.rss)/i);
+    if (link) {
+      const abs = link.startsWith("http") ? link : `https://${link.replace(/^\/\//, "")}`;
+      got = await grab(abs);
+    }
+  }
+  const xml = got.body;
+
+  const items = xml.split(/<item[\s>]/i).slice(1);
+  if (!items.length) {
+    return NextResponse.json(
+      { step: "no <item> found", trail, head: xml.slice(0, 200).replace(/\s+/g, " ") },
+      { status: 200 },
+    );
+  }
   const sample = items.slice(0, 3).map((it) => {
     const title = first(it, /<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/);
     const guid = first(it, /<guid[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/guid>/);
