@@ -8,6 +8,7 @@ import { EXTERNAL, LISTEN, LISTEN_BUTTONS, SITE, T7P_LISTEN } from "@/lib/site";
 import { PlayButton } from "@/components/AudioPlayer";
 import { Countdown } from "@/components/Countdown";
 import { Container, PlatformButtons } from "@/components/ui";
+import { getEarlyEpisodes } from "@/lib/early";
 import { Arrow } from "@/components/Icons";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
 
@@ -36,7 +37,41 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
   const legacy: Record<string, { show: Show; season?: string }> = { "season-1": { show: "redacted", season: "1" }, minisodes: { show: "redacted", season: "minisodes" }, postmortem: { show: "postmortem" }, };
   const fromLegacy = sp.tab ? legacy[sp.tab] : undefined;
   const show: Show = (SHOWS.find((t) => t.id === (sp.show ?? fromLegacy?.show))?.id ?? "redacted") as Show;
-  const [{ episodes, minisodes, postmortems }, t7pFeed] = await Promise.all([getEpisodes(), getSevenPlanes().catch(() => ({ episodes: [] }))]);
+  const [{ episodes, minisodes, postmortems }, t7pFeed, early] = await Promise.all([getEpisodes(), getSevenPlanes().catch(() => ({ episodes: [] })), getEarlyEpisodes().catch(() => [])]);
+
+  // Episodes members already have and the public feed has not reached. Shown so the join pitch
+  // reaches people browsing, rather than only those handed the direct link — but with no
+  // synopsis and no play control, since neither is theirs yet.
+  const earlySet = new Set<string>();
+  const earlyRows: Episode[] = early.map((e) => {
+    const m = e.slug.match(/^s(\d+)e(\d+)$/);
+    earlySet.add(e.guid);
+    return {
+      kind: m ? ("episode" as const) : ("postmortem" as const),
+      slug: e.slug,
+      title: e.title,
+      shortTitle: m
+        ? e.title.replace(/^S\d+\s*E\d+\s*[:\-\u2013]\s*/i, "").trim()
+        : e.title.replace(/^postmortem\s*:\s*/i, "").trim(),
+      code: m ? `S${Number(m[1])} E${Number(m[2])}` : undefined,
+      season: m ? Number(m[1]) : undefined,
+      number: m ? Number(m[2]) : undefined,
+      date: e.publishedAt && !Number.isNaN(Date.parse(e.publishedAt)) ? new Date(e.publishedAt).toISOString() : new Date().toISOString(),
+      audioUrl: "",
+      image: e.image || "/brand/showart.jpeg",
+      duration: e.duration ? String(e.duration) : undefined,
+      summary: "",
+      bodyHtml: "",
+      starring: [],
+      credits: [],
+      notesHtml: "",
+      guid: e.guid,
+    };
+  });
+  for (const r of earlyRows) {
+    if (r.kind === "episode") episodes.push(r);
+    else postmortems.push(r);
+  }
   // Seven Planes items as Episode-shaped rows that link to the show page
   const t7p: Episode[] = t7pFeed.episodes.filter((e) => !/trailer/i.test(e.title)).map((e) => ({ kind: "bonus", slug: `t7p#${e.slug}`, title: e.title, shortTitle: e.title, date: e.date, audioUrl: e.audioUrl, image: "/spinoffs/t7p-art.jpeg", duration: e.duration, summary: e.summary, bodyHtml: e.bodyHtml, starring: [], credits: [], notesHtml: "", guid: `t7p-${e.slug}` }));
 
@@ -57,7 +92,10 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
     : episodes.filter((e) => String(e.season ?? 1) === season);
 
   const sectionAll: Episode[] = show === "t7p" ? t7p : show === "postmortem" ? postmortems : show === "corrupted" ? [] : [...episodes, ...minisodes];
-  const latest = [...sectionAll].sort((x, y) => +new Date(y.date) - +new Date(x.date))[0];
+  // Early episodes are the newest by date but have no public audio, so letting one become the
+  // featured row put an unplayable play button in the most prominent place on the page.
+  // "Latest" means the latest one anybody can actually listen to.
+  const latest = [...sectionAll].filter((e) => !earlySet.has(e.guid)).sort((x, y) => +new Date(y.date) - +new Date(x.date))[0];
 
   const defaultOrder = season === "minisodes" ? "newest" : "oldest";
   const order = sp.order === "oldest" || sp.order === "newest" ? sp.order : defaultOrder;
@@ -246,7 +284,18 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
                     {String(n ?? "").padStart(2, "0")}
                   </span>
                   <div className="relative flex items-center gap-4 p-4 sm:p-5">
-                    <PlayButton track={track(e)} size="sm" />
+                    {earlySet.has(e.guid) ? (
+                      /* No play control: there is no public file, and the member's copy lives on
+                         the episode page where their token can be checked. */
+                      <span aria-hidden className="grid size-11 shrink-0 place-items-center border border-yellow/50 text-yellow">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="4" y="10" width="16" height="10" rx="1" />
+                          <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                        </svg>
+                      </span>
+                    ) : (
+                      <PlayButton track={track(e)} size="sm" />
+                    )}
                     <div className="min-w-0 flex-1">
                       <p className="eyebrow text-yellow">{e.kind === "episode" ? e.code : e.kind === "postmortem" ? `Postmortem ${String(n).padStart(2, "0")}` : e.kind === "minisode" ? "Minisode" : "The Seven Planes"}</p>
                       <h2 className="display text-2xl sm:text-3xl leading-none mt-1">
@@ -257,6 +306,11 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
                       {e.guestDirector && (
                         <p className="mt-1.5 inline-flex items-center gap-1.5 border border-yellow/50 text-yellow px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]">
                           Guest director · <span className="normal-case tracking-normal font-bold">{e.guestDirector}</span>
+                        </p>
+                      )}
+                      {earlySet.has(e.guid) && (
+                        <p className="mt-1.5 inline-flex items-center gap-1.5 border border-yellow/50 text-yellow px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]">
+                          Early access · Members
                         </p>
                       )}
                       {e.summary && <p className="mt-1.5 text-sm text-muted line-clamp-1 max-w-prose">{e.summary}</p>}

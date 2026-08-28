@@ -36,7 +36,8 @@ type PlayerCtx = {
    * creates a real audio element for entitled members, and the bar becomes its face. Pass null
    * to go back to ours. Everything else (positions, prev/next, speed, volume) is unchanged.
    */
-  adoptAudio: (el: HTMLAudioElement | null) => void;
+  /** Drive a foreign <audio>. forTrackId names the episode it carries, so the bar never plays it under another title. */
+  adoptAudio: (el: HTMLAudioElement | null, forTrackId?: string) => void;
   /** True while a foreign element is driving playback. */
   adopted: boolean;
   volume: number;
@@ -75,6 +76,20 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   // null = the player owns its element. Set, and the binding effect below re-runs against
   // the foreign one; its owner is responsible for creating and destroying it.
   const [external, setExternal] = useState<HTMLAudioElement | null>(null);
+  // Which track the adopted element is carrying. Supporting Cast's element holds ONE entitled
+  // episode; playing anything else through it would be the wrong audio under the right title.
+  const adoptedFor = useRef<string | null>(null);
+  // Kept for the life of the provider. Rebuilding it on every adopt/release threw away volume,
+  // rate and position, and left load() with nothing to fall back to mid-call.
+  const internal = useRef<HTMLAudioElement | null>(null);
+  const getInternal = useCallback(() => {
+    if (!internal.current) {
+      const a = new Audio();
+      a.preload = "metadata";
+      internal.current = a;
+    }
+    return internal.current;
+  }, []);
   const [volume, setVolumeState] = useState(1);
   const [muted, setMutedState] = useState(false);
   useEffect(() => {
@@ -127,8 +142,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   // Bind to the element we are driving: ours by default, or an adopted one. Re-runs on swap.
   useEffect(() => {
-    const a = external ?? new Audio();
-    if (!external) a.preload = "metadata";
+    const a = external ?? getInternal();
     audio.current = a;
     setPositions(readPos());
     // Restore last track (paused) so the bar comes back after a reload. Only for our own element:
@@ -165,10 +179,18 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         const r = await fetch(`/api/next?guid=${encodeURIComponent(cur.id)}&order=${ord}`);
         const { next } = (await r.json()) as { next: Track | null };
         if (next) {
-          a.src = next.src;
+          // Their element serves one entitled episode. Hand playback back to ours before
+          // moving on, rather than pointing theirs at the next public file.
+          const target = external ? getInternal() : a;
+          if (external) {
+            adoptedFor.current = null;
+            setExternal(null);
+            audio.current = target;
+          }
+          target.src = next.src;
           setTrack(next);
           localStorage.setItem(LAST_KEY, JSON.stringify(next));
-          a.play().catch(() => {});
+          target.play().catch(() => {});
         }
       } catch {}
     };
@@ -188,10 +210,11 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       a.removeEventListener("pause", onPa);
       a.removeEventListener("ended", onEnd);
     };
-  }, [external]);
+  }, [external, getInternal]);
 
   // Adopting mid-playback should not leave the old element running underneath.
-  const adoptAudio = useCallback((el: HTMLAudioElement | null) => {
+  const adoptAudio = useCallback((el: HTMLAudioElement | null, forTrackId?: string) => {
+    adoptedFor.current = el ? forTrackId ?? null : null;
     setExternal((prev) => {
       if (prev === el) return prev;
       try {
@@ -252,10 +275,21 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   const load = useCallback(
     (t: Track, autoplay = true) => {
-      const a = audio.current;
+      // Supporting Cast's element already points at the member's entitled file. Assigning t.src
+      // over it swapped in the public, ad-stitched audio the moment anyone pressed play, which
+      // made the whole member-audio path a no-op. Their source is left alone; if the bar is asked
+      // for a DIFFERENT episode, their element is handed back first rather than repurposed.
+      const adoptedHere = !!external && adoptedFor.current === t.id;
+      let a = audio.current;
+      if (external && !adoptedHere) {
+        adoptedFor.current = null;
+        setExternal(null);
+        a = getInternal();
+        audio.current = a;
+      }
       if (!a) return;
       if (track?.id !== t.id) {
-        a.src = t.src;
+        if (!adoptedHere) a.src = t.src;
         const p = readPos()[t.id];
         const resumeAt = p && p.d - p.t > 10 ? p.t : 0;
         if (resumeAt) a.addEventListener("loadedmetadata", () => (a.currentTime = resumeAt), { once: true });
@@ -267,7 +301,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       a.playbackRate = rate;
       if (autoplay) a.play().catch(() => {});
     },
-    [track?.id, rate],
+    [track?.id, rate, external, getInternal],
   );
 
   const toggle = useCallback(

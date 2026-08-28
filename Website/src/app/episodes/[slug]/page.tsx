@@ -203,7 +203,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
   return (
     <article>
       <JsonLd data={jsonLd} />
-      {privateGuid && <MemberAudio episodeGuid={privateGuid} />}
+      {privateGuid && <MemberAudio episodeGuid={privateGuid} trackId={ep.guid} />}
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", url: SITE.url }, { name: "Episodes", url: `${SITE.url}/episodes` }, { name: title, url }])} />
 
       {/* Header band: blurred cover behind, cover + title in front */}

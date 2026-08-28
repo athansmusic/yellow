@@ -25,7 +25,7 @@ const SC_FEED_UUID = "0a8a7bce-e475-4497-9e86-0b86f9b9cea0";
  * Anything that fails — no token, script blocked, no audio element — simply returns, and the page
  * keeps the public audio it already had.
  */
-export function MemberAudio({ episodeGuid }: { episodeGuid?: string | null }) {
+export function MemberAudio({ episodeGuid, trackId }: { episodeGuid?: string | null; trackId?: string }) {
   const { adoptAudio, playing } = usePlayer();
   const hostRef = useRef<HTMLDivElement>(null);
   const mountedRef = useRef(false);
@@ -87,7 +87,7 @@ export function MemberAudio({ episodeGuid }: { episodeGuid?: string | null }) {
         const audio = el.querySelector("audio");
         if (audio) {
           clearInterval(poll);
-          adoptAudio(audio);
+          adoptAudio(audio, trackId);
           setState("adopted");
         } else if (++tries > 40) {
           clearInterval(poll);
@@ -122,7 +122,7 @@ export function MemberAudio({ episodeGuid }: { episodeGuid?: string | null }) {
       };
       document.body.appendChild(s);
     },
-    [adoptAudio],
+    [adoptAudio, trackId],
   );
 
   useEffect(() => {

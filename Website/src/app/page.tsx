@@ -11,6 +11,7 @@ import cast from "@/data/cast.json";
 import supporters from "@/data/supporters.json";
 import { ThankYou } from "@/components/ThankYou";
 import { FanArtRail } from "@/components/FanArtRail";
+import { HeroGreeting } from "@/components/HeroGreeting";
 import { Container, Heading, PlatformButtons, Section } from "@/components/ui";
 import { AwardsStrip } from "@/components/AwardsStrip";
 import { TrailerButton } from "@/components/TrailerButton";
@@ -64,6 +65,7 @@ export default async function Home() {
         <Container className="relative py-10 sm:py-20 lg:py-28 w-full">
           <div className="lg:ml-auto lg:w-[52%] xl:w-[48%] text-center lg:text-left [text-shadow:0_2px_18px_rgba(0,0,0,.85)]">
             <h1 className="sr-only">REDACTED: a horror comedy audio drama</h1>
+            <HeroGreeting />
             <Image src="/brand/logo-hero.avif" alt="" width={900} height={225} priority className="w-[min(92vw,36rem)] h-auto mx-auto lg:mx-0 drop-shadow-[0_0_40px_rgba(0,0,0,.85)]" />
             <p className="mt-4 text-sm sm:text-base font-semibold uppercase tracking-[0.22em] text-paper">A Procedural Horror Comedy</p>
             {settings && settings.seasonStatus !== "airing" && (

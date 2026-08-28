@@ -23,7 +23,7 @@ export function EarlyEpisode({ early }: { early: Early }) {
 
   return (
     <article>
-      <MemberAudio episodeGuid={early.guid} />
+      <MemberAudio episodeGuid={early.guid} trackId={early.guid} />
 
       <div className="relative overflow-hidden border-b border-line">
         <Image src={art} alt="" fill sizes="100vw" className="object-cover scale-110 blur-2xl opacity-40" aria-hidden />
@@ -51,7 +51,7 @@ export function EarlyEpisode({ early }: { early: Early }) {
       </div>
 
       <Container className="py-10 sm:py-14">
-        <EarlyGate slug={early.slug} />
+        <EarlyGate slug={early.slug} guid={early.guid} title={early.title} image={art} />
 
         <div className="mt-10 border-t border-line pt-6">
           <Link href="/episodes?show=redacted" className="text-muted hover:text-yellow">

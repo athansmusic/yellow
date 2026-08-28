@@ -21,11 +21,13 @@ export type EarlyEpisode = {
   description: string;
   image: string | null;
   duration: number | null;
+  /** Their published_at, e.g. "August 28, 2026" — when MEMBERS got it, not the public release. */
+  publishedAt: string | null;
 };
 
 type PlayerConfig = {
   success?: boolean;
-  episode?: { title?: string; description?: string; duration?: number; image_url?: string };
+  episode?: { title?: string; description?: string; duration?: number; image_url?: string; published_at?: string };
   feed?: { image_url?: string };
 };
 
@@ -93,5 +95,36 @@ export async function getEarlyEpisode(slug: string): Promise<EarlyEpisode | null
     description: cfg.episode.description ?? "",
     image: cfg.episode.image_url ?? cfg.feed?.image_url ?? null,
     duration: typeof cfg.episode.duration === "number" ? cfg.episode.duration : null,
+    publishedAt: cfg.episode.published_at ?? null,
   };
+}
+
+/**
+ * Every early episode at once, for the episodes index. Reads the published feed a single time
+ * rather than once per slug, which the per-slug helper would do.
+ */
+export async function getEarlyEpisodes(): Promise<EarlyEpisode[]> {
+  let published: Set<string>;
+  try {
+    published = new Set((await getAllItems()).map((e) => e.slug));
+  } catch {
+    return [];
+  }
+  const pending = Object.entries(PRIVATE_EPISODE_GUIDS).filter(([slug]) => !published.has(slug));
+  const found = await Promise.all(
+    pending.map(async ([slug, guid]) => {
+      const cfg = await fetchConfig(guid);
+      if (!cfg?.success || !cfg.episode?.title) return null;
+      return {
+        slug,
+        guid,
+        title: cfg.episode.title,
+        description: cfg.episode.description ?? "",
+        image: cfg.episode.image_url ?? cfg.feed?.image_url ?? null,
+        duration: typeof cfg.episode.duration === "number" ? cfg.episode.duration : null,
+        publishedAt: cfg.episode.published_at ?? null,
+      } satisfies EarlyEpisode;
+    }),
+  );
+  return found.filter((e): e is EarlyEpisode => e !== null);
 }

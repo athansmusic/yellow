@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { liveToken } from "@/lib/member";
+import { PlayButton } from "@/components/AudioPlayer";
 
 type Unlocked = { title: string; description: string };
 
@@ -18,7 +19,17 @@ type Unlocked = { title: string; description: string };
  * first client render matches the HTML. A member sees the pitch for a moment; the alternative is a
  * hydration mismatch, which on this site once killed every handler on every page.
  */
-export function EarlyGate({ slug }: { slug: string }) {
+export function EarlyGate({
+  slug,
+  guid,
+  title,
+  image,
+}: {
+  slug: string;
+  guid: string;
+  title: string;
+  image?: string;
+}) {
   const [unlocked, setUnlocked] = useState<Unlocked | null>(null);
   const [checking, setChecking] = useState(true);
 
@@ -43,11 +54,22 @@ export function EarlyGate({ slug }: { slug: string }) {
   }, [slug]);
 
   if (unlocked) {
+    // src is deliberately empty. There is no public file for this episode yet, and the player
+    // knows not to write a source onto an element it did not create — MemberAudio has already
+    // handed it Supporting Cast's, entitled and ad free. The id matches what MemberAudio adopted
+    // for, which is how the bar knows this track is the one that element is carrying.
+    const track = { id: guid, title, subtitle: "REDACTED", src: "", image, href: `/episodes/${slug}` };
     return (
       <div className="mt-8">
-        <p className="display text-sm tracking-wide text-yellow">EARLY ACCESS · MEMBERS</p>
+        <div className="flex items-center gap-4">
+          <PlayButton track={track} size="lg" />
+          <div>
+            <p className="display text-sm tracking-wide text-yellow">EARLY ACCESS · MEMBERS</p>
+            <p className="text-muted text-sm">Ad free, straight from Supporting Cast.</p>
+          </div>
+        </div>
         <div
-          className="prose-tru mt-3 max-w-prose"
+          className="prose-tru mt-6 max-w-prose"
           dangerouslySetInnerHTML={{ __html: unlocked.description }}
         />
       </div>
