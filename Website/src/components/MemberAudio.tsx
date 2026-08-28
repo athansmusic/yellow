@@ -109,12 +109,28 @@ export function MemberAudio({ episodeGuid }: { episodeGuid?: string | null }) {
 
   // Their player is never seen: it is the audio source, not the interface. Kept in the layout
   // rather than display:none, since a detached or undisplayed player may not initialise at all.
+  //
+  // ?debug=audio surfaces what actually happened, because otherwise every failure mode looks
+  // identical from the outside: the public audio just plays.
+  const debug = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("debug") === "audio";
+
   return (
-    <div
-      ref={hostRef}
-      aria-hidden
-      data-member-audio={state}
-      className="absolute w-px h-px overflow-hidden opacity-0 pointer-events-none -left-[9999px]"
-    />
+    <>
+      <div
+        ref={hostRef}
+        aria-hidden
+        data-member-audio={state}
+        className="absolute w-px h-px overflow-hidden opacity-0 pointer-events-none -left-[9999px]"
+      />
+      {debug && (
+        <div className="fixed bottom-24 left-3 z-50 border border-yellow bg-ink px-3 py-2 font-mono text-xs text-paper">
+          member audio: <b className="text-yellow">{state}</b>
+          <br />
+          guid: {episodeGuid ? `${episodeGuid.slice(0, 10)}…` : "none"}
+          <br />
+          token: {liveToken() ? "live" : "none/expired"}
+        </div>
+      )}
+    </>
   );
 }
