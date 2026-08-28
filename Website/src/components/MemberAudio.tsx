@@ -10,6 +10,8 @@ declare global {
 }
 
 const SC_PLAYER_JS = "https://media.supportingcast.fm/js/sc-player.js";
+/** The members' feed on Supporting Cast. An identifier, not a secret. */
+const SC_FEED_UUID = "0a8a7bce-e475-4497-9e86-0b86f9b9cea0";
 const TOKEN_KEY = "sc_widget_token";
 
 /**
@@ -23,13 +25,13 @@ const TOKEN_KEY = "sc_widget_token";
  * Anything that fails — no token, no episode uuid, script blocked, no audio element — simply
  * returns, and the page keeps the public audio it already had.
  */
-export function MemberAudio({ episodeUuid }: { episodeUuid?: string | null }) {
+export function MemberAudio({ episodeGuid }: { episodeGuid?: string | null }) {
   const { adoptAudio } = usePlayer();
   const hostRef = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<"idle" | "mounting" | "adopted" | "unavailable">("idle");
 
   useEffect(() => {
-    if (!episodeUuid) return;
+    if (!episodeGuid) return;
     let token: string | null = null;
     try {
       token = localStorage.getItem(TOKEN_KEY);
@@ -44,7 +46,10 @@ export function MemberAudio({ episodeUuid }: { episodeUuid?: string | null }) {
 
     const mount = document.createElement("div");
     mount.className = "sc-player";
-    mount.setAttribute("data-episode-uuid", episodeUuid);
+    // guid + feed, not uuid: the guid is what Acast gave the private-feed episode, and it is the
+    // only identifier available for every episode without hand-copying uuids off listen pages.
+    mount.setAttribute("data-episode-guid", episodeGuid);
+    mount.setAttribute("data-feed-uuid", SC_FEED_UUID);
     mount.setAttribute("data-autoinit", "false");
     mount.setAttribute("data-auth-token", token);
     mount.setAttribute("data-show-description", "false");
@@ -103,7 +108,7 @@ export function MemberAudio({ episodeUuid }: { episodeUuid?: string | null }) {
       // Hand playback back to our own element; their element goes with the unmount.
       adoptAudio(null);
     };
-  }, [episodeUuid, adoptAudio]);
+  }, [episodeGuid, adoptAudio]);
 
   // Their player is never seen: it is the audio source, not the interface. Kept in the layout
   // rather than display:none, since a detached or undisplayed player may not initialise at all.
