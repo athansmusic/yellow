@@ -195,13 +195,27 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
           {/* Signed-in members see themselves here instead of the Patreon prompt: it is the only
               place on the site that tells you your membership is actually live. */}
           {member?.signedIn ? (
-            <Link
-              href="/account"
-              title="Account"
-              className="hidden lg:inline-flex items-center gap-2 display text-xl px-3 py-1.5 mr-2 text-yellow border border-yellow/70 hover:bg-yellow hover:text-ink transition-colors max-w-48"
-            >
-              <span className="truncate">{member.name ?? "Account"}</span>
-            </Link>
+            /* Hover (and keyboard focus) opens the member menu. Rendered only inside this branch,
+               so nothing here can leak to a signed-out visitor. Pure CSS rather than the nav's
+               click-driven Dropdown: there is no page behind the badge to click through to, and a
+               menu that needs no state cannot get stuck open on route changes. */
+            <div className="relative hidden lg:block mr-2 group">
+              <Link
+                href="/account"
+                aria-haspopup="true"
+                className="inline-flex items-center gap-2 display text-xl px-3 py-1.5 text-yellow border border-yellow/70 group-hover:bg-yellow group-hover:text-ink group-focus-within:bg-yellow group-focus-within:text-ink transition-colors max-w-48"
+              >
+                <span className="truncate">{member.name ?? "Account"}</span>
+              </Link>
+              <div className="absolute right-0 top-full min-w-44 bg-ink-2 border border-line shadow-[0_20px_40px_rgba(0,0,0,.6)] hidden group-hover:block group-focus-within:block">
+                <Link href="/account" className="block px-4 py-2 text-[15px] text-paper/85 hover:text-yellow hover:bg-ink-3">
+                  Account
+                </Link>
+                <Link href="/feeds" className="block px-4 py-2 text-[15px] text-paper/85 hover:text-yellow hover:bg-ink-3">
+                  Feeds
+                </Link>
+              </div>
+            </div>
           ) : (
             <a href={LISTEN.patreon} target="_blank" rel="noreferrer" className="hidden lg:inline-flex items-center gap-2 display text-xl px-3 py-1.5 mr-2 text-yellow border border-yellow/70 hover:bg-yellow hover:text-ink transition-colors">
               <Patreon width={16} height={16} /> Patreon
@@ -332,6 +346,19 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
                 Brand assets
               </Link>
             </div>
+
+            {/* The drawer is the only nav on small screens, so the member links belong here too —
+                and, like the badge, only for someone actually signed in. */}
+            {member?.signedIn && (
+              <div className="mt-5 pt-4 border-t border-line grid gap-1">
+                <Link href="/account" className="block text-[15px] py-2 text-paper/85 hover:text-yellow">
+                  Account
+                </Link>
+                <Link href="/feeds" className="block text-[15px] py-2 text-paper/85 hover:text-yellow">
+                  Feeds
+                </Link>
+              </div>
+            )}
 
             <div className="mt-5 flex flex-wrap gap-3">
               <a href="/discord" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 display text-xl px-4 py-2 border border-[#5865F2] text-[#8b9dff] hover:bg-[#5865F2] hover:text-white">

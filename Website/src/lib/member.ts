@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
  *
  * The embed writes sc_widget_token to localStorage on the origin the login link landed on. That
  * origin is decided by the `redirect_url` their widget sends with auth/request, which it reads from
- * `data-redirect-url` on the mount — see LoginWidget. Point it anywhere but here and the token is
+ * `data-redirect-url` on the mount — see ScWidget. Point it anywhere but here and the token is
  * written to a different origin, where nothing on this site can ever read it.
  *
  * The token is not opaque: it is base64(json)|signature, and the json carries `d` (issued) and `e`

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui";
-import { AccountWidget } from "./AccountWidget";
+import { ScWidget } from "@/components/ScWidget";
 import { MemberDebug } from "./MemberDebug";
 
 /**
@@ -21,7 +21,7 @@ export default function AccountPage() {
       <h1 className="display text-5xl sm:text-6xl leading-[0.95]">ACCOUNT</h1>
       <div className="mt-10">
         <MemberDebug />
-        <AccountWidget />
+        <ScWidget view="account" />
       </div>
     </Container>
   );

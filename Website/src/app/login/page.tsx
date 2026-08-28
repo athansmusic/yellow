@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui";
-import { LoginWidget } from "./LoginWidget";
+import { ScWidget } from "@/components/ScWidget";
 
 /**
  * Member sign-in. Its own route so the account view has somewhere to send a signed-out visitor
@@ -16,7 +16,7 @@ export default function LoginPage() {
     <Container className="py-16">
       <h1 className="display text-5xl sm:text-6xl leading-[0.95]">SIGN IN</h1>
       <div className="mt-10">
-        <LoginWidget />
+        <ScWidget view="login" />
       </div>
     </Container>
   );

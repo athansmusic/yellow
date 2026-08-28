@@ -8,18 +8,26 @@ declare global {
   }
 }
 
+const SC_WIDGET_JS = "https://hushstudios.supportingcast.fm/js/sc-widget.js";
+/** Publishable by design — it identifies the network, grants nothing, and is already client-side. */
+const PK =
+  "wpk_I8kt6WweVJg8cAvL8AtzisBdsdlW9T7eH6zEY38R5ubOaIxrQa6yqYV7BOS24w5sSk5FKSgLbbsDTnq7tmv5lR3vELNcRUlCbvN";
+
+/** The screens of their embed we route to. `setup` is their name for the feed / add-to-app page. */
+export type ScView = "login" | "account" | "setup";
+
 /**
- * SupportingCast login view, framed like the join and account pages: a light card inset in a dark
- * panel.
+ * One mount for Supporting Cast's embed, pointed at whichever of their screens a route wants.
  *
- * Its own route because the account view bounces straight to a login when there is no token, and
- * that login had nowhere on this site to land.
+ * Sign-in, account and feed setup were three near-identical copies of this file that differed only
+ * in one attribute, so a fix to any of them had to be made three times.
  *
- * No colour overrides. This screen cannot be exercised from outside — checking it means actually
- * signing in — and hand-theming screens nobody can see is what put white text on white panels on
- * the join page. The widget is built for a light ground, so it gets one.
+ * Deliberately no colour rules beyond squaring the corners. These screens sit behind a member
+ * login and cannot be loaded or checked from outside one, and hand-theming screens nobody can see
+ * is what put white text on white panels on the join page. The widget is built for a light ground,
+ * so it gets one: a light card inset in a dark panel, matching the join page.
  */
-export function LoginWidget() {
+export function ScWidget({ view }: { view: ScView }) {
   const hostRef = useRef<HTMLDivElement>(null);
 
   // Two hard-won rules, same as the join page: the mount lives outside React's tree, because
@@ -32,18 +40,16 @@ export function LoginWidget() {
 
     const mount = document.createElement("div");
     mount.id = "supportingcast-widget";
-    mount.setAttribute("data-initial-view", "login");
+    mount.setAttribute("data-initial-view", view);
     mount.setAttribute("data-menu-visible", "false");
     mount.setAttribute("data-autoinit", "false");
-    // The whole integration hinges on this one attribute. Their widget only sends
-    // redirect_url with auth/request when it is set, and without it Supporting Cast points
-    // the emailed link at their own domain — so the token is written to THEIR origin, and
-    // localStorage being per-origin, this site can never see that anyone signed in.
+    mount.setAttribute("data-publishable-key", PK);
+    // The whole integration hinges on this one attribute. Their widget only sends redirect_url
+    // with auth/request when it is set, and without it Supporting Cast points the emailed link at
+    // their own domain — so the token is written to THEIR origin, and localStorage being
+    // per-origin, this site can never see that anyone signed in.
     mount.setAttribute("data-redirect-url", `${window.location.origin}/account`);
-    mount.setAttribute(
-      "data-publishable-key",
-      "wpk_I8kt6WweVJg8cAvL8AtzisBdsdlW9T7eH6zEY38R5ubOaIxrQa6yqYV7BOS24w5sSk5FKSgLbbsDTnq7tmv5lR3vELNcRUlCbvN",
-    );
+    if (view === "setup") mount.setAttribute("data-setup-list-subfeeds", "true");
     host.appendChild(mount);
 
     const start = () => {
@@ -61,11 +67,11 @@ export function LoginWidget() {
     }
     existing?.remove();
     const script = document.createElement("script");
-    script.src = "https://hushstudios.supportingcast.fm/js/sc-widget.js";
+    script.src = SC_WIDGET_JS;
     script.async = true;
     script.onload = start;
     document.body.appendChild(script);
-  }, []);
+  }, [view]);
 
   return (
     <>
