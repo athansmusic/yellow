@@ -130,7 +130,10 @@ export function useMember(): MemberState | undefined {
 
     read();
 
-    // Signing in or out happens in the widget, which may be on another tab or another route.
+    // Signing in or out happens in the widget, which may be on another tab or another route. The
+    // storage event only fires in OTHER tabs, so it alone would miss the ordinary mobile flow:
+    // leave for the mail app, follow the magic link, come back to this tab. focus, visibilitychange
+    // and pageshow (which covers a back/forward-cache restore, where no effect re-runs) close that.
     const onStorage = (e: StorageEvent) => {
       if (e.key === TOKEN_KEY) {
         try {
@@ -139,10 +142,19 @@ export function useMember(): MemberState | undefined {
         read();
       }
     };
+    const onVisible = () => {
+      if (document.visibilityState === "visible") read();
+    };
     window.addEventListener("storage", onStorage);
+    window.addEventListener("focus", read);
+    window.addEventListener("pageshow", read);
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       dead = true;
       window.removeEventListener("storage", onStorage);
+      window.removeEventListener("focus", read);
+      window.removeEventListener("pageshow", read);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
 
