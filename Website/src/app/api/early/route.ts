@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { privateGuidFor } from "@/lib/private-episodes";
+import { getEarlyEpisode } from "@/lib/early";
 
 /**
  * The synopsis for an early episode, for members only.
@@ -49,8 +50,17 @@ export async function GET(req: Request) {
     if (!j?.success || !j.is_authorized) {
       return NextResponse.json({ error: "Not a member" }, { status: 403 });
     }
+    // Parsed the same way as any other episode, so a member reads the same shaped page everyone
+    // else will next week rather than a wall of raw show notes.
+    const ep = await getEarlyEpisode(slug);
     return NextResponse.json(
-      { title: j.episode?.title ?? "", description: j.episode?.description ?? "" },
+      {
+        title: ep?.title ?? j.episode?.title ?? "",
+        summary: ep?.summary ?? "",
+        notesHtml: ep?.notesHtml ?? "",
+        contentWarnings: ep?.contentWarnings ?? "",
+        starring: ep?.starring ?? [],
+      },
       // Entitlement is per-listener; nothing here may be held in a shared cache.
       { headers: { "Cache-Control": "private, no-store" } },
     );

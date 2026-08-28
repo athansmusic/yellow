@@ -1,5 +1,5 @@
 import "server-only";
-import { getAllItems } from "@/lib/feed";
+import { episodeFromParts, getAllItems, type Episode } from "@/lib/feed";
 import { PRIVATE_EPISODE_GUIDS, privateGuidFor } from "@/lib/private-episodes";
 
 /**
@@ -14,16 +14,8 @@ import { PRIVATE_EPISODE_GUIDS, privateGuidFor } from "@/lib/private-episodes";
  * here and no private feed URL goes anywhere near the repo or the browser. It also means the copy
  * shown on an early page is the copy THEY hold, which is the same thing the member's app shows.
  */
-export type EarlyEpisode = {
-  slug: string;
-  guid: string;
-  title: string;
-  description: string;
-  image: string | null;
-  duration: number | null;
-  /** Their published_at, e.g. "August 28, 2026" — when MEMBERS got it, not the public release. */
-  publishedAt: string | null;
-};
+/** A normal Episode, parsed the same way as any other — it just has no public audio yet. */
+export type EarlyEpisode = Episode;
 
 type PlayerConfig = {
   success?: boolean;
@@ -87,16 +79,22 @@ export async function getEarlyEpisode(slug: string): Promise<EarlyEpisode | null
 
   const cfg = await fetchConfig(guid);
   if (!cfg?.success || !cfg.episode?.title) return null;
+  return toEarly(cfg, guid);
+}
 
-  return {
-    slug,
+function toEarly(cfg: PlayerConfig, guid: string): EarlyEpisode | null {
+  const e = cfg.episode;
+  if (!e?.title) return null;
+  return episodeFromParts({
+    title: e.title,
+    descHtml: e.description ?? "",
+    image: e.image_url ?? cfg.feed?.image_url ?? undefined,
+    durationSeconds: e.duration ?? null,
+    publishedAt: e.published_at ?? null,
+    // The members' guid, so the play button and MemberAudio agree on which track the adopted
+    // element is carrying.
     guid,
-    title: cfg.episode.title,
-    description: cfg.episode.description ?? "",
-    image: cfg.episode.image_url ?? cfg.feed?.image_url ?? null,
-    duration: typeof cfg.episode.duration === "number" ? cfg.episode.duration : null,
-    publishedAt: cfg.episode.published_at ?? null,
-  };
+  });
 }
 
 /**
@@ -112,18 +110,10 @@ export async function getEarlyEpisodes(): Promise<EarlyEpisode[]> {
   }
   const pending = Object.entries(PRIVATE_EPISODE_GUIDS).filter(([slug]) => !published.has(slug));
   const found = await Promise.all(
-    pending.map(async ([slug, guid]) => {
+    pending.map(async ([, guid]) => {
       const cfg = await fetchConfig(guid);
-      if (!cfg?.success || !cfg.episode?.title) return null;
-      return {
-        slug,
-        guid,
-        title: cfg.episode.title,
-        description: cfg.episode.description ?? "",
-        image: cfg.episode.image_url ?? cfg.feed?.image_url ?? null,
-        duration: typeof cfg.episode.duration === "number" ? cfg.episode.duration : null,
-        publishedAt: cfg.episode.published_at ?? null,
-      } satisfies EarlyEpisode;
+      if (!cfg?.success) return null;
+      return toEarly(cfg, guid);
     }),
   );
   return found.filter((e): e is EarlyEpisode => e !== null);

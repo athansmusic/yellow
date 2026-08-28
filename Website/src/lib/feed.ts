@@ -312,6 +312,32 @@ function toEpisode(it: RawItem): Episode | null {
   };
 }
 
+/**
+ * Build an Episode from parts rather than a feed item, for an episode the public feed does not
+ * carry yet. Runs the same classify/parseDescription path as everything else, so an early page
+ * gets its summary, starring list, content warnings and credits parsed exactly like any other —
+ * the notes are the same Acast show notes, just fetched from Supporting Cast instead.
+ */
+export function episodeFromParts(parts: {
+  title: string;
+  descHtml: string;
+  image?: string;
+  durationSeconds?: number | null;
+  publishedAt?: string | null;
+  guid: string;
+}): Episode | null {
+  return toEpisode({
+    title: parts.title,
+    description: parts.descHtml,
+    guid: parts.guid,
+    pubDate: parts.publishedAt ?? "",
+    "itunes:duration": parts.durationSeconds ? String(parts.durationSeconds) : "",
+    "itunes:image": parts.image ? { "@_href": parts.image } : undefined,
+    // No enclosure on purpose: there is no public file, and the member's audio comes from
+    // Supporting Cast's own player, never from a URL this site hands out.
+  } as unknown as RawItem);
+}
+
 export async function getAllItems(fresh = false): Promise<Episode[]> {
   const items = await fetchFeed(FEEDS.redacted, fresh);
   return items
@@ -350,8 +376,16 @@ export async function getItemBySlug(slug: string): Promise<Episode | undefined> 
 }
 
 /** Neighbours of the same kind, for prev/next navigation. */
-export async function getNeighbours(ep: Episode) {
-  const all = (await getAllItems()).filter((e) => e.kind === ep.kind);
+/**
+ * extra carries episodes the public feed does not have yet, so next/prev still reaches a members'
+ * episode — landing on its locked page, which is the point of it being locked. Passed in rather
+ * than imported, since the module that finds them already imports this one.
+ */
+export async function getNeighbours(ep: Episode, extra: Episode[] = []) {
+  const merged = [...(await getAllItems()), ...extra.filter((x) => !x.slug.startsWith("t7p"))];
+  const all = merged
+    .filter((e) => e.kind === ep.kind)
+    .sort((a, b) => +new Date(b.date) - +new Date(a.date));
   const i = all.findIndex((e) => e.slug === ep.slug);
   return { newer: i > 0 ? all[i - 1] : undefined, older: i >= 0 && i < all.length - 1 ? all[i + 1] : undefined };
 }

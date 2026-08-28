@@ -7,8 +7,8 @@ import { getPlatformLinks } from "@/lib/episodeLinks";
 import { getEpisodeMeta, getPostmortemTranscript, getTranscript } from "@/lib/curtain";
 import { MemberAudio } from "@/components/MemberAudio";
 import { privateGuidFor } from "@/lib/private-episodes";
-import { earlySlugs, getEarlyEpisode } from "@/lib/early";
-import { EarlyEpisode } from "./EarlyEpisode";
+import { earlySlugs, getEarlyEpisode, getEarlyEpisodes } from "@/lib/early";
+import { EarlyGate } from "@/components/EarlyGate";
 import { getDoc } from "@/lib/content";
 import { ResumeBadge } from "@/components/ResumeBadge";
 import { LISTEN, SITE } from "@/lib/site";
@@ -105,14 +105,16 @@ function castFor(actor: string) {
 
 export default async function EpisodePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const ep = await getItemBySlug(slug);
-  if (!ep) {
-    const early = await getEarlyEpisode(slug);
-    if (early) return <EarlyEpisode early={early} />;
-    notFound();
-  }
+  const published = await getItemBySlug(slug);
+  // Members get an episode days before the public feed carries it. Rather than a page of its own,
+  // it goes through this one — same parser, same layout — with the parts that are not theirs yet
+  // held back until Supporting Cast vouches for the reader.
+  const early = published ? null : await getEarlyEpisode(slug);
+  if (!published && !early) notFound();
+  const locked = !published;
+  const ep = (published ?? early)!;
   const [{ newer, older }, links, all, aberrations, transcript, merchDoc, cm] = await Promise.all([
-    getNeighbours(ep),
+    getNeighbours(ep, await getEarlyEpisodes().catch(() => [])),
     getPlatformLinks(ep.title),
     getAllItems().catch(() => []),
     getDoc("aberrations").catch(() => []),
@@ -123,6 +125,10 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
   const merchSlugs = merchDoc[ep.slug] ?? [];
   // The lede is the feed's, which is Curtain's description by way of Acast.
   const summary = ep.summary;
+  // On a locked page the synopsis is the thing being withheld, so it must not ride out in the
+  // structured data or the share text either — both are HTML, and one of them is what a search
+  // result or a pasted link would show.
+  const publicBlurb = locked ? "Out now for members. Early access to every episode, ad free." : summary;
   const merch = merchSlugs.length ? (await getProducts().catch(() => [])).filter((p) => merchSlugs.includes(p.slug)).map(toCard) : [];
   const norm = (x?: string) => (x ?? "").toLowerCase().replace(/[\s:]+/g, "");
   const stripPart = (x: string) => x.replace(/\s*\(part \d+\)\s*$/i, "");
@@ -170,12 +176,12 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
     name: title,
     url,
     datePublished: ep.date,
-    description: summary,
+    description: publicBlurb,
     image: art.startsWith("http") ? art : `${SITE.url}${art}`,
     associatedMedia: { "@type": "MediaObject", contentUrl: ep.audioUrl, encodingFormat: "audio/mpeg" },
     partOfSeries: { "@id": `${SITE.url}/#series` },
     ...(ep.number ? { episodeNumber: ep.number, partOfSeason: { "@type": "PodcastSeason", seasonNumber: ep.season ?? 1, name: `Season ${ep.season ?? 1}` } } : {}),
-    ...(starring.length ? { actor: starring.map((s) => ({ "@type": "Person", name: s.actor })) } : {}),
+    ...(!locked && starring.length ? { actor: starring.map((s) => ({ "@type": "Person", name: s.actor })) } : {}),
     ...(transcript ? { transcript: transcript.lines.map((l) => `${l.character}: ${l.text}`).join("\n") } : {}),
     // The dyslexia-friendly reader on tru.show, so engines can hand out an accessible version
     ...(transcript && readerUrl ? { subjectOf: { "@type": "CreativeWork", name: "Accessible transcript reader", url: readerUrl } } : {}),
@@ -215,7 +221,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <Crumbs items={[{ label: "Episodes", href: `/episodes?${KIND_QUERY[ep.kind]}` }, { label: ep.kind === "episode" ? ep.code ?? ep.title : KIND_LABEL[ep.kind] }]} />
             <div className="flex gap-2">
-              <ShareButton title={`${title} · REDACTED`} text={summary} path={`/episodes/${ep.slug}`} />
+              <ShareButton title={`${title} · REDACTED`} text={publicBlurb} path={`/episodes/${ep.slug}`} />
               <nav aria-label="Episode navigation" className="flex gap-2">
                 <NavBtn e={older} dir="prev" />
                 <NavBtn e={newer} dir="next" />
@@ -242,7 +248,11 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
                 )}
                 <ResumeBadge id={ep.guid} />
               </div>
-              {summary && <p className="mt-4 text-lg text-paper/85 max-w-prose">{summary}</p>}
+              {!locked && summary && <p className="mt-4 text-lg text-paper/85 max-w-prose">{summary}</p>}
+              {locked ? (
+                /* No public file and no platform links yet — the member's copy is the only copy. */
+                <EarlyGate slug={ep.slug} guid={ep.guid} title={title} image={art} />
+              ) : (
               <div className="mt-6 flex flex-wrap items-center gap-6">
                 <PlayButton track={{ id: ep.guid, title, subtitle: "REDACTED", src: ep.audioUrl, image: art, href: `/episodes/${ep.slug}` }} size="lg" />
                 <PlatformButtons links={platforms} size="sm" />
@@ -260,6 +270,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
                   </>
                 )}
               </div>
+              )}
             </div>
           </div>
         </Container>
@@ -313,14 +324,14 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
             </section>
           )}
 
-          {ep.notesHtml && !(ep.guestDirector && /guest[\s-]*directed by/i.test(ep.notesHtml) && ep.notesHtml.replace(/<[^>]+>/g, "").trim().length < 120) && (
+          {!locked && ep.notesHtml && !(ep.guestDirector && /guest[\s-]*directed by/i.test(ep.notesHtml) && ep.notesHtml.replace(/<[^>]+>/g, "").trim().length < 120) && (
             <section>
               <h2 className="eyebrow mb-3">Episode notes</h2>
               <div className="prose-site text-paper/90 [overflow-wrap:anywhere] [&_a]:break-all [&_ul]:list-disc [&_ul]:pl-5 [&_li]:my-1" dangerouslySetInnerHTML={{ __html: safeHtml(ep.notesHtml) }} />
             </section>
           )}
 
-          {starring.length > 0 && (
+          {!locked && starring.length > 0 && (
             <section>
               <h2 className="eyebrow mb-3">Starring</h2>
               <ul className="grid sm:grid-cols-2 gap-x-8 border-t border-line">
@@ -356,6 +367,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
             </section>
           )}
 
+          {!locked && (
           <section id="warnings" className="scroll-mt-24">
             <details className="group border border-line bg-ink-2/70">
               <summary className="cursor-pointer list-none p-4 flex items-center justify-between display text-2xl">
@@ -365,6 +377,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
               <p className="px-4 pb-4 text-paper/85">{ep.contentWarnings ?? "None listed for this one beyond the usual: horror, violence, language."}</p>
             </details>
           </section>
+          )}
 
           {merch.length > 0 && (
             <section aria-label="Based on this episode">

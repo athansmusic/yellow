@@ -39,35 +39,12 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
   const show: Show = (SHOWS.find((t) => t.id === (sp.show ?? fromLegacy?.show))?.id ?? "redacted") as Show;
   const [{ episodes, minisodes, postmortems }, t7pFeed, early] = await Promise.all([getEpisodes(), getSevenPlanes().catch(() => ({ episodes: [] })), getEarlyEpisodes().catch(() => [])]);
 
-  // Episodes members already have and the public feed has not reached. Shown so the join pitch
-  // reaches people browsing, rather than only those handed the direct link — but with no
-  // synopsis and no play control, since neither is theirs yet.
-  const earlySet = new Set<string>();
-  const earlyRows: Episode[] = early.map((e) => {
-    const m = e.slug.match(/^s(\d+)e(\d+)$/);
-    earlySet.add(e.guid);
-    return {
-      kind: m ? ("episode" as const) : ("postmortem" as const),
-      slug: e.slug,
-      title: e.title,
-      shortTitle: m
-        ? e.title.replace(/^S\d+\s*E\d+\s*[:\-\u2013]\s*/i, "").trim()
-        : e.title.replace(/^postmortem\s*:\s*/i, "").trim(),
-      code: m ? `S${Number(m[1])} E${Number(m[2])}` : undefined,
-      season: m ? Number(m[1]) : undefined,
-      number: m ? Number(m[2]) : undefined,
-      date: e.publishedAt && !Number.isNaN(Date.parse(e.publishedAt)) ? new Date(e.publishedAt).toISOString() : new Date().toISOString(),
-      audioUrl: "",
-      image: e.image || "/brand/showart.jpeg",
-      duration: e.duration ? String(e.duration) : undefined,
-      summary: "",
-      bodyHtml: "",
-      starring: [],
-      credits: [],
-      notesHtml: "",
-      guid: e.guid,
-    };
-  });
+  // Episodes members already have and the public feed has not reached. Listed so the join pitch
+  // reaches people browsing, not only whoever was handed the direct link — parsed like any other
+  // episode, but shown with a padlock and no summary, since neither the audio nor the synopsis is
+  // theirs yet.
+  const earlySet = new Set(early.map((e) => e.guid));
+  const earlyRows: Episode[] = early;
   for (const r of earlyRows) {
     if (r.kind === "episode") episodes.push(r);
     else postmortems.push(r);
@@ -92,10 +69,10 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
     : episodes.filter((e) => String(e.season ?? 1) === season);
 
   const sectionAll: Episode[] = show === "t7p" ? t7p : show === "postmortem" ? postmortems : show === "corrupted" ? [] : [...episodes, ...minisodes];
-  // Early episodes are the newest by date but have no public audio, so letting one become the
-  // featured row put an unplayable play button in the most prominent place on the page.
-  // "Latest" means the latest one anybody can actually listen to.
-  const latest = [...sectionAll].filter((e) => !earlySet.has(e.guid)).sort((x, y) => +new Date(y.date) - +new Date(x.date))[0];
+  // The newest episode, early ones included — the point of an early episode is that it is
+  // reachable and locked, so the featured row links to it like any other. It loses only its play
+  // control, below, because there is no public file behind it.
+  const latest = [...sectionAll].sort((x, y) => +new Date(y.date) - +new Date(x.date))[0];
 
   const defaultOrder = season === "minisodes" ? "newest" : "oldest";
   const order = sp.order === "oldest" || sp.order === "newest" ? sp.order : defaultOrder;
@@ -222,11 +199,20 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
                         {latest.kind === "episode" ? `${latest.code}: ${latest.shortTitle}` : latest.shortTitle}
                       </Link>
                       <p className="text-xs text-muted mt-1 line-clamp-1">
-                        {latest.summary}
+                        {earlySet.has(latest.guid) ? "Early access · Members" : latest.summary}
                         {latest.duration ? ` · ${formatDuration(latest.duration)}` : ""}
                       </p>
                     </div>
-                    <PlayButton track={track(latest)} size="sm" />
+                    {earlySet.has(latest.guid) ? (
+                      <Link href={pageHref(latest)} aria-label={`${latest.shortTitle} — members only`} className="grid size-11 shrink-0 place-items-center border border-yellow/50 text-yellow hover:bg-yellow hover:text-ink transition-colors">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="4" y="10" width="16" height="10" rx="1" />
+                          <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                        </svg>
+                      </Link>
+                    ) : (
+                      <PlayButton track={track(latest)} size="sm" />
+                    )}
                   </div>
                 )}
               </div>

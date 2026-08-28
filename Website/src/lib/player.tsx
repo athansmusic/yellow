@@ -145,6 +145,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const a = external ?? getInternal();
     audio.current = a;
     setPositions(readPos());
+    // Seed from whatever the element already is. We only adopt Supporting Cast's <audio> once it
+    // exists, by which time it has usually loaded its metadata and fired loadedmetadata — so the
+    // listeners attached below would never hear it, and the bar sat at 0:00 for the whole episode
+    // even while it played. Events only report changes; the current state has to be read.
+    if (Number.isFinite(a.duration) && a.duration > 0) setDuration(a.duration);
+    if (a.currentTime > 0) setTime(a.currentTime);
+    setPlaying(!a.paused);
     // Restore last track (paused) so the bar comes back after a reload. Only for our own element:
     // an adopted one already has its source, chosen by whoever owns it.
     if (!external) {
