@@ -35,6 +35,11 @@ export function LoginWidget() {
     mount.setAttribute("data-initial-view", "login");
     mount.setAttribute("data-menu-visible", "false");
     mount.setAttribute("data-autoinit", "false");
+    // The whole integration hinges on this one attribute. Their widget only sends
+    // redirect_url with auth/request when it is set, and without it Supporting Cast points
+    // the emailed link at their own domain — so the token is written to THEIR origin, and
+    // localStorage being per-origin, this site can never see that anyone signed in.
+    mount.setAttribute("data-redirect-url", `${window.location.origin}/account`);
     mount.setAttribute(
       "data-publishable-key",
       "wpk_I8kt6WweVJg8cAvL8AtzisBdsdlW9T7eH6zEY38R5ubOaIxrQa6yqYV7BOS24w5sSk5FKSgLbbsDTnq7tmv5lR3vELNcRUlCbvN",
