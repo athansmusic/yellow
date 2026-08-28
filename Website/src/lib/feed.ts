@@ -173,7 +173,14 @@ function parseDescription(html: string) {
         // The self-link paragraph ('Episode Details') sits inside this span; it is not a warning.
         .filter((l) => !/^(episode details|this episode on our website|companion postmortem|main episode)\b/i.test(l))
         .filter((l) => !/theredactedunit\.com/i.test(l))
-        .join(" ") || undefined;
+        // Acast appends its own hosting notice to every description. It is normally cut off with
+        // the credits block, so it never reaches here — but an episode whose notes have no credits
+        // block yet keeps it, and it then reads as though the privacy policy were a content
+        // warning. Belt and braces, independent of where the notes were read from.
+        .filter((l) => !/hosted on acast|acast\.com\/privacy/i.test(l))
+        .join(" ")
+        .replace(/\s*Hosted on Acast\..*$/i, "")
+        .trim() || undefined;
     notesSrc = main.slice(0, cwIdx);
   }
   // Notes: paragraphs before Starring, minus the self-link and the "warnings below" line
