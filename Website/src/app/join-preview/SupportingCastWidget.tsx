@@ -46,6 +46,20 @@ export function SupportingCastWidget() {
 #supportingcast-widget { display: block; font-family: var(--font-body); }
 #supportingcast-widget .sc-shop { background: transparent !important; }
 
+/* The widget sets color:#222 on its root and everything inherits it, so anything not named
+   below rendered near-black on the ink panels. Blanket it to paper first; every rule after
+   this one is class-based and so outranks it wherever a different colour is wanted. */
+#supportingcast-widget,
+#supportingcast-widget * { color: var(--color-paper) !important; }
+
+/* It also ships its own Tailwind build (tw-*), which paints the plan cards white. */
+#supportingcast-widget .tw-bg-white { background-color: var(--color-ink-2) !important; }
+
+/* Nothing on this site has soft corners. */
+#supportingcast-widget *, #supportingcast-widget *::before, #supportingcast-widget *::after {
+  border-radius: 0 !important;
+}
+
 /* Plan cards: ink panels, line borders - no white cards, no drop shadows */
 #supportingcast-widget .sc-subscription-plan {
   background: var(--color-ink-2) !important;
