@@ -50,8 +50,8 @@ export async function GET(req: Request) {
     if (!j?.success || !j.is_authorized) {
       return NextResponse.json({ error: "Not a member" }, { status: 403 });
     }
-    // Parsed the same way as any other episode, so a member reads the same shaped page everyone
-    // else will next week rather than a wall of raw show notes.
+    // Built from Curtain — what it published to Acast — and parsed by the site's own parser, so a
+    // member reads the same shaped page everyone else will once the schedule fires.
     const ep = await getEarlyEpisode(slug);
     return NextResponse.json(
       {

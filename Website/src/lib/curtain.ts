@@ -89,6 +89,11 @@ export type EpisodeMeta = {
   description: string | null;
   meta_description: string | null;
   writer?: string | null;
+  /** One "Actor as Character" per line — what Curtain sent to Acast. */
+  cast?: string | null;
+  content_warnings?: string | null;
+  /** The episode's id on the members' feed, for Supporting Cast's player. Grants nothing. */
+  private_episode_id?: string | null;
 };
 
 /**
@@ -111,6 +116,19 @@ async function metaIndex(showSlug: string): Promise<Map<string, EpisodeMeta>> {
     /* Curtain down: the site falls back to the description it derives from the feed */
   }
   return map;
+}
+
+/** Everything Curtain knows about a show's episodes, including ones Acast has only SCHEDULED. */
+export async function allEpisodeMeta(showSlug: string): Promise<EpisodeMeta[]> {
+  const seen = new Set<string>();
+  const out: EpisodeMeta[] = [];
+  for (const m of (await metaIndex(showSlug)).values()) {
+    const k = `${m.code}|${m.title}`;
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(m);
+  }
+  return out;
 }
 
 export async function getEpisodeMeta(kind: string, code?: string | null, title?: string | null): Promise<EpisodeMeta | null> {
