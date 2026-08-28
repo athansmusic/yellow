@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePlayer } from "@/lib/player";
+import { liveToken } from "@/lib/member";
 
 declare global {
   interface Window {
@@ -12,7 +13,6 @@ declare global {
 const SC_PLAYER_JS = "https://media.supportingcast.fm/js/sc-player.js";
 /** The members' feed on Supporting Cast. An identifier, not a secret. */
 const SC_FEED_UUID = "0a8a7bce-e475-4497-9e86-0b86f9b9cea0";
-const TOKEN_KEY = "sc_widget_token";
 
 /**
  * Plays the member's ad-free audio through OUR player, without going around Supporting Cast.
@@ -32,12 +32,9 @@ export function MemberAudio({ episodeGuid }: { episodeGuid?: string | null }) {
 
   useEffect(() => {
     if (!episodeGuid) return;
-    let token: string | null = null;
-    try {
-      token = localStorage.getItem(TOKEN_KEY);
-    } catch {
-      /* private mode: no member session to speak of */
-    }
+    // Expiry-aware: member tokens last 7 days, and an expired one would mount their player only
+    // for it to decline and leave the listener wondering why the ad-free audio stopped.
+    const token = liveToken();
     if (!token) return;
 
     const host = hostRef.current;
