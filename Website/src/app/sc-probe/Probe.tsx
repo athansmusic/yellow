@@ -98,6 +98,29 @@ export function Probe() {
         }
       }
 
+      // The RSS is unreadable from the browser, so ask our own server to look at it.
+      try {
+        const r = await fetch("/api/sc-probe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        });
+        const j = await r.json();
+        say("");
+        say(`SERVER-SIDE RSS READ -> ${r.status}`);
+        if (j.itemCount != null) say(`  items in your private feed: ${j.itemCount}`);
+        (j.sample ?? []).forEach((it: Record<string, unknown>, i: number) => {
+          say(`  item ${i + 1}: "${String(it.title).slice(0, 42)}"`);
+          say(`    guid: ${String(it.guid).slice(0, 60)}`);
+          say(`    guid is a uuid? ${it.guidLooksLikeUuid ? "YES" : "no"}`);
+          say(`    audio host: ${it.enclosureHost}`);
+        });
+        if (j.uuidsInFirstItem?.length) say(`  uuids seen in item 1: ${j.uuidsInFirstItem.join(", ")}`);
+        if (j.step) say(`  stopped at: ${j.step} ${j.status ?? ""}`);
+      } catch (e) {
+        say(`server probe failed: ${(e as Error).message}`);
+      }
+
       say("done.");
     })();
   }, []);
