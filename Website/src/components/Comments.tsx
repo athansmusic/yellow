@@ -8,6 +8,15 @@ type Comment = { id: string; author_name: string; body: string; created_at: stri
 
 const MAX = 2000;
 
+/**
+ * Whether a signed-out visitor is told the discussion exists.
+ *
+ * Off until membership moves to Supporting Cast: /join still sends people to Patreon, so the
+ * pitch would invite them to buy the wrong thing. Members are unaffected either way — this only
+ * governs what someone who is not signed in sees. Flip to true on the switch.
+ */
+const SHOW_SIGNED_OUT_PITCH = false;
+
 function when(iso: string) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
@@ -97,6 +106,7 @@ export function Comments({ slug }: { slug: string }) {
   if (member === undefined) return null;
 
   if (!member.signedIn) {
+    if (!SHOW_SIGNED_OUT_PITCH) return null;
     return (
       <section id="comments" className="scroll-mt-24">
         <h2 className="eyebrow mb-3">Discussion</h2>
