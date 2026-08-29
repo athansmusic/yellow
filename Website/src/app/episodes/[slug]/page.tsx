@@ -7,6 +7,7 @@ import { getPlatformLinks } from "@/lib/episodeLinks";
 import { getEpisodeMeta, getPostmortemTranscript, getTranscript } from "@/lib/curtain";
 import { earlySlugs, getEarlyEpisode, getEarlyEpisodes } from "@/lib/early";
 import { EarlyProvider, EarlyTop, EarlyBelow } from "@/components/EarlyGate";
+import { Comments } from "@/components/Comments";
 import { getDoc } from "@/lib/content";
 import { ResumeBadge } from "@/components/ResumeBadge";
 import { LISTEN, SITE } from "@/lib/site";
@@ -363,6 +364,10 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
               </Link>
             </section>
           )}
+
+          {/* Members write, everyone reads. Placed after the episode's own material so the page
+              still leads with the episode rather than the conversation about it. */}
+          <Comments slug={ep.slug} />
 
           {!locked && (
           <section id="warnings" className="scroll-mt-24">
