@@ -51,14 +51,14 @@ export function EarlyProvider({ slug, children }: { slug: string; children: Reac
 }
 
 /** Header band: the play control and synopsis for a member, the pitch for everyone else. */
-export function EarlyTop({ guid, title, image }: { guid: string; title: string; image?: string }) {
+export function EarlyTop({ slug, guid, title, image }: { slug: string; guid: string; title: string; image?: string }) {
   const unlocked = useContext(Ctx);
 
   if (unlocked) {
     // src is deliberately empty. There is no public file for this episode, and the player knows not
-    // to write a source onto an element it did not create — MemberAudio has already handed it
-    // Supporting Cast's, entitled and ad free. The id matches what MemberAudio adopted for.
-    const track = { id: guid, title, subtitle: "REDACTED", src: "", image };
+    // to write a source onto an element it did not create — MemberAudioBridge has already handed
+    // it Supporting Cast's, entitled and ad free. The id matches what the bridge adopted for.
+    const track = { id: guid, title, subtitle: "REDACTED", src: "", image, href: `/episodes/${slug}` };
     return (
       <>
         <div className="mt-6 flex flex-wrap items-center gap-6">

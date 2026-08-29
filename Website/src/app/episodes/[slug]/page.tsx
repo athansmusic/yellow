@@ -5,8 +5,6 @@ import { notFound } from "next/navigation";
 import { getAllItems, getItemBySlug, getNeighbours, formatDate, formatDuration, toTrack } from "@/lib/feed";
 import { getPlatformLinks } from "@/lib/episodeLinks";
 import { getEpisodeMeta, getPostmortemTranscript, getTranscript } from "@/lib/curtain";
-import { MemberAudio } from "@/components/MemberAudio";
-import { privateGuidFor } from "@/lib/private-episodes";
 import { earlySlugs, getEarlyEpisode, getEarlyEpisodes } from "@/lib/early";
 import { EarlyProvider, EarlyTop, EarlyBelow } from "@/components/EarlyGate";
 import { getDoc } from "@/lib/content";
@@ -202,14 +200,10 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
     );
   };
 
-  // Signed-in members hear the ad-free cut through Supporting Cast's player, driven by our bar.
-  // Everyone else never mounts it and keeps the public audio.
-  const privateGuid = privateGuidFor(slug);
 
   const body = (
     <article>
       <JsonLd data={jsonLd} />
-      {privateGuid && <MemberAudio episodeGuid={privateGuid} trackId={ep.guid} />}
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", url: SITE.url }, { name: "Episodes", url: `${SITE.url}/episodes` }, { name: title, url }])} />
 
       {/* Header band: blurred cover behind, cover + title in front */}
@@ -252,7 +246,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
               {locked ? (
                 /* No public file and no platform links yet — the member's copy is the only copy.
                    Cast and warnings are NOT here: they belong in the lower grid, same as always. */
-                <EarlyTop guid={ep.guid} title={title} image={art} />
+                <EarlyTop slug={ep.slug} guid={ep.guid} title={title} image={art} />
               ) : (
               <div className="mt-6 flex flex-wrap items-center gap-6">
                 <PlayButton track={{ id: ep.guid, title, subtitle: "REDACTED", src: ep.audioUrl, image: art, href: `/episodes/${ep.slug}` }} size="lg" />

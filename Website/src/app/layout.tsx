@@ -11,6 +11,7 @@ import { SearchOverlay } from "@/components/SiteSearch";
 import { getDoc } from "@/lib/content";
 import { CartProvider } from "@/lib/cart";
 import { PlayerProvider } from "@/lib/player";
+import { MemberAudioBridge } from "@/components/MemberAudioBridge";
 import { SITE, LISTEN } from "@/lib/site";
 import { JsonLd, siteJsonLd } from "@/lib/schema";
 import { Analytics, CookieConsent } from "@/components/CookieConsent";
@@ -66,6 +67,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <AlertsPopup promoText={promoText} />
             <SearchOverlay />
             <PlayerBar />
+            {/* Ad-free audio follows the track, not the route, so it applies wherever play is pressed. */}
+            <MemberAudioBridge />
             <ReviewNudge />
           </CartProvider>
         </PlayerProvider>

@@ -79,6 +79,11 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   // Which track the adopted element is carrying. Supporting Cast's element holds ONE entitled
   // episode; playing anything else through it would be the wrong audio under the right title.
   const adoptedFor = useRef<string | null>(null);
+  // Their <audio> only exists once their script has loaded and answered, which on a phone is
+  // reliably AFTER the listener has already pressed play. Swapping elements pauses what is
+  // playing, so the tap appeared to unload the episode and it took a second one to start the
+  // ad-free cut. If we interrupt playback to adopt, we resume it.
+  const resumeOnAdopt = useRef(false);
   // Kept for the life of the provider. Rebuilding it on every adopt/release threw away volume,
   // rate and position, and left load() with nothing to fall back to mid-call.
   const internal = useRef<HTMLAudioElement | null>(null);
@@ -152,6 +157,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     if (Number.isFinite(a.duration) && a.duration > 0) setDuration(a.duration);
     if (a.currentTime > 0) setTime(a.currentTime);
     setPlaying(!a.paused);
+    // Carry playback across the swap. Their cut starts where it starts — the two are different
+    // lengths, so there is no position to bring over — but the listener asked for audio and should
+    // not have to ask twice. If the browser declines outside a gesture, the bar simply shows paused.
+    if (external && resumeOnAdopt.current) {
+      resumeOnAdopt.current = false;
+      a.play().catch(() => {});
+    }
     // Restore last track (paused) so the bar comes back after a reload. Only for our own element:
     // an adopted one already has its source, chosen by whoever owns it.
     if (!external) {
@@ -225,7 +237,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setExternal((prev) => {
       if (prev === el) return prev;
       try {
-        audio.current?.pause();
+        const cur = audio.current;
+        resumeOnAdopt.current = !!el && !!cur && !cur.paused;
+        cur?.pause();
       } catch {}
       return el;
     });
