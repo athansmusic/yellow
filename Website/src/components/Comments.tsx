@@ -19,11 +19,11 @@ function when(iso: string) {
 }
 
 /**
- * The episode's comment thread. Anyone can read it; only members can post.
+ * The episode's comment thread. Members only, to read as well as to write.
  *
- * Read by everyone on purpose: a thread only members can see does nothing for the person deciding
- * whether to join, and an episode page with people talking on it is a better argument for joining
- * than a locked box would be.
+ * A signed-out visitor is never sent the comments at all — not sent them and told not to look.
+ * The fetch only happens with a token, and the endpoint behind it refuses without one, so the
+ * thread is absent from the page rather than hidden in it.
  *
  * Nothing here decides who the author is. The post carries the member's Supporting Cast token, and
  * the server files the comment under whoever Supporting Cast says that token belongs to — a
@@ -38,8 +38,12 @@ export function Comments({ slug }: { slug: string }) {
   const box = useRef<HTMLTextAreaElement>(null);
 
   const load = useCallback(async () => {
+    const token = liveToken();
+    if (!token) return;
     try {
-      const r = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`);
+      const r = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`, {
+        headers: { "x-sc-token": token },
+      });
       const j = (await r.json()) as { comments?: Comment[] };
       setComments(j.comments ?? []);
     } catch {
@@ -47,9 +51,11 @@ export function Comments({ slug }: { slug: string }) {
     }
   }, [slug]);
 
+  // Only once we know they are signed in — a fetch without a token is refused anyway, and asking
+  // would tell a signed-out reader that there is something here to be refused.
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (member?.signedIn) void load();
+  }, [member?.signedIn, load]);
 
   const submit = useCallback(
     async (e: React.FormEvent) => {
@@ -87,6 +93,28 @@ export function Comments({ slug }: { slug: string }) {
 
   const count = comments?.length ?? 0;
 
+  // Nothing at all until the membership check has run, so neither state flashes at the wrong person.
+  if (member === undefined) return null;
+
+  if (!member.signedIn) {
+    return (
+      <section id="comments" className="scroll-mt-24">
+        <h2 className="eyebrow mb-3">Discussion</h2>
+        <p className="text-muted max-w-prose">
+          Members talk about each episode here.{" "}
+          <Link href="/join" className="text-yellow hover:underline underline-offset-4">
+            Join the Unit
+          </Link>{" "}
+          or{" "}
+          <Link href="/login" className="text-yellow hover:underline underline-offset-4">
+            sign in
+          </Link>
+          .
+        </p>
+      </section>
+    );
+  }
+
   return (
     <section id="comments" className="scroll-mt-24">
       <h2 className="eyebrow mb-3">
@@ -113,10 +141,7 @@ export function Comments({ slug }: { slug: string }) {
         </ul>
       )}
 
-      {/* undefined means the membership check has not finished; showing neither state avoids a
-          sign-in prompt flashing at someone who is already signed in. */}
-      {member === undefined ? null : member.signedIn ? (
-        <form onSubmit={submit} className="mt-7 border-t border-line pt-6">
+      <form onSubmit={submit} className="mt-7 border-t border-line pt-6">
           <label htmlFor="comment-body" className="eyebrow block mb-2">
             Add yours
           </label>
@@ -141,27 +166,12 @@ export function Comments({ slug }: { slug: string }) {
               posting as {member.name ?? "your account"} · {MAX - draft.length} left
             </span>
           </div>
-          {error && (
-            <p role="alert" className="mt-3 text-sm text-yellow">
-              {error}
-            </p>
-          )}
-        </form>
-      ) : (
-        <div className="mt-7 border-t border-line pt-6">
-          <p className="text-muted max-w-prose">
-            Members can join the discussion.{" "}
-            <Link href="/join" className="text-yellow hover:underline underline-offset-4">
-              Join the Unit
-            </Link>{" "}
-            or{" "}
-            <Link href="/login" className="text-yellow hover:underline underline-offset-4">
-              sign in
-            </Link>
-            .
+        {error && (
+          <p role="alert" className="mt-3 text-sm text-yellow">
+            {error}
           </p>
-        </div>
-      )}
+        )}
+      </form>
     </section>
   );
 }
