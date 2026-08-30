@@ -10,6 +10,8 @@ type Comment = {
   avatar_url: string | null;
   body: string;
   created_at: string;
+  /** Whether this one is the reader's own. Decided by the server from their token. */
+  mine?: boolean;
 };
 
 /** Two initials, for a member who has never uploaded a picture. */
@@ -88,6 +90,7 @@ export function Comments({ slug }: { slug: string }) {
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<string | null>(null);
   const box = useRef<HTMLTextAreaElement>(null);
 
   const load = useCallback(async () => {
@@ -144,6 +147,28 @@ export function Comments({ slug }: { slug: string }) {
     [draft, busy, slug],
   );
 
+  const remove = useCallback(async (id: string) => {
+    const token = liveToken();
+    if (!token) return;
+    if (!confirm("Delete your comment?")) return;
+    setRemoving(id);
+    setError(null);
+    try {
+      const r = await fetch("/api/comments", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", "x-sc-token": token },
+        body: JSON.stringify({ id }),
+      });
+      const j = (await r.json()) as { deleted?: string; error?: string };
+      if (!r.ok || !j.deleted) setError(j.error ?? "Could not delete that.");
+      else setComments((prev) => (prev ?? []).filter((c) => c.id !== id));
+    } catch {
+      setError("Could not delete that. Try again.");
+    } finally {
+      setRemoving(null);
+    }
+  }, []);
+
   const count = comments?.length ?? 0;
 
   // Nothing at all until the membership check has run, so neither state flashes at the wrong person.
@@ -188,6 +213,16 @@ export function Comments({ slug }: { slug: string }) {
                 <p className="flex flex-wrap items-baseline gap-x-3">
                   <span className="display text-lg">{c.author_name}</span>
                   <span className="text-xs text-muted tabular">{when(c.created_at)}</span>
+                  {c.mine && (
+                    <button
+                      type="button"
+                      onClick={() => remove(c.id)}
+                      disabled={removing === c.id}
+                      className="text-xs text-muted hover:text-yellow underline underline-offset-4 disabled:opacity-40"
+                    >
+                      {removing === c.id ? "Deleting…" : "Delete"}
+                    </button>
+                  )}
                 </p>
                 <p className="mt-1 text-paper/85 max-w-prose whitespace-pre-wrap [overflow-wrap:anywhere]">
                   {c.body}

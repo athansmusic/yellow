@@ -51,3 +51,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Could not post that. Try again." }, { status: 502 });
   }
 }
+
+export async function DELETE(req: Request) {
+  const token = req.headers.get("x-sc-token") ?? "";
+  const body = await req.text();
+  try {
+    const res = await fetch(`${CURTAIN}/api/public/comments`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json", "x-sc-token": token },
+      body,
+      cache: "no-store",
+    });
+    const j = await res.json();
+    return NextResponse.json(j, { status: res.status, headers: { "Cache-Control": "private, no-store" } });
+  } catch {
+    return NextResponse.json({ error: "Could not delete that. Try again." }, { status: 502 });
+  }
+}
