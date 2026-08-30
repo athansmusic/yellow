@@ -364,9 +364,17 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
               <a href="/discord" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 display text-xl px-4 py-2 border border-[#5865F2] text-[#8b9dff] hover:bg-[#5865F2] hover:text-white">
                 <Discord width={16} height={16} /> Discord
               </a>
+              {/* Same swap the desktop bar makes: a signed-in member is shown themselves, not an
+                  invitation to subscribe somewhere they already have. */}
+              {member?.signedIn ? (
+                <Link href="/account" className="inline-flex items-center gap-2 display text-xl px-4 py-2 border border-yellow/70 text-yellow hover:bg-yellow hover:text-ink max-w-[15rem]">
+                  <span className="truncate">{member.name ?? "Account"}</span>
+                </Link>
+              ) : (
               <a href={LISTEN.patreon} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 display text-xl px-4 py-2 border border-yellow/70 text-yellow hover:bg-yellow hover:text-ink">
                 <Patreon width={16} height={16} /> Patreon
               </a>
+              )}
             </div>
           </nav>
           <div className="px-2 py-3 border-t border-line flex flex-wrap gap-1">

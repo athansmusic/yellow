@@ -4,7 +4,51 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { liveToken, useMember } from "@/lib/member";
 
-type Comment = { id: string; author_name: string; body: string; created_at: string };
+type Comment = {
+  id: string;
+  author_name: string;
+  avatar_url: string | null;
+  body: string;
+  created_at: string;
+};
+
+/** Two initials, for a member who has never uploaded a picture. */
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "?";
+  return (parts[0][0] + (parts.length > 1 ? parts[parts.length - 1][0] : "")).toUpperCase();
+}
+
+/**
+ * The member's picture, or their initials.
+ *
+ * An avatar that fails to load falls back rather than leaving a broken image: the URL is stored
+ * when the comment is written, and Supporting Cast is free to move or remove it afterwards.
+ */
+function Avatar({ src, name }: { src: string | null; name: string }) {
+  const [failed, setFailed] = useState(false);
+  const show = src && !failed;
+  return (
+    <span
+      aria-hidden
+      className="grid size-9 shrink-0 place-items-center overflow-hidden border border-line bg-ink-2 text-xs text-muted"
+    >
+      {show ? (
+        // eslint-disable-next-line @next/next/no-img-element -- a member-supplied URL on a host
+        // next/image is not configured for; sizing is fixed so there is nothing to optimise.
+        <img
+          src={src}
+          alt=""
+          loading="lazy"
+          className="size-full object-cover"
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        initials(name)
+      )}
+    </span>
+  );
+}
 
 const MAX = 2000;
 
@@ -138,14 +182,17 @@ export function Comments({ slug }: { slug: string }) {
       ) : (
         <ul className="grid gap-5 border-t border-line pt-5">
           {comments.map((c) => (
-            <li key={c.id}>
-              <p className="flex flex-wrap items-baseline gap-x-3">
-                <span className="display text-lg">{c.author_name}</span>
-                <span className="text-xs text-muted tabular">{when(c.created_at)}</span>
-              </p>
-              <p className="mt-1 text-paper/85 max-w-prose whitespace-pre-wrap [overflow-wrap:anywhere]">
-                {c.body}
-              </p>
+            <li key={c.id} className="grid grid-cols-[auto_minmax(0,1fr)] gap-3">
+              <Avatar src={c.avatar_url} name={c.author_name} />
+              <div className="min-w-0">
+                <p className="flex flex-wrap items-baseline gap-x-3">
+                  <span className="display text-lg">{c.author_name}</span>
+                  <span className="text-xs text-muted tabular">{when(c.created_at)}</span>
+                </p>
+                <p className="mt-1 text-paper/85 max-w-prose whitespace-pre-wrap [overflow-wrap:anywhere]">
+                  {c.body}
+                </p>
+              </div>
             </li>
           ))}
         </ul>
