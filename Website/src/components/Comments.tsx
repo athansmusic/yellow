@@ -15,14 +15,19 @@ type Comment = {
   avatar_url: string | null;
   body: string;
   created_at: string;
+  edited_at?: string | null;
   is_spoiler: boolean;
   parent_id: string | null;
+  /** Written by the show rather than by a listener. Decided by id on the server, never by name. */
+  creator?: boolean;
   /** Whether this one is the reader's own. Decided by the server from their token. */
   mine?: boolean;
   reactions?: Reactions;
 };
 
 const MAX = 2000;
+/** Matches the server's window. Shown as a countdown rather than a rule nobody read. */
+const EDIT_WINDOW_MS = 5 * 60 * 1000;
 
 /**
  * Whether a signed-out visitor is told the discussion exists.
@@ -76,6 +81,36 @@ function Avatar({ src, name, small }: { src: string | null; name: string; small?
 }
 
 /**
+ * Comment text with any URLs made clickable.
+ *
+ * Built as React elements, never as HTML — this is text a member typed, and the one thing you must
+ * not do with it is hand it to dangerouslySetInnerHTML. Only http and https become links; anything
+ * else stays inert text, so javascript: and data: cannot be dressed up as a link.
+ */
+function Linkified({ text }: { text: string }) {
+  const parts = text.split(/(https?:\/\/[^\s<>"']+)/g);
+  return (
+    <>
+      {parts.map((part, i) =>
+        /^https?:\/\//i.test(part) ? (
+          <a
+            key={i}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer nofollow ugc"
+            className="text-yellow underline underline-offset-4 [overflow-wrap:anywhere]"
+          >
+            {part}
+          </a>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
+/**
  * A comment body that might spoil the season.
  *
  * Hidden until asked for rather than shown under a warning — a warning you read after your eye has
@@ -85,7 +120,11 @@ function Avatar({ src, name, small }: { src: string | null; name: string; small?
 function Body({ text, spoiler }: { text: string; spoiler: boolean }) {
   const [shown, setShown] = useState(!spoiler);
   if (shown) {
-    return <p className="mt-1 text-paper/85 max-w-prose whitespace-pre-wrap [overflow-wrap:anywhere]">{text}</p>;
+    return (
+      <p className="mt-1 text-paper/85 max-w-prose whitespace-pre-wrap [overflow-wrap:anywhere]">
+        <Linkified text={text} />
+      </p>
+    );
   }
   return (
     <button
@@ -117,6 +156,8 @@ export function Comments({ slug }: { slug: string }) {
   const [replyTo, setReplyTo] = useState<Comment | null>(null);
   const [busy, setBusy] = useState(false);
   const [removing, setRemoving] = useState<string | null>(null);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -240,6 +281,36 @@ export function Comments({ slug }: { slug: string }) {
     [load],
   );
 
+  const saveEdit = useCallback(
+    async (id: string) => {
+      const token = liveToken();
+      const text = editDraft.trim();
+      if (!token || !text) return;
+      setError(null);
+      try {
+        const r = await fetch("/api/comments", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", "x-sc-token": token },
+          body: JSON.stringify({ id, body: text }),
+        });
+        const j = (await r.json()) as { comment?: { body: string; edited_at: string }; error?: string };
+        if (!r.ok || !j.comment) {
+          setError(j.error ?? "Could not save that.");
+        } else {
+          setComments((prev) =>
+            (prev ?? []).map((c) =>
+              c.id === id ? { ...c, body: j.comment!.body, edited_at: j.comment!.edited_at } : c,
+            ),
+          );
+          setEditing(null);
+        }
+      } catch {
+        setError("Could not save that. Try again.");
+      }
+    },
+    [editDraft],
+  );
+
   const count = comments?.length ?? 0;
 
   // Nothing at all until the membership check has run, so neither state flashes at the wrong person.
@@ -274,7 +345,25 @@ export function Comments({ slug }: { slug: string }) {
       <div className="min-w-0">
         <p className="flex flex-wrap items-baseline gap-x-3">
           <span className={`display ${isReply ? "text-base" : "text-lg"}`}>{c.author_name}</span>
+          {c.creator && (
+            <span className="border border-yellow px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-yellow">
+              Creator
+            </span>
+          )}
           <span className="text-xs text-muted tabular">{when(c.created_at)}</span>
+          {c.edited_at && <span className="text-xs text-muted">edited</span>}
+          {c.mine && Date.now() - new Date(c.created_at).getTime() < EDIT_WINDOW_MS && editing !== c.id && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditing(c.id);
+                setEditDraft(c.body);
+              }}
+              className="text-xs text-muted hover:text-yellow underline underline-offset-4"
+            >
+              Edit
+            </button>
+          )}
           {c.mine && (
             <button
               type="button"
@@ -287,7 +376,35 @@ export function Comments({ slug }: { slug: string }) {
           )}
         </p>
 
-        <Body text={c.body} spoiler={c.is_spoiler} />
+        {editing === c.id ? (
+          <div className="mt-2">
+            <textarea
+              value={editDraft}
+              onChange={(e) => setEditDraft(e.target.value.slice(0, MAX))}
+              rows={3}
+              className="w-full bg-ink-2 border border-line p-3 text-paper focus:outline-none focus:border-yellow"
+            />
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => saveEdit(c.id)}
+                disabled={!editDraft.trim()}
+                className="border border-yellow px-3 py-1 text-xs text-yellow hover:bg-yellow hover:text-ink disabled:opacity-40"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditing(null)}
+                className="text-xs text-muted hover:text-yellow underline underline-offset-4"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <Body text={c.body} spoiler={c.is_spoiler} />
+        )}
 
         <div className="mt-2 flex flex-wrap items-center gap-1.5">
           {EMOJI.map((e) => {
@@ -350,7 +467,7 @@ export function Comments({ slug }: { slug: string }) {
       {comments === null ? (
         <p className="text-muted text-sm">Loading…</p>
       ) : count === 0 ? (
-        <p className="text-muted">No one has said anything yet.</p>
+        <p className="text-muted max-w-prose">Nothing here yet. Say the first thing.</p>
       ) : (
         <ul className="grid gap-6 border-t border-line pt-5">
           {tops.map((c) => (

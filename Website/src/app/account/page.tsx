@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/ui";
 import { ScWidget } from "@/components/ScWidget";
 import { MemberDebug } from "./MemberDebug";
+import { Discussion } from "@/components/Discussion";
 
 /**
  * Member account access. Its own page, separate from the join flow, because a member arriving to
@@ -22,6 +23,8 @@ export default function AccountPage() {
       <div className="mt-10">
         <MemberDebug />
         <ScWidget view="account" />
+        {/* Replies waiting, and what has been said lately anywhere. */}
+        <Discussion />
       </div>
     </Container>
   );
