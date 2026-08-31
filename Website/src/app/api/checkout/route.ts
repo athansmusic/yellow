@@ -20,7 +20,15 @@ export async function POST(req: Request) {
   if (!(ALLOWED_COUNTRIES as readonly string[]).includes(cc)) return NextResponse.json({ error: "We can't ship to that country yet." }, { status: 400 });
 
   // Prices always come from the server-side catalog, never from the client.
-  const line_items = [];
+  type LineItem = {
+    quantity: number;
+    price_data: {
+      currency: string;
+      unit_amount: number;
+      product_data: { name: string; images: string[]; metadata: Record<string, string> };
+    };
+  };
+  const line_items: LineItem[] = [];
   const meta: { v: number; q: number }[] = [];
   for (const it of items) {
     const found = await findVariant(it.variantId);
@@ -65,7 +73,8 @@ export async function POST(req: Request) {
   const coupon = process.env.STRIPE_MEMBER_COUPON_ID;
   const memberDiscount = coupon ? await isMember(req.headers.get("x-sc-token")) : false;
 
-  const session = await stripe().checkout.sessions.create({
+  const build = (withDiscount: boolean) =>
+    stripe().checkout.sessions.create({
     ui_mode: "embedded",
     mode: "payment",
     line_items,
@@ -83,7 +92,7 @@ export async function POST(req: Request) {
       },
     ],
     automatic_tax: { enabled: false },
-    ...(memberDiscount
+    ...(withDiscount
       ? { discounts: [{ coupon: coupon! }] }
       : { allow_promotion_codes: true as const }),
     metadata: {
@@ -91,10 +100,26 @@ export async function POST(req: Request) {
       country: cc,
       source: "theredactedunit.com",
       // So a refund or a support question can tell later whether the member price was applied.
-      member: memberDiscount ? "yes" : "no",
+      member: withDiscount ? "yes" : "no",
     },
     return_url: `${origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
-  });
+    });
+
+  /**
+   * A bad coupon must never cost a sale.
+   *
+   * Stripe rejects the whole session if the coupon does not exist — which happens the moment a
+   * live key meets a coupon created in test mode, and again if one is ever deleted or expires. The
+   * discount is the part that is allowed to fail here; buying the thing is not.
+   */
+  let session;
+  try {
+    session = await build(memberDiscount);
+  } catch (err) {
+    if (!memberDiscount) throw err;
+    console.error("member coupon rejected, falling back to full price:", err);
+    session = await build(false);
+  }
 
   return NextResponse.json({ clientSecret: session.client_secret });
 }
