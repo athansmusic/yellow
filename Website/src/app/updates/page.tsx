@@ -11,13 +11,23 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function UpdatesPage() {
+/**
+ * ?tag= arrives from the chips on a post, so following one lands on the list already narrowed.
+ * Read here rather than with useSearchParams, which would need a Suspense boundary to say the
+ * same thing.
+ */
+export default async function UpdatesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tag?: string }>;
+}) {
+  const { tag } = await searchParams;
   return (
     <Container className="py-16">
       <h1 className="display text-5xl sm:text-6xl leading-[0.95]">UPDATES</h1>
       <p className="mt-4 max-w-prose text-muted">Notes, extras and news for members.</p>
       <div className="mt-10">
-        <UpdatesFeed />
+        <UpdatesFeed initialTag={tag} />
       </div>
     </Container>
   );

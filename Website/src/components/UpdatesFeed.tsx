@@ -1,11 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { liveToken, useMember } from "@/lib/member";
 import { LinkOut } from "@/components/LinkOut";
 import { Comments } from "@/components/Comments";
 import { markPostsSeen } from "@/components/BellMenu";
+
+export type PostType = "text" | "image" | "video" | "audio";
 
 export type Update = {
   id: string;
@@ -13,6 +15,7 @@ export type Update = {
   title: string;
   body: string;
   tags: string[];
+  post_type?: PostType;
   published_at: string;
 };
 
@@ -98,6 +101,80 @@ function Files({ files }: { files: Attachment[] }) {
   );
 }
 
+const TYPE_LABEL: Record<PostType, string> = {
+  text: "Writing",
+  image: "Photos",
+  video: "Video",
+  audio: "Audio",
+};
+
+/**
+ * Filters, built from what is actually here.
+ *
+ * The options come from the loaded posts rather than the full vocabulary, so the page never offers
+ * a door into an empty room — a tag with nothing under it is a dead end that reads as a bug. They
+ * disappear entirely when there is only one kind of thing to look at, which is most of the time
+ * early on.
+ */
+function Filters({
+  updates,
+  type,
+  tag,
+  setType,
+  setTag,
+}: {
+  updates: Update[];
+  type: PostType | null;
+  tag: string | null;
+  setType: (t: PostType | null) => void;
+  setTag: (t: string | null) => void;
+}) {
+  const types = useMemo(() => {
+    const seen = new Set<PostType>();
+    for (const u of updates) seen.add(u.post_type ?? "text");
+    return (["text", "image", "video", "audio"] as PostType[]).filter((t) => seen.has(t));
+  }, [updates]);
+
+  const tags = useMemo(() => {
+    const seen = new Set<string>();
+    for (const u of updates) for (const t of u.tags) seen.add(t);
+    return [...seen].sort();
+  }, [updates]);
+
+  if (types.length < 2 && tags.length === 0) return null;
+
+  const chip = (on: boolean) =>
+    `border px-3 py-1 text-xs uppercase tracking-[0.14em] transition-colors ${
+      on ? "border-yellow bg-yellow text-ink" : "border-line text-muted hover:border-yellow hover:text-yellow"
+    }`;
+
+  return (
+    <div className="mb-8 grid gap-3">
+      {types.length > 1 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <button type="button" onClick={() => setType(null)} className={chip(type === null)}>
+            All
+          </button>
+          {types.map((t) => (
+            <button key={t} type="button" onClick={() => setType(type === t ? null : t)} className={chip(type === t)}>
+              {TYPE_LABEL[t]}
+            </button>
+          ))}
+        </div>
+      )}
+      {tags.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          {tags.map((t) => (
+            <button key={t} type="button" onClick={() => setTag(tag === t ? null : t)} className={chip(tag === t)}>
+              {t}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /**
  * Updates — posts for members only.
  *
@@ -106,10 +183,13 @@ function Files({ files }: { files: Attachment[] }) {
  *
  * With a slug this is one post and its comments; without, the list.
  */
-export function UpdatesFeed({ slug }: { slug?: string }) {
+export function UpdatesFeed({ slug, initialTag }: { slug?: string; initialTag?: string }) {
   const member = useMember();
   const [updates, setUpdates] = useState<Update[] | null>(null);
   const [files, setFiles] = useState<Attachment[]>([]);
+  // A tag arriving in the URL — from a chip on a post — starts the list filtered to it.
+  const [type, setType] = useState<PostType | null>(null);
+  const [tag, setTag] = useState<string | null>(initialTag ?? null);
 
   const load = useCallback(async () => {
     const token = liveToken();
@@ -193,26 +273,57 @@ export function UpdatesFeed({ slug }: { slug?: string }) {
     return <p className="text-muted max-w-prose">Nothing posted yet.</p>;
   }
 
+  const shown = updates.filter(
+    (u) => (!type || (u.post_type ?? "text") === type) && (!tag || u.tags.includes(tag)),
+  );
+
   return (
-    <ul className="grid gap-8 border-t border-line pt-6">
-      {updates.map((u) => (
-        <li key={u.id}>
-          <p className="eyebrow text-yellow">{when(u.published_at)}</p>
-          <h2 className="display text-2xl sm:text-3xl leading-tight mt-1">
-            <Link href={`/updates/${u.slug}`} className="hover:text-yellow">
-              {u.title}
-            </Link>
-          </h2>
-          {u.body && (
-            <p className="mt-2 text-paper/80 max-w-prose line-clamp-3 [overflow-wrap:anywhere]">
-              {u.body.split(/\n{2,}/)[0]}
-            </p>
-          )}
-          {u.tags.length > 0 && (
-            <p className="mt-2 text-xs uppercase tracking-[0.14em] text-muted">{u.tags.join(" · ")}</p>
-          )}
-        </li>
-      ))}
-    </ul>
+    <>
+      <Filters updates={updates} type={type} tag={tag} setType={setType} setTag={setTag} />
+      {shown.length === 0 ? (
+        <p className="text-muted max-w-prose border-t border-line pt-6">
+          Nothing under that filter.{" "}
+          <button
+            type="button"
+            onClick={() => {
+              setType(null);
+              setTag(null);
+            }}
+            className="text-yellow hover:underline underline-offset-4"
+          >
+            Show everything
+          </button>
+          .
+        </p>
+      ) : (
+        <ul className="grid gap-8 border-t border-line pt-6">
+          {shown.map((u) => (
+            <li key={u.id}>
+              <p className="eyebrow text-yellow">
+                {when(u.published_at)}
+                {u.post_type && u.post_type !== "text" && (
+                  <span className="ml-2 text-muted">{TYPE_LABEL[u.post_type]}</span>
+                )}
+              </p>
+              <h2 className="display text-2xl sm:text-3xl leading-tight mt-1">
+                <Link href={`/updates/${u.slug}`} className="hover:text-yellow">
+                  {u.title}
+                </Link>
+              </h2>
+              {u.body && (
+                <p className="mt-2 text-paper/80 max-w-prose line-clamp-3 [overflow-wrap:anywhere]">
+                  {u.body.split(/\n{2,}/)[0]}
+                </p>
+              )}
+              {u.tags.length > 0 && (
+                <p className="mt-2 text-xs uppercase tracking-[0.14em] text-muted">
+                  {u.tags.join(" · ")}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
   );
 }
