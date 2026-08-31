@@ -4,6 +4,7 @@ import Link from "next/link";
 import { EXTERNAL } from "@/lib/site";
 import { PageHero, Section } from "@/components/ui";
 import { assertVisible } from "@/lib/visibility";
+import { WallMembers } from "@/components/WallMembers";
 
 export const metadata: Metadata = {
   title: "Supporter Wall: Kickstarter Backers",
@@ -101,6 +102,20 @@ export default async function SupporterWall() {
             </ul>
           </section>
         ))}
+      </Section>
+
+      <Section>
+        <div className="border-t border-line pt-10">
+          <p className="eyebrow text-yellow">The Unit</p>
+          <h2 className="display text-3xl sm:text-4xl mt-1">Members keeping it going</h2>
+          <p className="mt-3 max-w-prose text-muted">
+            The Kickstarter got the show made. These are the people paying for the next one — listed
+            because they asked to be.
+          </p>
+          <div className="mt-6">
+            <WallMembers />
+          </div>
+        </div>
       </Section>
     </>
   );
