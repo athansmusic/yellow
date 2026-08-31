@@ -38,7 +38,7 @@ const TEAM: { name: string; role: string; image?: string }[] = [
   { name: "Natalie Light", role: "Creative Director" },
   { name: "Landon Whisnant", role: "Lead Sound Designer", image: "/team/landon-whisnant.avif" },
   { name: "Lyssa Jay", role: "Writer (Postmortem)" },
-  { name: "Krista Langois", role: "Moderation & Support" },
+  { name: "Krista Langois", role: "Moderation & Support", image: "/team/krista-langois.avif" },
   { name: "Taylor Michaels", role: "Production Assistant" },
   { name: "Reag Koster", role: "Social Media", image: "/team/reag-koster.avif" },
 ];
