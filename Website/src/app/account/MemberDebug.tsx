@@ -37,6 +37,17 @@ export function MemberDebug() {
         out.push("token did not decode");
       }
     }
+    // Why the store discount is or is not applying. The three causes of "no discount" look
+    // identical on the shop page; this is where someone goes to find out which one it is.
+    if (raw) {
+      fetch("/api/member-discount", { headers: { "x-sc-token": raw } })
+        .then((r) => r.json())
+        .then((j: { percentOff?: number; reason?: string }) =>
+          setRows((prev) => [...(prev ?? []), `store discount: ${j.percentOff ?? 0}% (${j.reason ?? "?"})`]),
+        )
+        .catch(() => {});
+    }
+
     setRows(out);
   }, []);
 

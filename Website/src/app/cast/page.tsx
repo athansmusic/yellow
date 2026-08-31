@@ -39,6 +39,7 @@ const TEAM: { name: string; role: string; image?: string }[] = [
   { name: "Landon Whisnant", role: "Lead Sound Designer", image: "/team/landon-whisnant.avif" },
   { name: "Lyssa Jay", role: "Writer (Postmortem)" },
   { name: "Taylor Michaels", role: "Writer (Additional Works)" },
+  { name: "Reag Koster", role: "Social Media", image: "/team/reag-koster.avif" },
 ];
 
 const normName = (x: string) => x.toLowerCase().replace(/[^a-z]/g, "");
