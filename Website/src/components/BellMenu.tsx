@@ -193,6 +193,19 @@ export function BellMenu() {
           <div
             ref={panel}
             className="fixed inset-x-3 top-[4.5rem] z-[60] max-h-[70vh] overflow-y-auto border border-line bg-ink-2 shadow-[0_20px_40px_rgba(0,0,0,.6)] lg:left-auto lg:right-6 lg:w-80">
+          <div className="sticky top-0 flex items-center justify-between gap-3 border-b border-line bg-ink-2 px-3 py-2">
+            <p className="eyebrow">Notifications</p>
+            {count > 0 && (
+              <button
+                type="button"
+                onClick={readAll}
+                className="border border-line px-2 py-1 text-xs text-muted hover:border-yellow hover:text-yellow"
+              >
+                Read all
+              </button>
+            )}
+          </div>
+
           {!loaded ? (
             <p className="p-4 text-sm text-muted">Loading…</p>
           ) : count === 0 ? (
@@ -248,19 +261,10 @@ export function BellMenu() {
             </>
           )}
 
-          <div className="flex items-center justify-between gap-3 border-t border-line p-3">
+          <div className="border-t border-line p-3">
             <Link href="/updates" onClick={() => setOpen(false)} className="text-xs text-muted hover:text-yellow">
               All updates →
             </Link>
-            {count > 0 && (
-              <button
-                type="button"
-                onClick={readAll}
-                className="text-xs text-muted hover:text-yellow underline underline-offset-4"
-              >
-                Mark all read
-              </button>
-            )}
           </div>
           </div>,
           document.body,
