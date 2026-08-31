@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { priceRange } from "./ProductCard";
+import { useDiscountedRangeText } from "@/lib/discount";
 
 export type HeroItem = {
   slug: string;
@@ -30,6 +31,7 @@ export function StoreHero({ items }: { items: HeroItem[] }) {
     return () => clearInterval(t);
   }, [paused, items.length]);
   const hero = items[i];
+  const heroPrice = useDiscountedRangeText(hero?.priceCents ?? 0, hero?.priceMaxCents ?? 0);
   if (!hero) return null;
 
   return (
@@ -41,7 +43,7 @@ export function StoreHero({ items }: { items: HeroItem[] }) {
         <p className="mt-4 text-paper/85 max-w-prose line-clamp-3">{hero.blurb}</p>
         <div className="mt-6 flex flex-wrap items-center gap-4">
           <Link href={`/store/${hero.slug}`} className="btn btn-yellow">
-            Shop {priceRange(hero)}
+            Shop {heroPrice}
           </Link>
           {hero.collection && (
             <Link href={`/store?col=${hero.collection.id}`} className="text-sm text-paper/80 underline underline-offset-4 hover:text-yellow">

@@ -8,7 +8,7 @@ import type { Product } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
 import { swatch } from "@/lib/swatches";
 import { priceRange } from "./ProductCard";
-import { Price } from "@/lib/discount";
+import { Price, PriceRange } from "@/lib/discount";
 
 type Sibling = { slug: string; name: string; image: string; priceCents: number; priceMaxCents: number };
 
@@ -37,7 +37,11 @@ export function ProductBuy({
 
   const needs = [sizes.length && !size ? "size" : null, colors.length && !color ? "color" : null].filter(Boolean) as string[];
   // A chosen variant has one price to discount; before that it may be a range, which stays plain.
-  const priceNode = variant ? <Price cents={variant.priceCents} /> : priceRange(p);
+  const priceNode = variant ? (
+    <Price cents={variant.priceCents} />
+  ) : (
+    <PriceRange min={p.priceCents} max={p.priceMaxCents} />
+  );
   // A selected colour with a generated mockup set (front, back, left, right, ...) takes over the whole
   // strip, so every colour shows the same set of angles instead of just one photo for non-default colours.
   const colorImages = useMemo(() => {
@@ -224,7 +228,9 @@ export function ProductBuy({
                         <Image src={s.image} alt="" fill sizes="40px" className="object-cover" />
                       </span>
                       <span className="min-w-0 flex-1 text-sm truncate group-hover:text-yellow">{s.name}</span>
-                      <span className="text-xs text-muted tabular">{priceRange(s)}</span>
+                      <span className="text-xs text-muted tabular">
+                        <PriceRange min={s.priceCents} max={s.priceMaxCents} />
+                      </span>
                     </Link>
                   </li>
                 ))}

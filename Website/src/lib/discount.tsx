@@ -58,3 +58,38 @@ export function Price({ cents, className = "" }: { cents: number; className?: st
     </span>
   );
 }
+
+/**
+ * A price that may be a range, with the member price beside it.
+ *
+ * Ranges get the same treatment as single prices rather than being skipped. Skipping them meant
+ * almost nothing on the store grid showed a saving, since most garments span several sizes — the
+ * discount was only visible after picking a variant, which is the point at which someone has
+ * already decided.
+ */
+export function PriceRange({ min, max, className = "" }: { min: number; max: number; className?: string }) {
+  const percent = useMemberDiscount();
+  const full = min === max ? money(min) : `${money(min)} to ${money(max)}`;
+  if (!percent) return <span className={className}>{full}</span>;
+  const cut = min === max ? money(discounted(min, percent)) : `${money(discounted(min, percent))} to ${money(discounted(max, percent))}`;
+  return (
+    <span className={`${className} inline-flex flex-wrap items-baseline gap-x-1.5`}>
+      <span className="text-muted line-through text-[0.8em] tabular">{full}</span>
+      <span className="text-yellow tabular">{cut}</span>
+    </span>
+  );
+}
+
+/**
+ * The member price as plain text, no strikethrough.
+ *
+ * For places where two prices cannot both be shown legibly — inside the yellow call-to-action
+ * button, where struck-through grey on yellow would be unreadable. It is still their real price,
+ * so showing it alone is honest rather than a tease.
+ */
+export function useDiscountedRangeText(min: number, max: number): string {
+  const percent = useMemberDiscount();
+  const lo = percent ? discounted(min, percent) : min;
+  const hi = percent ? discounted(max, percent) : max;
+  return lo === hi ? money(lo) : `${money(lo)} to ${money(hi)}`;
+}
