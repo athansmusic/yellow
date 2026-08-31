@@ -8,7 +8,7 @@
   "catalogProductId": 71,
   "blank": "Bella + Canvas 3001",
   "priceCents": 2500,
-  "priceMaxCents": 3250,
+  "priceMaxCents": 2900,
   "image": "https://files.cdn.printful.com/files/06e/06e4b42eb8c73807d711d51991c7412c_preview.png",
   "images": [
    "https://files.cdn.printful.com/files/06e/06e4b42eb8c73807d711d51991c7412c_preview.png"
@@ -66,7 +66,7 @@
     "name": "Eli Reyes Logo Tee / 2XL",
     "size": "2XL",
     "color": "Black Heather",
-    "priceCents": 2650,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/06e/06e4b42eb8c73807d711d51991c7412c_preview.png",
     "available": true
    },
@@ -75,7 +75,7 @@
     "name": "Eli Reyes Logo Tee / 3XL",
     "size": "3XL",
     "color": "Black Heather",
-    "priceCents": 2850,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/06e/06e4b42eb8c73807d711d51991c7412c_preview.png",
     "available": true
    },
@@ -84,7 +84,7 @@
     "name": "Eli Reyes Logo Tee / 4XL",
     "size": "4XL",
     "color": "Black Heather",
-    "priceCents": 3050,
+    "priceCents": 2800,
     "image": "https://files.cdn.printful.com/files/06e/06e4b42eb8c73807d711d51991c7412c_preview.png",
     "available": true
    },
@@ -93,7 +93,7 @@
     "name": "Eli Reyes Logo Tee / 5XL",
     "size": "5XL",
     "color": "Black Heather",
-    "priceCents": 3250,
+    "priceCents": 2900,
     "image": "https://files.cdn.printful.com/files/06e/06e4b42eb8c73807d711d51991c7412c_preview.png",
     "available": true
    }
@@ -125,7 +125,7 @@
   "catalogProductId": 71,
   "blank": "Bella + Canvas 3001",
   "priceCents": 2500,
-  "priceMaxCents": 3250,
+  "priceMaxCents": 2900,
   "image": "https://files.cdn.printful.com/files/e6f/e6fd6c9be496fcd2d6f200b8f1932932_preview.png",
   "images": [
    "https://files.cdn.printful.com/files/e6f/e6fd6c9be496fcd2d6f200b8f1932932_preview.png",
@@ -216,7 +216,7 @@
     "name": "Jacob on Stage Tee / Black Heather / 2XL",
     "size": "2XL",
     "color": "Black Heather",
-    "priceCents": 2650,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/e6f/e6fd6c9be496fcd2d6f200b8f1932932_preview.png",
     "available": true,
     "images": [
@@ -231,7 +231,7 @@
     "name": "Jacob on Stage Tee / Black Heather / 3XL",
     "size": "3XL",
     "color": "Black Heather",
-    "priceCents": 2850,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/e6f/e6fd6c9be496fcd2d6f200b8f1932932_preview.png",
     "available": true,
     "images": [
@@ -246,7 +246,7 @@
     "name": "Jacob on Stage Tee / Black Heather / 4XL",
     "size": "4XL",
     "color": "Black Heather",
-    "priceCents": 3050,
+    "priceCents": 2800,
     "image": "https://files.cdn.printful.com/files/e6f/e6fd6c9be496fcd2d6f200b8f1932932_preview.png",
     "available": true,
     "images": [
@@ -261,7 +261,7 @@
     "name": "Jacob on Stage Tee / Black Heather / 5XL",
     "size": "5XL",
     "color": "Black Heather",
-    "priceCents": 3250,
+    "priceCents": 2900,
     "image": "https://files.cdn.printful.com/files/e6f/e6fd6c9be496fcd2d6f200b8f1932932_preview.png",
     "available": true,
     "images": [
@@ -351,7 +351,7 @@
     "name": "Jacob on Stage Tee / Navy / 2XL",
     "size": "2XL",
     "color": "Navy",
-    "priceCents": 2650,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/9f9/9f92ae100af226a513b150cee8cb1f82_preview.png",
     "available": true,
     "images": [
@@ -366,7 +366,7 @@
     "name": "Jacob on Stage Tee / Navy / 3XL",
     "size": "3XL",
     "color": "Navy",
-    "priceCents": 2850,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/9f9/9f92ae100af226a513b150cee8cb1f82_preview.png",
     "available": true,
     "images": [
@@ -381,7 +381,7 @@
     "name": "Jacob on Stage Tee / Navy / 4XL",
     "size": "4XL",
     "color": "Navy",
-    "priceCents": 3050,
+    "priceCents": 2800,
     "image": "https://files.cdn.printful.com/files/9f9/9f92ae100af226a513b150cee8cb1f82_preview.png",
     "available": true,
     "images": [
@@ -396,7 +396,7 @@
     "name": "Jacob on Stage Tee / Navy / 5XL",
     "size": "5XL",
     "color": "Navy",
-    "priceCents": 3250,
+    "priceCents": 2900,
     "image": "https://files.cdn.printful.com/files/9f9/9f92ae100af226a513b150cee8cb1f82_preview.png",
     "available": true,
     "images": [
@@ -486,7 +486,7 @@
     "name": "Jacob on Stage Tee / Heather Emerald / 2XL",
     "size": "2XL",
     "color": "Heather Emerald",
-    "priceCents": 2650,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/e3e/e3e6ce2695087a12ea58faa175e35c1b_preview.png",
     "available": true,
     "images": [
@@ -501,7 +501,7 @@
     "name": "Jacob on Stage Tee / Heather Emerald / 3XL",
     "size": "3XL",
     "color": "Heather Emerald",
-    "priceCents": 2850,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/e3e/e3e6ce2695087a12ea58faa175e35c1b_preview.png",
     "available": true,
     "images": [
@@ -591,7 +591,7 @@
     "name": "Jacob on Stage Tee / Heather Midnight Navy / 2XL",
     "size": "2XL",
     "color": "Heather Midnight Navy",
-    "priceCents": 2650,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/ff4/ff475ff483c2dc826e7ea29723b07ff4_preview.png",
     "available": true,
     "images": [
@@ -606,7 +606,7 @@
     "name": "Jacob on Stage Tee / Heather Midnight Navy / 3XL",
     "size": "3XL",
     "color": "Heather Midnight Navy",
-    "priceCents": 2850,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/ff4/ff475ff483c2dc826e7ea29723b07ff4_preview.png",
     "available": true,
     "images": [
@@ -621,7 +621,7 @@
     "name": "Jacob on Stage Tee / Heather Midnight Navy / 4XL",
     "size": "4XL",
     "color": "Heather Midnight Navy",
-    "priceCents": 3050,
+    "priceCents": 2800,
     "image": "https://files.cdn.printful.com/files/ff4/ff475ff483c2dc826e7ea29723b07ff4_preview.png",
     "available": true,
     "images": [
@@ -662,7 +662,7 @@
   "catalogProductId": 71,
   "blank": "Bella + Canvas 3001",
   "priceCents": 2500,
-  "priceMaxCents": 3250,
+  "priceMaxCents": 2900,
   "image": "https://files.cdn.printful.com/files/d6d/d6dc0ee282d53dfc209d92735a3d58f5_preview.png",
   "images": [
    "https://files.cdn.printful.com/files/d6d/d6dc0ee282d53dfc209d92735a3d58f5_preview.png"
@@ -720,7 +720,7 @@
     "name": "Falling Eli Tee / 2XL",
     "size": "2XL",
     "color": "Black Heather",
-    "priceCents": 2650,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/d6d/d6dc0ee282d53dfc209d92735a3d58f5_preview.png",
     "available": true
    },
@@ -729,7 +729,7 @@
     "name": "Falling Eli Tee / 3XL",
     "size": "3XL",
     "color": "Black Heather",
-    "priceCents": 2850,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/d6d/d6dc0ee282d53dfc209d92735a3d58f5_preview.png",
     "available": true
    },
@@ -738,7 +738,7 @@
     "name": "Falling Eli Tee / 4XL",
     "size": "4XL",
     "color": "Black Heather",
-    "priceCents": 3050,
+    "priceCents": 2800,
     "image": "https://files.cdn.printful.com/files/d6d/d6dc0ee282d53dfc209d92735a3d58f5_preview.png",
     "available": true
    },
@@ -747,7 +747,7 @@
     "name": "Falling Eli Tee / 5XL",
     "size": "5XL",
     "color": "Black Heather",
-    "priceCents": 3250,
+    "priceCents": 2900,
     "image": "https://files.cdn.printful.com/files/d6d/d6dc0ee282d53dfc209d92735a3d58f5_preview.png",
     "available": true
    }
@@ -779,7 +779,7 @@
   "catalogProductId": 615,
   "blank": "All-Over Print Men's Windbreaker",
   "priceCents": 7000,
-  "priceMaxCents": 7400,
+  "priceMaxCents": 7000,
   "image": "https://files.cdn.printful.com/files/88c/88cfdcbe8facb3eb110ebdf9eb132e80_preview.png",
   "images": [
    "https://files.cdn.printful.com/files/88c/88cfdcbe8facb3eb110ebdf9eb132e80_preview.png"
@@ -836,7 +836,7 @@
     "name": "Spatter Windbreaker / 2XL",
     "size": "2XL",
     "color": "Black",
-    "priceCents": 7200,
+    "priceCents": 7000,
     "image": "https://files.cdn.printful.com/files/88c/88cfdcbe8facb3eb110ebdf9eb132e80_preview.png",
     "available": true
    },
@@ -845,7 +845,7 @@
     "name": "Spatter Windbreaker / 3XL",
     "size": "3XL",
     "color": "Black",
-    "priceCents": 7400,
+    "priceCents": 7000,
     "image": "https://files.cdn.printful.com/files/88c/88cfdcbe8facb3eb110ebdf9eb132e80_preview.png",
     "available": true
    }
@@ -875,7 +875,7 @@
   "catalogProductId": 380,
   "blank": "Cotton Heritage M2580",
   "priceCents": 5000,
-  "priceMaxCents": 5400,
+  "priceMaxCents": 5000,
   "image": "https://files.cdn.printful.com/files/ff6/ff684e034d0d72ad56735e0af74a7df9_preview.png",
   "images": [
    "https://files.cdn.printful.com/files/ff6/ff684e034d0d72ad56735e0af74a7df9_preview.png",
@@ -955,7 +955,7 @@
     "name": "Forest Fire Hoodie / Light / Team Red / 2XL",
     "size": "2XL",
     "color": "Team Red",
-    "priceCents": 5200,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/b3b/b3b6e1333c22dd45c096b293af403d29_preview.png",
     "available": true,
     "images": [
@@ -970,7 +970,7 @@
     "name": "Forest Fire Hoodie / Light / Team Red / 3XL",
     "size": "3XL",
     "color": "Team Red",
-    "priceCents": 5400,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/b3b/b3b6e1333c22dd45c096b293af403d29_preview.png",
     "available": true,
     "images": [
@@ -1045,7 +1045,7 @@
     "name": "Forest Fire Hoodie / Light / Adobe / 2XL",
     "size": "2XL",
     "color": "Adobe",
-    "priceCents": 5200,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/b1f/b1fbb27ae794c00be1f53438c1e1a616_preview.png",
     "available": true,
     "images": [
@@ -1060,7 +1060,7 @@
     "name": "Forest Fire Hoodie / Light / Adobe / 3XL",
     "size": "3XL",
     "color": "Adobe",
-    "priceCents": 5400,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/b1f/b1fbb27ae794c00be1f53438c1e1a616_preview.png",
     "available": true,
     "images": [
@@ -1135,7 +1135,7 @@
     "name": "Forest Fire Hoodie / Light / Khaki / 2XL",
     "size": "2XL",
     "color": "Khaki",
-    "priceCents": 5200,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/15f/15fd54887ffabdfcf52c0ea79958ec6b_preview.png",
     "available": true,
     "images": [
@@ -1150,7 +1150,7 @@
     "name": "Forest Fire Hoodie / Light / Khaki / 3XL",
     "size": "3XL",
     "color": "Khaki",
-    "priceCents": 5400,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/15f/15fd54887ffabdfcf52c0ea79958ec6b_preview.png",
     "available": true,
     "images": [
@@ -1225,7 +1225,7 @@
     "name": "Forest Fire Hoodie / Light / Lavender / 2XL",
     "size": "2XL",
     "color": "Lavender",
-    "priceCents": 5200,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/447/447cfdec66c8a8998ba549f2c8583a9a_preview.png",
     "available": true,
     "images": [
@@ -1240,7 +1240,7 @@
     "name": "Forest Fire Hoodie / Light / Lavender / 3XL",
     "size": "3XL",
     "color": "Lavender",
-    "priceCents": 5400,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/447/447cfdec66c8a8998ba549f2c8583a9a_preview.png",
     "available": true,
     "images": [
@@ -1315,7 +1315,7 @@
     "name": "Forest Fire Hoodie / Light / Sky Blue / 2XL",
     "size": "2XL",
     "color": "Sky Blue",
-    "priceCents": 5200,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/eef/eefd729ecdbe5e722ec29eb6eee8c70d_preview.png",
     "available": true,
     "images": [
@@ -1330,7 +1330,7 @@
     "name": "Forest Fire Hoodie / Light / Sky Blue / 3XL",
     "size": "3XL",
     "color": "Sky Blue",
-    "priceCents": 5400,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/eef/eefd729ecdbe5e722ec29eb6eee8c70d_preview.png",
     "available": true,
     "images": [
@@ -1405,7 +1405,7 @@
     "name": "Forest Fire Hoodie / Light / White / 2XL",
     "size": "2XL",
     "color": "White",
-    "priceCents": 5200,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/ff6/ff684e034d0d72ad56735e0af74a7df9_preview.png",
     "available": true,
     "images": [
@@ -1420,7 +1420,7 @@
     "name": "Forest Fire Hoodie / Light / White / 3XL",
     "size": "3XL",
     "color": "White",
-    "priceCents": 5400,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/ff6/ff684e034d0d72ad56735e0af74a7df9_preview.png",
     "available": true,
     "images": [
@@ -1459,7 +1459,7 @@
   "catalogProductId": 380,
   "blank": "Cotton Heritage M2580",
   "priceCents": 5000,
-  "priceMaxCents": 5400,
+  "priceMaxCents": 5000,
   "image": "https://files.cdn.printful.com/files/74b/74b6125d5a3681db1d603da5046ba7bd_preview.png",
   "images": [
    "https://files.cdn.printful.com/files/74b/74b6125d5a3681db1d603da5046ba7bd_preview.png",
@@ -1539,7 +1539,7 @@
     "name": "Forest Fire Hoodie / Dark / Black / 2XL",
     "size": "2XL",
     "color": "Black",
-    "priceCents": 5200,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/503/503a65750664fd35792dcfa34174c816_preview.png",
     "available": true,
     "images": [
@@ -1554,7 +1554,7 @@
     "name": "Forest Fire Hoodie / Dark / Black / 3XL",
     "size": "3XL",
     "color": "Black",
-    "priceCents": 5400,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/503/503a65750664fd35792dcfa34174c816_preview.png",
     "available": true,
     "images": [
@@ -1629,7 +1629,7 @@
     "name": "Forest Fire Hoodie / Dark / Navy Blazer / 2XL",
     "size": "2XL",
     "color": "Navy Blazer",
-    "priceCents": 5200,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/88a/88a961b370ac97eb2d39cb1096282361_preview.png",
     "available": true,
     "images": [
@@ -1644,7 +1644,7 @@
     "name": "Forest Fire Hoodie / Dark / Navy Blazer / 3XL",
     "size": "3XL",
     "color": "Navy Blazer",
-    "priceCents": 5400,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/88a/88a961b370ac97eb2d39cb1096282361_preview.png",
     "available": true,
     "images": [
@@ -1719,7 +1719,7 @@
     "name": "Forest Fire Hoodie / Dark / Maroon / 2XL",
     "size": "2XL",
     "color": "Maroon",
-    "priceCents": 5200,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/74b/74b6125d5a3681db1d603da5046ba7bd_preview.png",
     "available": true,
     "images": [
@@ -1734,7 +1734,7 @@
     "name": "Forest Fire Hoodie / Dark / Maroon / 3XL",
     "size": "3XL",
     "color": "Maroon",
-    "priceCents": 5400,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/74b/74b6125d5a3681db1d603da5046ba7bd_preview.png",
     "available": true,
     "images": [
@@ -1770,7 +1770,7 @@
   "catalogProductId": 71,
   "blank": "Bella + Canvas 3001",
   "priceCents": 2500,
-  "priceMaxCents": 3250,
+  "priceMaxCents": 2900,
   "image": "https://files.cdn.printful.com/files/3db/3db4d27dc068e64a9356a119ee183709_preview.png",
   "images": [
    "https://files.cdn.printful.com/files/3db/3db4d27dc068e64a9356a119ee183709_preview.png",
@@ -1835,7 +1835,7 @@
     "name": "Forest Fire Tee / 2XL",
     "size": "2XL",
     "color": "Black Heather",
-    "priceCents": 2650,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/3db/3db4d27dc068e64a9356a119ee183709_preview.png",
     "available": true
    },
@@ -1844,7 +1844,7 @@
     "name": "Forest Fire Tee / 3XL",
     "size": "3XL",
     "color": "Black Heather",
-    "priceCents": 2850,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/3db/3db4d27dc068e64a9356a119ee183709_preview.png",
     "available": true
    },
@@ -1853,7 +1853,7 @@
     "name": "Forest Fire Tee / 4XL",
     "size": "4XL",
     "color": "Black Heather",
-    "priceCents": 3050,
+    "priceCents": 2800,
     "image": "https://files.cdn.printful.com/files/3db/3db4d27dc068e64a9356a119ee183709_preview.png",
     "available": true
    },
@@ -1862,7 +1862,7 @@
     "name": "Forest Fire Tee / 5XL",
     "size": "5XL",
     "color": "Black Heather",
-    "priceCents": 3250,
+    "priceCents": 2900,
     "image": "https://files.cdn.printful.com/files/3db/3db4d27dc068e64a9356a119ee183709_preview.png",
     "available": true
    }
@@ -2038,7 +2038,7 @@
   "catalogProductId": 146,
   "blank": "Gildan 18500",
   "priceCents": 4000,
-  "priceMaxCents": 4800,
+  "priceMaxCents": 4400,
   "image": "https://files.cdn.printful.com/files/f31/f3174d5488b7a2f9e571877c613a0126_preview.png",
   "images": [
    "https://files.cdn.printful.com/files/f31/f3174d5488b7a2f9e571877c613a0126_preview.png",
@@ -2114,7 +2114,7 @@
     "name": "Car Crash Hoodie / Black / 2XL",
     "size": "2XL",
     "color": "Black",
-    "priceCents": 4200,
+    "priceCents": 4100,
     "image": "https://files.cdn.printful.com/files/f31/f3174d5488b7a2f9e571877c613a0126_preview.png",
     "available": true,
     "images": [
@@ -2129,7 +2129,7 @@
     "name": "Car Crash Hoodie / Black / 3XL",
     "size": "3XL",
     "color": "Black",
-    "priceCents": 4400,
+    "priceCents": 4200,
     "image": "https://files.cdn.printful.com/files/f31/f3174d5488b7a2f9e571877c613a0126_preview.png",
     "available": true,
     "images": [
@@ -2144,7 +2144,7 @@
     "name": "Car Crash Hoodie / Black / 4XL",
     "size": "4XL",
     "color": "Black",
-    "priceCents": 4600,
+    "priceCents": 4300,
     "image": "https://files.cdn.printful.com/files/f31/f3174d5488b7a2f9e571877c613a0126_preview.png",
     "available": true,
     "images": [
@@ -2159,7 +2159,7 @@
     "name": "Car Crash Hoodie / Black / 5XL",
     "size": "5XL",
     "color": "Black",
-    "priceCents": 4800,
+    "priceCents": 4400,
     "image": "https://files.cdn.printful.com/files/f31/f3174d5488b7a2f9e571877c613a0126_preview.png",
     "available": true,
     "images": [
@@ -2234,7 +2234,7 @@
     "name": "Car Crash Hoodie / Navy / 2XL",
     "size": "2XL",
     "color": "Navy",
-    "priceCents": 4200,
+    "priceCents": 4100,
     "image": "https://files.cdn.printful.com/files/670/67031a172bb2814c1ecdd195fcd1ef83_preview.png",
     "available": true,
     "images": [
@@ -2249,7 +2249,7 @@
     "name": "Car Crash Hoodie / Navy / 3XL",
     "size": "3XL",
     "color": "Navy",
-    "priceCents": 4400,
+    "priceCents": 4200,
     "image": "https://files.cdn.printful.com/files/670/67031a172bb2814c1ecdd195fcd1ef83_preview.png",
     "available": true,
     "images": [
@@ -2264,7 +2264,7 @@
     "name": "Car Crash Hoodie / Navy / 4XL",
     "size": "4XL",
     "color": "Navy",
-    "priceCents": 4600,
+    "priceCents": 4300,
     "image": "https://files.cdn.printful.com/files/670/67031a172bb2814c1ecdd195fcd1ef83_preview.png",
     "available": true,
     "images": [
@@ -2279,7 +2279,7 @@
     "name": "Car Crash Hoodie / Navy / 5XL",
     "size": "5XL",
     "color": "Navy",
-    "priceCents": 4800,
+    "priceCents": 4400,
     "image": "https://files.cdn.printful.com/files/670/67031a172bb2814c1ecdd195fcd1ef83_preview.png",
     "available": true,
     "images": [
@@ -2354,7 +2354,7 @@
     "name": "Car Crash Hoodie / Forest Green / 2XL",
     "size": "2XL",
     "color": "Forest Green",
-    "priceCents": 4200,
+    "priceCents": 4100,
     "image": "https://files.cdn.printful.com/files/944/9448163adbacfa52b24b5f606449d1fa_preview.png",
     "available": true,
     "images": [
@@ -2369,7 +2369,7 @@
     "name": "Car Crash Hoodie / Forest Green / 3XL",
     "size": "3XL",
     "color": "Forest Green",
-    "priceCents": 4400,
+    "priceCents": 4200,
     "image": "https://files.cdn.printful.com/files/944/9448163adbacfa52b24b5f606449d1fa_preview.png",
     "available": true,
     "images": [
@@ -2384,7 +2384,7 @@
     "name": "Car Crash Hoodie / Forest Green / 4XL",
     "size": "4XL",
     "color": "Forest Green",
-    "priceCents": 4600,
+    "priceCents": 4300,
     "image": "https://files.cdn.printful.com/files/944/9448163adbacfa52b24b5f606449d1fa_preview.png",
     "available": true,
     "images": [
@@ -2399,7 +2399,7 @@
     "name": "Car Crash Hoodie / Forest Green / 5XL",
     "size": "5XL",
     "color": "Forest Green",
-    "priceCents": 4800,
+    "priceCents": 4400,
     "image": "https://files.cdn.printful.com/files/944/9448163adbacfa52b24b5f606449d1fa_preview.png",
     "available": true,
     "images": [
@@ -2474,7 +2474,7 @@
     "name": "Car Crash Hoodie / Light Blue / 2XL",
     "size": "2XL",
     "color": "Light Blue",
-    "priceCents": 4200,
+    "priceCents": 4100,
     "image": "https://files.cdn.printful.com/files/b5e/b5eac127fc8067511784125e6dce0afa_preview.png",
     "available": true,
     "images": [
@@ -2489,7 +2489,7 @@
     "name": "Car Crash Hoodie / Light Blue / 3XL",
     "size": "3XL",
     "color": "Light Blue",
-    "priceCents": 4400,
+    "priceCents": 4200,
     "image": "https://files.cdn.printful.com/files/b5e/b5eac127fc8067511784125e6dce0afa_preview.png",
     "available": true,
     "images": [
@@ -2504,7 +2504,7 @@
     "name": "Car Crash Hoodie / Light Blue / 4XL",
     "size": "4XL",
     "color": "Light Blue",
-    "priceCents": 4600,
+    "priceCents": 4300,
     "image": "https://files.cdn.printful.com/files/b5e/b5eac127fc8067511784125e6dce0afa_preview.png",
     "available": true,
     "images": [
@@ -2519,7 +2519,7 @@
     "name": "Car Crash Hoodie / Light Blue / 5XL",
     "size": "5XL",
     "color": "Light Blue",
-    "priceCents": 4800,
+    "priceCents": 4400,
     "image": "https://files.cdn.printful.com/files/b5e/b5eac127fc8067511784125e6dce0afa_preview.png",
     "available": true,
     "images": [
@@ -2594,7 +2594,7 @@
     "name": "Car Crash Hoodie / White / 2XL",
     "size": "2XL",
     "color": "White",
-    "priceCents": 4200,
+    "priceCents": 4100,
     "image": "https://files.cdn.printful.com/files/2f5/2f5026d6e5e97a1504d288b2f4a1cc58_preview.png",
     "available": true,
     "images": [
@@ -2609,7 +2609,7 @@
     "name": "Car Crash Hoodie / White / 3XL",
     "size": "3XL",
     "color": "White",
-    "priceCents": 4400,
+    "priceCents": 4200,
     "image": "https://files.cdn.printful.com/files/2f5/2f5026d6e5e97a1504d288b2f4a1cc58_preview.png",
     "available": true,
     "images": [
@@ -2624,7 +2624,7 @@
     "name": "Car Crash Hoodie / White / 4XL",
     "size": "4XL",
     "color": "White",
-    "priceCents": 4600,
+    "priceCents": 4300,
     "image": "https://files.cdn.printful.com/files/2f5/2f5026d6e5e97a1504d288b2f4a1cc58_preview.png",
     "available": true,
     "images": [
@@ -2639,7 +2639,7 @@
     "name": "Car Crash Hoodie / White / 5XL",
     "size": "5XL",
     "color": "White",
-    "priceCents": 4800,
+    "priceCents": 4400,
     "image": "https://files.cdn.printful.com/files/2f5/2f5026d6e5e97a1504d288b2f4a1cc58_preview.png",
     "available": true,
     "images": [
@@ -2679,7 +2679,7 @@
   "catalogProductId": 71,
   "blank": "Bella + Canvas 3001",
   "priceCents": 2500,
-  "priceMaxCents": 3250,
+  "priceMaxCents": 2900,
   "image": "https://files.cdn.printful.com/files/ca0/ca0cffefdc16836829a22a58d6fd705b_preview.png",
   "images": [
    "https://files.cdn.printful.com/files/ca0/ca0cffefdc16836829a22a58d6fd705b_preview.png",
@@ -2769,7 +2769,7 @@
     "name": "Car Crash Tee / Black / 2XL",
     "size": "2XL",
     "color": "Black",
-    "priceCents": 2650,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/ca0/ca0cffefdc16836829a22a58d6fd705b_preview.png",
     "available": true,
     "images": [
@@ -2784,7 +2784,7 @@
     "name": "Car Crash Tee / Black / 3XL",
     "size": "3XL",
     "color": "Black",
-    "priceCents": 2850,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/ca0/ca0cffefdc16836829a22a58d6fd705b_preview.png",
     "available": true,
     "images": [
@@ -2799,7 +2799,7 @@
     "name": "Car Crash Tee / Black / 4XL",
     "size": "4XL",
     "color": "Black",
-    "priceCents": 3050,
+    "priceCents": 2800,
     "image": "https://files.cdn.printful.com/files/ca0/ca0cffefdc16836829a22a58d6fd705b_preview.png",
     "available": true,
     "images": [
@@ -2814,7 +2814,7 @@
     "name": "Car Crash Tee / Black / 5XL",
     "size": "5XL",
     "color": "Black",
-    "priceCents": 3250,
+    "priceCents": 2900,
     "image": "https://files.cdn.printful.com/files/ca0/ca0cffefdc16836829a22a58d6fd705b_preview.png",
     "available": true,
     "images": [
@@ -2889,7 +2889,7 @@
     "name": "Car Crash Tee / Oxblood Black / 2XL",
     "size": "2XL",
     "color": "Oxblood Black",
-    "priceCents": 2650,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/118/118cc64276e772867b3d4034f6134cfb_preview.png",
     "available": true,
     "images": [
@@ -2904,7 +2904,7 @@
     "name": "Car Crash Tee / Oxblood Black / 3XL",
     "size": "3XL",
     "color": "Oxblood Black",
-    "priceCents": 2850,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/118/118cc64276e772867b3d4034f6134cfb_preview.png",
     "available": true,
     "images": [
@@ -2919,7 +2919,7 @@
     "name": "Car Crash Tee / Oxblood Black / 4XL",
     "size": "4XL",
     "color": "Oxblood Black",
-    "priceCents": 3050,
+    "priceCents": 2800,
     "image": "https://files.cdn.printful.com/files/118/118cc64276e772867b3d4034f6134cfb_preview.png",
     "available": true,
     "images": [
@@ -3009,7 +3009,7 @@
     "name": "Car Crash Tee / Heather Midnight Navy / 2XL",
     "size": "2XL",
     "color": "Heather Midnight Navy",
-    "priceCents": 2650,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/6d5/6d5d7100549e7f732d5b2bd0392b9ca2_preview.png",
     "available": true,
     "images": [
@@ -3024,7 +3024,7 @@
     "name": "Car Crash Tee / Heather Midnight Navy / 3XL",
     "size": "3XL",
     "color": "Heather Midnight Navy",
-    "priceCents": 2850,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/6d5/6d5d7100549e7f732d5b2bd0392b9ca2_preview.png",
     "available": true,
     "images": [
@@ -3039,7 +3039,7 @@
     "name": "Car Crash Tee / Heather Midnight Navy / 4XL",
     "size": "4XL",
     "color": "Heather Midnight Navy",
-    "priceCents": 3050,
+    "priceCents": 2800,
     "image": "https://files.cdn.printful.com/files/6d5/6d5d7100549e7f732d5b2bd0392b9ca2_preview.png",
     "available": true,
     "images": [
@@ -3129,7 +3129,7 @@
     "name": "Car Crash Tee / Heather Ice Blue / 2XL",
     "size": "2XL",
     "color": "Heather Ice Blue",
-    "priceCents": 2650,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/552/552766aeff604052c5a0480b6a5cd221_preview.png",
     "available": true,
     "images": [
@@ -3144,7 +3144,7 @@
     "name": "Car Crash Tee / Heather Ice Blue / 3XL",
     "size": "3XL",
     "color": "Heather Ice Blue",
-    "priceCents": 2850,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/552/552766aeff604052c5a0480b6a5cd221_preview.png",
     "available": true,
     "images": [
@@ -3159,7 +3159,7 @@
     "name": "Car Crash Tee / Heather Ice Blue / 4XL",
     "size": "4XL",
     "color": "Heather Ice Blue",
-    "priceCents": 3050,
+    "priceCents": 2800,
     "image": "https://files.cdn.printful.com/files/552/552766aeff604052c5a0480b6a5cd221_preview.png",
     "available": true,
     "images": [
@@ -3261,7 +3261,7 @@
   "catalogProductId": 380,
   "blank": "Cotton Heritage M2580",
   "priceCents": 5000,
-  "priceMaxCents": 5400,
+  "priceMaxCents": 5000,
   "image": "https://files.cdn.printful.com/files/cdb/cdb868c69d933c1d6d88418a24639864_preview.png",
   "images": [
    "https://files.cdn.printful.com/files/cdb/cdb868c69d933c1d6d88418a24639864_preview.png",
@@ -3311,7 +3311,7 @@
     "name": "Aberrant Hoodie / 2XL",
     "size": "2XL",
     "color": "Black",
-    "priceCents": 5200,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/cdb/cdb868c69d933c1d6d88418a24639864_preview.png",
     "available": true
    },
@@ -3320,7 +3320,7 @@
     "name": "Aberrant Hoodie / 3XL",
     "size": "3XL",
     "color": "Black",
-    "priceCents": 5400,
+    "priceCents": 5000,
     "image": "https://files.cdn.printful.com/files/cdb/cdb868c69d933c1d6d88418a24639864_preview.png",
     "available": true
    }
@@ -3348,7 +3348,7 @@
   "catalogProductId": 71,
   "blank": "Bella + Canvas 3001",
   "priceCents": 2500,
-  "priceMaxCents": 3300,
+  "priceMaxCents": 2900,
   "image": "https://files.cdn.printful.com/files/767/7670d4c872a42520404f52e28d688495_preview.png",
   "images": [
    "https://files.cdn.printful.com/files/767/7670d4c872a42520404f52e28d688495_preview.png",
@@ -3407,7 +3407,7 @@
     "name": "Aberrant Tee / 2XL",
     "size": "2XL",
     "color": "Black",
-    "priceCents": 2700,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/767/7670d4c872a42520404f52e28d688495_preview.png",
     "available": true
    },
@@ -3416,7 +3416,7 @@
     "name": "Aberrant Tee / 3XL",
     "size": "3XL",
     "color": "Black",
-    "priceCents": 2900,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/767/7670d4c872a42520404f52e28d688495_preview.png",
     "available": true
    },
@@ -3425,7 +3425,7 @@
     "name": "Aberrant Tee / 4XL",
     "size": "4XL",
     "color": "Black",
-    "priceCents": 3100,
+    "priceCents": 2800,
     "image": "https://files.cdn.printful.com/files/767/7670d4c872a42520404f52e28d688495_preview.png",
     "available": true
    },
@@ -3434,7 +3434,7 @@
     "name": "Aberrant Tee / 5XL",
     "size": "5XL",
     "color": "Black",
-    "priceCents": 3300,
+    "priceCents": 2900,
     "image": "https://files.cdn.printful.com/files/767/7670d4c872a42520404f52e28d688495_preview.png",
     "available": true
    }
@@ -3465,7 +3465,7 @@
   "catalogProductId": 390,
   "blank": "All-Over Print Unisex Bomber Jacket",
   "priceCents": 8500,
-  "priceMaxCents": 8900,
+  "priceMaxCents": 8500,
   "image": "https://files.cdn.printful.com/files/023/0235d562e16d1b847ef119939de4ff1d_preview.png",
   "images": [
    "https://files.cdn.printful.com/files/023/0235d562e16d1b847ef119939de4ff1d_preview.png",
@@ -3528,7 +3528,7 @@
     "name": "Spatter Bomber Jacket / 2XL",
     "size": "2XL",
     "color": "White",
-    "priceCents": 8700,
+    "priceCents": 8500,
     "image": "https://files.cdn.printful.com/files/023/0235d562e16d1b847ef119939de4ff1d_preview.png",
     "available": true
    },
@@ -3537,7 +3537,7 @@
     "name": "Spatter Bomber Jacket / 3XL",
     "size": "3XL",
     "color": "White",
-    "priceCents": 8900,
+    "priceCents": 8500,
     "image": "https://files.cdn.printful.com/files/023/0235d562e16d1b847ef119939de4ff1d_preview.png",
     "available": true
    }
@@ -6959,8 +6959,8 @@
   "sub": "t-shirts",
   "catalogProductId": 71,
   "blank": "Bella + Canvas 3001",
-  "priceCents": 3000,
-  "priceMaxCents": 3800,
+  "priceCents": 2500,
+  "priceMaxCents": 2800,
   "image": "https://files.cdn.printful.com/files/0dd/0dd671cef0f74b209f7a8e6257a50600_preview.png",
   "images": [
    "https://files.cdn.printful.com/files/0dd/0dd671cef0f74b209f7a8e6257a50600_preview.png",
@@ -6975,7 +6975,7 @@
     "name": "What's on Mars Tee / Black Heather / XS",
     "size": "XS",
     "color": "Black Heather",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/0dd/0dd671cef0f74b209f7a8e6257a50600_preview.png",
     "available": true,
     "images": [
@@ -6990,7 +6990,7 @@
     "name": "What's on Mars Tee / Black Heather / S",
     "size": "S",
     "color": "Black Heather",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/0dd/0dd671cef0f74b209f7a8e6257a50600_preview.png",
     "available": true,
     "images": [
@@ -7005,7 +7005,7 @@
     "name": "What's on Mars Tee / Black Heather / M",
     "size": "M",
     "color": "Black Heather",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/0dd/0dd671cef0f74b209f7a8e6257a50600_preview.png",
     "available": true,
     "images": [
@@ -7020,7 +7020,7 @@
     "name": "What's on Mars Tee / Black Heather / L",
     "size": "L",
     "color": "Black Heather",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/0dd/0dd671cef0f74b209f7a8e6257a50600_preview.png",
     "available": true,
     "images": [
@@ -7035,7 +7035,7 @@
     "name": "What's on Mars Tee / Black Heather / XL",
     "size": "XL",
     "color": "Black Heather",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/0dd/0dd671cef0f74b209f7a8e6257a50600_preview.png",
     "available": true,
     "images": [
@@ -7050,7 +7050,7 @@
     "name": "What's on Mars Tee / Black Heather / 2XL",
     "size": "2XL",
     "color": "Black Heather",
-    "priceCents": 3200,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/0dd/0dd671cef0f74b209f7a8e6257a50600_preview.png",
     "available": true,
     "images": [
@@ -7065,7 +7065,7 @@
     "name": "What's on Mars Tee / Black Heather / 3XL",
     "size": "3XL",
     "color": "Black Heather",
-    "priceCents": 3400,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/0dd/0dd671cef0f74b209f7a8e6257a50600_preview.png",
     "available": true,
     "images": [
@@ -7080,7 +7080,7 @@
     "name": "What's on Mars Tee / Black Heather / 4XL",
     "size": "4XL",
     "color": "Black Heather",
-    "priceCents": 3800,
+    "priceCents": 2800,
     "image": "https://files.cdn.printful.com/files/0dd/0dd671cef0f74b209f7a8e6257a50600_preview.png",
     "available": true,
     "images": [
@@ -7095,7 +7095,7 @@
     "name": "What's on Mars Tee / Heather Midnight Navy / XS",
     "size": "XS",
     "color": "Heather Midnight Navy",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/4cb/4cb1f601f435008a5ae77b79a8f5506d_preview.png",
     "available": true,
     "images": [
@@ -7110,7 +7110,7 @@
     "name": "What's on Mars Tee / Heather Midnight Navy / S",
     "size": "S",
     "color": "Heather Midnight Navy",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/4cb/4cb1f601f435008a5ae77b79a8f5506d_preview.png",
     "available": true,
     "images": [
@@ -7125,7 +7125,7 @@
     "name": "What's on Mars Tee / Heather Midnight Navy / M",
     "size": "M",
     "color": "Heather Midnight Navy",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/4cb/4cb1f601f435008a5ae77b79a8f5506d_preview.png",
     "available": true,
     "images": [
@@ -7140,7 +7140,7 @@
     "name": "What's on Mars Tee / Heather Midnight Navy / L",
     "size": "L",
     "color": "Heather Midnight Navy",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/4cb/4cb1f601f435008a5ae77b79a8f5506d_preview.png",
     "available": true,
     "images": [
@@ -7155,7 +7155,7 @@
     "name": "What's on Mars Tee / Heather Midnight Navy / XL",
     "size": "XL",
     "color": "Heather Midnight Navy",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/4cb/4cb1f601f435008a5ae77b79a8f5506d_preview.png",
     "available": true,
     "images": [
@@ -7170,7 +7170,7 @@
     "name": "What's on Mars Tee / Heather Midnight Navy / 2XL",
     "size": "2XL",
     "color": "Heather Midnight Navy",
-    "priceCents": 3200,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/4cb/4cb1f601f435008a5ae77b79a8f5506d_preview.png",
     "available": true,
     "images": [
@@ -7185,7 +7185,7 @@
     "name": "What's on Mars Tee / Heather Midnight Navy / 3XL",
     "size": "3XL",
     "color": "Heather Midnight Navy",
-    "priceCents": 3400,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/4cb/4cb1f601f435008a5ae77b79a8f5506d_preview.png",
     "available": true,
     "images": [
@@ -7200,7 +7200,7 @@
     "name": "What's on Mars Tee / Heather Midnight Navy / 4XL",
     "size": "4XL",
     "color": "Heather Midnight Navy",
-    "priceCents": 3800,
+    "priceCents": 2800,
     "image": "https://files.cdn.printful.com/files/4cb/4cb1f601f435008a5ae77b79a8f5506d_preview.png",
     "available": true,
     "images": [
@@ -7215,7 +7215,7 @@
     "name": "What's on Mars Tee / Maroon / XS",
     "size": "XS",
     "color": "Maroon",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/b2e/b2e4dbd3a1d20173696d3e06487917cd_preview.png",
     "available": true,
     "images": [
@@ -7230,7 +7230,7 @@
     "name": "What's on Mars Tee / Maroon / S",
     "size": "S",
     "color": "Maroon",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/b2e/b2e4dbd3a1d20173696d3e06487917cd_preview.png",
     "available": true,
     "images": [
@@ -7245,7 +7245,7 @@
     "name": "What's on Mars Tee / Maroon / M",
     "size": "M",
     "color": "Maroon",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/b2e/b2e4dbd3a1d20173696d3e06487917cd_preview.png",
     "available": true,
     "images": [
@@ -7260,7 +7260,7 @@
     "name": "What's on Mars Tee / Maroon / L",
     "size": "L",
     "color": "Maroon",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/b2e/b2e4dbd3a1d20173696d3e06487917cd_preview.png",
     "available": true,
     "images": [
@@ -7275,7 +7275,7 @@
     "name": "What's on Mars Tee / Maroon / XL",
     "size": "XL",
     "color": "Maroon",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/b2e/b2e4dbd3a1d20173696d3e06487917cd_preview.png",
     "available": true,
     "images": [
@@ -7290,7 +7290,7 @@
     "name": "What's on Mars Tee / Maroon / 2XL",
     "size": "2XL",
     "color": "Maroon",
-    "priceCents": 3200,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/b2e/b2e4dbd3a1d20173696d3e06487917cd_preview.png",
     "available": true,
     "images": [
@@ -7305,7 +7305,7 @@
     "name": "What's on Mars Tee / Maroon / 3XL",
     "size": "3XL",
     "color": "Maroon",
-    "priceCents": 3400,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/b2e/b2e4dbd3a1d20173696d3e06487917cd_preview.png",
     "available": true,
     "images": [
@@ -7320,7 +7320,7 @@
     "name": "What's on Mars Tee / Maroon / 4XL",
     "size": "4XL",
     "color": "Maroon",
-    "priceCents": 3800,
+    "priceCents": 2800,
     "image": "https://files.cdn.printful.com/files/b2e/b2e4dbd3a1d20173696d3e06487917cd_preview.png",
     "available": true,
     "images": [
@@ -7335,7 +7335,7 @@
     "name": "What's on Mars Tee / Athletic Heather / XS",
     "size": "XS",
     "color": "Athletic Heather",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/602/6029bde87a59a1081b6fdd090bceb3ae_preview.png",
     "available": true,
     "images": [
@@ -7350,7 +7350,7 @@
     "name": "What's on Mars Tee / Athletic Heather / S",
     "size": "S",
     "color": "Athletic Heather",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/602/6029bde87a59a1081b6fdd090bceb3ae_preview.png",
     "available": true,
     "images": [
@@ -7365,7 +7365,7 @@
     "name": "What's on Mars Tee / Athletic Heather / M",
     "size": "M",
     "color": "Athletic Heather",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/602/6029bde87a59a1081b6fdd090bceb3ae_preview.png",
     "available": true,
     "images": [
@@ -7380,7 +7380,7 @@
     "name": "What's on Mars Tee / Athletic Heather / L",
     "size": "L",
     "color": "Athletic Heather",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/602/6029bde87a59a1081b6fdd090bceb3ae_preview.png",
     "available": true,
     "images": [
@@ -7395,7 +7395,7 @@
     "name": "What's on Mars Tee / Athletic Heather / XL",
     "size": "XL",
     "color": "Athletic Heather",
-    "priceCents": 3000,
+    "priceCents": 2500,
     "image": "https://files.cdn.printful.com/files/602/6029bde87a59a1081b6fdd090bceb3ae_preview.png",
     "available": true,
     "images": [
@@ -7410,7 +7410,7 @@
     "name": "What's on Mars Tee / Athletic Heather / 2XL",
     "size": "2XL",
     "color": "Athletic Heather",
-    "priceCents": 3200,
+    "priceCents": 2600,
     "image": "https://files.cdn.printful.com/files/602/6029bde87a59a1081b6fdd090bceb3ae_preview.png",
     "available": true,
     "images": [
@@ -7425,7 +7425,7 @@
     "name": "What's on Mars Tee / Athletic Heather / 3XL",
     "size": "3XL",
     "color": "Athletic Heather",
-    "priceCents": 3400,
+    "priceCents": 2700,
     "image": "https://files.cdn.printful.com/files/602/6029bde87a59a1081b6fdd090bceb3ae_preview.png",
     "available": true,
     "images": [
@@ -7440,7 +7440,7 @@
     "name": "What's on Mars Tee / Athletic Heather / 4XL",
     "size": "4XL",
     "color": "Athletic Heather",
-    "priceCents": 3800,
+    "priceCents": 2800,
     "image": "https://files.cdn.printful.com/files/602/6029bde87a59a1081b6fdd090bceb3ae_preview.png",
     "available": true,
     "images": [

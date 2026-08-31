@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { liveToken } from "@/lib/member";
-import { LAST_SEEN_KEY } from "@/components/UpdatesFeed";
 
 type Notice = {
   id: string;
@@ -13,6 +13,31 @@ type Notice = {
   created_at: string;
 };
 type Post = { id: string; slug: string; title: string; published_at: string };
+
+/**
+ * Ids of posts this browser has seen.
+ *
+ * A list of ids rather than a "newest seen" timestamp, because a timestamp cannot express "I read
+ * that one but not the two under it" — opening the newest would bury everything older with it.
+ */
+export const SEEN_POSTS_KEY = "tru-updates-seen-ids";
+
+export function readSeenPosts(): string[] {
+  try {
+    const raw = localStorage.getItem(SEEN_POSTS_KEY);
+    return raw ? (JSON.parse(raw) as string[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function markPostsSeen(ids: string[]) {
+  try {
+    const merged = Array.from(new Set([...readSeenPosts(), ...ids]));
+    // Kept bounded; nobody needs a thousand ids to answer "is this new".
+    localStorage.setItem(SEEN_POSTS_KEY, JSON.stringify(merged.slice(-200)));
+  } catch {}
+}
 
 function when(iso: string) {
   const d = new Date(iso);
@@ -34,31 +59,31 @@ function label(slug: string) {
 /**
  * The bell, and what it opens.
  *
- * Two things worth interrupting someone for: a reply to something they wrote, and a post from the
- * show they have not seen. Both, because a bell that only counted replies would be permanently
- * empty for the many members who read without commenting.
+ * Two things worth interrupting someone for: a reply to something they wrote, and a post they have
+ * not seen. Both, because a bell counting only replies sits permanently empty for the many members
+ * who read without ever commenting.
  *
- * New posts are counted against a marker in this browser rather than a row per member per post —
- * there is no fan-out to write and nothing to keep in step, at the cost of the count being
- * per-browser. For "is there something new to read", that is the right trade.
- *
- * Opening the panel is what marks replies read: they have now been seen, and a badge that outlives
- * being looked at is just noise.
+ * Reading is per item. Opening the panel used to mark everything read, so one glance cleared eight
+ * things — and the list emptied under the reader while they were still looking at it. An item is
+ * now read when it is clicked, with "Mark all read" there for anyone who wants that as a deliberate
+ * act rather than a side effect.
  */
 export function BellMenu() {
   const [open, setOpen] = useState(false);
   const [notices, setNotices] = useState<Notice[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
-  const [seen, setSeen] = useState<string | null>(null);
+  const [seenPosts, setSeenPosts] = useState<string[]>([]);
   const [loaded, setLoaded] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
+  const panel = useRef<HTMLDivElement>(null);
+  // The panel is portalled to <body>, which does not exist during the server render.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const load = useCallback(async () => {
     const token = liveToken();
     if (!token) return;
-    try {
-      setSeen(localStorage.getItem(LAST_SEEN_KEY));
-    } catch {}
+    setSeenPosts(readSeenPosts());
     try {
       const [a, u] = await Promise.all([
         fetch("/api/comments/activity", { headers: { "x-sc-token": token } }).then((r) => r.json()),
@@ -77,11 +102,12 @@ export function BellMenu() {
     void load();
   }, [load]);
 
-  // Close on outside click and on Escape, like every other menu on the site.
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
-      if (!wrap.current?.contains(e.target as Node)) setOpen(false);
+      // The panel lives outside this component's DOM now, so both have to be checked.
+      const t = e.target as Node;
+      if (!wrap.current?.contains(t) && !panel.current?.contains(t)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     document.addEventListener("mousedown", onDown);
@@ -93,34 +119,47 @@ export function BellMenu() {
   }, [open]);
 
   const unreadReplies = notices.filter((n) => !n.read_at);
-  const newPosts = posts.filter((p) => !seen || p.published_at > seen);
+  const newPosts = posts.filter((p) => !seenPosts.includes(p.id));
   const count = unreadReplies.length + newPosts.length;
 
-  const toggle = useCallback(async () => {
-    const next = !open;
-    setOpen(next);
-    if (!next) return;
-    // Seen on opening: replies are marked read, and the newest post becomes the marker.
+  /** Read one reply. Optimistic, since the click is about to navigate away. */
+  const readOne = useCallback((id: string) => {
     const token = liveToken();
-    if (token && unreadReplies.length) {
-      try {
-        await fetch("/api/comments/activity", { method: "POST", headers: { "x-sc-token": token } });
-        setNotices((prev) => prev.map((n) => ({ ...n, read_at: n.read_at ?? new Date().toISOString() })));
-        sessionStorage.removeItem("tru-unread-replies");
-      } catch {}
-    }
-    if (posts[0]) {
-      try {
-        localStorage.setItem(LAST_SEEN_KEY, posts[0].published_at);
-      } catch {}
-    }
-  }, [open, unreadReplies.length, posts]);
+    setNotices((prev) => prev.map((n) => (n.id === id ? { ...n, read_at: new Date().toISOString() } : n)));
+    try {
+      sessionStorage.removeItem("tru-unread-replies");
+    } catch {}
+    if (!token) return;
+    void fetch("/api/comments/activity", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-sc-token": token },
+      body: JSON.stringify({ id }),
+    }).catch(() => {});
+  }, []);
+
+  const readPost = useCallback((id: string) => {
+    markPostsSeen([id]);
+    setSeenPosts((prev) => [...prev, id]);
+  }, []);
+
+  const readAll = useCallback(() => {
+    const token = liveToken();
+    const now = new Date().toISOString();
+    setNotices((prev) => prev.map((n) => ({ ...n, read_at: n.read_at ?? now })));
+    markPostsSeen(posts.map((p) => p.id));
+    setSeenPosts(posts.map((p) => p.id));
+    try {
+      sessionStorage.removeItem("tru-unread-replies");
+    } catch {}
+    if (!token) return;
+    void fetch("/api/comments/activity", { method: "POST", headers: { "x-sc-token": token } }).catch(() => {});
+  }, [posts]);
 
   return (
     <div ref={wrap} className="relative">
       <button
         type="button"
-        onClick={toggle}
+        onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-haspopup="true"
         aria-label={count > 0 ? `${count} new` : "Nothing new"}
@@ -137,11 +176,26 @@ export function BellMenu() {
         )}
       </button>
 
-      {open && (
-        <div className="absolute right-0 top-full z-40 mt-1 w-[min(20rem,calc(100vw-1.5rem))] max-h-[70vh] overflow-y-auto border border-line bg-ink-2 shadow-[0_20px_40px_rgba(0,0,0,.6)]">
+      {open &&
+        mounted &&
+        createPortal(
+          /*
+           * Rendered into <body>, not here.
+           *
+           * The header sets backdrop-filter, which makes it a containing block for fixed
+           * descendants — so a "fixed" panel inside it was positioned against the header rather
+           * than the viewport, and collapsed to nothing. A portal is the only way out of that;
+           * no amount of positioning fixes it from inside.
+           *
+           * Below lg it spans the viewport under the header; from lg it is pinned to the right,
+           * where the bell is.
+           */
+          <div
+            ref={panel}
+            className="fixed inset-x-3 top-[4.5rem] z-[60] max-h-[70vh] overflow-y-auto border border-line bg-ink-2 shadow-[0_20px_40px_rgba(0,0,0,.6)] lg:left-auto lg:right-6 lg:w-80">
           {!loaded ? (
             <p className="p-4 text-sm text-muted">Loading…</p>
-          ) : unreadReplies.length === 0 && newPosts.length === 0 ? (
+          ) : count === 0 ? (
             <p className="p-4 text-sm text-muted">Nothing new. You are all caught up.</p>
           ) : (
             <>
@@ -153,7 +207,10 @@ export function BellMenu() {
                       <li key={p.id}>
                         <Link
                           href={`/updates/${p.slug}`}
-                          onClick={() => setOpen(false)}
+                          onClick={() => {
+                            readPost(p.id);
+                            setOpen(false);
+                          }}
                           className="block text-sm hover:text-yellow"
                         >
                           {p.title}
@@ -173,7 +230,10 @@ export function BellMenu() {
                       <li key={n.id}>
                         <Link
                           href={`/episodes/${n.episode_slug}#comments`}
-                          onClick={() => setOpen(false)}
+                          onClick={() => {
+                            readOne(n.id);
+                            setOpen(false);
+                          }}
                           className="block text-sm hover:text-yellow"
                         >
                           <span className="display">{n.actor_name}</span>{" "}
@@ -188,13 +248,23 @@ export function BellMenu() {
             </>
           )}
 
-          <div className="border-t border-line p-3">
+          <div className="flex items-center justify-between gap-3 border-t border-line p-3">
             <Link href="/updates" onClick={() => setOpen(false)} className="text-xs text-muted hover:text-yellow">
               All updates →
             </Link>
+            {count > 0 && (
+              <button
+                type="button"
+                onClick={readAll}
+                className="text-xs text-muted hover:text-yellow underline underline-offset-4"
+              >
+                Mark all read
+              </button>
+            )}
           </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

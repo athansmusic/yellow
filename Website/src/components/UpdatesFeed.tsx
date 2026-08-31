@@ -5,6 +5,7 @@ import Link from "next/link";
 import { liveToken, useMember } from "@/lib/member";
 import { LinkOut } from "@/components/LinkOut";
 import { Comments } from "@/components/Comments";
+import { markPostsSeen } from "@/components/BellMenu";
 
 export type Update = {
   id: string;
@@ -22,9 +23,6 @@ export type Attachment = {
   size_bytes: number | null;
   url: string;
 };
-
-/** The newest post this browser has seen, so the bell can count what arrived since. */
-export const LAST_SEEN_KEY = "tru-updates-seen";
 
 function when(iso: string) {
   const d = new Date(iso);
@@ -123,13 +121,9 @@ export function UpdatesFeed({ slug }: { slug?: string }) {
       const j = (await r.json()) as { updates?: Update[]; files?: Attachment[] };
       setUpdates(j.updates ?? []);
       setFiles(j.files ?? []);
-      // Mark the newest post as seen, so the bell stops counting what has now been read.
-      const newest = (j.updates ?? [])[0]?.published_at;
-      if (newest && !slug) {
-        try {
-          localStorage.setItem(LAST_SEEN_KEY, newest);
-        } catch {}
-      }
+      // Seeing the list counts as seeing what is on it; opening one post marks only that one.
+      const ids = (j.updates ?? []).map((u) => u.id);
+      if (ids.length) markPostsSeen(slug ? ids.slice(0, 1) : ids);
     } catch {
       setUpdates([]);
     }

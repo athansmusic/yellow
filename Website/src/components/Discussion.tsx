@@ -47,8 +47,8 @@ function label(slug: string) {
  * list looks like a room with people in it. At low volume that matters more, not less — which is
  * why this exists at all rather than leaving conversation buried per episode.
  *
- * Opening the page marks replies read: they have now been seen, and a badge that outlives being
- * looked at is just noise.
+ * A reply clears when it is clicked, not when this page loads. Loading a page is not the same as
+ * having read eight things, and clearing them on sight loses the ones you meant to come back to.
  */
 export function Discussion() {
   const member = useMember();
@@ -63,12 +63,8 @@ export function Discussion() {
       const j = (await r.json()) as { recent?: Recent[]; notifications?: Notice[] };
       setRecent(j.recent ?? []);
       setNotices(j.notifications ?? []);
-      if ((j.notifications ?? []).some((n) => !n.read_at)) {
-        await fetch("/api/comments/activity", { method: "POST", headers: { "x-sc-token": token } });
-        try {
-          sessionStorage.removeItem("tru-unread-replies");
-        } catch {}
-      }
+      // Deliberately does NOT mark anything read. Loading a page is not reading eight replies;
+      // each one clears when it is clicked, in the bell or here.
     } catch {
       setRecent([]);
     }
@@ -92,6 +88,18 @@ export function Discussion() {
               <li key={n.id}>
                 <Link
                   href={`/episodes/${n.episode_slug}#comments`}
+                  onClick={() => {
+                    const t = liveToken();
+                    if (!t) return;
+                    try {
+                      sessionStorage.removeItem("tru-unread-replies");
+                    } catch {}
+                    void fetch("/api/comments/activity", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json", "x-sc-token": t },
+                      body: JSON.stringify({ id: n.id }),
+                    }).catch(() => {});
+                  }}
                   className="flex flex-wrap items-baseline gap-x-3 hover:text-yellow"
                 >
                   <span className="display text-lg">{n.actor_name}</span>
