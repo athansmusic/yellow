@@ -9,6 +9,7 @@ import { LISTEN, LISTEN_BUTTONS, MORE_NAV as MORE_NAV_ALL, NAV as NAV_ALL, SOCIA
 import { COLLECTIONS, TAXONOMY } from "@/lib/storeTaxonomy";
 import { useCart } from "@/lib/cart";
 import { useMember } from "@/lib/member";
+import { useUnread } from "@/lib/unread";
 import { Cart, Close, Discord, Menu, Patreon, ICONS } from "./Icons";
 import { SearchButton, openSearch } from "./SiteSearch";
 
@@ -100,6 +101,8 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
   const pathname = usePathname();
   const { count, ready, justAdded } = useCart();
   const member = useMember();
+  // Only ever fetched for a signed-in member; a signed-out visitor makes no request and has no bell.
+  const unread = useUnread(member?.signedIn);
   const panelRef = useRef<HTMLDivElement>(null);
   // The header's backdrop-blur makes it the containing block for fixed children, so the drawer portals to <body>.
   const [mounted, setMounted] = useState(false);
@@ -199,7 +202,22 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
                so nothing here can leak to a signed-out visitor. Pure CSS rather than the nav's
                click-driven Dropdown: there is no page behind the badge to click through to, and a
                menu that needs no state cannot get stuck open on route changes. */
-            <div className="relative hidden lg:block mr-2 group">
+            <div className="relative hidden lg:flex items-center gap-2 mr-2 group">
+              <Link
+                href="/account#comments"
+                aria-label={unread > 0 ? `${unread} new ${unread === 1 ? "reply" : "replies"}` : "No new replies"}
+                className="relative inline-grid size-9 place-items-center border border-yellow/70 text-yellow hover:bg-yellow hover:text-ink transition-colors"
+              >
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                  <path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8" />
+                  <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+                </svg>
+                {unread > 0 && (
+                  <span className="absolute -right-1.5 -top-1.5 min-w-4 border border-ink bg-yellow px-1 text-[10px] font-bold leading-4 text-ink tabular">
+                    {unread > 9 ? "9+" : unread}
+                  </span>
+                )}
+              </Link>
               <Link
                 href="/account"
                 aria-haspopup="true"
@@ -356,6 +374,14 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
                 </Link>
                 <Link href="/feeds" className="block text-[15px] py-2 text-paper/85 hover:text-yellow">
                   Feeds
+                </Link>
+                <Link href="/account#comments" className="flex items-center gap-2 text-[15px] py-2 text-paper/85 hover:text-yellow">
+                  Replies
+                  {unread > 0 && (
+                    <span className="min-w-5 bg-yellow px-1.5 text-center text-[11px] font-bold leading-5 text-ink tabular">
+                      {unread > 9 ? "9+" : unread}
+                    </span>
+                  )}
                 </Link>
               </div>
             )}
