@@ -10,6 +10,7 @@ import { COLLECTIONS, TAXONOMY } from "@/lib/storeTaxonomy";
 import { useCart } from "@/lib/cart";
 import { useMember } from "@/lib/member";
 import { useUnread } from "@/lib/unread";
+import { BellMenu } from "@/components/BellMenu";
 import { Cart, Close, Discord, Menu, Patreon, ICONS } from "./Icons";
 import { SearchButton, openSearch } from "./SiteSearch";
 
@@ -203,21 +204,7 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
                click-driven Dropdown: there is no page behind the badge to click through to, and a
                menu that needs no state cannot get stuck open on route changes. */
             <div className="relative hidden lg:flex items-center gap-2 mr-2 group">
-              <Link
-                href="/account#comments"
-                aria-label={unread > 0 ? `${unread} new ${unread === 1 ? "reply" : "replies"}` : "No new replies"}
-                className="relative inline-grid size-9 place-items-center border border-yellow/70 text-yellow hover:bg-yellow hover:text-ink transition-colors"
-              >
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
-                  <path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8" />
-                  <path d="M13.7 21a2 2 0 0 1-3.4 0" />
-                </svg>
-                {unread > 0 && (
-                  <span className="absolute -right-1.5 -top-1.5 min-w-4 border border-ink bg-yellow px-1 text-[10px] font-bold leading-4 text-ink tabular">
-                    {unread > 9 ? "9+" : unread}
-                  </span>
-                )}
-              </Link>
+              <BellMenu />
               <Link
                 href="/account"
                 aria-haspopup="true"
