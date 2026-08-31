@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { liveToken, useMember } from "@/lib/member";
+import { LinkOut } from "@/components/LinkOut";
 
 /** Mirrors the CHECK constraint on episode_comment_reactions. The database is the authority. */
 const EMOJI = ["😂", "😱", "❤️", "🤯"] as const;
@@ -86,6 +87,9 @@ function Avatar({ src, name, small }: { src: string | null; name: string; small?
  * Built as React elements, never as HTML — this is text a member typed, and the one thing you must
  * not do with it is hand it to dangerouslySetInnerHTML. Only http and https become links; anything
  * else stays inert text, so javascript: and data: cannot be dressed up as a link.
+ *
+ * Each one asks before leaving, because the reader has no reason to trust a URL another listener
+ * typed. Site links elsewhere are not wrapped: a warning on the Spotify button protects nobody.
  */
 function Linkified({ text }: { text: string }) {
   const parts = text.split(/(https?:\/\/[^\s<>"']+)/g);
@@ -93,15 +97,9 @@ function Linkified({ text }: { text: string }) {
     <>
       {parts.map((part, i) =>
         /^https?:\/\//i.test(part) ? (
-          <a
-            key={i}
-            href={part}
-            target="_blank"
-            rel="noopener noreferrer nofollow ugc"
-            className="text-yellow underline underline-offset-4 [overflow-wrap:anywhere]"
-          >
+          <LinkOut key={i} href={part}>
             {part}
-          </a>
+          </LinkOut>
         ) : (
           part
         ),
