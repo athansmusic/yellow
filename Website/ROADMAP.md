@@ -1,75 +1,46 @@
 # Roadmap
 
-Wanted next, not started. Each entry says what it is and what the hard part is, so picking one up
-does not begin with re-deciding it.
+What is left, and what the hard part is, so picking something up does not begin by re-deciding it.
 
-Recorded 2026-08-29.
-
----
-
-## Updates — a members' thread, posted from Curtain
-
-Blog-style posts, written and published in Curtain the way episode copy already is, appearing on
-the show site. Tagged. **Hidden unless signed in**, and members can comment on them.
-
-Posts need attachments: images, video, audio.
-
-**What already exists to build on**
-
-- Comments are done and members-only, keyed on an arbitrary slug (`episode_comments.episode_slug`
-  is deliberately not a foreign key), so an update post can carry a thread with no schema change.
-- Curtain already publishes copy to the site through `/api/public/episode-meta`; an
-  `/api/public/updates` alongside it is the same shape.
-- The site's members-only pattern is settled: fetch with the Supporting Cast token, and Curtain
-  verifies it. Reuse `whoIsMember`.
-
-**The hard part is the files, not the posts.** The site has no database and only Vercel Blob, whose
-overwrites serve stale through the CDN for weeks — fine for write-once uploads, wrong for anything
-edited. Curtain has Supabase Storage and already uploads audio for Petra. Decide which store owns
-update attachments before writing any of it, and note that member-only files need signed URLs
-rather than public ones, or the gate is decorative.
+Updated 2026-08-31.
 
 ---
 
-## Albums — full downloads for members
+## Done since this was written
 
-A section where whole albums are uploaded, and signed-in members can download either the complete
-album or individual tracks.
-
-**The hard part is delivery, not listing.** A download link a member can copy is a download link
-anyone can use, so:
-
-- Files must not sit at guessable public URLs. Signed, short-lived URLs minted per request after
-  the token check, the same way `/api/early` gates a synopsis today.
-- "Download the whole album" means either zipping on demand (slow, memory-hungry on a serverless
-  function, and the reason most sites do not) or storing a prebuilt zip per album at upload time.
-  The second is almost certainly right.
-- Large files through a serverless proxy hit execution limits. Curtain already learned this the
-  hard way — see `fix(share): episode audio via signed-URL redirect (storage mirror) — Vercel kills
-  long Drive proxies`. Redirect to storage; never stream through the app.
+Updates, Albums and the member store discount are all built and live, along with comments
+(members-only, with replies, spoilers, reactions, editing, avatars and moderation), the reply bell,
+and a blocked-word list. The notes below are what remains.
 
 ---
 
-## Automatic store discount for members
+## Waiting on you, not on code
 
-A signed-in member gets a discount applied across the store without typing a code.
+- **Run `supabase/add_comment_blocklist.sql`** if it has not been run — it is the newest migration
+  and the blocked-word list does nothing without it.
+- **`CREATOR_SC_USER_IDS`** in Curtain's environment, so your own comments carry the creator badge.
+  Post once, read `sc_user_id` from Supabase, set it. Keyed by id and never by display name,
+  because a name is something any member can type.
+- **Post one comment.** Every refusal path is verified — bad token, no token, bad slug, blocked
+  word — but no comment has ever been successfully stored, so the write path is still theoretical.
+- **Seed the discussion before switching it on everywhere.** Fifty-three empty threads read as
+  abandoned. Recent episodes first, each with a note from you.
 
-**Open questions before this is buildable**
+## Worth doing next
 
-- The store runs on Printful. Whether a discount can be applied programmatically, and at what layer
-  (cart, checkout, a generated single-use code), needs checking against whatever handles checkout —
-  a per-member code minted on demand is the usual answer.
-- A code that auto-applies for members is a code that leaks. Single-use per member, or tied to
-  their Supporting Cast id, or both.
-- Decide what happens to a member's discount when their membership lapses mid-order.
+- **Comments live on episodes and Updates only.** Aberrations pages are the obvious third home — a
+  monster catalogue invites comment far more than a cast page does. CORRUPTED at launch.
+- **What's on Mars sizing is fixed, but nothing else was touched.** Hoodies and jackets still carry
+  their original spreads ($4–$8). The tee ladder is the only one flattened; the same reasoning
+  would apply to the rest if you want it.
+- **`SHOW_SIGNED_OUT_PITCH`** in `Comments.tsx` is false until membership moves off Patreon. One
+  line, and the copy is already written.
 
----
+## Known limitations, deliberate
 
-## Also noted, smaller
-
-- **Seed the discussion before switching it on everywhere.** 53 empty threads read as abandoned.
-  Recent episodes first, each with a note from you.
-- **`CREATOR_SC_USER_IDS`** is unset in Curtain, so no comment is badged as the creator yet. Post
-  once, read `sc_user_id` from Supabase, set the env var.
-- **Comments live on episodes only.** Aberrations pages are the obvious second home; CORRUPTED at
-  launch.
+- **Album zips are uploaded, not assembled.** Building one server-side means holding the whole
+  album in memory in a serverless function, which is a wall this codebase has already hit.
+- **New-post counts are per browser.** They are compared against a marker in localStorage rather
+  than a row per member per post — no fan-out to write, nothing to keep in step.
+- **Spoiler blur is a courtesy, not a boundary.** Every reader is already a member; the text is in
+  the page either way.
