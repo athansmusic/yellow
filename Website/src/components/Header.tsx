@@ -227,6 +227,14 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
             </a>
           )}
 
+          {/* The bell again for phones, where the desktop bar is hidden — a notification you have to
+              open a drawer to discover is not really a notification. Signed-in only, same as above. */}
+          {member?.signedIn && (
+            <div className="lg:hidden">
+              <BellMenu />
+            </div>
+          )}
+
           <SearchButton className="p-2 text-paper hover:text-yellow" />
           <Link
             href="/cart"

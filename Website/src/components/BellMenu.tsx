@@ -138,7 +138,7 @@ export function BellMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-40 mt-1 w-80 max-h-[70vh] overflow-y-auto border border-line bg-ink-2 shadow-[0_20px_40px_rgba(0,0,0,.6)]">
+        <div className="absolute right-0 top-full z-40 mt-1 w-[min(20rem,calc(100vw-1.5rem))] max-h-[70vh] overflow-y-auto border border-line bg-ink-2 shadow-[0_20px_40px_rgba(0,0,0,.6)]">
           {!loaded ? (
             <p className="p-4 text-sm text-muted">Loading…</p>
           ) : unreadReplies.length === 0 && newPosts.length === 0 ? (
