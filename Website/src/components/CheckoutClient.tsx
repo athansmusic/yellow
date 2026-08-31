@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { useCart } from "@/lib/cart";
+import { liveToken } from "@/lib/member";
 
 export function CheckoutClient({ publishableKey, country }: { publishableKey: string; country: string }) {
   const { lines, ready } = useCart();
@@ -12,9 +13,12 @@ export function CheckoutClient({ publishableKey, country }: { publishableKey: st
   const stripePromise = useMemo(() => (publishableKey ? loadStripe(publishableKey) : null), [publishableKey]);
 
   const fetchClientSecret = useCallback(async () => {
+    // The token, not a claim about being a member: the server asks Supporting Cast, so sending
+    // this cannot buy a discount that Supporting Cast would not confirm.
+    const token = liveToken();
     const res = await fetch("/api/checkout", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...(token ? { "x-sc-token": token } : {}) },
       body: JSON.stringify({ country, items: lines.map((l) => ({ variantId: l.variantId, qty: l.qty })) }),
     });
     const data = (await res.json()) as { clientSecret?: string; error?: string };

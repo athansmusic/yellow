@@ -4,6 +4,7 @@ import { stripe, stripeEnabled } from "@/lib/stripe";
 import { findVariant } from "@/lib/catalog";
 import { ALLOWED_COUNTRIES, arrivalDays, regionFor, shippingFor } from "@/lib/shipping";
 import { SITE } from "@/lib/site";
+import { isMember } from "@/lib/sc-member";
 
 const Body = z.object({
   country: z.string().length(2),
@@ -50,6 +51,20 @@ export async function POST(req: Request) {
   const regionCountries = region.countries.length ? region.countries : (ALLOWED_COUNTRIES as readonly string[]).filter((c) => regionFor(c).id === "world");
   const origin = req.headers.get("origin") ?? SITE.url;
 
+  /**
+   * Members get their discount applied for them.
+   *
+   * Membership is decided from the token, never from anything the browser asserts — the same rule
+   * that keeps prices coming from the server catalog rather than the cart.
+   *
+   * Stripe treats `discounts` and `allow_promotion_codes` as mutually exclusive on a session, so
+   * the two cases are built differently rather than both: a member gets the discount and no code
+   * box, everyone else keeps the box. Unset STRIPE_MEMBER_COUPON_ID means nobody gets anything and
+   * the store behaves exactly as it did.
+   */
+  const coupon = process.env.STRIPE_MEMBER_COUPON_ID;
+  const memberDiscount = coupon ? await isMember(req.headers.get("x-sc-token")) : false;
+
   const session = await stripe().checkout.sessions.create({
     ui_mode: "embedded",
     mode: "payment",
@@ -68,8 +83,16 @@ export async function POST(req: Request) {
       },
     ],
     automatic_tax: { enabled: false },
-    allow_promotion_codes: true,
-    metadata: { items: JSON.stringify(meta), country: cc, source: "theredactedunit.com" },
+    ...(memberDiscount
+      ? { discounts: [{ coupon: coupon! }] }
+      : { allow_promotion_codes: true as const }),
+    metadata: {
+      items: JSON.stringify(meta),
+      country: cc,
+      source: "theredactedunit.com",
+      // So a refund or a support question can tell later whether the member price was applied.
+      member: memberDiscount ? "yes" : "no",
+    },
     return_url: `${origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
   });
 
