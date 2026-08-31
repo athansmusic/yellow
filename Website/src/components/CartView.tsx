@@ -9,6 +9,7 @@ import type { CardProduct } from "@/lib/catalog";
 import { ALLOWED_COUNTRIES, COUNTRY_NAMES, FREE_US_THRESHOLD_CENTS, shippingFor } from "@/lib/shipping";
 import { ProductCard } from "./ProductCard";
 import { Arrow, Close } from "./Icons";
+import { Price } from "@/lib/discount";
 
 const COUNTRY_KEY = "tru-ship-country";
 
@@ -116,7 +117,9 @@ export function CartView({ suggestions }: Props) {
                       {l.name}
                     </Link>
                     {l.variantLabel && <p className="text-sm text-muted">{l.variantLabel}</p>}
-                    <p className="text-sm text-muted tabular mt-1">{money(l.priceCents)} each</p>
+                    <p className="text-sm text-muted tabular mt-1">
+                      <Price cents={l.priceCents} /> each
+                    </p>
                   </div>
                   <label className="flex items-center gap-2 text-sm">
                     <span className="sr-only">Quantity for {l.name}</span>
@@ -129,7 +132,9 @@ export function CartView({ suggestions }: Props) {
                     </select>
                   </label>
                   <div className="flex items-center gap-3 justify-between sm:justify-end">
-                    <span className="tabular font-semibold">{money(l.priceCents * l.qty)}</span>
+                    <span className="tabular font-semibold">
+                      <Price cents={l.priceCents * l.qty} />
+                    </span>
                     <button type="button" onClick={() => { setUndo(l); remove(l.variantId); }} aria-label={`Remove ${l.name}`} className="p-2 text-muted hover:text-red-2">
                       <Close width={16} height={16} />
                     </button>

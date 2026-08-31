@@ -12,6 +12,7 @@ import { getDoc } from "@/lib/content";
 import { CartProvider } from "@/lib/cart";
 import { PlayerProvider } from "@/lib/player";
 import { MemberAudioBridge } from "@/components/MemberAudioBridge";
+import { DiscountProvider } from "@/lib/discount";
 import { SITE, LISTEN } from "@/lib/site";
 import { JsonLd, siteJsonLd } from "@/lib/schema";
 import { Analytics, CookieConsent } from "@/components/CookieConsent";
@@ -57,6 +58,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <div aria-hidden className="pointer-events-none fixed inset-0 z-0 bg-[url('/home/static.gif')] bg-[length:300px] opacity-[0.04] mix-blend-screen" />
         <PlayerProvider>
           <CartProvider>
+            <DiscountProvider>
             <Header hidden={hidden} />
             <main id="main" className="relative z-10 flex-1">
               {children}
@@ -70,6 +72,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             {/* Ad-free audio follows the track, not the route, so it applies wherever play is pressed. */}
             <MemberAudioBridge />
             <ReviewNudge />
+            </DiscountProvider>
           </CartProvider>
         </PlayerProvider>
       </body>

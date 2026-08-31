@@ -8,6 +8,7 @@ import type { Product } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
 import { swatch } from "@/lib/swatches";
 import { priceRange } from "./ProductCard";
+import { Price } from "@/lib/discount";
 
 type Sibling = { slug: string; name: string; image: string; priceCents: number; priceMaxCents: number };
 
@@ -35,7 +36,8 @@ export function ProductBuy({
   }, [p.variants, size, color, sizes.length, colors.length]);
 
   const needs = [sizes.length && !size ? "size" : null, colors.length && !color ? "color" : null].filter(Boolean) as string[];
-  const price = variant ? money(variant.priceCents) : priceRange(p);
+  // A chosen variant has one price to discount; before that it may be a range, which stays plain.
+  const priceNode = variant ? <Price cents={variant.priceCents} /> : priceRange(p);
   // A selected colour with a generated mockup set (front, back, left, right, ...) takes over the whole
   // strip, so every colour shows the same set of angles instead of just one photo for non-default colours.
   const colorImages = useMemo(() => {
@@ -117,7 +119,7 @@ export function ProductBuy({
         {/* Buy box */}
         <div ref={boxRef} className="lg:sticky lg:top-24 self-start min-w-0">
           <h1 className="display text-4xl sm:text-5xl">{p.name}</h1>
-          <p className="mt-2 display text-3xl text-yellow tabular">{price}</p>
+          <p className="mt-2 display text-3xl text-yellow tabular">{priceNode}</p>
           {p.artist && (
             <p className="mt-1 text-sm text-muted">
               Art by{" "}
@@ -234,7 +236,7 @@ export function ProductBuy({
 
       {/* Phone-only sticky add-to-cart, once the buy box has scrolled out of view */}
       <div className={`sm:hidden fixed inset-x-0 bottom-0 z-30 border-t border-line bg-ink/95 backdrop-blur px-4 py-2 flex items-center gap-3 transition-transform bottom-bar ${showSticky ? "translate-y-0" : "translate-y-full"}`} aria-hidden={!showSticky}>
-        <span className="display text-lg text-yellow tabular flex-1 truncate">{price}</span>
+        <span className="display text-lg text-yellow tabular flex-1 truncate">{priceNode}</span>
         <button type="button" onClick={onAdd} disabled={!variant || !variant.available} className="btn btn-yellow">
           {needs.length ? `Select ${needs.join(" & ")}` : variant && !variant.available ? "Sold out" : "Add to cart"}
         </button>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { money } from "@/lib/money";
 import type { CardProduct } from "@/lib/catalog";
 import { swatch } from "@/lib/swatches";
+import { Price } from "@/lib/discount";
 
 /** "$20.00" / "$28.00 to $45.50" */
 export function priceRange(p: Pick<CardProduct, "priceCents" | "priceMaxCents">) {
@@ -29,7 +30,14 @@ export function ProductCard({ p, priority = false }: { p: CardProduct; priority?
         </h3>
         {p.artist && <p className="text-[11px] uppercase tracking-wider text-muted">Art by {p.artist}</p>}
         <div className="mt-auto pt-2 flex items-center justify-between gap-3">
-          <p className="text-sm text-paper/90 tabular">{priceRange(p)}</p>
+          <p className="text-sm text-paper/90 tabular">
+            {p.priceCents === p.priceMaxCents ? (
+              <Price cents={p.priceCents} />
+            ) : (
+              // A range with two struck-through numbers is noise; the saving shows on the product page.
+              priceRange(p)
+            )}
+          </p>
           {colors.length > 1 && (
             <ul className="flex items-center gap-1" aria-label={`${colors.length} colours`}>
               {colors.slice(0, 6).map((c) => (
