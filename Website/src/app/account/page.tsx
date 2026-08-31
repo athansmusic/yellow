@@ -3,6 +3,7 @@ import { Container } from "@/components/ui";
 import { ScWidget } from "@/components/ScWidget";
 import { MemberDebug } from "./MemberDebug";
 import { Discussion } from "@/components/Discussion";
+import { MemberPrefs } from "@/components/MemberPrefs";
 
 /**
  * Member account access. Its own page, separate from the join flow, because a member arriving to
@@ -24,6 +25,7 @@ export default function AccountPage() {
         <MemberDebug />
         <ScWidget view="account" />
         {/* Replies waiting, and what has been said lately anywhere. */}
+        <MemberPrefs />
         <Discussion />
       </div>
     </Container>

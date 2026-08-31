@@ -80,10 +80,24 @@ export function ScWidget({ view }: { view: ScView }) {
           __html: `
 /* Structural only — no colour rules, so nothing here can make text invisible on a screen that
    cannot be previewed from outside a member login. */
-#supportingcast-widget { display: block; font-family: var(--font-body); }
+#supportingcast-widget { display: block; font-family: var(--font-body); max-width: 100%; }
 #supportingcast-widget *,
 #supportingcast-widget *::before,
 #supportingcast-widget *::after { border-radius: 0 !important; }
+
+/* Keep their layout inside our card on a phone.
+   Their rows are built for a desktop-width panel: a field sized in absolute units with its
+   control beside it. Below about 420px that row is wider than the card, so the field runs past
+   the edge and the "Change" beside it lands on the page background outside the panel.
+   min-width:0 lets a flex child shrink under its intrinsic width (without it a text input floors
+   at roughly its size attribute), box-sizing keeps padded fields honest, and max-width caps
+   anything sized absolutely. */
+#supportingcast-widget * { min-width: 0; max-width: 100%; box-sizing: border-box; }
+#supportingcast-widget input,
+#supportingcast-widget select,
+#supportingcast-widget textarea { width: 100%; }
+/* A long address wraps rather than widening its row. */
+#supportingcast-widget { overflow-wrap: anywhere; }
 `,
         }}
       />
@@ -96,7 +110,7 @@ export function ScWidget({ view }: { view: ScView }) {
               "repeating-linear-gradient(135deg, rgba(242,240,234,0.035) 0 2px, transparent 2px 8px)",
           }}
         >
-          <div className="bg-paper text-ink p-5 sm:p-7 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+          <div className="bg-paper text-ink p-5 sm:p-7 shadow-[0_10px_30px_rgba(0,0,0,0.5)] overflow-x-auto">
             <div ref={hostRef} />
           </div>
         </div>
