@@ -6,9 +6,10 @@ import { liveToken, useMember } from "@/lib/member";
 /**
  * What a member can choose to receive.
  *
- * Episode releases are deliberately not on this list: Supporting Cast already announces those to
- * the podcast app, and a second email saying the same thing is how a mailing list gets muted. The
- * copy says so, because an unexplained "email me about updates" reads as exactly that duplicate.
+ * The copy names episode releases on purpose. A bare "email me about updates" reads as a second
+ * announcement of the episode they were just told about, which is how a list gets muted before it
+ * has sent anything — so the label places this alongside what they already get rather than leaving
+ * them to guess it duplicates it.
  *
  * The address is never sent from here. Curtain reads it from Supporting Cast when the box is
  * ticked, so this cannot be used to sign somebody else up.
@@ -71,11 +72,11 @@ export function MemberPrefs() {
           className="mt-1 size-4 accent-yellow"
         />
         <span>
-          <span className="block">Email me about updates — not episode releases.</span>
+          <span className="block">Email me about updates, not just episode releases.</span>
           <span className="mt-1 block text-sm text-muted">
-            Occasional posts from the team: behind the scenes, extras, announcements. New episodes
-            already reach you through your podcast app, so they are not included here. Unsubscribe
-            from any email, or by unticking this.
+            Occasional posts from the team: behind the scenes, extras, announcements. Episode
+            releases already reach you through your podcast app — this is everything else.
+            Unsubscribe from any email, or by unticking this.
           </span>
         </span>
       </label>
