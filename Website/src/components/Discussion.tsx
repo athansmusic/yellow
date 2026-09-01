@@ -116,11 +116,11 @@ export function Discussion() {
         <h2 className="eyebrow mb-3">Lately in the discussion</h2>
         {recent.length === 0 ? (
           <p className="text-muted max-w-prose">
-            Nothing yet anywhere. Episode pages are where it happens —{" "}
+            Nothing recently. Visit{" "}
             <Link href="/episodes" className="text-yellow hover:underline underline-offset-4">
-              pick one
-            </Link>
-            .
+              any episode page
+            </Link>{" "}
+            and comment now!
           </p>
         ) : (
           <ul className="grid gap-4 border-t border-line pt-4">
