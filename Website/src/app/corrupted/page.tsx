@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { CorruptedSignup, FileStatus, Grain, RedactedSlots, Stamp, TearDefs, Trailer } from "./parts";
+import { CorruptedSignup, FileStatus, Grain, Stamp, TearDefs, Trailer } from "./parts";
 
 /**
  * CORRUPTED: the spin-off's own landing page. Deliberately not the show's design language.
@@ -83,17 +83,6 @@ export default function CorruptedPage() {
               CORRUPTED is an in-universe horror anthology series exploring a new aberration or case each month, set in either the modern day or somewhere in history. Some stories introduce entirely original threats; others expand on aberrations from the main show. And sometimes, the horror stems from familiar legends and stories
             </p>
           </div>
-        </div>
-      </section>
-
-      {/* Confirmed cast */}
-      <section className="relative z-10 border-t-2 border-[#0a0708]">
-        <div className="mx-auto max-w-6xl px-5 py-24">
-          <h2 className="display leading-[0.85] text-[clamp(2.5rem,9vw,6.5rem)] text-[#0a0708]">Confirmed cast</h2>
-          <RedactedSlots />
-          <a href="#notify" className="inline-block mt-10">
-            <Stamp>Get cast reveals first</Stamp>
-          </a>
         </div>
       </section>
 

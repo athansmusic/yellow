@@ -81,30 +81,6 @@ export function FileStatus() {
   );
 }
 
-/** Confirmed cast, one name at a time. The rest stay off the page until they're announced. */
-const NAME = "Xalavier Nelson Jr.";
-export function RedactedSlots() {
-  const [name, setName] = useState(NAME);
-  const [hot, setHot] = useState(false);
-  useEffect(() => {
-    if (!hot) {
-      setName(NAME);
-      return;
-    }
-    const t = setInterval(() => setName(Math.random() < 0.3 ? NAME : rand(NAME)), 90);
-    return () => clearInterval(t);
-  }, [hot]);
-
-  return (
-    <ul className="mt-10 flex flex-wrap gap-6">
-      <li className="max-w-[26rem]" onMouseEnter={() => setHot(true)} onMouseLeave={() => setHot(false)}>
-        <Stamp>Confirmed</Stamp>
-        <p className="mt-4 display text-4xl sm:text-5xl leading-none text-[#0a0708]">{name}</p>
-      </li>
-    </ul>
-  );
-}
-
 /** Poster until asked; the embed only loads on click, so no YouTube cookies on arrival. */
 export function Trailer() {
   const [playing, setPlaying] = useState(false);
