@@ -96,8 +96,11 @@ export function ScWidget({ view }: { view: ScView }) {
 #supportingcast-widget input,
 #supportingcast-widget select,
 #supportingcast-widget textarea { width: 100%; }
-/* A long address wraps rather than widening its row. */
-#supportingcast-widget { overflow-wrap: anywhere; }
+/* Their controls are single words — "Change", "Save" — and min-width:0 above lets the cell holding
+   one shrink until it breaks the word across two lines. Nothing is gained by wrapping a control:
+   let it hold its width and take the space it needs. */
+#supportingcast-widget a,
+#supportingcast-widget button { white-space: nowrap; }
 `,
         }}
       />
