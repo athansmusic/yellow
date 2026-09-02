@@ -31,7 +31,10 @@ export async function GET(req: Request) {
       body: JSON.stringify({ code, state }),
       cache: "no-store",
     });
-    const j = (await res.json()) as { linked?: boolean; error?: string };
+    const j = (await res.json()) as { linked?: boolean; error?: string; needsJoin?: boolean };
+    // Not being in the server yet is not a failure — it gets its own landing so the page can offer
+    // an invite and a retry instead of an apology.
+    if (j.needsJoin) return back("join");
     if (!res.ok || !j.linked) {
       // The reason travels in the URL so the account page can say what went wrong.
       return NextResponse.redirect(

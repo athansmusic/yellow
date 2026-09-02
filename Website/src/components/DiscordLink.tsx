@@ -3,7 +3,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { liveToken, useMember } from "@/lib/member";
 
-type Status = { available: boolean; linked: boolean; name?: string | null; url?: string | null };
+type Status = {
+  available: boolean;
+  linked: boolean;
+  name?: string | null;
+  url?: string | null;
+  inviteUrl?: string | null;
+};
 
 /**
  * Linking a Discord account to a membership.
@@ -22,6 +28,9 @@ export function DiscordLink() {
   const [status, setStatus] = useState<Status | null>(null);
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<string | null>(null);
+  // Set when Discord says they are not in the server, which is answered with an invite rather
+  // than an error — they have done nothing wrong and are one click from being able to retry.
+  const [needsJoin, setNeedsJoin] = useState(false);
 
   const load = useCallback(async () => {
     const token = liveToken();
@@ -45,7 +54,10 @@ export function DiscordLink() {
     if (!d) return;
     if (d === "linked") setNote("Discord linked — your role is on.");
     else if (d === "cancelled") setNote("Linking cancelled. Nothing changed.");
-    else setNote(p.get("why") || "That did not work. Try again.");
+    else if (d === "join") {
+      setNeedsJoin(true);
+      setNote("Join the server first, then press the button again.");
+    } else setNote(p.get("why") || "That did not work. Try again.");
     // Clears the query so a refresh does not replay the message.
     window.history.replaceState({}, "", window.location.pathname);
   }, []);
@@ -88,15 +100,29 @@ export function DiscordLink() {
       ) : (
         <div className="max-w-prose">
           <p className="text-muted">
-            Link your Discord account to get the members-only role. You approve it on Discord, and
-            you can unlink here at any time — the role comes off with it.
+            Get the members-only role in the Hush server. You approve it on Discord, and you can
+            unlink here at any time — the role comes off with it.
           </p>
+
+          {needsJoin && status.inviteUrl && (
+            <p className="mt-3">
+              <a
+                href={status.inviteUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="border border-line px-4 py-2 text-sm uppercase tracking-[0.14em] hover:border-yellow hover:text-yellow"
+              >
+                Join the server
+              </a>
+            </p>
+          )}
+
           {status.url && (
             <a
               href={status.url}
               className="mt-3 inline-block border border-yellow px-4 py-2 text-sm uppercase tracking-[0.14em] text-yellow hover:bg-yellow hover:text-ink"
             >
-              Link Discord
+              {needsJoin ? "Try again" : "Get Discord role"}
             </a>
           )}
         </div>
