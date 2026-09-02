@@ -42,6 +42,9 @@ export function AccountFields() {
   // Ours, not theirs. Loaded alongside so the form has one idea of what is currently set.
   const [updateEmails, setUpdateEmails] = useState(false);
   const [savedUpdateEmails, setSavedUpdateEmails] = useState(false);
+  // Also ours: whether they want their name on the public supporter wall.
+  const [listed, setListed] = useState(false);
+  const [savedListed, setSavedListed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -71,6 +74,17 @@ export function AccountFields() {
         if (!dead) setError("Could not load your details.");
       });
 
+    void fetch("/api/wall", { headers: { "x-sc-token": token } })
+      .then((r) => r.json())
+      .then((j: { listed?: boolean | null }) => {
+        if (dead) return;
+        setListed(!!j.listed);
+        setSavedListed(!!j.listed);
+      })
+      .catch(() => {
+        /* the box simply starts unticked */
+      });
+
     void fetch("/api/update-emails", { headers: { "x-sc-token": token } })
       .then((r) => r.json())
       .then((j: { subscribed?: boolean }) => {
@@ -95,9 +109,20 @@ export function AccountFields() {
       displayName.trim() !== (user.displayName ?? "") ||
       email.trim() !== (user.email ?? "") ||
       newEpisodes !== !!current.newEpisodes ||
-      updateEmails !== savedUpdateEmails
+      updateEmails !== savedUpdateEmails ||
+      listed !== savedListed
     );
-  }, [user, displayName, email, newEpisodes, current.newEpisodes, updateEmails, savedUpdateEmails]);
+  }, [
+    user,
+    displayName,
+    email,
+    newEpisodes,
+    current.newEpisodes,
+    updateEmails,
+    savedUpdateEmails,
+    listed,
+    savedListed,
+  ]);
 
   const save = useCallback(async () => {
     const token = liveToken();
@@ -139,6 +164,21 @@ export function AccountFields() {
         }
         setSavedUpdateEmails(!!j.subscribed);
         setUpdateEmails(!!j.subscribed);
+      }
+
+      if (listed !== savedListed) {
+        const r = await fetch("/api/wall", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-sc-token": token },
+          body: JSON.stringify({ listed }),
+        });
+        const j = (await r.json()) as { listed?: boolean; error?: string };
+        if (!r.ok) {
+          setError(j.error ?? "Could not save your supporter wall choice.");
+          return;
+        }
+        setSavedListed(!!j.listed);
+        setListed(!!j.listed);
       }
 
       // Nothing of theirs changed, so nothing of theirs is sent.
@@ -184,7 +224,19 @@ export function AccountFields() {
     } finally {
       setBusy(false);
     }
-  }, [busy, changed, current, displayName, email, newEpisodes, user, updateEmails, savedUpdateEmails]);
+  }, [
+    busy,
+    changed,
+    current,
+    displayName,
+    email,
+    newEpisodes,
+    user,
+    updateEmails,
+    savedUpdateEmails,
+    listed,
+    savedListed,
+  ]);
 
   /** The avatar is its own endpoint, so it cannot ride along with the rest. */
   const upload = useCallback(async (file: File) => {
@@ -281,6 +333,26 @@ export function AccountFields() {
                   <span className="block text-[15px]">Email me when updates are posted.</span>
                   <span className="mt-1 block text-sm text-muted">
                     Behind the scenes, extras and announcements from the team.
+                  </span>
+                </span>
+              </label>
+            </div>
+
+            <div className="grid gap-2.5">
+              <span className="eyebrow">Supporter wall</span>
+
+              <label className={toggleRow}>
+                <input
+                  type="checkbox"
+                  checked={listed}
+                  onChange={(e) => setListed(e.target.checked)}
+                  className="mt-0.5 size-4 accent-yellow"
+                />
+                <span>
+                  <span className="block text-[15px]">List my name on the supporter wall.</span>
+                  <span className="mt-1 block text-sm text-muted">
+                    Your display name, shown publicly beside the other supporters. Off unless you
+                    ask for it, and untick to be removed.
                   </span>
                 </span>
               </label>
