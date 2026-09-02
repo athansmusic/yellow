@@ -40,6 +40,9 @@ async function call<T>(path: string, method: "GET" | "PUT", token: string, body?
       "Content-Type": "application/json",
     },
     body: body === undefined ? undefined : JSON.stringify(body),
+    // Re-reading straight after a write is the whole point of these calls; a cached body would
+    // hand back the value we just changed and make a successful save look like it did nothing.
+    cache: "no-store",
   });
   if (res.status === 204) return {} as T;
   return (await res.json()) as T;

@@ -73,10 +73,20 @@ export function AccountFields() {
         setError(updated.message);
         return;
       }
-      // Re-read rather than trusting what PUT hands back: their reply is not always the whole
-      // user, so believing it left the field showing the old value until a manual refresh.
-      setUser(await scGetUser(token));
+      /*
+       * Show what was saved, immediately.
+       *
+       * Two things made a successful write look like nothing happened: PUT does not always answer
+       * with the whole user, and a re-read can come back describing the old value. Neither is
+       * worth diagnosing from here — the write succeeded, so the saved value is the truth, and the
+       * re-read is only allowed to fill in fields around it.
+       */
+      const saved = { [editing]: value } as Partial<ScUser>;
+      setUser((u) => (u ? { ...u, ...saved } : u));
       setEditing(null);
+      void scGetUser(token)
+        .then((fresh) => setUser({ ...fresh, ...saved }))
+        .catch(() => {});
       setNote(
         editing === "email"
           ? "Email updated. Your next sign-in link goes to the new address."
@@ -102,8 +112,13 @@ export function AccountFields() {
         setError(res.message ?? "That image was not accepted.");
         return;
       }
-      setUser(await scGetUser(token));
+      // Their response carries the stored url, so it is the value to show.
+      const url = res.url;
+      setUser((u) => (u ? { ...u, avatarUrl: url } : u));
       setNote("Avatar updated.");
+      void scGetUser(token)
+        .then((fresh) => setUser({ ...fresh, avatarUrl: url }))
+        .catch(() => {});
     } catch {
       setError("Could not upload that image.");
     } finally {
@@ -138,8 +153,15 @@ export function AccountFields() {
         setError(res.message);
         return;
       }
-      setUser(await scGetUser(token));
+      // Same rule as the fields: the write succeeded, so the box shows what was written. Their
+      // GET reports an empty state as an array, which would read back as "off" and flip the box
+      // under the person who just ticked it.
+      const notifications = { ...current, newEpisodes: next };
+      setUser((u) => (u ? { ...u, notifications } : u));
       setNote(next ? "You will hear about new episodes." : "Episode emails are off.");
+      void scGetUser(token)
+        .then((fresh) => setUser({ ...fresh, notifications }))
+        .catch(() => {});
     } catch {
       setError("Could not save that. Try again.");
     } finally {
