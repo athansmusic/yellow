@@ -1,6 +1,3 @@
-"use client";
-
-import { useCallback, useState } from "react";
 import { activeSubscription, cardOf, type ScUser } from "@/lib/sc";
 
 /**
@@ -10,47 +7,13 @@ import { activeSubscription, cardOf, type ScUser } from "@/lib/sc";
  * call against Supporting Cast's sixty-a-minute — and nothing is scraped out of their DOM, which is
  * what made an earlier attempt at this fragile.
  *
- * The actions are still theirs. Changing a plan means proration, retention offers and tax, and
- * their widget already does all of it correctly; our button presses theirs. That keeps the money
- * logic where it belongs while the page reads as one product.
+ * Read-only on purpose. Their panel is on this page and its own controls work first time, whereas
+ * pressing them from here through a synthetic click took several attempts to land. A summary that
+ * always tells the truth beats a button that works on the third go.
  */
 export function SubscriptionCard({ user }: { user: ScUser }) {
-  const [note, setNote] = useState<string | null>(null);
   const sub = activeSubscription(user);
   const card = cardOf(user.paymentMethod ?? null);
-
-  /**
-   * Press their button.
-   *
-   * Their dialogs are their own React, so reaching for the button is the honest way in — a
-   * hand-built modal would have to reimplement the retention offer and the cancellation survey and
-   * would drift from whatever they change next.
-   *
-   * Their panel sits further down the page, so if the button cannot be found the member is simply
-   * pointed at it rather than left with an apology.
-   */
-  const openTheirs = useCallback(async (selector: string) => {
-    setNote(null);
-
-    const find = () => document.querySelector<HTMLElement>(selector);
-    let button = find();
-
-    // Only if their widget is still mounting.
-    for (let i = 0; i < 10 && !button; i++) {
-      await new Promise((r) => setTimeout(r, 100));
-      button = find();
-    }
-
-    if (button) {
-      button.click();
-      return;
-    }
-
-    setNote("Use the billing panel below.");
-    document
-      .querySelector("#supportingcast-widget")
-      ?.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, []);
 
   if (!sub) {
     return (
@@ -162,21 +125,12 @@ export function SubscriptionCard({ user }: { user: ScUser }) {
               <span className="text-[15px] text-paper/80">{renews}</span>
             </div>
 
-            <div className="mt-1 flex flex-wrap gap-2.5">
-              <button
-                type="button"
-                onClick={() => void openTheirs(".sc-change-plan-button")}
-                className="border border-yellow px-4 py-2 text-[11px] uppercase tracking-[0.16em] text-yellow transition-colors hover:bg-yellow hover:text-ink"
-              >
-                Change plan
-              </button>
-            </div>
+            {/* No button here on purpose: pressing their hidden one took several clicks to catch.
+                Their panel is on this page and its own control works first time. */}
+            <p className="text-sm text-muted">
+              Change or cancel in <a href="#billing" className="text-yellow hover:underline underline-offset-4">Billing</a> below.
+            </p>
 
-            {note && (
-              <p role="status" className="text-sm text-muted">
-                {note}
-              </p>
-            )}
           </div>
         </div>
       </div>
