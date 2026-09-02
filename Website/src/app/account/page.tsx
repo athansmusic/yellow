@@ -4,7 +4,6 @@ import { ScWidget } from "@/components/ScWidget";
 import { AccountFields } from "@/components/AccountFields";
 import { MemberDebug } from "./MemberDebug";
 import { Discussion } from "@/components/Discussion";
-import { MemberPrefs } from "@/components/MemberPrefs";
 import { DiscordLink } from "@/components/DiscordLink";
 
 /**
@@ -36,7 +35,6 @@ export default function AccountPage() {
           <ScWidget view="account" />
         </section>
         {/* Replies waiting, and what has been said lately anywhere. */}
-        <MemberPrefs />
         <DiscordLink />
         <Discussion />
       </div>

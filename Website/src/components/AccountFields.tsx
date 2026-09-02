@@ -24,6 +24,11 @@ import {
  * it drops the member to a login screen. A form that saved per field spent that budget for
  * nothing.
  *
+ * One button covers two systems. Everything except the updates list belongs to Supporting Cast;
+ * that one is ours, on our own host and outside their rate limit. Which server a preference lives
+ * on is our problem, not something to make somebody read a page to understand — so it is one form
+ * with one Save.
+ *
  * Billing stays with them: plan changes carry proration, retention offers and tax, and that is the
  * one screen where being wrong costs real money.
  */
@@ -33,6 +38,9 @@ export function AccountFields() {
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [newEpisodes, setNewEpisodes] = useState(false);
+  // Ours, not theirs. Loaded alongside so the form has one idea of what is currently set.
+  const [updateEmails, setUpdateEmails] = useState(false);
+  const [savedUpdateEmails, setSavedUpdateEmails] = useState(false);
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -51,6 +59,7 @@ export function AccountFields() {
     const token = liveToken();
     if (!token) return;
     let dead = false;
+
     void scGetUser(token)
       .then(({ ok, data }) => {
         if (dead) return;
@@ -60,6 +69,18 @@ export function AccountFields() {
       .catch(() => {
         if (!dead) setError("Could not load your details.");
       });
+
+    void fetch("/api/update-emails", { headers: { "x-sc-token": token } })
+      .then((r) => r.json())
+      .then((j: { subscribed?: boolean }) => {
+        if (dead) return;
+        setUpdateEmails(!!j.subscribed);
+        setSavedUpdateEmails(!!j.subscribed);
+      })
+      .catch(() => {
+        /* the box simply starts unticked */
+      });
+
     return () => {
       dead = true;
     };
@@ -72,9 +93,10 @@ export function AccountFields() {
     return (
       displayName.trim() !== (user.displayName ?? "") ||
       email.trim() !== (user.email ?? "") ||
-      newEpisodes !== !!current.newEpisodes
+      newEpisodes !== !!current.newEpisodes ||
+      updateEmails !== savedUpdateEmails
     );
-  }, [user, displayName, email, newEpisodes, current.newEpisodes]);
+  }, [user, displayName, email, newEpisodes, current.newEpisodes, updateEmails, savedUpdateEmails]);
 
   const save = useCallback(async () => {
     const token = liveToken();
@@ -101,6 +123,29 @@ export function AccountFields() {
     setError(null);
     setNote(null);
     try {
+      // Ours first, and only if it changed. It is on our own host, so it costs nothing against
+      // Supporting Cast's sixty-a-minute.
+      if (updateEmails !== savedUpdateEmails) {
+        const r = await fetch("/api/update-emails", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-sc-token": token },
+          body: JSON.stringify({ subscribed: updateEmails }),
+        });
+        const j = (await r.json()) as { subscribed?: boolean; error?: string };
+        if (!r.ok) {
+          setError(j.error ?? "Could not save your email preference.");
+          return;
+        }
+        setSavedUpdateEmails(!!j.subscribed);
+        setUpdateEmails(!!j.subscribed);
+      }
+
+      // Nothing of theirs changed, so nothing of theirs is sent.
+      if (Object.keys(patch).length === 0) {
+        setNote("Saved.");
+        return;
+      }
+
       const { ok, data } = await scPutUser(token, patch);
       if (!ok) {
         setError(data.message ?? "Supporting Cast would not save that.");
@@ -134,7 +179,7 @@ export function AccountFields() {
     } finally {
       setBusy(false);
     }
-  }, [busy, changed, current, displayName, email, newEpisodes, user]);
+  }, [busy, changed, current, displayName, email, newEpisodes, user, updateEmails, savedUpdateEmails]);
 
   /** The avatar is its own endpoint, so it cannot ride along with the rest. */
   const upload = useCallback(async (file: File) => {
@@ -193,6 +238,21 @@ export function AccountFields() {
             <span className="block">Email me when a new episode is out.</span>
             <span className="mt-1 block text-sm text-muted">
               Sent by Supporting Cast as the episode lands in your feed.
+            </span>
+          </span>
+        </label>
+
+        <label className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            checked={updateEmails}
+            onChange={(e) => setUpdateEmails(e.target.checked)}
+            className="mt-1 size-4 accent-yellow"
+          />
+          <span>
+            <span className="block">Email me when updates are posted.</span>
+            <span className="mt-1 block text-sm text-muted">
+              Behind the scenes, extras and announcements from the team.
             </span>
           </span>
         </label>
