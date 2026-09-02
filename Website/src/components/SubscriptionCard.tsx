@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from "react";
 import { activeSubscription, cardOf, type ScUser } from "@/lib/sc";
-import { REVEAL_BILLING } from "@/components/BillingPanel";
 
 /**
  * The membership, shown once, in our own styling.
@@ -23,9 +22,12 @@ export function SubscriptionCard({ user }: { user: ScUser }) {
   /**
    * Press their button.
    *
-   * Their panel is mounted off-screen at a real width, so the button exists before anyone clicks
-   * and their modal opens over the page. Nothing expands, and cancelling leaves the page as it was
-   * rather than showing a second copy of the member's own settings.
+   * Their dialogs are their own React, so reaching for the button is the honest way in — a
+   * hand-built modal would have to reimplement the retention offer and the cancellation survey and
+   * would drift from whatever they change next.
+   *
+   * Their panel sits further down the page, so if the button cannot be found the member is simply
+   * pointed at it rather than left with an apology.
    */
   const openTheirs = useCallback(async (selector: string) => {
     setNote(null);
@@ -33,53 +35,21 @@ export function SubscriptionCard({ user }: { user: ScUser }) {
     const find = () => document.querySelector<HTMLElement>(selector);
     let button = find();
 
-    // Only if their widget is somehow still mounting.
+    // Only if their widget is still mounting.
     for (let i = 0; i < 10 && !button; i++) {
       await new Promise((r) => setTimeout(r, 100));
       button = find();
     }
 
-    if (!button) {
-      window.dispatchEvent(new Event(REVEAL_BILLING));
-      setNote("Opened the full panel below — change your plan from there.");
-      setTimeout(
-        () =>
-          document
-            .querySelector("#supportingcast-widget")
-            ?.scrollIntoView({ behavior: "smooth", block: "center" }),
-        150,
-      );
+    if (button) {
+      button.click();
       return;
     }
 
-    button.click();
-
-    /*
-     * A modal is drawn in the top layer wherever its container sits; a non-modal one is not, and
-     * would open off-screen where nobody could reach it. Their markup does not say which they use,
-     * so rather than assume: if a dialog opened but landed outside the viewport, bring the panel
-     * into the page so it can be seen and finished.
-     */
-    setTimeout(() => {
-      const open = document.querySelector<HTMLDialogElement>("dialog[open]");
-      if (!open) return;
-      const box = open.getBoundingClientRect();
-      if (box.right < 0 || box.bottom < 0 || box.left > window.innerWidth) {
-        window.dispatchEvent(new Event(REVEAL_BILLING));
-        setTimeout(() => open.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
-      }
-    }, 250);
-  }, []);
-
-  const reveal = useCallback(() => {
-    window.dispatchEvent(new Event(REVEAL_BILLING));
-    setTimeout(
-      () =>
-        document
-          .querySelector("#supportingcast-widget")
-          ?.scrollIntoView({ behavior: "smooth", block: "start" }),
-      150,
-    );
+    setNote("Use the billing panel below.");
+    document
+      .querySelector("#supportingcast-widget")
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, []);
 
   if (!sub) {
@@ -199,15 +169,6 @@ export function SubscriptionCard({ user }: { user: ScUser }) {
                 className="border border-yellow px-4 py-2 text-[11px] uppercase tracking-[0.16em] text-yellow transition-colors hover:bg-yellow hover:text-ink"
               >
                 Change plan
-              </button>
-              {/* Everything else their panel does — cards, invoices, the rest — without us
-                  guessing which of their controls does what. */}
-              <button
-                type="button"
-                onClick={reveal}
-                className="border border-line px-4 py-2 text-[11px] uppercase tracking-[0.16em] text-muted transition-colors hover:border-yellow hover:text-yellow"
-              >
-                Manage billing
               </button>
             </div>
 
