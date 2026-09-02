@@ -68,6 +68,7 @@ export const MORE_NAV = [
   { label: "Bingo", href: "/bingo" },
   { label: "FAQ", href: "/faq" },
   { label: "Partner with us", href: "/partner" },
+  { label: "Supporter wall", href: "/supporter-wall" },
 ] as const;
 
 export const EXTERNAL = {

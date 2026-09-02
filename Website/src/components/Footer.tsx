@@ -17,6 +17,7 @@ const SITE_LINKS = [
   { label: "Store", href: "/store" },
   { label: "Discord", href: "/discord" },
   { label: "About", href: "/about" },
+  { label: "Supporter wall", href: "/supporter-wall" },
   { label: "FAQ", href: "/faq" },
   { label: "Bingo", href: "/bingo" },
   { label: "Fan wiki", href: EXTERNAL.wiki },
@@ -96,7 +97,6 @@ export function Footer({ hidden = [] }: { hidden?: string[] }) {
             <Link href="/store-faq" className="hover:text-yellow">Store FAQ &amp; shipping</Link>
             <Link href="/store-terms" className="hover:text-yellow">Terms &amp; returns</Link>
             <Link href="/assets" className="hover:text-yellow">Brand assets</Link>
-            <Link href="/supporter-wall" className="hover:text-yellow">Supporters</Link>
           </nav>
           <p>© {new Date().getFullYear()} Hush Studios</p>
         </div>
