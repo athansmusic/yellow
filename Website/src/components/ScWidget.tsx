@@ -16,21 +16,16 @@ const PK =
 /** The screens of their embed we route to. `setup` is their name for the feed / add-to-app page. */
 export type ScView = "login" | "account" | "setup";
 
-/**
- * Headings whose sections this page already owns, so the embed should not show them twice.
+/*
+ * The account view renders these sections, in this order: General, Avatar, Notification Settings,
+ * Subscription, Payment Details.
  *
- * Matched on their visible text because their markup carries no ids or section hooks. If they
- * rename a heading the match stops working and the duplicate section reappears — visibly wrong
- * rather than silently broken, which is the right way round for cosmetic surgery on somebody
- * else's DOM.
+ * Hiding the first three — which this site now renders itself — was tried and reverted. Their
+ * markup has no ids or section hooks, so it had to match on heading text and hide ancestors; with
+ * that in place their own config call began failing CORS preflight and the widget dropped members
+ * to the login screen. Whatever the mechanism, the trade was a cosmetic win against a sign-in
+ * outage. If it is attempted again, it needs testing behind a real member login first.
  */
-export const SC_SECTIONS = {
-  general: "General",
-  avatar: "Avatar",
-  notifications: "Notification Settings",
-  subscription: "Subscription",
-  payment: "Payment Details",
-} as const;
 
 /**
  * One mount for Supporting Cast's embed, pointed at whichever of their screens a route wants.
@@ -43,11 +38,8 @@ export const SC_SECTIONS = {
  * is what put white text on white panels on the join page. The widget is built for a light ground,
  * so it gets one: a light card inset in a dark panel, matching the join page.
  */
-export function ScWidget({ view, hide = [] }: { view: ScView; hide?: string[] }) {
+export function ScWidget({ view }: { view: ScView }) {
   const hostRef = useRef<HTMLDivElement>(null);
-  // The prop is written inline at the call site, so its identity changes every render; the effect
-  // below keys off the contents instead of rebuilding its observer each time.
-  const hideKey = hide.join("|");
 
   // Two hard-won rules, same as the join page: the mount lives outside React's tree, because
   // hydration seeing the widget's injected DOM wiped it (error #418); and auto-init is disabled,
@@ -91,56 +83,6 @@ export function ScWidget({ view, hide = [] }: { view: ScView; hide?: string[] })
     script.onload = start;
     document.body.appendChild(script);
   }, [view]);
-
-  /*
-   * Hide the sections this page renders itself.
-   *
-   * The widget mounts asynchronously and re-renders on its own, so this watches rather than runs
-   * once. Everything it does is display-only: nothing is removed, so a mis-hit is undone by
-   * turning the prop off, and the widget never notices its own DOM was touched.
-   */
-  useEffect(() => {
-    const host = hostRef.current;
-    if (!host || hide.length === 0) return;
-
-    const keep = [SC_SECTIONS.subscription, SC_SECTIONS.payment];
-
-    const trim = () => {
-      const headings = host.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6, legend");
-      for (const h of Array.from(headings)) {
-        const text = (h.textContent ?? "").trim();
-        if (!hide.some((label) => text === label)) continue;
-
-        // Climb to the largest ancestor that still holds only this section — stopping before one
-        // that would take a section we are keeping with it.
-        let node: HTMLElement = h;
-        while (node.parentElement && node.parentElement !== host) {
-          const parent = node.parentElement;
-          const swallows = keep.some((k) => (parent.textContent ?? "").includes(k));
-          if (swallows) break;
-          node = parent;
-        }
-
-        if (node === h) {
-          // Flat layout: the heading's siblings are the section. Hide up to the next heading.
-          let sib = h.nextElementSibling as HTMLElement | null;
-          h.style.display = "none";
-          while (sib && !/^H[1-6]$|^LEGEND$/.test(sib.tagName)) {
-            sib.style.display = "none";
-            sib = sib.nextElementSibling as HTMLElement | null;
-          }
-        } else {
-          node.style.display = "none";
-        }
-      }
-    };
-
-    trim();
-    const observer = new MutationObserver(trim);
-    observer.observe(host, { childList: true, subtree: true });
-    return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- hideKey is the stable form of hide
-  }, [hideKey]);
 
   return (
     <>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui";
-import { ScWidget, SC_SECTIONS } from "@/components/ScWidget";
+import { ScWidget } from "@/components/ScWidget";
 import { AccountFields } from "@/components/AccountFields";
 import { MemberDebug } from "./MemberDebug";
 import { Discussion } from "@/components/Discussion";
@@ -33,12 +33,7 @@ export default function AccountPage() {
           <h2 className="eyebrow mb-4">Subscription and billing</h2>
           {/* Left in full rather than tucked away: it is also how a change made above is confirmed
               — save here, reload, and their page should agree. */}
-          {/* Their General, Avatar and Notification Settings are the same three fields we render
-              above, so the embed keeps only what we do not do: the plan and the card. */}
-          <ScWidget
-            view="account"
-            hide={[SC_SECTIONS.general, SC_SECTIONS.avatar, SC_SECTIONS.notifications]}
-          />
+          <ScWidget view="account" />
         </section>
         {/* Replies waiting, and what has been said lately anywhere. */}
         <MemberPrefs />

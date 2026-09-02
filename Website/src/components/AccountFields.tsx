@@ -84,9 +84,6 @@ export function AccountFields() {
       const saved = { [editing]: value } as Partial<ScUser>;
       setUser((u) => (u ? { ...u, ...saved } : u));
       setEditing(null);
-      void scGetUser(token)
-        .then((fresh) => setUser({ ...fresh, ...saved }))
-        .catch(() => {});
       setNote(
         editing === "email"
           ? "Email updated. Your next sign-in link goes to the new address."
@@ -116,9 +113,6 @@ export function AccountFields() {
       const url = res.url;
       setUser((u) => (u ? { ...u, avatarUrl: url } : u));
       setNote("Avatar updated.");
-      void scGetUser(token)
-        .then((fresh) => setUser({ ...fresh, avatarUrl: url }))
-        .catch(() => {});
     } catch {
       setError("Could not upload that image.");
     } finally {
@@ -159,9 +153,6 @@ export function AccountFields() {
       const notifications = { ...current, newEpisodes: next };
       setUser((u) => (u ? { ...u, notifications } : u));
       setNote(next ? "You will hear about new episodes." : "Episode emails are off.");
-      void scGetUser(token)
-        .then((fresh) => setUser({ ...fresh, notifications }))
-        .catch(() => {});
     } catch {
       setError("Could not save that. Try again.");
     } finally {
