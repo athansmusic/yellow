@@ -78,7 +78,7 @@ export function SubscriptionCard({ user }: { user: ScUser }) {
 
   if (!sub) {
     return (
-      <section className="mt-12 border-t border-line pt-8">
+      <section>
         <h2 className="eyebrow mb-4">Membership</h2>
         <p className="text-muted max-w-prose">No active membership on this account.</p>
       </section>
@@ -103,7 +103,7 @@ export function SubscriptionCard({ user }: { user: ScUser }) {
   const benefits = sub.benefit_items ?? [];
 
   return (
-    <section className="mt-12 border-t border-line pt-8">
+    <section>
       <h2 className="eyebrow mb-4">Membership</h2>
 
       <div className="border border-line p-5 max-w-prose">
@@ -165,6 +165,24 @@ export function SubscriptionCard({ user }: { user: ScUser }) {
             className="border border-yellow px-4 py-2 text-sm uppercase tracking-[0.14em] text-yellow hover:bg-yellow hover:text-ink"
           >
             Change plan
+          </button>
+          {/* Everything else their panel does — cards, invoices, the rest — without us guessing
+              which of their controls does what. */}
+          <button
+            type="button"
+            onClick={() => {
+              window.dispatchEvent(new Event(REVEAL_BILLING));
+              setTimeout(
+                () =>
+                  document
+                    .querySelector("#supportingcast-widget")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+                150,
+              );
+            }}
+            className="border border-line px-4 py-2 text-sm uppercase tracking-[0.14em] text-muted hover:border-yellow hover:text-yellow"
+          >
+            Manage billing
           </button>
         </div>
 

@@ -216,8 +216,12 @@ export function AccountFields() {
     "w-full border border-line bg-ink px-3 py-2 text-paper focus:border-yellow focus:outline-none";
 
   return (
-    <section>
-      <h2 className="eyebrow mb-4">Your details</h2>
+    <>
+      {/* Membership first: it is what somebody opens this page to check. */}
+      <SubscriptionCard user={user} />
+
+      <section className="mt-12 border-t border-line pt-8">
+        <h2 className="eyebrow mb-4">Your details</h2>
 
       <div className="grid gap-5 max-w-prose">
         <label className="grid gap-1.5">
@@ -231,6 +235,8 @@ export function AccountFields() {
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={field} />
           <span className="text-sm text-muted">Where your sign-in link is sent.</span>
         </label>
+
+        <p className="eyebrow mt-1">Emails</p>
 
         <label className="flex items-start gap-3">
           <input
@@ -262,7 +268,7 @@ export function AccountFields() {
           </span>
         </label>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4 border-t border-line pt-5">
           <span className="eyebrow">Avatar</span>
           {user.avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- their host is not in the image
@@ -296,8 +302,11 @@ export function AccountFields() {
             disabled={busy}
             className="text-sm text-yellow hover:underline underline-offset-4 disabled:opacity-40"
           >
-            {busy ? "Working…" : "Change"}
+            {busy ? "Working…" : "Change picture"}
           </button>
+          <span className="w-full text-sm text-muted sm:w-auto">
+            Square JPG or PNG, at least 200px.
+          </span>
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
@@ -309,23 +318,52 @@ export function AccountFields() {
           >
             {busy ? "Saving…" : "Save changes"}
           </button>
+          {changed && !busy && (
+            <button
+              type="button"
+              onClick={() => {
+                adopt(user);
+                setError(null);
+                setNote(null);
+              }}
+              className="text-sm text-muted hover:text-paper"
+            >
+              Discard
+            </button>
+          )}
           {changed && !busy && <span className="text-sm text-muted">Unsaved changes.</span>}
         </div>
+
+        {/* Ends the session on this device. Their widget reads the same key, so clearing it signs
+            the member out of the embed as well as out of ours. */}
+        <p className="border-t border-line pt-5">
+          <button
+            type="button"
+            onClick={() => {
+              try {
+                localStorage.removeItem("sc_widget_token");
+                sessionStorage.clear();
+              } catch {}
+              window.location.href = "/";
+            }}
+            className="text-sm text-muted hover:text-yellow"
+          >
+            Sign out
+          </button>
+        </p>
       </div>
 
-      {note && (
-        <p role="status" className="mt-4 text-sm text-yellow">
-          {note}
-        </p>
-      )}
-      {error && (
-        <p role="alert" className="mt-4 text-sm text-[#ff8a76]">
-          {error}
-        </p>
-      )}
-
-      {/* Same user object, no second call. */}
-      <SubscriptionCard user={user} />
-    </section>
+        {note && (
+          <p role="status" className="mt-4 text-sm text-yellow">
+            {note}
+          </p>
+        )}
+        {error && (
+          <p role="alert" className="mt-4 text-sm text-[#ff8a76]">
+            {error}
+          </p>
+        )}
+      </section>
+    </>
   );
 }
