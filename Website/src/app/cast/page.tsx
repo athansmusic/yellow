@@ -39,7 +39,7 @@ const TEAM: { name: string; role: string; image?: string }[] = [
   { name: "Landon Whisnant", role: "Lead Sound Designer", image: "/team/landon-whisnant.avif" },
   { name: "Bard", role: "Dialogue Editor" },
   { name: "Lyssa Jay", role: "Writer (Postmortem)" },
-  { name: "Krista Langois", role: "Moderation & Support", image: "/team/krista-langois.avif" },
+  { name: "Krista Langlois", role: "Moderation & Support", image: "/team/krista-langlois.avif" },
   { name: "Taylor Michaels", role: "Production Assistant" },
   { name: "Reag Koster", role: "Social Media", image: "/team/reag-koster.avif" },
 ];
