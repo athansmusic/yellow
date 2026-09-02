@@ -16,6 +16,8 @@ export const SC_PK =
 const API = "https://widget-api.supportingcast.fm";
 
 /** Their user object, camelCase, as their widget reads it. */
+export type ScNotifications = { posts?: boolean; newEpisodes?: boolean };
+
 export type ScUser = {
   uuid: string | null;
   email: string;
@@ -24,6 +26,9 @@ export type ScUser = {
   displayName: string;
   avatarUrl: string;
   accountPageRestricted: boolean;
+  // Their default user object carries this as an empty array and the populated one as an object,
+  // so it is read through notificationsOf rather than trusted to be either.
+  notifications?: ScNotifications | unknown[];
 };
 
 async function call<T>(path: string, method: "GET" | "PUT", token: string, body?: unknown): Promise<T> {
@@ -43,8 +48,16 @@ async function call<T>(path: string, method: "GET" | "PUT", token: string, body?
 export const scGetUser = (token: string) => call<ScUser>("user", "GET", token);
 
 /** Send only what changed — a full object would overwrite fields this page does not show. */
-export const scPutUser = (token: string, patch: Partial<Pick<ScUser, "displayName" | "email">>) =>
-  call<ScUser & { message?: string }>("user", "PUT", token, patch);
+export const scPutUser = (
+  token: string,
+  patch: Partial<Pick<ScUser, "displayName" | "email">> & { notifications?: ScNotifications },
+) => call<ScUser & { message?: string }>("user", "PUT", token, patch);
+
+/** Their empty state is an array, their populated one an object. Both mean "nothing set" here. */
+export function notificationsOf(user: ScUser | null): ScNotifications {
+  const n = user?.notifications;
+  return n && !Array.isArray(n) ? (n as ScNotifications) : {};
+}
 
 export const scPutAvatar = (token: string, dataUrl: string) =>
   call<{ success?: boolean; url?: string; message?: string }>("avatar", "PUT", token, { upload: dataUrl });

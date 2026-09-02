@@ -2,7 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { liveToken, useMember } from "@/lib/member";
-import { scGetUser, scPutAvatar, scPutUser, shrinkToDataUrl, type ScUser } from "@/lib/sc";
+import {
+  notificationsOf,
+  scGetUser,
+  scPutAvatar,
+  scPutUser,
+  shrinkToDataUrl,
+  type ScUser,
+} from "@/lib/sc";
 
 type Field = "displayName" | "email";
 
@@ -61,12 +68,14 @@ export function AccountFields() {
     setError(null);
     try {
       const updated = await scPutUser(token, { [editing]: value });
-      // They answer with the user object; a message instead means they refused it.
-      if (!updated || (updated.message && !updated.uuid)) {
-        setError(updated?.message ?? "Supporting Cast would not save that.");
+      // A message with no user in it means they refused the change.
+      if (updated?.message && !updated.uuid) {
+        setError(updated.message);
         return;
       }
-      setUser(updated);
+      // Re-read rather than trusting what PUT hands back: their reply is not always the whole
+      // user, so believing it left the field showing the old value until a manual refresh.
+      setUser(await scGetUser(token));
       setEditing(null);
       setNote(
         editing === "email"
@@ -93,7 +102,7 @@ export function AccountFields() {
         setError(res.message ?? "That image was not accepted.");
         return;
       }
-      setUser((u) => (u ? { ...u, avatarUrl: res.url as string } : u));
+      setUser(await scGetUser(token));
       setNote("Avatar updated.");
     } catch {
       setError("Could not upload that image.");
@@ -102,7 +111,45 @@ export function AccountFields() {
     }
   }, []);
 
+  /**
+   * Supporting Cast's own new-episode email.
+   *
+   * Only this one is offered. Their other switch covers posts, and members already get those from
+   * us — showing both would be two controls for one outcome, and the one that wins would depend on
+   * which page somebody happened to be looking at.
+   *
+   * Whatever `posts` is set to is passed straight back. This page has no opinion on it, and
+   * quietly flipping a setting the member never saw is how trust in a preferences screen goes.
+   */
+  const toggleEpisodes = useCallback(async () => {
+    const token = liveToken();
+    if (!token || busy) return;
+    const current = notificationsOf(user);
+    const next = !current.newEpisodes;
+
+    setBusy(true);
+    setError(null);
+    setNote(null);
+    try {
+      const res = await scPutUser(token, {
+        notifications: { ...current, newEpisodes: next },
+      });
+      if (res?.message && !res.uuid) {
+        setError(res.message);
+        return;
+      }
+      setUser(await scGetUser(token));
+      setNote(next ? "You will hear about new episodes." : "Episode emails are off.");
+    } catch {
+      setError("Could not save that. Try again.");
+    } finally {
+      setBusy(false);
+    }
+  }, [user, busy]);
+
   if (!member?.signedIn || !user) return null;
+
+  const notifications = notificationsOf(user);
 
   const row = (field: Field, label: string, value: string) => (
     <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-line py-4">
@@ -196,6 +243,24 @@ export function AccountFields() {
             {busy ? "Working…" : "Change"}
           </button>
         </span>
+      </div>
+
+      <div className="border-b border-line py-4">
+        <label className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            checked={!!notifications.newEpisodes}
+            onChange={() => void toggleEpisodes()}
+            disabled={busy}
+            className="mt-1 size-4 accent-yellow"
+          />
+          <span>
+            <span className="block">Email me when a new episode is out.</span>
+            <span className="mt-1 block text-sm text-muted">
+              Sent by Supporting Cast as the episode lands in your feed.
+            </span>
+          </span>
+        </label>
       </div>
 
       {note && (
