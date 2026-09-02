@@ -106,11 +106,9 @@ export default async function SupporterWall() {
 
       <Section>
         <div className="border-t border-line pt-10">
-          <p className="eyebrow text-yellow">The Unit</p>
-          <h2 className="display text-3xl sm:text-4xl mt-1">Members keeping it going</h2>
+          <h2 className="display text-3xl sm:text-4xl">TRU MEMBERS</h2>
           <p className="mt-3 max-w-prose text-muted">
-            The Kickstarter got the show made. These are the people paying for the next one — listed
-            because they asked to be.
+            Thank you to everybody continuing to support us.
           </p>
           <div className="mt-6">
             <WallMembers />
