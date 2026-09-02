@@ -18,6 +18,49 @@ const API = "https://widget-api.supportingcast.fm";
 /** Their user object, camelCase, as their widget reads it. */
 export type ScNotifications = { posts?: boolean; newEpisodes?: boolean };
 
+/** One line of what a plan includes. Their markdown is plain text in practice. */
+export type ScBenefit = { id: number; position: number; benefit_md: string };
+
+/**
+ * A membership, as their user object describes it.
+ *
+ * Only the fields this site renders are named. Theirs carries a good deal more — stripe ids, price
+ * ids, pending-change bookkeeping — none of which belongs on a page a member reads.
+ */
+export type ScSubscription = {
+  active: boolean;
+  status: string;
+  auto_renew: boolean;
+  name: string;
+  price_description: string;
+  price_amount: number;
+  interval: string;
+  is_free: boolean;
+  is_trialing: boolean;
+  is_gift: boolean;
+  gifter_name: string | null;
+  gift_expires_at_formatted: string | null;
+  ends_at_formatted: string | null;
+  benefits_prefix_md: string | null;
+  benefit_items: ScBenefit[] | null;
+  // Null on a comped or gifted membership — nothing is being charged, so nothing renews.
+  stripe_subscription_id: string | null;
+};
+
+/**
+ * The card on file.
+ *
+ * Null for anyone not being charged, and its populated shape has not been seen from here, so every
+ * field is optional and the display copes with all of them missing.
+ */
+export type ScPaymentMethod = {
+  brand?: string;
+  last4?: string;
+  exp_month?: number | string;
+  exp_year?: number | string;
+  card?: { brand?: string; last4?: string; exp_month?: number | string; exp_year?: number | string };
+} | null;
+
 export type ScUser = {
   uuid: string | null;
   email: string;
@@ -29,6 +72,8 @@ export type ScUser = {
   // Their default user object carries this as an empty array and the populated one as an object,
   // so it is read through notificationsOf rather than trusted to be either.
   notifications?: ScNotifications | unknown[];
+  subscriptions?: ScSubscription[] | null;
+  paymentMethod?: ScPaymentMethod;
 };
 
 /**
@@ -121,4 +166,26 @@ export function shrinkToDataUrl(file: File, max = 512): Promise<string> {
     };
     reader.readAsDataURL(file);
   });
+}
+
+/** The membership to show. Members hold one in practice; the active one wins if that changes. */
+export function activeSubscription(user: ScUser | null): ScSubscription | null {
+  const subs = user?.subscriptions;
+  if (!Array.isArray(subs) || subs.length === 0) return null;
+  return subs.find((s) => s.active) ?? subs[0];
+}
+
+/** Brand and last four, however their payload happens to nest them. */
+export function cardOf(pm: ScPaymentMethod): { brand: string; last4: string; expires: string } | null {
+  if (!pm) return null;
+  const c = pm.card ?? pm;
+  const last4 = c.last4;
+  if (!last4) return null;
+  const month = c.exp_month ? String(c.exp_month).padStart(2, "0") : null;
+  const year = c.exp_year ? String(c.exp_year).slice(-2) : null;
+  return {
+    brand: c.brand ? c.brand.replace(/\b\w/g, (m) => m.toUpperCase()) : "Card",
+    last4: String(last4),
+    expires: month && year ? `${month}/${year}` : "",
+  };
 }

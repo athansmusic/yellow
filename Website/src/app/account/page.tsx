@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui";
-import { ScWidget } from "@/components/ScWidget";
+import { BillingPanel } from "@/components/BillingPanel";
 import { AccountFields } from "@/components/AccountFields";
 import { MemberDebug } from "./MemberDebug";
 import { Discussion } from "@/components/Discussion";
@@ -28,12 +28,9 @@ export default function AccountPage() {
             where plan changes carry proration, retention offers and tax — the one screen where
             rebuilding it would cost real money to get wrong. */}
         <AccountFields />
-        <section className="mt-12 border-t border-line pt-8">
-          <h2 className="eyebrow mb-4">Subscription and billing</h2>
-          {/* Left in full rather than tucked away: it is also how a change made above is confirmed
-              — save here, reload, and their page should agree. */}
-          <ScWidget view="account" />
-        </section>
+        {/* Their panel is mounted but out of sight: the membership card above renders the same
+            facts once, and presses their buttons for anything that touches money. */}
+        <BillingPanel />
         {/* Replies waiting, and what has been said lately anywhere. */}
         <DiscordLink />
         <Discussion />

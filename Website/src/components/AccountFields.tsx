@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { liveToken, setMemberName, useMember } from "@/lib/member";
+import { SubscriptionCard } from "@/components/SubscriptionCard";
 import {
   notificationsOf,
   scGetUser,
@@ -322,6 +323,9 @@ export function AccountFields() {
           {error}
         </p>
       )}
+
+      {/* Same user object, no second call. */}
+      <SubscriptionCard user={user} />
     </section>
   );
 }
