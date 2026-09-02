@@ -31,7 +31,22 @@ export type ScUser = {
   notifications?: ScNotifications | unknown[];
 };
 
-async function call<T>(path: string, method: "GET" | "PUT", token: string, body?: unknown): Promise<T> {
+/**
+ * Whether it worked comes from the status line, not the body.
+ *
+ * Reading success out of the response shape was a mistake worth recording: a write that answered
+ * with only a message — no user object — was taken for a refusal, so a save that had genuinely
+ * landed left the field showing its old value and reported an error. The status says plainly what
+ * their body only implies.
+ */
+export type ScResult<T> = { ok: boolean; status: number; data: T & { message?: string } };
+
+async function call<T>(
+  path: string,
+  method: "GET" | "PUT",
+  token: string,
+  body?: unknown,
+): Promise<ScResult<T>> {
   const res = await fetch(`${API}/${path}`, {
     method,
     headers: {
@@ -44,8 +59,21 @@ async function call<T>(path: string, method: "GET" | "PUT", token: string, body?
     // hand back the value we just changed and make a successful save look like it did nothing.
     cache: "no-store",
   });
-  if (res.status === 204) return {} as T;
-  return (await res.json()) as T;
+
+  let data = {} as T & { message?: string };
+  if (res.status !== 204) {
+    try {
+      data = (await res.json()) as T & { message?: string };
+    } catch {
+      // 429s and gateway errors are not always JSON; the status still tells the caller enough.
+    }
+  }
+
+  // 429 is the one worth naming: their API allows 60 requests a minute, and past that even the
+  // preflight fails, which the browser then reports as a CORS error.
+  if (res.status === 429) data.message ||= "Supporting Cast is rate limiting us. Wait a moment.";
+
+  return { ok: res.ok, status: res.status, data };
 }
 
 export const scGetUser = (token: string) => call<ScUser>("user", "GET", token);
@@ -54,7 +82,7 @@ export const scGetUser = (token: string) => call<ScUser>("user", "GET", token);
 export const scPutUser = (
   token: string,
   patch: Partial<Pick<ScUser, "displayName" | "email">> & { notifications?: ScNotifications },
-) => call<ScUser & { message?: string }>("user", "PUT", token, patch);
+) => call<ScUser>("user", "PUT", token, patch);
 
 /** Their empty state is an array, their populated one an object. Both mean "nothing set" here. */
 export function notificationsOf(user: ScUser | null): ScNotifications {
@@ -63,7 +91,7 @@ export function notificationsOf(user: ScUser | null): ScNotifications {
 }
 
 export const scPutAvatar = (token: string, dataUrl: string) =>
-  call<{ success?: boolean; url?: string; message?: string }>("avatar", "PUT", token, { upload: dataUrl });
+  call<{ success?: boolean; url?: string }>("avatar", "PUT", token, { upload: dataUrl });
 
 /**
  * A photo straight off a phone is several megabytes and takes seconds to upload as base64 — their
