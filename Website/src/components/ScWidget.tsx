@@ -16,16 +16,22 @@ const PK =
 /** The screens of their embed we route to. `setup` is their name for the feed / add-to-app page. */
 export type ScView = "login" | "account" | "setup";
 
-/*
- * The account view renders these sections, in this order: General, Avatar, Notification Settings,
- * Subscription, Payment Details.
+/**
+ * Headings whose sections this site renders itself.
  *
- * Hiding the first three — which this site now renders itself — was tried and reverted. Their
- * markup has no ids or section hooks, so it had to match on heading text and hide ancestors; with
- * that in place their own config call began failing CORS preflight and the widget dropped members
- * to the login screen. Whatever the mechanism, the trade was a cosmetic win against a sign-in
- * outage. If it is attempted again, it needs testing behind a real member login first.
+ * Hiding these was tried once, reverted after their config call started failing CORS preflight,
+ * and is back because that was a misdiagnosis: the failure was their sixty-a-minute rate limit
+ * being exhausted by a form that saved every field separately and re-read after each one. This
+ * only ever changed `display`.
+ *
+ * Matched on visible heading text — their markup has `sc-` hooks on some controls but none on the
+ * account sections. A rename brings the duplicate section back, which is visibly wrong rather
+ * than silently broken, and the right way round for cosmetic surgery on somebody else's DOM.
  */
+export const SC_SECTIONS = {
+  general: "General",
+  notifications: "Notification Settings",
+} as const;
 
 /**
  * One mount for Supporting Cast's embed, pointed at whichever of their screens a route wants.
@@ -38,8 +44,11 @@ export type ScView = "login" | "account" | "setup";
  * is what put white text on white panels on the join page. The widget is built for a light ground,
  * so it gets one: a light card inset in a dark panel, matching the join page.
  */
-export function ScWidget({ view }: { view: ScView }) {
+export function ScWidget({ view, hide = [] }: { view: ScView; hide?: string[] }) {
   const hostRef = useRef<HTMLDivElement>(null);
+  // Written inline at the call site, so its identity changes every render; the effect keys off the
+  // contents rather than rebuilding its observer each time.
+  const hideKey = hide.join("|");
 
   // Two hard-won rules, same as the join page: the mount lives outside React's tree, because
   // hydration seeing the widget's injected DOM wiped it (error #418); and auto-init is disabled,
@@ -83,6 +92,63 @@ export function ScWidget({ view }: { view: ScView }) {
     script.onload = start;
     document.body.appendChild(script);
   }, [view]);
+
+  /*
+   * Hide the sections this site renders itself.
+   *
+   * The widget mounts asynchronously and re-renders on its own, so this watches rather than runs
+   * once. Display-only: nothing is removed and the widget never notices.
+   *
+   * The rule that matters: a section is the largest ancestor still containing exactly ONE heading.
+   * An earlier version climbed until it met a heading it wanted to keep, so during the first
+   * render — before the later sections existed at all — nothing stopped the climb and it hid the
+   * whole embed. Counting headings cannot make that mistake, because an ancestor holding the whole
+   * widget holds several.
+   */
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host || hide.length === 0) return;
+
+    const HEADING = "h1, h2, h3, h4, h5, h6, legend";
+
+    const trim = () => {
+      try {
+        for (const h of Array.from(host.querySelectorAll<HTMLElement>(HEADING))) {
+          const text = (h.textContent ?? "").trim();
+          if (!hide.some((label) => text === label)) continue;
+
+          let node: HTMLElement = h;
+          while (
+            node.parentElement &&
+            node.parentElement !== host &&
+            node.parentElement.querySelectorAll(HEADING).length <= 1
+          ) {
+            node = node.parentElement;
+          }
+
+          if (node === h) {
+            // Flat layout: the heading's siblings are the section, up to the next heading.
+            h.style.display = "none";
+            let sib = h.nextElementSibling as HTMLElement | null;
+            while (sib && !sib.matches(HEADING)) {
+              sib.style.display = "none";
+              sib = sib.nextElementSibling as HTMLElement | null;
+            }
+          } else {
+            node.style.display = "none";
+          }
+        }
+      } catch {
+        // Cosmetic surgery on somebody else's DOM must never be what takes the page down.
+      }
+    };
+
+    trim();
+    const observer = new MutationObserver(trim);
+    observer.observe(host, { childList: true, subtree: true });
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- hideKey is the stable form of hide
+  }, [hideKey]);
 
   return (
     <>

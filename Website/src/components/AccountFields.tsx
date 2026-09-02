@@ -213,156 +213,173 @@ export function AccountFields() {
   if (!member?.signedIn || !user) return null;
 
   const field =
-    "w-full border border-line bg-ink px-3 py-2 text-paper focus:border-yellow focus:outline-none";
+    "w-full border border-line/80 bg-ink px-3 py-2.5 text-[15px] text-paper transition-colors focus:border-yellow focus:outline-none";
+  /** A preference reads as one target, not a checkbox with words next to it. */
+  const toggleRow = "flex w-full items-start gap-3.5 border border-line p-3.5 text-left transition-colors hover:border-yellow/60";
 
   return (
     <>
       {/* Membership first: it is what somebody opens this page to check. */}
       <SubscriptionCard user={user} />
 
-      <section className="mt-12 border-t border-line pt-8">
-        <h2 className="eyebrow mb-4">Your details</h2>
+      <section id="details" className="mt-10">
+        <div className="border border-line">
+          <div className="border-b border-line px-5 py-3">
+            <p className="eyebrow">Your details</p>
+          </div>
 
-      <div className="grid gap-5 max-w-prose">
-        <label className="grid gap-1.5">
-          <span className="eyebrow">Display name</span>
-          <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={field} />
-          <span className="text-sm text-muted">Shown on your comments.</span>
-        </label>
+          <div className="grid gap-6 p-5">
+            <div className="grid gap-5 sm:grid-cols-2">
+              <label className="grid gap-1.5">
+                <span className="eyebrow">Display name</span>
+                <input
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className={field}
+                />
+                <span className="text-sm text-muted">Shown on your comments.</span>
+              </label>
 
-        <label className="grid gap-1.5">
-          <span className="eyebrow">Email</span>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={field} />
-          <span className="text-sm text-muted">Where your sign-in link is sent.</span>
-        </label>
+              <label className="grid gap-1.5">
+                <span className="eyebrow">Email</span>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={field}
+                />
+                <span className="text-sm text-muted">Where your sign-in link is sent.</span>
+              </label>
+            </div>
 
-        <p className="eyebrow mt-1">Emails</p>
+            <div className="grid gap-2.5">
+              <span className="eyebrow">Emails</span>
 
-        <label className="flex items-start gap-3">
-          <input
-            type="checkbox"
-            checked={newEpisodes}
-            onChange={(e) => setNewEpisodes(e.target.checked)}
-            className="mt-1 size-4 accent-yellow"
-          />
-          <span>
-            <span className="block">Email me when a new episode is out.</span>
-            <span className="mt-1 block text-sm text-muted">
-              Sent by Supporting Cast as the episode lands in your feed.
-            </span>
-          </span>
-        </label>
+              <label className={toggleRow}>
+                <input
+                  type="checkbox"
+                  checked={newEpisodes}
+                  onChange={(e) => setNewEpisodes(e.target.checked)}
+                  className="mt-0.5 size-4 accent-yellow"
+                />
+                <span>
+                  <span className="block text-[15px]">Email me when a new episode is out.</span>
+                  <span className="mt-1 block text-sm text-muted">
+                    Sent by Supporting Cast as the episode lands in your feed.
+                  </span>
+                </span>
+              </label>
 
-        <label className="flex items-start gap-3">
-          <input
-            type="checkbox"
-            checked={updateEmails}
-            onChange={(e) => setUpdateEmails(e.target.checked)}
-            className="mt-1 size-4 accent-yellow"
-          />
-          <span>
-            <span className="block">Email me when updates are posted.</span>
-            <span className="mt-1 block text-sm text-muted">
-              Behind the scenes, extras and announcements from the team.
-            </span>
-          </span>
-        </label>
+              <label className={toggleRow}>
+                <input
+                  type="checkbox"
+                  checked={updateEmails}
+                  onChange={(e) => setUpdateEmails(e.target.checked)}
+                  className="mt-0.5 size-4 accent-yellow"
+                />
+                <span>
+                  <span className="block text-[15px]">Email me when updates are posted.</span>
+                  <span className="mt-1 block text-sm text-muted">
+                    Behind the scenes, extras and announcements from the team.
+                  </span>
+                </span>
+              </label>
+            </div>
 
-        <div className="flex flex-wrap items-center gap-4 border-t border-line pt-5">
-          <span className="eyebrow">Avatar</span>
-          {user.avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element -- their host is not in the image
-            // config, and next/image throws at runtime for a hostname it does not know.
-            <img
-              src={user.avatarUrl}
-              alt=""
-              width={44}
-              height={44}
-              className="size-11 border border-line object-cover"
-            />
-          ) : (
-            <span className="grid size-11 place-items-center border border-line text-xs text-muted">
-              None
-            </span>
-          )}
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            hidden
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              e.target.value = "";
-              if (f) void upload(f);
-            }}
-          />
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            disabled={busy}
-            className="text-sm text-yellow hover:underline underline-offset-4 disabled:opacity-40"
-          >
-            {busy ? "Working…" : "Change picture"}
-          </button>
-          <span className="w-full text-sm text-muted sm:w-auto">
-            Square JPG or PNG, at least 200px.
-          </span>
+            <div className="grid gap-2.5">
+              <span className="eyebrow">Avatar</span>
+              <div className="flex flex-wrap items-center gap-4">
+                {user.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- their host is not in the
+                  // image config, and next/image throws at runtime for a hostname it does not know.
+                  <img
+                    src={user.avatarUrl}
+                    alt=""
+                    width={48}
+                    height={48}
+                    className="size-12 border border-line object-cover"
+                  />
+                ) : (
+                  <span className="grid size-12 place-items-center border border-line text-xs text-muted">
+                    None
+                  </span>
+                )}
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    e.target.value = "";
+                    if (f) void upload(f);
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  disabled={busy}
+                  className="border border-line px-4 py-2 text-[11px] uppercase tracking-[0.16em] text-muted transition-colors hover:border-yellow hover:text-yellow disabled:opacity-40"
+                >
+                  {busy ? "Working…" : "Change picture"}
+                </button>
+                <span className="text-sm text-muted">Square JPG or PNG, at least 200px.</span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4 border-t border-line pt-5">
+              <button
+                type="button"
+                onClick={() => void save()}
+                disabled={busy || !changed}
+                className="border border-yellow px-5 py-2 text-[11px] uppercase tracking-[0.16em] text-yellow transition-colors hover:bg-yellow hover:text-ink disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-yellow"
+              >
+                {busy ? "Saving…" : "Save changes"}
+              </button>
+              {changed && !busy && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    adopt(user);
+                    setError(null);
+                    setNote(null);
+                  }}
+                  className="text-sm text-muted hover:text-paper"
+                >
+                  Discard
+                </button>
+              )}
+              {changed && !busy && <span className="text-sm text-muted">Unsaved changes.</span>}
+
+              {/* Ends the session on this device. Their widget reads the same key, so clearing it
+                  signs the member out of the embed as well as out of ours. */}
+              <button
+                type="button"
+                onClick={() => {
+                  try {
+                    localStorage.removeItem("sc_widget_token");
+                    sessionStorage.clear();
+                  } catch {}
+                  window.location.href = "/";
+                }}
+                className="ml-auto text-sm text-muted hover:text-[#ff8f6b]"
+              >
+                Sign out
+              </button>
+            </div>
+
+            {note && (
+              <p role="status" className="text-sm text-yellow">
+                {note}
+              </p>
+            )}
+            {error && (
+              <p role="alert" className="text-sm text-[#ff8f6b]">
+                {error}
+              </p>
+            )}
+          </div>
         </div>
-
-        <div className="flex flex-wrap items-center gap-4">
-          <button
-            type="button"
-            onClick={() => void save()}
-            disabled={busy || !changed}
-            className="border border-yellow px-5 py-2 text-sm uppercase tracking-[0.14em] text-yellow hover:bg-yellow hover:text-ink disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-yellow"
-          >
-            {busy ? "Saving…" : "Save changes"}
-          </button>
-          {changed && !busy && (
-            <button
-              type="button"
-              onClick={() => {
-                adopt(user);
-                setError(null);
-                setNote(null);
-              }}
-              className="text-sm text-muted hover:text-paper"
-            >
-              Discard
-            </button>
-          )}
-          {changed && !busy && <span className="text-sm text-muted">Unsaved changes.</span>}
-        </div>
-
-        {/* Ends the session on this device. Their widget reads the same key, so clearing it signs
-            the member out of the embed as well as out of ours. */}
-        <p className="border-t border-line pt-5">
-          <button
-            type="button"
-            onClick={() => {
-              try {
-                localStorage.removeItem("sc_widget_token");
-                sessionStorage.clear();
-              } catch {}
-              window.location.href = "/";
-            }}
-            className="text-sm text-muted hover:text-yellow"
-          >
-            Sign out
-          </button>
-        </p>
-      </div>
-
-        {note && (
-          <p role="status" className="mt-4 text-sm text-yellow">
-            {note}
-          </p>
-        )}
-        {error && (
-          <p role="alert" className="mt-4 text-sm text-[#ff8a76]">
-            {error}
-          </p>
-        )}
       </section>
     </>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ScWidget } from "@/components/ScWidget";
+import { ScWidget, SC_SECTIONS } from "@/components/ScWidget";
 
 /**
  * Asks this panel into view. Recovery only — the ordinary path never shows it.
@@ -60,7 +60,12 @@ export function BillingPanel() {
         </div>
       )}
       <div style={revealed ? undefined : OFFSCREEN} aria-hidden={!revealed}>
-        <ScWidget view="account" />
+        {/* Their General and Notification Settings are the fields this page renders above, so
+            the panel keeps only what we do not do: the plan and the card. */}
+        <ScWidget
+          view="account"
+          hide={[SC_SECTIONS.general, SC_SECTIONS.notifications]}
+        />
       </div>
     </section>
   );
