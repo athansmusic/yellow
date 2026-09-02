@@ -33,6 +33,11 @@ export default function JoinPage() {
         ongoing production of REDACTED, and helps us create more of the
         stories you love!
       </p>
+      {/* Owner's copy, verbatim. Its own line rather than a fourth benefit card: the cards each
+          need a title, and writing one would be prose this page does not take from me. */}
+      <p className="mt-6 display text-xl sm:text-2xl text-yellow">
+        All tiers receive 20% off all items in our store!
+      </p>
       {/* Benefits - owner's copy, verbatim */}
       <ul className="mt-12 grid sm:grid-cols-3 border-t border-l border-line">
         {BENEFITS.map((b) => (
