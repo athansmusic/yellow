@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { activeSubscription, cardOf, type ScUser } from "@/lib/sc";
+import { REVEAL_BILLING } from "@/components/BillingPanel";
 
 /**
  * The membership, shown once, in our own styling.
@@ -25,16 +26,38 @@ export function SubscriptionCard({ user }: { user: ScUser }) {
    * Their dialogs are opened by their own React, so reaching for the button is the honest way in —
    * a hand-built modal would have to reimplement the retention offer and the cancellation survey,
    * and would drift from whatever they change next.
+   *
+   * The panel it lives in is clipped to a pixel until asked for, and a widget that small does not
+   * reliably lay out, so the button often is not there on the first look. Revealing the panel and
+   * looking again turns that from an error message into the thing the member wanted. If it still
+   * is not found, the panel is left open and scrolled to — their real controls, one scroll away,
+   * rather than a dead end.
    */
-  const openTheirs = useCallback((selector: string) => {
-    const button = document.querySelector<HTMLElement>(selector);
+  const openTheirs = useCallback(async (selector: string) => {
+    setNote(null);
+
+    const find = () => document.querySelector<HTMLElement>(selector);
+    let button = find();
+
     if (!button) {
-      // Their markup changed, or the widget has not finished mounting.
-      setNote("That is not ready yet — scroll down and use the panel below.");
+      window.dispatchEvent(new Event(REVEAL_BILLING));
+      // Their React needs a beat to mount into a container that now has a size.
+      for (let i = 0; i < 12 && !button; i++) {
+        await new Promise((r) => setTimeout(r, 100));
+        button = find();
+      }
+    }
+
+    if (button) {
+      button.click();
       return;
     }
-    setNote(null);
-    button.click();
+
+    window.dispatchEvent(new Event(REVEAL_BILLING));
+    setNote("Opened the full panel below — change your plan from there.");
+    setTimeout(() => {
+      document.querySelector("#supportingcast-widget")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 150);
   }, []);
 
   if (!sub) {
@@ -122,7 +145,7 @@ export function SubscriptionCard({ user }: { user: ScUser }) {
         <div className="mt-5 flex flex-wrap gap-3">
           <button
             type="button"
-            onClick={() => openTheirs(".sc-change-plan-button")}
+            onClick={() => void openTheirs(".sc-change-plan-button")}
             className="border border-yellow px-4 py-2 text-sm uppercase tracking-[0.14em] text-yellow hover:bg-yellow hover:text-ink"
           >
             Change plan

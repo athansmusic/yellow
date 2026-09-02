@@ -1,7 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ScWidget } from "@/components/ScWidget";
+
+/**
+ * Asks this panel to show itself.
+ *
+ * The membership card above works by pressing a button inside here, and a widget clipped to a
+ * single pixel does not reliably lay out — so the card reveals the panel first and looks again,
+ * rather than reporting that it could not find something the member cannot see anyway.
+ */
+export const REVEAL_BILLING = "tru-billing-reveal";
 
 /**
  * Supporting Cast's account panel, kept on the page but out of sight.
@@ -17,9 +26,16 @@ import { ScWidget } from "@/components/ScWidget";
  */
 export function BillingPanel() {
   const [revealed, setRevealed] = useState(false);
+  const wrap = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onReveal = () => setRevealed(true);
+    window.addEventListener(REVEAL_BILLING, onReveal);
+    return () => window.removeEventListener(REVEAL_BILLING, onReveal);
+  }, []);
 
   return (
-    <section className="mt-12 border-t border-line pt-8">
+    <section ref={wrap} className="mt-12 border-t border-line pt-8">
       <div className="flex flex-wrap items-baseline justify-between gap-4">
         <h2 className="eyebrow">Billing</h2>
         <button
