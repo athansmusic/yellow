@@ -23,15 +23,13 @@ export function SubscriptionCard({ user }: { user: ScUser }) {
   /**
    * Press their button.
    *
-   * Their dialogs are opened by their own React, so reaching for the button is the honest way in —
-   * a hand-built modal would have to reimplement the retention offer and the cancellation survey,
-   * and would drift from whatever they change next.
+   * Their dialogs are their own React, so reaching for the button is the honest way in — a
+   * hand-built modal would have to reimplement the retention offer and the cancellation survey and
+   * would drift from whatever they change next.
    *
-   * The panel it lives in is clipped to a pixel until asked for, and a widget that small does not
-   * reliably lay out, so the button often is not there on the first look. Revealing the panel and
-   * looking again turns that from an error message into the thing the member wanted. If it still
-   * is not found, the panel is left open and scrolled to — their real controls, one scroll away,
-   * rather than a dead end.
+   * Their panel is mounted off-screen at a real size, so the button exists before anyone clicks
+   * and the modal simply opens over the page. Nothing expands, and cancelling leaves the page as
+   * it was rather than showing a second copy of the member's own settings.
    */
   const openTheirs = useCallback(async (selector: string) => {
     setNote(null);
@@ -39,25 +37,43 @@ export function SubscriptionCard({ user }: { user: ScUser }) {
     const find = () => document.querySelector<HTMLElement>(selector);
     let button = find();
 
-    if (!button) {
-      window.dispatchEvent(new Event(REVEAL_BILLING));
-      // Their React needs a beat to mount into a container that now has a size.
-      for (let i = 0; i < 12 && !button; i++) {
-        await new Promise((r) => setTimeout(r, 100));
-        button = find();
-      }
+    // Only if their widget is somehow still mounting.
+    for (let i = 0; i < 10 && !button; i++) {
+      await new Promise((r) => setTimeout(r, 100));
+      button = find();
     }
 
-    if (button) {
-      button.click();
+    if (!button) {
+      window.dispatchEvent(new Event(REVEAL_BILLING));
+      setNote("Opened the full panel below — change your plan from there.");
+      setTimeout(
+        () =>
+          document
+            .querySelector("#supportingcast-widget")
+            ?.scrollIntoView({ behavior: "smooth", block: "center" }),
+        150,
+      );
       return;
     }
 
-    window.dispatchEvent(new Event(REVEAL_BILLING));
-    setNote("Opened the full panel below — change your plan from there.");
+    button.click();
+
+    /*
+     * A modal is drawn in the top layer wherever its container sits; a non-modal one is not, and
+     * would open off-screen where nobody could reach it. Their markup does not say which they use,
+     * so rather than assume: if a dialog opened but landed outside the viewport, bring the panel
+     * into the page so it can be seen and finished.
+     */
     setTimeout(() => {
-      document.querySelector("#supportingcast-widget")?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 150);
+      const open = document.querySelector<HTMLDialogElement>("dialog[open]");
+      if (!open) return;
+      const box = open.getBoundingClientRect();
+      const offscreen = box.right < 0 || box.bottom < 0 || box.left > window.innerWidth;
+      if (offscreen) {
+        window.dispatchEvent(new Event(REVEAL_BILLING));
+        setTimeout(() => open.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
+      }
+    }, 250);
   }, []);
 
   if (!sub) {
