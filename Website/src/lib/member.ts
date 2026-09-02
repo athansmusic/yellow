@@ -18,6 +18,14 @@ const TOKEN_KEY = "sc_widget_token";
 const NAME_KEY = "tru-member-name";
 /** Field names seen on a real /user response, for ?debug=member. Names only, never values. */
 const SHAPE_KEY = "tru-member-shape";
+/**
+ * Fired when the name changes somewhere on this page.
+ *
+ * The browser's own `storage` event only reaches OTHER tabs, so renaming yourself on the account
+ * page left the header showing the old name until the tab was closed — the cache below is read
+ * without a round trip, by design, and nothing was telling it the cache was now wrong.
+ */
+const CHANGED = "tru-member-changed";
 const PK =
   "wpk_I8kt6WweVJg8cAvL8AtzisBdsdlW9T7eH6zEY38R5ubOaIxrQa6yqYV7BOS24w5sSk5FKSgLbbsDTnq7tmv5lR3vELNcRUlCbvN";
 
@@ -71,6 +79,22 @@ function nameFrom(raw: Record<string, unknown>): string | null {
   // Last resort: the local part of their email beats a generic label, and they already know it.
   const email = str(u.email);
   return email ? email.split("@")[0] : null;
+}
+
+/**
+ * Record a new display name and tell every badge on the page about it.
+ *
+ * Called after the account form saves a rename. The name is already known, so this updates the
+ * cache directly rather than spending one of Supporting Cast's sixty-a-minute re-reading it.
+ */
+export function setMemberName(name: string | null) {
+  try {
+    if (name) sessionStorage.setItem(NAME_KEY, name);
+    else sessionStorage.removeItem(NAME_KEY);
+  } catch {}
+  try {
+    window.dispatchEvent(new Event(CHANGED));
+  } catch {}
 }
 
 export type MemberState = { signedIn: boolean; name: string | null };
@@ -148,12 +172,14 @@ export function useMember(): MemberState | undefined {
     window.addEventListener("storage", onStorage);
     window.addEventListener("focus", read);
     window.addEventListener("pageshow", read);
+    window.addEventListener(CHANGED, read);
     document.addEventListener("visibilitychange", onVisible);
     return () => {
       dead = true;
       window.removeEventListener("storage", onStorage);
       window.removeEventListener("focus", read);
       window.removeEventListener("pageshow", read);
+      window.removeEventListener(CHANGED, read);
       document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);

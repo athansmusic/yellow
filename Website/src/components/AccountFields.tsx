@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { liveToken, useMember } from "@/lib/member";
+import { liveToken, setMemberName, useMember } from "@/lib/member";
 import {
   notificationsOf,
   scGetUser,
@@ -169,6 +169,10 @@ export function AccountFields() {
             }
           : u,
       );
+      // The header and anywhere else showing a name read a per-tab cache, so a rename has to be
+      // announced or it sits there stale until the tab is closed.
+      if (patch.displayName !== undefined) setMemberName(patch.displayName);
+
       setNote(
         patch.email !== undefined
           ? "Saved. Your next sign-in link goes to the new address."
