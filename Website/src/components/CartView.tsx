@@ -9,7 +9,7 @@ import type { CardProduct } from "@/lib/catalog";
 import { ALLOWED_COUNTRIES, COUNTRY_NAMES, FREE_US_THRESHOLD_CENTS, shippingFor } from "@/lib/shipping";
 import { ProductCard } from "./ProductCard";
 import { Arrow, Close } from "./Icons";
-import { Price } from "@/lib/discount";
+import { Price, discounted, useMemberDiscount } from "@/lib/discount";
 
 const COUNTRY_KEY = "tru-ship-country";
 
@@ -94,8 +94,23 @@ export function CartView({ suggestions }: Props) {
       </div>
     );
 
+  /*
+   * The lines showed the member price while the summary added up the list price, so a cart of two
+   * discounted tees announced a total nobody was going to be charged. Stripe applies the coupon at
+   * checkout, and it is the same percentage this reads, so the arithmetic can be shown here rather
+   * than sprung on them at the end.
+   */
+  const percent = useMemberDiscount();
+  // Per line, matching how each line is displayed and how Stripe rounds a percentage coupon.
+  const memberSubtotal = percent
+    ? lines.reduce((sum, l) => sum + discounted(l.priceCents, percent) * l.qty, 0)
+    : subtotalCents;
+  const savedCents = subtotalCents - memberSubtotal;
+
+  // Free shipping still measured on the list price: a threshold that moved when a discount applied
+  // would take the reward away at exactly the moment it was earned.
   const ship = shippingFor(country, subtotalCents);
-  const total = subtotalCents + ship.rateCents;
+  const total = memberSubtotal + ship.rateCents;
   const toFree = FREE_US_THRESHOLD_CENTS - subtotalCents;
   const pct = Math.min(100, Math.round((subtotalCents / FREE_US_THRESHOLD_CENTS) * 100));
 
@@ -176,6 +191,12 @@ export function CartView({ suggestions }: Props) {
               <dt className="text-muted">Subtotal</dt>
               <dd>{money(subtotalCents)}</dd>
             </div>
+            {savedCents > 0 && (
+              <div className="flex justify-between text-yellow">
+                <dt>Member discount · {percent}%</dt>
+                <dd>-{money(savedCents)}</dd>
+              </div>
+            )}
             <div className="flex justify-between">
               <dt className="text-muted">Shipping · {ship.region.label}</dt>
               <dd>{ship.rateCents === 0 ? "Free" : money(ship.rateCents)}</dd>
