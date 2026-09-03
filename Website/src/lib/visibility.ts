@@ -29,7 +29,17 @@ export function isHiddenPath(path: string, hidden: string[]) {
   return hidden.some((h) => p === h || p.startsWith(h + "/") || (h === "/store" && (p === "/cart" || p.startsWith("/checkout"))));
 }
 
-/** Call at the top of a hideable page (and its children): 404s when hidden. */
+/**
+ * Call at the top of a hideable page (and its children): 404s when hidden.
+ *
+ * Signed in to admin is the exception. Hiding a page used to hide it from the owner too, so the
+ * only way to check a page before revealing it was to reveal it — which is the wrong order. A
+ * member session does not count here: "hidden" has to mean hidden from the audience, and every
+ * paying member is the audience.
+ */
 export async function assertVisible(path: string) {
-  if (isHiddenPath(path, await hiddenPages())) notFound();
+  if (!isHiddenPath(path, await hiddenPages())) return;
+  const { auth } = await import("@/auth");
+  const session = await auth().catch(() => null);
+  if (!session?.user) notFound();
 }
