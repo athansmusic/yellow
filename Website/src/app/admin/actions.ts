@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { auth, isAdminEmail, signIn, signOut } from "@/auth";
-import { getDoc, setDoc, LIKE_KINDS, SOCIAL_KEYS, type Aberration, type LikeKind, type LikePage, type SeasonStatus, type StoreCopy } from "@/lib/content";
+import { getDocFresh, setDoc, LIKE_KINDS, SOCIAL_KEYS, type Aberration, type LikeKind, type LikePage, type SeasonStatus, type StoreCopy } from "@/lib/content";
 import { slugify } from "@/lib/feed";
 
 async function requireAdmin() {
@@ -111,7 +111,7 @@ export async function saveAberration(fd: FormData) {
     threat: Math.min(5, Math.max(0, Number(fd.get("threat")) || 0)) || undefined,
     image: (await storeUpload(fd.get("imageFile"), `aberrations/${slug}`)) ?? (str(fd, "image") || undefined),
   };
-  const all = await getDoc("aberrations");
+  const all = await getDocFresh("aberrations");
   const rest = all.filter((x) => x.slug !== original && x.slug !== slug);
   await setDoc("aberrations", [...rest, a]);
   redirect(`/admin/aberrations/${slug}?saved=1`);
@@ -120,10 +120,19 @@ export async function saveAberration(fd: FormData) {
 export async function deleteAberration(fd: FormData) {
   await requireAdmin();
   const slug = str(fd, "slug");
-  const all = await getDoc("aberrations");
+  const all = await getDocFresh("aberrations");
   await setDoc("aberrations", all.filter((x) => x.slug !== slug));
   redirect("/admin/aberrations?deleted=1");
 }
+
+/*
+ * Every action below reads with getDocFresh, never the cached getDoc.
+ *
+ * These are read-modify-write: load the whole document, change one entry, write it back. Through a
+ * sixty-second cache that loses data — a second save inside the window reads the document from
+ * BEFORE the first save, then writes it back carrying only its own change, and the first save is
+ * gone with no error anywhere. Saving twice in a minute is what editing looks like.
+ */
 
 // ── If you like… pages ───────────────────────────────────────────────────
 export async function saveLike(fd: FormData) {
@@ -152,7 +161,7 @@ export async function saveLike(fd: FormData) {
       .map(([label, theirs, ours]) => ({ label, theirs, ours })),
     faq: faqQ.map((q, i) => ({ q: q.trim(), a: (faqA[i] ?? "").trim() })).filter((x) => x.q && x.a),
   };
-  const all = await getDoc("like");
+  const all = await getDocFresh("like");
   const rest = all.filter((x) => x.slug !== original && x.slug !== slug);
   await setDoc("like", [...rest, l]);
   redirect(`/admin/like/${slug}?saved=1`);
@@ -161,7 +170,7 @@ export async function saveLike(fd: FormData) {
 export async function deleteLike(fd: FormData) {
   await requireAdmin();
   const slug = str(fd, "slug");
-  const all = await getDoc("like");
+  const all = await getDocFresh("like");
   await setDoc("like", all.filter((x) => x.slug !== slug));
   redirect("/admin/like?deleted=1");
 }
@@ -191,7 +200,7 @@ export async function saveEpisodeMerch(fd: FormData) {
   const episode = str(fd, "episode");
   if (!episode) redirect("/admin/merch");
   const slugs = fd.getAll("product").map(String).filter(Boolean);
-  const all = await getDoc("episodeMerch");
+  const all = await getDocFresh("episodeMerch");
   const next = { ...all };
   if (slugs.length) next[episode] = slugs;
   else delete next[episode];
@@ -226,7 +235,7 @@ export async function addContributorArt(fd: FormData) {
     redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&err=${encodeURIComponent((e as Error).message)}`);
   }
   if (url) {
-    const all = await getDoc("contributors");
+    const all = await getDocFresh("contributors");
     const person = all[slug] ?? {};
     const art = [...(person.art ?? []), { id, url, title: str(fd, "title") }];
     await setDoc("contributors", { ...all, [slug]: { ...person, art } });
@@ -238,7 +247,7 @@ export async function removeContributorArt(fd: FormData) {
   await requireAdmin();
   const slug = str(fd, "slug");
   const id = str(fd, "id");
-  const all = await getDoc("contributors");
+  const all = await getDocFresh("contributors");
   const person = all[slug];
   if (person?.art) {
     await setDoc("contributors", { ...all, [slug]: { ...person, art: person.art.filter((a) => a.id !== id) } });
@@ -250,7 +259,7 @@ export async function saveContributorBio(fd: FormData) {
   await requireAdmin();
   const slug = str(fd, "slug");
   const bio = str(fd, "bio");
-  const all = await getDoc("contributors");
+  const all = await getDocFresh("contributors");
   const person = all[slug] ?? {};
   await setDoc("contributors", { ...all, [slug]: { ...person, bio: bio || undefined } });
   redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&saved=1`);
@@ -259,7 +268,7 @@ export async function saveContributorBio(fd: FormData) {
 export async function toggleContributorHidden(fd: FormData) {
   await requireAdmin();
   const slug = str(fd, "slug");
-  const all = await getDoc("contributors");
+  const all = await getDocFresh("contributors");
   const person = all[slug] ?? {};
   await setDoc("contributors", { ...all, [slug]: { ...person, hidden: !person.hidden } });
   redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&saved=1`);
@@ -275,7 +284,7 @@ export async function saveContributorPhoto(fd: FormData) {
     redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&err=${encodeURIComponent((e as Error).message)}`);
   }
   if (url) {
-    const all = await getDoc("contributors");
+    const all = await getDocFresh("contributors");
     await setDoc("contributors", { ...all, [slug]: { ...(all[slug] ?? {}), photo: url } });
   }
   redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&saved=1`);
@@ -284,7 +293,7 @@ export async function saveContributorPhoto(fd: FormData) {
 export async function removeContributorPhoto(fd: FormData) {
   await requireAdmin();
   const slug = str(fd, "slug");
-  const all = await getDoc("contributors");
+  const all = await getDocFresh("contributors");
   const person = all[slug];
   if (person) await setDoc("contributors", { ...all, [slug]: { ...person, photo: undefined } });
   redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&removed=1`);
@@ -296,7 +305,7 @@ export async function addContributorWork(fd: FormData) {
   const slug = str(fd, "slug");
   const title = str(fd, "workTitle");
   if (slug && title) {
-    const all = await getDoc("contributors");
+    const all = await getDocFresh("contributors");
     const person = all[slug] ?? {};
     const work = { id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`, title, note: str(fd, "workNote") || undefined, url: asUrl(str(fd, "workUrl")) || undefined };
     await setDoc("contributors", { ...all, [slug]: { ...person, works: [...(person.works ?? []), work] } });
@@ -308,7 +317,7 @@ export async function removeContributorWork(fd: FormData) {
   await requireAdmin();
   const slug = str(fd, "slug");
   const id = str(fd, "id");
-  const all = await getDoc("contributors");
+  const all = await getDocFresh("contributors");
   const person = all[slug];
   if (person?.works) await setDoc("contributors", { ...all, [slug]: { ...person, works: person.works.filter((w) => w.id !== id) } });
   redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&removed=1`);
@@ -322,7 +331,7 @@ export async function saveContributorSocials(fd: FormData) {
     const v = asUrl(str(fd, `social:${k}`));
     if (v) socials[k] = v;
   }
-  const all = await getDoc("contributors");
+  const all = await getDocFresh("contributors");
   await setDoc("contributors", { ...all, [slug]: { ...(all[slug] ?? {}), socials } });
   redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&saved=1`);
 }
@@ -334,7 +343,7 @@ export async function attachContributorArt(fd: FormData) {
   const urls = fd.getAll("url").map(String).filter(Boolean);
   if (!slug || !urls.length) return;
   const title = str(fd, "title");
-  const all = await getDoc("contributors");
+  const all = await getDocFresh("contributors");
   const person = all[slug] ?? {};
   const added = urls.map((url, i) => ({ id: `${Date.now().toString(36)}${i}${Math.random().toString(36).slice(2, 6)}`, url, title: urls.length === 1 ? title : "" }));
   await setDoc("contributors", { ...all, [slug]: { ...person, art: [...(person.art ?? []), ...added] } });
@@ -346,7 +355,7 @@ export async function attachContributorPhoto(fd: FormData) {
   const slug = str(fd, "slug");
   const url = str(fd, "url");
   if (!slug || !url) return;
-  const all = await getDoc("contributors");
+  const all = await getDocFresh("contributors");
   await setDoc("contributors", { ...all, [slug]: { ...(all[slug] ?? {}), photo: url } });
   revalidatePath("/admin/contributors");
 }
@@ -361,7 +370,7 @@ export async function saveContributorDetails(fd: FormData) {
     if (v) socials[k] = v;
   }
   const bio = str(fd, "bio");
-  const all = await getDoc("contributors");
+  const all = await getDocFresh("contributors");
   await setDoc("contributors", { ...all, [slug]: { ...(all[slug] ?? {}), bio: bio || undefined, socials } });
   redirect(`/admin/contributors?p=${encodeURIComponent(slug)}&saved=1`);
 }
