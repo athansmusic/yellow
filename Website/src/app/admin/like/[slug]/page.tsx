@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getDocFresh, LIKE_KINDS, type LikePage } from "@/lib/content";
+import { getDoc, LIKE_KINDS, type LikePage } from "@/lib/content";
 import { Field, Saved } from "../../ui";
 import { deleteLike, saveLike } from "../../actions";
 
 export default async function EditLike({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ saved?: string; from?: string }> }) {
   const { slug } = await params;
   const { saved, from } = await searchParams;
-  const all = await getDocFresh("like");
+  const all = await getDoc("like");
   const isNew = slug === "new";
   // "Start from" copies an existing page's fields into the new form (slug and name cleared so it can't overwrite the original)
   const template = isNew && from ? all.find((x) => x.slug === from) : undefined;

@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { getDocFresh } from "@/lib/content";
+import { getDoc } from "@/lib/content";
 
 export default async function LikeAdmin({ searchParams }: { searchParams: Promise<{ deleted?: string }> }) {
   const { deleted } = await searchParams;
-  const all = (await getDocFresh("like")).sort((a, b) => a.name.localeCompare(b.name));
+  const all = (await getDoc("like")).sort((a, b) => a.name.localeCompare(b.name));
   return (
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
