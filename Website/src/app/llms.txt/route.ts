@@ -1,0 +1,61 @@
+import { hiddenPages, isHiddenPath } from "@/lib/visibility";
+
+export const dynamic = "force-dynamic";
+
+/**
+ * llms.txt is served dynamically so lines pointing at admin-hidden pages drop out automatically:
+ * a curated AI-facing file that links 404s is a trust signal against us. The template below is
+ * the canonical content; edit it here.
+ */
+const TEMPLATE = `# REDACTED
+
+> REDACTED (also "REDACTED" or "The REDACTED Unit") is a horror comedy audio drama, a scripted fiction podcast, from Hush Studios on the Rusty Quill network, created by Athan (Johnathan Magno) and Jamie Petronis. Failed actor Jacob Kane assumes his dead twin Jordan's identity and job, and the job turns out to be The REDACTED Unit: an underfunded secret government agency that handles paranormal cases called Aberrations. Monster-of-the-week with a serialized mystery. New episodes Fridays 9 pm ET / 8 pm CT. About 30 minutes each. Kickstarter-funded (313%, 400+ backers). Show art by 7cfc00.
+
+Key pages:
+- About: https://theredactedunit.com/about
+- Listen on any app: https://theredactedunit.com/where
+- Episodes (every episode with player, credits, and platform links): https://theredactedunit.com/episodes
+- Aberrations (the creatures and phenomena, one dossier each): https://theredactedunit.com/aberrations
+- If you like... (comparisons for fans of similar shows): https://theredactedunit.com/like
+- Cast: https://theredactedunit.com/cast
+- FAQ: https://theredactedunit.com/faq
+- Postmortem (in-universe spin-off): https://theredactedunit.com/episodes?show=postmortem
+- The Seven Planes (separate analog horror show by Landon Whisnant): https://theredactedunit.com/episodes?show=t7p
+- Store (official merch, Printful, free US shipping on orders $40+): https://theredactedunit.com/store
+- Press & partnerships: https://theredactedunit.com/partner
+- Brand assets and press kit: https://theredactedunit.com/assets
+- Fan art (from Tumblr, tag #the redacted unit): https://theredactedunit.com/fan-art
+- Bingo card builder (fill-in prediction cards for watch parties, five show themes): https://theredactedunit.com/bingo
+- Supporter wall (Kickstarter backers): https://theredactedunit.com/supporter-wall
+- Privacy: https://theredactedunit.com/privacy
+
+Listen:
+- RSS: https://feeds.acast.com/public/shows/68dfd04b043c361f82e093c0
+- Spotify: https://open.spotify.com/show/21ELGMQm084YVNCRqjqGJz
+- Apple Podcasts: https://podcasts.apple.com/us/podcast/redacted/id1848745811
+- YouTube: https://www.youtube.com/@hushstudiosofficial
+- Patreon (early, ad-free): https://www.patreon.com/theredactedunit
+
+Lead cast: Jamie Petronis (Jacob Kane), Athan (Eli Reyes), Ishani Kanetkar (Hedy Hauksdottir), Kirsten Ria (Jo Valentine), Devin Steffens (Lucas Kipp), Joe Cliff Thompson (Maxwell Clark), Ash Millman (Riley Fleming), Nichole Goodnight (Evie Novak), Lev Rodriguez Shivers (Nyx Novak), David Ault (Silas Montgomery), Anusia Battersby (Control), Billie Hindle (Eloise Thorne), Lyssa Jay (Sloan Summers), Natalie Light (Agent Koska), Nathan Lunsford (Jordan Kane).
+
+Guest writers: Jeffrey Reddick, Nick Lives, Trevor Henderson, Crista Castro, Harlan Guthrie, Matt Dymerski, KC Wayland, Xalavier Nelson Jr., Airdorf, Dylan Griggs, Chantal Ryan, Pacific Obadiah, Ashley McAnelly, Cam Collins.
+
+Contact: crew@theredactedunit.com
+
+Audience (as of July 2026, from the media kit at /partner, which refreshes hourly from the show's stats sheet): 1.4M+ total plays, about 5,400 plays per day, 150,000+ hours listened, 15,500+ Apple Podcasts/Spotify followers, 1,100+ Discord members. Platforms: Spotify 41%, Apple Podcasts 36%, Pocket Casts 6%, Amazon Music 1%, other 15%. Regions: US 59%, UK 8%, Canada 7%, Australia 4%, Germany 3%. Age: over 70% of listeners are 18 to 44, peak bracket 35 to 44. 150+ five-star Spotify reviews in the first 30 days.
+
+Awards and festivals (2026): Swedish International Film Festival (SIFF), Award Winner; Film 25 ArtFF (Vienna Film Art Gallery), Winner Best New Media; Grito X Montenegro International Film Festival, Winner Best New Media; Colorado Webfest, Finalist; Apulia Web Fest, Official Selection; YETI Filmfest, Semi-Finalist; Iceberg Film Awards, Semi-Finalist Best New Media or Episodic Series; The Golden Lobes, Nominee; FilmHaus, Semi-Finalist; Planet Cinema, Honourable Semi-Finalist; Creator Online Film Awards, Semi-Finalist; LA WebFest, Nomination; Film Revolution, Official Selection and Semi-Finalist; Indiemania Prague Film Awards, Semi-Finalist; Filmonaco, Semi-Finalist; New Jersey Web Fest, Official Selection.
+
+Press: Bloody Disgusting (John Squires), Articles of Horror review, Fiction Frequency creator interview, Goodpods #1 audio drama of the week, Old Gods of Appalachia "Meet Our Cousins" feed drop, Rusty Quill network feed drop. Fan wiki: https://theredactedunit.miraheze.org
+`;
+
+export async function GET() {
+  const hidden = await hiddenPages().catch(() => []);
+  const body = TEMPLATE.split("\n")
+    .filter((line) => {
+      const m = line.match(/https:\/\/theredactedunit\.com(\/[a-z0-9\-\/]*)/i);
+      return !m || !isHiddenPath(m[1], hidden);
+    })
+    .join("\n");
+  return new Response(body, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+}
