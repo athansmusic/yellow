@@ -125,6 +125,19 @@ export function AccountFields() {
     savedListed,
   ]);
 
+
+  /**
+   * Carry a new name or picture through everything already written.
+   *
+   * Comments keep the author's name on the row rather than looking it up, which is what makes a
+   * thread one query instead of one per author — so a rename has to come back and update them.
+   * Deliberately not awaited by the save: the change itself is already stored, and a slow sweep
+   * should not hold up the confirmation.
+   */
+  const syncProfile = useCallback((token: string) => {
+    void fetch("/api/profile", { method: "POST", headers: { "x-sc-token": token } }).catch(() => {});
+  }, []);
+
   const save = useCallback(async () => {
     const token = liveToken();
     if (!token || !user || busy || !changed) return;
@@ -214,7 +227,10 @@ export function AccountFields() {
       // The header and anywhere else showing a name read a per-tab cache, so a rename has to be
       // announced or it sits there stale until the tab is closed.
       forgetUser();
-      if (patch.displayName !== undefined) setMemberProfile({ name: patch.displayName });
+      if (patch.displayName !== undefined) {
+        setMemberProfile({ name: patch.displayName });
+        syncProfile(token);
+      }
 
       setNote(
         patch.email !== undefined
@@ -238,6 +254,7 @@ export function AccountFields() {
     savedUpdateEmails,
     listed,
     savedListed,
+    syncProfile,
   ]);
 
   /** The avatar is its own endpoint, so it cannot ride along with the rest. */
@@ -258,13 +275,14 @@ export function AccountFields() {
       setUser((u) => (u ? { ...u, avatarUrl: url } : u));
       forgetUser();
       setMemberProfile({ avatar: url });
+      syncProfile(token);
       setNote("Avatar updated.");
     } catch {
       setError("Could not upload that image.");
     } finally {
       setBusy(false);
     }
-  }, []);
+  }, [syncProfile]);
 
   if (!member?.signedIn || !user) return null;
 
