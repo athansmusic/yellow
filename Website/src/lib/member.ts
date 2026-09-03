@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
  */
 const TOKEN_KEY = "sc_widget_token";
 const NAME_KEY = "tru-member-name";
+const AVATAR_KEY = "tru-member-avatar";
 /** Field names seen on a real /user response, for ?debug=member. Names only, never values. */
 const SHAPE_KEY = "tru-member-shape";
 /**
@@ -82,22 +83,31 @@ function nameFrom(raw: Record<string, unknown>): string | null {
 }
 
 /**
- * Record a new display name and tell every badge on the page about it.
+ * Record a new display name or picture and tell every badge on the page about it.
  *
- * Called after the account form saves a rename. The name is already known, so this updates the
- * cache directly rather than spending one of Supporting Cast's sixty-a-minute re-reading it.
+ * Called after the account form saves. Both values are already known, so this updates the cache
+ * directly rather than spending one of Supporting Cast's sixty-a-minute re-reading them.
  */
-export function setMemberName(name: string | null) {
+export function setMemberProfile({ name, avatar }: { name?: string | null; avatar?: string | null }) {
   try {
-    if (name) sessionStorage.setItem(NAME_KEY, name);
-    else sessionStorage.removeItem(NAME_KEY);
+    if (name !== undefined) {
+      if (name) sessionStorage.setItem(NAME_KEY, name);
+      else sessionStorage.removeItem(NAME_KEY);
+    }
+    if (avatar !== undefined) {
+      if (avatar) sessionStorage.setItem(AVATAR_KEY, avatar);
+      else sessionStorage.removeItem(AVATAR_KEY);
+    }
   } catch {}
   try {
     window.dispatchEvent(new Event(CHANGED));
   } catch {}
 }
 
-export type MemberState = { signedIn: boolean; name: string | null };
+/** Kept for the older call site; a rename is the common case. */
+export const setMemberName = (name: string | null) => setMemberProfile({ name });
+
+export type MemberState = { signedIn: boolean; name: string | null; avatar: string | null };
 
 /**
  * Signed-in state for the header. Returns undefined until known, so the badge renders nothing
@@ -114,16 +124,18 @@ export function useMember(): MemberState | undefined {
     const read = () => {
       const token = liveToken();
       if (!token) {
-        setState({ signedIn: false, name: null });
+        setState({ signedIn: false, name: null, avatar: null });
         return;
       }
 
       // Names change rarely; remember it for the tab so every page load is not a round trip.
       let cached: string | null = null;
+      let cachedAvatar: string | null = null;
       try {
         cached = sessionStorage.getItem(NAME_KEY);
+        cachedAvatar = sessionStorage.getItem(AVATAR_KEY);
       } catch {}
-      setState({ signedIn: true, name: cached });
+      setState({ signedIn: true, name: cached, avatar: cachedAvatar });
       if (cached) return;
 
       fetch("https://widget-api.supportingcast.fm/user", {
@@ -136,16 +148,25 @@ export function useMember(): MemberState | undefined {
         .then((r) => (r.ok ? r.json() : null))
         .then((j: Record<string, unknown> | null) => {
           if (dead || !j) return;
+          const u = (j.user ?? j.data ?? j) as Record<string, unknown>;
           try {
-            const u = (j.user ?? j.data ?? j) as Record<string, unknown>;
             sessionStorage.setItem(SHAPE_KEY, Object.keys(u).join(", "));
           } catch {}
+          // Only an absolute http(s) URL ever becomes an image source.
+          const rawAvatar = str(u.avatarUrl) ?? str(u.avatar_url) ?? str(u.avatar);
+          const avatar = rawAvatar && /^https?:\/\//i.test(rawAvatar) ? rawAvatar : null;
           const name = nameFrom(j);
-          if (!name) return;
+          try {
+            if (avatar) sessionStorage.setItem(AVATAR_KEY, avatar);
+          } catch {}
+          if (!name) {
+            if (avatar) setState({ signedIn: true, name: null, avatar });
+            return;
+          }
           try {
             sessionStorage.setItem(NAME_KEY, name);
           } catch {}
-          setState({ signedIn: true, name });
+          setState({ signedIn: true, name, avatar });
         })
         .catch(() => {
           /* signed in but nameless: the badge falls back to a generic label */
@@ -162,6 +183,7 @@ export function useMember(): MemberState | undefined {
       if (e.key === TOKEN_KEY) {
         try {
           sessionStorage.removeItem(NAME_KEY);
+          sessionStorage.removeItem(AVATAR_KEY);
         } catch {}
         read();
       }

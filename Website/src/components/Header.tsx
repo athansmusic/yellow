@@ -210,6 +210,9 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
                 aria-haspopup="true"
                 className="inline-flex items-center gap-2 display text-xl px-3 py-1.5 text-yellow border border-yellow/70 group-hover:bg-yellow group-hover:text-ink group-focus-within:bg-yellow group-focus-within:text-ink transition-colors max-w-48"
               >
+                {/* eslint-disable-next-line @next/next/no-img-element -- Supporting Cast's media
+                    host is not in the image config, and next/image throws on an unknown hostname. */}
+                {member.avatar && <img src={member.avatar} alt="" width={22} height={22} className="size-[22px] shrink-0 border border-current/40 object-cover" />}
                 <span className="truncate">{member.name ?? "Account"}</span>
               </Link>
               <div className="absolute right-0 top-full min-w-44 bg-ink-2 border border-line shadow-[0_20px_40px_rgba(0,0,0,.6)] hidden group-hover:block group-focus-within:block">
@@ -389,6 +392,8 @@ export function Header({ hidden = [] }: { hidden?: string[] }) {
                   invitation to subscribe somewhere they already have. */}
               {member?.signedIn ? (
                 <Link href="/account" className="inline-flex items-center gap-2 display text-xl px-4 py-2 border border-yellow/70 text-yellow hover:bg-yellow hover:text-ink max-w-[15rem]">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- see above */}
+                  {member.avatar && <img src={member.avatar} alt="" width={22} height={22} className="size-[22px] shrink-0 border border-current/40 object-cover" />}
                   <span className="truncate">{member.name ?? "Account"}</span>
                 </Link>
               ) : (

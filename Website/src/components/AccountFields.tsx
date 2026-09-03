@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { liveToken, setMemberName, useMember } from "@/lib/member";
+import { liveToken, setMemberProfile, useMember } from "@/lib/member";
 import { SubscriptionCard } from "@/components/SubscriptionCard";
 import {
   notificationsOf,
@@ -212,7 +212,7 @@ export function AccountFields() {
       );
       // The header and anywhere else showing a name read a per-tab cache, so a rename has to be
       // announced or it sits there stale until the tab is closed.
-      if (patch.displayName !== undefined) setMemberName(patch.displayName);
+      if (patch.displayName !== undefined) setMemberProfile({ name: patch.displayName });
 
       setNote(
         patch.email !== undefined
@@ -254,6 +254,7 @@ export function AccountFields() {
       }
       const url = data.url;
       setUser((u) => (u ? { ...u, avatarUrl: url } : u));
+      setMemberProfile({ avatar: url });
       setNote("Avatar updated.");
     } catch {
       setError("Could not upload that image.");
