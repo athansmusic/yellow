@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Close } from "./Icons";
 
 type Piece = { id: string; url: string; title: string };
@@ -11,6 +12,9 @@ export function ArtLightbox({ pieces, artist }: { pieces: Piece[]; artist: strin
   const [open, setOpen] = useState<number | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
+  // <body> does not exist during the server render, so the portal waits for the client.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const close = useCallback(() => setOpen(null), []);
   const step = useCallback(
@@ -62,9 +66,19 @@ export function ArtLightbox({ pieces, artist }: { pieces: Piece[]; artist: strin
         ))}
       </ul>
 
-      {current && (
-        <div
-          ref={dialogRef}
+      {current &&
+        mounted &&
+        /*
+         * Rendered into <body>, not here.
+         *
+         * z-50 only beats the footer's z-10 when both sit in the same stacking context, and an
+         * ancestor of this grid makes its own — so the viewer was being painted underneath the
+         * footer no matter how high its z-index went. A portal is the only reliable way out of
+         * somebody else's stacking context.
+         */
+        createPortal(
+          <div
+            ref={dialogRef}
           tabIndex={-1}
           role="dialog"
           aria-modal="true"
@@ -101,8 +115,9 @@ export function ArtLightbox({ pieces, artist }: { pieces: Piece[]; artist: strin
               </button>
             </>
           )}
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
     </>
   );
 }
