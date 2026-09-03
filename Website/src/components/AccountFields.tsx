@@ -9,6 +9,7 @@ import {
   scPutAvatar,
   scPutUser,
   shrinkToDataUrl,
+  forgetUser,
   type ScUser,
 } from "@/lib/sc";
 
@@ -212,6 +213,7 @@ export function AccountFields() {
       );
       // The header and anywhere else showing a name read a per-tab cache, so a rename has to be
       // announced or it sits there stale until the tab is closed.
+      forgetUser();
       if (patch.displayName !== undefined) setMemberProfile({ name: patch.displayName });
 
       setNote(
@@ -254,6 +256,7 @@ export function AccountFields() {
       }
       const url = data.url;
       setUser((u) => (u ? { ...u, avatarUrl: url } : u));
+      forgetUser();
       setMemberProfile({ avatar: url });
       setNote("Avatar updated.");
     } catch {

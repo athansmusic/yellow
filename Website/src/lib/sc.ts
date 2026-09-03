@@ -121,7 +121,46 @@ async function call<T>(
   return { ok: res.ok, status: res.status, data };
 }
 
-export const scGetUser = (token: string) => call<ScUser>("user", "GET", token);
+/*
+ * One /user call, shared.
+ *
+ * Their sixty-a-minute is spent by everyone using the publishable key at once, not per visitor —
+ * so it is a budget for the whole site, and the account page alone was spending five of it per
+ * load: their widget's config and user, and two separate reads of ours. Anything asking within a
+ * few seconds now joins the request already in flight, and a reload inside the window reuses the
+ * answer instead of buying it again.
+ *
+ * `force` is for straight after a write, where the point is to see what changed.
+ */
+let userInflight: Promise<ScResult<ScUser>> | null = null;
+let userAt = 0;
+let userLast: ScResult<ScUser> | null = null;
+const USER_TTL_MS = 15_000;
+
+export function scGetUser(token: string, force = false): Promise<ScResult<ScUser>> {
+  if (!force) {
+    if (userInflight) return userInflight;
+    if (userLast?.ok && Date.now() - userAt < USER_TTL_MS) return Promise.resolve(userLast);
+  }
+  userInflight = call<ScUser>("user", "GET", token)
+    .then((r) => {
+      if (r.ok) {
+        userLast = r;
+        userAt = Date.now();
+      }
+      return r;
+    })
+    .finally(() => {
+      userInflight = null;
+    });
+  return userInflight;
+}
+
+/** After a write, or after signing out, the remembered answer is no longer the truth. */
+export function forgetUser() {
+  userLast = null;
+  userAt = 0;
+}
 
 /** Send only what changed — a full object would overwrite fields this page does not show. */
 export const scPutUser = (

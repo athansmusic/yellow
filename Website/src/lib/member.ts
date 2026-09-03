@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { scGetUser } from "@/lib/sc";
 
 /**
  * Whether this browser holds a live Supporting Cast session, and who it belongs to.
@@ -138,15 +139,10 @@ export function useMember(): MemberState | undefined {
       setState({ signedIn: true, name: cached, avatar: cachedAvatar });
       if (cached) return;
 
-      fetch("https://widget-api.supportingcast.fm/user", {
-        headers: {
-          "Supportingcast-Widget-Publishable-Key": PK,
-          "Supportingcast-Widget-Access-Token": token,
-          "Content-Type": "application/json",
-        },
-      })
-        .then((r) => (r.ok ? r.json() : null))
-        .then((j: Record<string, unknown> | null) => {
+      // The same shared read the account page uses, so a page carrying both spends one call.
+      scGetUser(token)
+        .then(({ ok, data }) => {
+          const j = ok ? (data as unknown as Record<string, unknown>) : null;
           if (dead || !j) return;
           const u = (j.user ?? j.data ?? j) as Record<string, unknown>;
           try {
