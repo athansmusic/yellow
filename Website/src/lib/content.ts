@@ -140,6 +140,18 @@ export async function getDoc<N extends DocName>(name: N): Promise<Docs[N]> {
   return unstable_cache(() => readRaw(name), ["content", name], { revalidate: 60, tags: [`content:${name}`] })();
 }
 
+/**
+ * Read straight from storage, past the cache.
+ *
+ * For the admin editors. Reading a document through a one-minute cache is right for the public
+ * site and wrong for the form you just saved: reloading it could hand back the version from before
+ * the save, which looks exactly like the save having failed — and invites saving again over the
+ * top of work that was never actually lost.
+ */
+export async function getDocFresh<N extends DocName>(name: N): Promise<Docs[N]> {
+  return readRaw(name);
+}
+
 /** Write a content document, then refresh every page that depends on it. */
 export async function setDoc<N extends DocName>(name: N, value: Docs[N]) {
   const body = JSON.stringify(value, null, 2) + "\n";
