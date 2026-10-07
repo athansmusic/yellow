@@ -11,7 +11,7 @@ import { Bar, Counter } from "@/components/partner/Counters";
 import { PlaysChart } from "@/components/partner/PlaysChart";
 import { SectionNav } from "@/components/partner/SectionNav";
 import { JsonLd, audienceJsonLd, breadcrumbJsonLd } from "@/lib/schema";
-import awards from "@/data/awards.json";
+import { awards } from "@/lib/awards";
 import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
@@ -453,7 +453,7 @@ export default async function PartnerPage() {
                     <li key={a.file} className="flex justify-between gap-4 border-b border-white/10 py-1.5">
                       <span className="text-paper/85">{a.festival}</span>
                       <span className="text-right text-paper/55 shrink-0">
-                        {a.result} · {a.year}
+                        {[a.result, a.year].filter(Boolean).join(" · ")}
                       </span>
                     </li>
                   ))}

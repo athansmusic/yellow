@@ -26,7 +26,9 @@ await sharp(cover).resize({ width: 3000, height: 3000, fit: "cover", withoutEnla
 await sharp("public/home/hero.avif").jpeg({ quality: 90 }).toFile(path.join(out, "REDACTED-key-art.jpg"));
 
 // Laurels: individual + one strip
-const laurels = fs.readdirSync("public/laurels").filter((f) => f.endsWith(".png")).sort();
+// Site order, not filename order: the strip reads left to right the way the website's list does,
+// and filenames are only IDs now that new laurels are added at the end of the folder.
+const laurels = JSON.parse(fs.readFileSync("src/data/awards.json", "utf8")).map((a) => `${a.file}.png`);
 for (const f of laurels) fs.copyFileSync(path.join("public/laurels", f), path.join(out, `laurel-${f}`));
 // Each laurel is trimmed to its artwork, then fitted into an even cell so sizes and margins match.
 const size = 600;

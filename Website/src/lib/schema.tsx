@@ -1,7 +1,7 @@
 import { LISTEN, SITE } from "./site";
-import awards from "@/data/awards.json";
+import { awards } from "@/lib/awards";
 
-export const AWARD_STRINGS = awards.map((a) => `${a.festival} ${a.year}: ${a.result}`);
+export const AWARD_STRINGS = awards.map((a) => `${[a.festival, a.year].filter(Boolean).join(" ")}: ${a.result}`);
 
 /** Organization + PodcastSeries, emitted on every page so crawlers and LLMs have a stable entity. */
 export function siteJsonLd() {
