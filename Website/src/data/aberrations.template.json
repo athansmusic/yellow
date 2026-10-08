@@ -1,0 +1,21 @@
+{
+  "_howto": "Copy this object into src/data/aberrations.json inside the [ ]. Everything about the episode itself (title, art, date, cast, content warnings, player, Postmortem link) is pulled from the feed automatically using episodeCode, so you only write the in-universe bits. Delete keys you don't need. No em dashes.",
+
+  "slug": "creature-name-lowercase-with-hyphens",
+  "name": "The Creature Name (as the Unit refers to it)",
+  "episodeCode": "S1 E12",
+  "_episodeCode": "Exactly as it appears on the episodes page, with the space: S1 E12. One aberration per episode is the default; a two-parter uses the Part 1 code.",
+
+  "type": "Short classification: Cryptid, Entity, Object, Location, Infection, Aquatic, Unknown, or whatever TRU would file it under",
+  "status": "Case closed / Contained / At large / Unknown",
+
+  "teaser": "One sentence, spoiler-free. This is the Google snippet and the card on the index page. The episode's own one-liner usually works.",
+
+  "entry": "Two or three paragraphs with spoilers: what it is, what it does, where it turned up, how the team dealt with it. Written in-universe is fine (report voice), or plainly, your call. Paragraphs separated by a blank line.",
+
+  "handling": "One line on how the case was resolved or contained.",
+
+  "firstSeen": "Optional. If it showed up earlier than its episode (a mention, a Postmortem), say where. Delete this key otherwise.",
+
+  "related": ["slug-of-another-aberration", "slug-of-another-aberration"]
+}

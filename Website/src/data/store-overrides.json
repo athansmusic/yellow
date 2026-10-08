@@ -1,0 +1,165 @@
+{
+  "_readme": "Editorial layer over the Printful catalog. Keys in byName must match the Printful product name exactly. Fields: description, category (apparel|accessories|home), artist, tags, order (lower = earlier; unset = 500, then newest first), new (badge), hidden, slug. typeDescriptions are regex \u2192 fallback copy used when a product has no description. hiddenIds: Printful product IDs to hide from the site (value is just a note).",
+  "typeDescriptions": {
+    "hoodie": "Unisex premium pullover hoodie. Heavyweight cotton-blend fleece, double-lined hood, front pouch pocket. Printed to order.\n\nSizes run true to unisex sizing. If you're between sizes, go up.",
+    "bomber": "All-over-print unisex bomber jacket. Lightweight, water-resistant outer with a soft lining, ribbed cuffs and hem. Printed to order.",
+    "t-shirt|tee|crew neck": "Unisex staple tee. Soft ring-spun cotton, retail fit, pre-shrunk. Printed to order.",
+    "joggers": "All-over-print recycled joggers. Stretchy, breathable, with an elastic waistband, drawstring, and side pockets. Printed to order.",
+    "shorts": "All-over-print athletic long shorts. Lightweight polyester with an elastic waistband and drawstring. Printed to order.",
+    "slip-on|shoe": "Canvas slip-ons with an all-over print. Cushioned insole, rubber sole. Printed to order.",
+    "beanie": "Cuffed knit beanie with an embroidered [REDACTED] logo. One size.",
+    "hat|cap": "Classic dad hat with an embroidered [REDACTED] logo. Adjustable strap, one size.",
+    "mug": "11 oz glossy ceramic mug. Dishwasher and microwave safe. Printed to order.",
+    "tumbler": "20 oz insulated stainless steel tumbler with a straw. Keeps drinks cold (or hot) for hours. Printed to order.",
+    "desk mat|mouse pad": "36\u2033 \u00d7 18\u2033 desk mat with a smooth, stitched-edge fabric top and non-slip rubber base. Printed to order.",
+    "puzzle": "Jigsaw puzzle printed on thick, glossy board. Ships in a printed tin. Printed to order.",
+    "journal": "Hardcover matte journal, 8\u2033 \u00d7 5.75\u2033, 150 lined pages with a ribbon bookmark. Printed to order.",
+    "post-it|note": "3\u2033 \u00d7 3\u2033 sticky note pads. Because yellow squares are the real hero of the show.",
+    "coaster": "Cork-backed coaster, 4\u2033 square. Printed to order.",
+    "bowl": "32 oz pet bowl. Food-safe, dishwasher safe. For the dog you should absolutely pet.",
+    "sticker": "Kiss-cut sticker sheet. Durable vinyl with a matte finish, indoor and outdoor safe.",
+    "patch": "3\u2033 embroidered patch with an iron-on backing.",
+    "flag": "All-over-print flag, 56\u2033 \u00d7 34.5\u2033, single-sided with a mirrored back. Brass grommets for hanging.",
+    "print|poster": "Enhanced matte paper poster. Museum-quality, archival paper. Ships rolled in a protective tube.",
+    "iphone case|phone case": "Tough, matte, MagSafe-compatible iPhone case. Dual-layer for impact protection. Printed to order.",
+    "crossbody bag|bag": "All-over-print utility crossbody bag with an adjustable strap and zip pockets. Printed to order."
+  },
+  "byName": {
+    "Eli Reyes Logo Tee": {
+      "order": 1,
+      "new": true,
+      "artist": "Cimejic"
+    },
+    "Jacob on Stage Tee": {
+      "order": 2,
+      "new": true,
+      "artist": "Darhak"
+    },
+    "Falling Eli Tee": {
+      "order": 3,
+      "new": true,
+      "artist": "Cimejic"
+    },
+    "Spatter Windbreaker": {
+      "order": 4,
+      "new": true
+    },
+    "Forest Fire Hoodie / Light": {
+      "artist": "Darhak",
+      "order": 10
+    },
+    "Forest Fire Hoodie / Dark": {
+      "artist": "Darhak",
+      "order": 11
+    },
+    "Forest Fire Tee": {
+      "artist": "Darhak",
+      "order": 12
+    },
+    "Forest Fire Print": {
+      "artist": "Darhak",
+      "order": 13,
+      "category": "home"
+    },
+    "Forest Fire Desk Mat": {
+      "artist": "Darhak",
+      "order": 14
+    },
+    "Forest Fire Puzzle": {
+      "artist": "Darhak",
+      "order": 15
+    },
+    "Car Crash Hoodie": {
+      "order": 20
+    },
+    "Car Crash Tee": {
+      "order": 21
+    },
+    "Car Crash Print": {
+      "order": 22,
+      "category": "home"
+    },
+    "Aberrant Hoodie": {
+      "order": 30
+    },
+    "Aberrant Tee": {
+      "order": 31
+    },
+    "Spatter Bomber Jacket": {
+      "order": 40
+    },
+    "Spatter Tee": {
+      "order": 41
+    },
+    "Logo Hat / Yellow on Black": {
+      "order": 50
+    },
+    "Logo Hat / Black on Black": {
+      "order": 51
+    },
+    "Logo Hat / Black on White": {
+      "order": 52
+    },
+    "Logo Beanie": {
+      "order": 53
+    },
+    "Logo Patch": {
+      "order": 100,
+      "category": "accessories"
+    },
+    "Chibi Sticker Sheet": {
+      "order": 101,
+      "category": "accessories"
+    },
+    "Greepling Sticker Sheet": {
+      "order": 102,
+      "category": "accessories",
+      "artist": "Karen Neat"
+    },
+    "Quotes Sticker Sheet": {
+      "order": 103,
+      "category": "accessories"
+    },
+    "Christmas Sticker Sheet": {
+      "order": 104,
+      "category": "accessories"
+    },
+    "Pride Flag": {
+      "order": 200,
+      "category": "home"
+    },
+    "Logo Flag": {
+      "order": 201,
+      "category": "home"
+    },
+    "Brood Print": {
+      "order": 300,
+      "category": "home"
+    },
+    "Shapeshifter Print": {
+      "order": 301,
+      "category": "home"
+    },
+    "Chorister Print": {
+      "order": 302,
+      "category": "home"
+    },
+    "Plaster Pigs Print": {
+      "order": 303,
+      "category": "home",
+      "artist": "Trevor Henderson"
+    },
+    "Plaster Pigs Canvas": {
+      "order": 304,
+      "category": "home",
+      "artist": "Trevor Henderson"
+    }
+  },
+  "hiddenIds": {
+    "427180291": "Bomber: REDACTED Spatter Series (duplicate, was $64)",
+    "399675845": "REDACTED Logo Mug (duplicate, older)",
+    "401026272": "Sticker sheet (test)",
+    "401004134": "[REDACTED] Chibi Stickers (duplicate of Chibi Edition)",
+    "393534325": "Aberrant Tee (duplicate of Aberrant T-Shirt)"
+  }
+}
