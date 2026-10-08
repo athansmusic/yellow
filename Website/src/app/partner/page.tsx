@@ -448,11 +448,14 @@ export default async function PartnerPage() {
               </div>
               <div>
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-paper/50">Awards and festivals</h3>
+                {/* Rows stack on a phone and sit side by side from sm. The result used to be shrink-0, so a
+                    long one ("Semi-Finalist, Best New Media or Episodic Series") squeezed the festival name
+                    to a sliver and ran off the edge, stretching the whole page wider than the screen. */}
                 <ul className="mt-3 grid gap-1.5 text-sm">
                   {awards.map((a) => (
-                    <li key={a.file} className="flex justify-between gap-4 border-b border-white/10 py-1.5">
-                      <span className="text-paper/85">{a.festival}</span>
-                      <span className="text-right text-paper/55 shrink-0">
+                    <li key={a.file} className="flex flex-col gap-0.5 border-b border-white/10 py-1.5 sm:flex-row sm:justify-between sm:gap-4">
+                      <span className="min-w-0 text-paper/85">{a.festival}</span>
+                      <span className="min-w-0 text-paper/55 sm:max-w-[55%] sm:text-right">
                         {[a.result, a.year].filter(Boolean).join(" · ")}
                       </span>
                     </li>
