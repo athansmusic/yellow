@@ -195,7 +195,7 @@ export default async function About() {
 
       <section className="mt-14 border-t border-line pt-6 text-sm text-paper/80">
         <p>
-          Award winner at the Swedish International Film Festival, Grito X, and Film 25 ArtFF, with selections at fifteen more festivals. Press, stats, and downloads are on the{" "}
+          Award winner at the Swedish International Film Festival and Film 25 ArtFF, with selections at fifteen more festivals. Press, stats, and downloads are on the{" "}
           <Link href="/partner" className="text-yellow underline underline-offset-4">
             press kit
           </Link>
