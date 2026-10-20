@@ -43,12 +43,13 @@ export function SectionNav() {
 
   return (
     <nav aria-label="Page sections" className="hidden min-[1700px]:block fixed left-6 top-1/2 -translate-y-1/2 z-30">
-      <ul className="grid gap-1">
+      {/* Its own dark backing: the nav floats over yellow and red sections, where bare grey text disappears. */}
+      <ul className="grid gap-0.5 border border-white/10 bg-ink/85 px-4 py-3 backdrop-blur-sm">
         {SECTIONS.map(([id, label]) => {
           const on = active === id;
           return (
             <li key={id}>
-              <a href={`#${id}`} aria-current={on ? "location" : undefined} className={`flex items-center gap-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${on ? "text-paper" : "text-paper/35 hover:text-paper/70"}`}>
+              <a href={`#${id}`} aria-current={on ? "location" : undefined} className={`flex items-center gap-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${on ? "text-paper" : "text-paper/55 hover:text-paper"}`}>
                 <span className={`size-1.5 rounded-full ${on ? "bg-paper" : "bg-paper/30"}`} aria-hidden />
                 {label}
               </a>

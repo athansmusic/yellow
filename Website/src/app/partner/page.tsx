@@ -151,18 +151,18 @@ export default async function PartnerPage() {
         </Container>
       </section>
 
-      {/* WINNERS: the headline row; everything else is one click away */}
+      {/* RECOGNITION: wins as a trophy case, everything else a quieter tier beneath. Nothing is collapsed. */}
       <section id="awards-strip" className="border-b border-line">
-        <Container className="py-10 sm:py-12 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-yellow">Winners</p>
-          <Laurels only="wins" className="mt-8 max-w-4xl mx-auto" />
-          <details className="mt-8 group">
-            <summary className="inline-block cursor-pointer list-none text-[11px] font-semibold uppercase tracking-[0.2em] text-paper/60 hover:text-yellow [&::-webkit-details-marker]:hidden">
-              <span className="group-open:hidden">+ {awards.length - awards.filter(isWin).length} more nominations and selections</span>
-              <span className="hidden group-open:inline">Hide</span>
-            </summary>
-            <Laurels only="rest" className="mt-8 max-w-5xl mx-auto" />
-          </details>
+        <Container className="py-12 sm:py-16">
+          <Title label="Recognition">Winners</Title>
+          <Laurels only="wins" className="mt-10" />
+
+          <div className="mt-12 flex items-center gap-4" aria-hidden>
+            <span className="h-px flex-1 bg-white/10" />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-paper/60">Nominations and selections · {awards.length - awards.filter(isWin).length}</span>
+            <span className="h-px flex-1 bg-white/10" />
+          </div>
+          <Laurels only="rest" className="mt-8" />
         </Container>
       </section>
 

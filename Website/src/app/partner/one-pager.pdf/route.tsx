@@ -34,10 +34,11 @@ const st = StyleSheet.create({
   h1: { fontFamily: "Montserrat", fontWeight: 800, fontSize: 25, lineHeight: 1.05, marginTop: 3, textTransform: "uppercase" },
   sub: { marginTop: 5, color: PAPER, fontSize: 9.5 },
   state: { marginTop: 2, color: MUTED, fontSize: 8.5 },
-  band: { marginTop: 16, backgroundColor: YELLOW, flexDirection: "row", paddingVertical: 12 },
-  stat: { flex: 1, alignItems: "center" },
+  band: { marginTop: 16, backgroundColor: YELLOW, flexDirection: "row", alignItems: "flex-start", paddingVertical: 12 },
+  // flexBasis 0 gives every column the same width whatever its label says; a long label wraps instead of spilling past the page edge.
+  stat: { flexGrow: 1, flexBasis: 0, alignItems: "center", paddingHorizontal: 6 },
   statN: { fontFamily: "Montserrat", fontWeight: 800, fontSize: 19, lineHeight: 1.2, color: INK },
-  statL: { marginTop: 4, textAlign: "center", fontFamily: "Montserrat", fontWeight: 700, fontSize: 6.3, letterSpacing: 1, color: INK, textTransform: "uppercase" },
+  statL: { marginTop: 4, textAlign: "center", lineHeight: 1.3, fontFamily: "Montserrat", fontWeight: 700, fontSize: 6.3, letterSpacing: 1, color: INK, textTransform: "uppercase" },
   asOf: { marginTop: 4, fontSize: 7, color: MUTED, textAlign: "right" },
   cols: { flexDirection: "row", gap: 18, marginTop: 12 },
   col: { flex: 1 },
@@ -82,7 +83,7 @@ export async function GET() {
     ["Followers", typeof stats.followers === "number" ? stats.followers.toLocaleString("en-US") : "n/a"],
     ["Discord members", typeof stats.discordMembers === "number" ? stats.discordMembers.toLocaleString("en-US") : "n/a"],
   ];
-  if (rating) band.push(["Rating, Spotify / Apple", rating.replace(/ Spotify| Apple/g, "").replace(" · ", " / ")]);
+  if (rating) band.push(["Rating\n(Spotify / Apple)", rating.replace(/ Spotify| Apple/g, "").replace(" · ", " / ")]);
 
   const wins = WINS.map((f) => awards.find((a) => a.file === f)).filter((a): a is NonNullable<typeof a> => !!a);
   const demo = (label: string) => audience?.demos.find(([k]) => k === label);
