@@ -103,25 +103,27 @@ export default async function PartnerPage() {
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", url: SITE.url }, { name: "Partner", url: `${SITE.url}/partner` }])} />
       <SectionNav />
 
-      {/* HERO: art beside the pitch on desktop so the stat band is on the first screen */}
+      {/* HERO: art beside a big headline, so neither side is left empty */}
       <section id="top" className="relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none" aria-hidden>
           <div className="absolute -top-24 left-1/2 -translate-x-1/4 w-[34rem] h-[34rem] rounded-full blur-3xl opacity-60" style={{ background: "radial-gradient(closest-side, rgba(255,150,0,0.45), rgba(255,60,0,0.12) 60%, transparent)" }} />
         </div>
-        <Container className="relative py-10 sm:py-12 lg:py-14 grid gap-8 lg:grid-cols-[auto_1fr] lg:gap-14 items-center text-center lg:text-left">
-          <Image src="/home/redacteded.avif" alt="REDACTED show art" width={300} height={300} priority className="mx-auto size-48 sm:size-60 lg:size-72 shadow-[0_20px_60px_rgba(0,0,0,0.6)]" />
+        <Container className="relative py-8 sm:py-12 lg:py-16 grid gap-6 lg:grid-cols-[auto_1fr] lg:gap-14 items-center text-center lg:text-left">
+          <Image src="/home/redacteded.avif" alt="REDACTED show art" width={300} height={300} priority className="mx-auto size-36 sm:size-56 lg:size-72 shadow-[0_20px_60px_rgba(0,0,0,0.6)]" />
           <div>
-            <h1 className="inline-block border border-yellow px-3 py-1 text-yellow font-light text-base sm:text-lg tracking-wide">ADVERTISE WITH US</h1>
-            <p className="mt-5 text-sm sm:text-base tracking-[0.12em] uppercase">A procedural horror comedy</p>
-            <p className="mt-1 text-base sm:text-lg text-paper/90">
-              On the <a href={SITE.network.url} target="_blank" rel="noreferrer" className="font-bold hover:text-yellow">Rusty Quill Network</a> · {state}
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-yellow">Media kit · Sponsorship</p>
+            <h1 className="mt-3 font-extrabold uppercase text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.02] tracking-tight text-balance">Advertise on REDACTED</h1>
+            <span className="mt-4 block h-0.5 w-8 bg-yellow mx-auto lg:mx-0" aria-hidden />
+            <p className="mt-4 text-sm sm:text-base tracking-[0.12em] uppercase">
+              A procedural horror comedy · <a href={SITE.network.url} target="_blank" rel="noreferrer" className="font-bold hover:text-yellow">Rusty Quill Network</a>
             </p>
-            <p className="mt-4 mx-auto lg:mx-0 max-w-[52ch] text-[15px] font-light leading-relaxed text-paper/70">{LOGLINE}</p>
+            <p className="mt-1 text-[15px] text-paper/70">{state}</p>
+            <p className="hidden sm:block mt-4 mx-auto lg:mx-0 max-w-[52ch] text-[15px] font-light leading-relaxed text-paper/70">{LOGLINE}</p>
             <div className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-3">
-              <a href="#contact" className="btn btn-yellow text-lg">
+              <a href="#contact" className="btn btn-yellow">
                 Partner with us
               </a>
-              <a href="/partner/one-pager.pdf" className="btn btn-ghost text-lg">
+              <a href="/partner/one-pager.pdf" className="btn btn-ghost">
                 One-page media kit (PDF)
               </a>
             </div>
@@ -129,9 +131,9 @@ export default async function PartnerPage() {
         </Container>
       </section>
 
-      {/* STATS: the yellow band, laid on the same left edge as the hero above it, with hairline dividers */}
+      {/* STATS: a slim yellow band; number and label sit side by side on desktop to keep it short */}
       <section id="stats" className="bg-yellow text-ink">
-        <Container className="py-6 sm:py-8">
+        <Container className="pt-1 pb-3 sm:pt-2">
           <dl className="grid grid-cols-2 lg:grid-cols-4">
             {[
               ["Total plays", s.totalPlays],
@@ -139,13 +141,13 @@ export default async function PartnerPage() {
               ["Hours consumed", s.hoursConsumed],
               ["Apple/Spotify followers", s.followers],
             ].map(([k, v], i) => (
-              <div key={k as string} className={`px-4 py-5 sm:px-6 sm:py-6 ${i % 2 === 1 ? "border-l border-ink/20" : ""} ${i > 0 ? "lg:border-l lg:border-ink/20" : ""} ${i > 1 ? "border-t border-ink/20 lg:border-t-0" : ""} ${i === 0 ? "lg:pl-0" : ""}`}>
-                <dd className="font-bold text-4xl sm:text-5xl lg:text-[3.35rem] leading-none tabular">{typeof v === "number" ? <Counter value={v} /> : "n/a"}</dd>
-                <dt className="mt-2.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.14em] text-ink/75">{k as string}</dt>
+              <div key={k as string} className={`flex flex-col lg:flex-row lg:items-center lg:gap-3 px-4 py-4 sm:px-6 sm:py-5 ${i % 2 === 1 ? "border-l border-ink/20" : ""} ${i > 0 ? "lg:border-l lg:border-ink/20" : ""} ${i > 1 ? "border-t border-ink/20 lg:border-t-0" : ""} ${i === 0 ? "lg:pl-0" : ""}`}>
+                <dd className="font-bold text-3xl sm:text-4xl lg:text-[2.5rem] leading-none tabular">{typeof v === "number" ? <Counter value={v} /> : "n/a"}</dd>
+                <dt className="mt-2 lg:mt-0 text-[10px] font-bold uppercase tracking-[0.14em] leading-tight text-ink/75 lg:max-w-[6.5rem]">{k as string}</dt>
               </div>
             ))}
           </dl>
-          {s.lastUpdated && <p className="mt-1 px-4 sm:px-6 lg:pl-0 text-[10px] sm:text-[11px] font-semibold tracking-[0.12em] uppercase text-ink/55">As of {s.lastUpdated}</p>}
+          {s.lastUpdated && <p className="px-4 sm:px-6 lg:pl-0 text-[10px] font-semibold tracking-[0.12em] uppercase text-ink/55">As of {s.lastUpdated}</p>}
         </Container>
       </section>
 
