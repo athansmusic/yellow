@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { awards, isWin } from "@/lib/awards";
 
@@ -53,11 +52,6 @@ export function AwardsStrip({ quotes }: { quotes: Quote[] }) {
             </li>
           ))}
         </ul>
-        <p className="mt-5 text-center text-[11px] font-semibold uppercase tracking-[0.18em]">
-          <Link href="/partner#awards-strip" className="text-yellow hover:underline underline-offset-4">
-            See all awards
-          </Link>
-        </p>
       </div>
 
       {/* Rotating press quote */}
