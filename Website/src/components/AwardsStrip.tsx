@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { EXTERNAL } from "@/lib/site";
-import { awards } from "@/lib/awards";
+import { awards, isWin } from "@/lib/awards";
 
-const LAURELS = awards.map((a) => `/laurels/${a.file}.png`);
+const WINS = awards.filter(isWin);
 
 type Quote = { quote: string; who: string; outlet: string; url?: string };
 
@@ -23,15 +24,30 @@ export function AwardsStrip({ quotes }: { quotes: Quote[] }) {
 
   return (
     <div className="border-b border-line bg-ink-2/80 overflow-hidden">
-      {/* Laurel marquee: two copies so the loop is seamless */}
-      <div className="group relative py-5" aria-label={`Festival selections and awards: ${awards.map((a) => `${a.result}, ${[a.festival, a.year].filter(Boolean).join(" ")}`).join("; ")}`} role="img">
-        <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-ink-2 to-transparent z-10" aria-hidden />
-        <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-ink-2 to-transparent z-10" aria-hidden />
-        <div className="flex w-max gap-10 marquee group-hover:[animation-play-state:paused]">
-          {[...LAURELS, ...LAURELS].map((src, k) => (
-            <Image key={k} src={src} alt="" width={64} height={64} sizes="64px" quality={55} className="h-12 sm:h-16 w-auto opacity-85 shrink-0" aria-hidden={k >= LAURELS.length} />
-          ))}
-        </div>
+      {/* The wins, still and large enough to read; the full list lives on the partner page */}
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 pt-7 pb-4" role="group" aria-label={`Awards and wins: ${WINS.map((a) => `${a.result}, ${[a.festival, a.year].filter(Boolean).join(" ")}`).join("; ")}`}>
+        <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-5 sm:gap-x-10">
+          {WINS.map((a) => {
+            const img = <Image src={`/laurels/${a.file}.png`} alt={`${a.festival}: ${[a.result, a.year].filter(Boolean).join(", ")}`} title={`${a.festival}: ${a.result}`} width={120} height={120} sizes="(min-width: 640px) 80px, 64px" className="h-16 sm:h-20 w-auto opacity-90 transition-opacity group-hover:opacity-100" />;
+            return (
+              <li key={a.file}>
+                {a.url ? (
+                  <a href={a.url} target="_blank" rel="noopener noreferrer" className="group block">
+                    {img}
+                  </a>
+                ) : (
+                  img
+                )}
+              </li>
+            );
+          })}
+        </ul>
+        <p className="mt-5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-paper/60">
+          {WINS.length} wins · {awards.length - WINS.length} more nominations and selections ·{" "}
+          <Link href="/partner#awards-strip" className="text-yellow hover:underline underline-offset-4">
+            See all awards
+          </Link>
+        </p>
       </div>
 
       {/* Goodpods + rotating quote */}
