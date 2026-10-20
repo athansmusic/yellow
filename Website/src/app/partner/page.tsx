@@ -510,7 +510,6 @@ export default async function PartnerPage() {
         <Container className="relative pt-28 pb-20 text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-yellow">Get in touch</p>
           <h2 className="display mt-3 text-5xl sm:text-6xl lg:text-7xl">Ready to partner?</h2>
-          <p className="mx-auto mt-5 max-w-[400px] text-[15px] font-light text-paper/40">We handle sponsorships directly. Send a note and it goes straight to Athan.</p>
           <PartnerForm email={SITE.email} />
         </Container>
       </section>
