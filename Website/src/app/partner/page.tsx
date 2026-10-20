@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { EXTERNAL, SITE } from "@/lib/site";
-import { FACTS, LOGLINE, PRESS_ZIP } from "@/data/press";
-import { getAudience, getDailyPlays, getStats } from "@/lib/partnerStats";
+import { factsFor, LOGLINE, PRESS_ZIP, seasonState } from "@/data/press";
+import { getAudience, getDailyPlays, getRatings, getStats } from "@/lib/partnerStats";
+import { getDoc } from "@/lib/content";
+import { PartnerForm } from "@/components/partner/PartnerForm";
 import writers from "@/data/writers.json";
 import { Container } from "@/components/ui";
 import { Laurels } from "@/components/Laurels";
@@ -16,7 +18,7 @@ import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
   title: "Advertise on REDACTED: Media Kit & Sponsorship",
-  description: "Media kit for REDACTED, the horror comedy audio drama on the Rusty Quill Network: 1.4M+ plays, daily listens by platform, listener demographics, festival awards, press kit downloads, and host-read sponsorship options.",
+  description: "Media kit for REDACTED, the horror comedy audio drama on the Rusty Quill Network: 1.9M+ plays, daily listens by platform, listener demographics, festival awards, press kit downloads, and host-read sponsorship options.",
   alternates: { canonical: "/partner" },
 };
 export const revalidate = 3600;
@@ -49,9 +51,10 @@ const QUOTES = [
   { q: "REDACTED wastes no time building stakes, and laying the groundwork for a solid mystery.", who: "Elyse Willems", role: "Funhaus" },
   { q: "Whatever you are expecting, REDACTED blows those expectations out the water. With incredible performances by the cast supported by high grade sound design and intelligent scripting, REDACTED perfectly represents the genre that is horror comedy.", who: "Tatiana Gefter", role: "Soul Operator" },
 ];
+// `when` is filled in from the season state so a card never promises a Friday episode that isn't coming.
 const OPTIONS = [
-  { t: "Pre-roll", d: "30-second host-read spot at the top of every episode.", pts: ["Available on all public episodes", "Host-read, in your brand's voice", "New episode every Friday"] },
-  { t: "Post-roll", d: "60-second host-read spot at the close of each episode.", pts: ["Available on all public episodes", "Longer format, more storytelling room", "High-retention audience"] },
+  { t: "Pre-roll", tag: "REDACTED · All episodes", d: "30-second host-read spot at the top of every episode.", pts: ["Available on all public episodes", "Host-read, in your brand's voice"] },
+  { t: "Post-roll", tag: "REDACTED · All episodes", d: "60-second host-read spot at the close of each episode.", pts: ["Available on all public episodes", "Longer format, more storytelling room", "High-retention audience"] },
 ];
 const TEAM = [
   {
@@ -73,8 +76,6 @@ const PARTNER_WRITERS = ["Jeffrey Reddick", "KC Wayland", "Trevor Henderson", "H
   .map((n) => writers.find((w) => w.name === n))
   .filter((w): w is (typeof writers)[number] => !!w);
 
-const mailto = `mailto:${SITE.email}?subject=Partnership`;
-
 /** Section label + big Montserrat heading with the short yellow rule, as on the original media kit. */
 function Title({ label, children, muted = false, className = "" }: { label: string; children: React.ReactNode; muted?: boolean; className?: string }) {
   return (
@@ -88,7 +89,10 @@ function Title({ label, children, muted = false, className = "" }: { label: stri
 
 export default async function PartnerPage() {
   await assertVisible("/partner");
-  const [s, plays, audience] = await Promise.all([getStats(), getDailyPlays(), getAudience()]);
+  const [s, plays, audience, ratings, settings] = await Promise.all([getStats(), getDailyPlays(), getAudience(), getRatings(), getDoc("settings").catch(() => null)]);
+  const state = seasonState(settings);
+  const onBreak = settings?.seasonStatus === "break";
+  const FACTS = factsFor(settings);
   const PLATFORMS = audience?.platforms ?? PLATFORMS_FALLBACK;
   const REGIONS = audience?.regions ?? REGIONS_FALLBACK;
   const DEMOS = audience?.demos ?? DEMOS_FALLBACK;
@@ -109,11 +113,16 @@ export default async function PartnerPage() {
           <Image src="/home/redacteded.avif" alt="REDACTED show art" width={260} height={260} priority className="mx-auto mt-4 size-48 sm:size-64 shadow-[0_20px_60px_rgba(0,0,0,0.6)]" />
           <p className="mt-5 text-sm sm:text-base tracking-[0.12em] uppercase">A procedural horror comedy</p>
           <p className="mt-1 text-base sm:text-lg text-paper/90">
-            On the <a href={SITE.network.url} target="_blank" rel="noreferrer" className="font-bold hover:text-yellow">Rusty Quill Network</a> · New episodes every Friday, 9/8c
+            On the <a href={SITE.network.url} target="_blank" rel="noreferrer" className="font-bold hover:text-yellow">Rusty Quill Network</a> · {state}
           </p>
-          <a href={mailto} className="btn btn-yellow mt-5 text-lg">
-            Partner with us
-          </a>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            <a href="#contact" className="btn btn-yellow text-lg">
+              Partner with us
+            </a>
+            <a href="/partner/one-pager.pdf" className="btn btn-ghost text-lg">
+              One-page media kit (PDF)
+            </a>
+          </div>
           <Laurels className="mt-10 max-w-5xl mx-auto" />
         </Container>
       </section>
@@ -192,7 +201,7 @@ export default async function PartnerPage() {
           </div>
 
           <h3 className="mt-14 text-[11px] font-semibold uppercase tracking-[0.2em] text-paper/50 mb-4">Demographics</h3>
-          <dl className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <dl className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {DEMOS.map(([k, v, n]) => (
               <div key={k} className="bg-white/[0.04] border border-white/[0.06] p-5">
                 <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-paper/50">{k}</dt>
@@ -247,7 +256,7 @@ export default async function PartnerPage() {
               <dl className="mt-4 grid grid-cols-2 gap-x-8 gap-y-6 text-sm">
                 {[
                   ["Format", "Monster-of-the-week · serialized · multi-season"],
-                  ["Cadence", "New episodes every Tuesday and Friday, 9/8c"],
+                  ["Schedule", state],
                   ["Avg length", "~30 minutes"],
                   ["Network", "Rusty Quill"],
                 ].map(([k, v]) => (
@@ -278,7 +287,7 @@ export default async function PartnerPage() {
                     <dt className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-paper/50">{k as string}</dt>
                   </div>
                 ))}
-                <a href={mailto} className="col-span-2 bg-yellow text-ink font-bold text-sm tracking-[0.14em] uppercase p-4 text-center hover:bg-paper transition-colors">
+                <a href="#contact" className="col-span-2 bg-yellow text-ink font-bold text-sm tracking-[0.14em] uppercase p-4 text-center hover:bg-paper transition-colors">
                   ✦ Partner
                 </a>
               </dl>
@@ -319,7 +328,16 @@ export default async function PartnerPage() {
             <span className="block text-yellow text-2xl tracking-[0.2em]" aria-hidden>
               ★★★★★
             </span>
-            <span className="block mt-2 text-[11px] font-bold uppercase tracking-[0.2em] text-white/80">150+ five-star Spotify reviews in the first 30 days</span>
+            <span className="block mt-2 text-[11px] font-bold uppercase tracking-[0.2em] text-white/80">
+              {ratings
+                ? [
+                    ratings.spotify && `${ratings.spotify.average.toFixed(1)} on Spotify${ratings.spotify.count ? ` (${ratings.spotify.count.toLocaleString("en-US")} ratings)` : ""}`,
+                    ratings.apple && `${ratings.apple.average.toFixed(1)} on Apple Podcasts${ratings.apple.count ? ` (${ratings.apple.count.toLocaleString("en-US")} ratings)` : ""}`,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")
+                : "150+ five-star Spotify reviews in the first 30 days"}
+            </span>
           </p>
         </Container>
       </section>
@@ -348,11 +366,19 @@ export default async function PartnerPage() {
           <Title label="Sponsorship">Partner options</Title>
           <p className="mt-6 max-w-[560px] text-[15px] font-light leading-relaxed text-paper/55">All sponsorships are host-read and produced in-house. Reach out to discuss rates, scheduling, and fit.</p>
 
-          <div className="mt-10 grid gap-4 md:grid-cols-2">
-            {OPTIONS.map((o) => (
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {[
+              ...OPTIONS.map((o) => ({ ...o, pts: [...o.pts, onBreak ? "Next season: date TBD, book ahead" : "New episode every Friday"] })),
+              {
+                t: "Discord",
+                tag: `Community${typeof s.discordMembers === "number" ? ` · ${s.discordMembers.toLocaleString("en-US")} members` : ""}`,
+                d: "A dedicated announcement in the REDACTED Discord, in front of the show's most engaged fans.",
+                pts: ["Reach out for scheduling", "Pairs with a pre-roll or post-roll"],
+              },
+            ].map((o) => (
               <div key={o.t} className="border border-white/10 bg-ink/40 p-7">
                 <h3 className="font-extrabold uppercase text-2xl tracking-tight">{o.t}</h3>
-                <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-yellow">REDACTED · All episodes</p>
+                <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-yellow">{o.tag}</p>
                 <p className="mt-5 text-sm text-paper/85">{o.d}</p>
                 <ul className="mt-6 border-t border-white/10 pt-5 grid gap-2 text-xs text-paper/60">
                   {o.pts.map((p) => (
@@ -371,7 +397,7 @@ export default async function PartnerPage() {
               <h3 className="font-extrabold uppercase text-2xl tracking-tight text-yellow">In-universe integration</h3>
               <p className="mt-2 text-sm text-paper/75 max-w-[60ch]">Depending on brand fit, we&apos;re open to weaving sponsor messaging directly into the REDACTED world: an in-universe ad placement.</p>
             </div>
-            <a href={mailto} className="btn btn-yellow shrink-0">
+            <a href="#contact" className="btn btn-yellow shrink-0">
               Let&apos;s talk
             </a>
           </div>
@@ -424,6 +450,7 @@ export default async function PartnerPage() {
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-paper/50">Downloads</h3>
                 <ul className="mt-3 grid gap-2 text-sm">
                   {[
+                    ["Media kit one-pager (PDF)", "/partner/one-pager.pdf"],
                     ["Everything (logos, art, laurels, zip)", `/press/${PRESS_ZIP}`],
                     ["Show art (JPEG)", "/press/REDACTED-show-art.jpg"],
                     ["Wordmark, white (PNG)", "/press/REDACTED-wordmark-white.png"],
@@ -483,10 +510,8 @@ export default async function PartnerPage() {
         <Container className="relative pt-28 pb-20 text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-yellow">Get in touch</p>
           <h2 className="display mt-3 text-5xl sm:text-6xl lg:text-7xl">Ready to partner?</h2>
-          <p className="mx-auto mt-5 max-w-[400px] text-[15px] font-light text-paper/40">We handle sponsorships directly. Reach out and we&apos;ll get back to you immediately.</p>
-          <a href={mailto} className="inline-block mt-8 display text-2xl sm:text-3xl text-yellow border-b-2 border-yellow pb-1 hover:text-paper hover:border-paper transition-colors">
-            {SITE.email}
-          </a>
+          <p className="mx-auto mt-5 max-w-[400px] text-[15px] font-light text-paper/40">We handle sponsorships directly. Send a note and it goes straight to Athan.</p>
+          <PartnerForm email={SITE.email} />
         </Container>
       </section>
     </div>

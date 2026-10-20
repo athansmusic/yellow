@@ -1,19 +1,37 @@
 /** Shared press copy: the Partner press kit and the Assets page both read from here so they never diverge. */
 import { SITE } from "@/lib/site";
+import type { Settings } from "@/lib/content";
 
 export const LOGLINE = "Failed actor Jacob Kane assumes his dead twin's identity and job. The job turns out to be The REDACTED Unit, a covert agency tasked with containing impossible creatures and phenomena.";
 
-export const BOILERPLATE =
-  "REDACTED is a horror comedy audio drama from Hush Studios on the Rusty Quill network, created by Athan (The Grotto) and Jamie Petronis (The Cellar Letters). Each episode is a self-contained paranormal case handled by an underfunded secret agency, with the mystery of Jacob Kane's dead twin running underneath. New episodes Fridays, Postmortem debriefs Tuesdays, at theredactedunit.com and on every podcast app.";
+type Season = Pick<Settings, "seasonStatus" | "nextSeasonLabel" | "nextSeasonDate"> | null | undefined;
+
+/** Where the show is right now, in a few words. Read from the admin's season setting so every
+ * press and partner surface says the same true thing instead of a schedule that has lapsed. */
+export function seasonState(s: Season): string {
+  const next = s?.nextSeasonLabel || "Season 2";
+  if (s?.seasonStatus === "break") {
+    const d = s.nextSeasonDate ? new Date(s.nextSeasonDate) : null;
+    const when = d && !Number.isNaN(d.getTime()) ? `returns ${d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" })}` : "date TBD";
+    return `Between seasons: ${next} confirmed, ${when}`;
+  }
+  if (s?.seasonStatus === "finished") return "Complete series";
+  return `New episodes ${SITE.schedule}`;
+}
+
+export function boilerplate(s: Season): string {
+  const when = s?.seasonStatus === "break" ? `${seasonState(s)}.` : s?.seasonStatus === "finished" ? "The complete series is available now." : "New episodes Fridays, Postmortem debriefs Tuesdays.";
+  return `REDACTED is a horror comedy audio drama from Hush Studios on the Rusty Quill network, created by Athan (The Grotto) and Jamie Petronis (The Cellar Letters). Each episode is a self-contained paranormal case handled by an underfunded secret agency, with the mystery of Jacob Kane's dead twin running underneath. ${when} At theredactedunit.com and on every podcast app.`;
+}
 
 export const FACTS: [string, string][] = [
-  ["Title", "REDACTED (also written [REDACTED])"],
+  ["Title", "REDACTED"],
   ["Format", "Scripted horror comedy audio drama, monster-of-the-week with a serialized mystery"],
   ["Created by", "Athan (Johnathan Magno) and Jamie Petronis"],
   ["Studio", "Hush Studios"],
   ["Network", "Rusty Quill"],
   ["Premiered", "November 8, 2025"],
-  ["Schedule", "New episodes Fridays, 9 pm ET / 8 pm CT; Postmortem Tuesdays"],
+  ["Schedule", "New episodes Fridays, 9 pm ET / 8 pm CT; Postmortem Tuesdays"], // swapped for seasonState() by factsFor()
   ["Episode length", "About 30 minutes"],
   ["Lead cast", "Jamie Petronis (Jacob Kane), Athan (Eli Reyes), Ishani Kanetkar (Hedy Hauksdottir), Kirsten Ria (Jo Valentine), Devin Steffens (Lucas Kipp), Joe Cliff Thompson (Maxwell Clark)"],
   ["Spin-offs", "Postmortem (in-universe debriefs), The Seven Planes (analog horror, Landon Whisnant)"],
@@ -21,6 +39,9 @@ export const FACTS: [string, string][] = [
   ["Show art", "7cfc00"],
   ["Contact", SITE.email],
 ];
+
+/** The fact sheet with its Schedule row following the season state. */
+export const factsFor = (s: Season): [string, string][] => FACTS.map(([k, v]) => (k === "Schedule" ? [k, seasonState(s)] : [k, v]));
 
 export const PALETTE: { name: string; token: string; hex: string; use: string }[] = [
   { name: "Yellow", token: "yellow", hex: "#FFF200", use: "Accent, buttons, the figure mark" },

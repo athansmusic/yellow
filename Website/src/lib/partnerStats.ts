@@ -134,6 +134,8 @@ export async function getAudience(): Promise<Audience | null> {
     ["Male", `${gPct("MALE").toFixed(1)}%`, "Spotify listener data"],
     ["Female", `${gPct("FEMALE").toFixed(1)}%`, "Spotify listener data"],
     ["Non-binary", `${gPct("NON_BINARY").toFixed(1)}%`, "Spotify listener data"],
+    // Whatever Spotify holds under any other label, so the three above never read as the whole story.
+    ["Not specified", `${(100 - gPct("MALE") - gPct("FEMALE") - gPct("NON_BINARY")).toFixed(1)}%`, "Spotify listener data"],
   ];
 
   return { platforms, regions, demos, asOf: d.as_of };
@@ -154,4 +156,15 @@ export async function getDailyPlays(): Promise<PlaysSeries | null> {
     acast: d.map((r) => r.acast ?? 0),
     youtube: d.map((r) => (r.youtube ?? 0) + (r.youtube_pm ?? 0)),
   };
+}
+
+export type Ratings = { spotify?: { average: number; count: number | null }; apple?: { average: number; count: number | null } };
+
+/** Current average rating and rating count per platform, from the automated feed. */
+export async function getRatings(): Promise<Ratings | null> {
+  const f = await getFeed();
+  if (!f?.ratings) return null;
+  const pick = (k: string) => (f.ratings?.[k] && f.ratings[k].average > 0 ? { average: f.ratings[k].average, count: f.ratings[k].count } : undefined);
+  const r = { spotify: pick("spotify"), apple: pick("apple") };
+  return r.spotify || r.apple ? r : null;
 }

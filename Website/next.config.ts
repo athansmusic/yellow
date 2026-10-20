@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/episodes/[slug]/opengraph-image": ["./src/fonts/**", "./public/brand/og-tpl-redacted.jpg", "./public/brand/og-tpl-postmortem.jpg"],
     "/cast/[slug]/opengraph-image": ["./src/fonts/**", "./public/brand/logo-nav-hd.png", "./public/cast/**"],
+    "/partner/one-pager.pdf": ["./src/fonts/**", "./public/press/REDACTED-show-art.jpg"],
   },
   // Lets a production build run beside the dev server (NEXT_DIST_DIR=.next-build npx next build)
   distDir: process.env.NEXT_DIST_DIR || ".next",

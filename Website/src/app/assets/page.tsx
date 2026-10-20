@@ -4,10 +4,11 @@ import path from "node:path";
 import Image from "next/image";
 import Link from "next/link";
 import { SITE, POLICY_UPDATED } from "@/lib/site";
-import { BOILERPLATE, FACTS, LOGLINE, PALETTE, PRESS_GROUPS, PRESS_ZIP, hexToRgb } from "@/data/press";
+import { boilerplate, factsFor, LOGLINE, PALETTE, PRESS_GROUPS, PRESS_ZIP, hexToRgb } from "@/data/press";
 import { Container } from "@/components/ui";
 import { CopyButton } from "@/components/ListenLinks";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
+import { getDoc } from "@/lib/content";
 import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
@@ -48,6 +49,9 @@ const RULES: { ok: boolean; text: string }[] = [
 
 export default async function AssetsPage() {
   await assertVisible("/assets");
+  const settings = await getDoc("settings").catch(() => null);
+  const FACTS = factsFor(settings);
+  const BOILERPLATE = boilerplate(settings);
   const fact = FACTS.map(([k, v]) => `${k}: ${v}`).join("\n");
   return (
     <Container className="py-10 sm:py-16 max-w-5xl">

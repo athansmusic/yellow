@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@next/third-parties": "^15.5.23",
+    "@react-pdf/renderer": "^4.9.0",
     "@stripe/react-stripe-js": "^3.7.0",
     "@stripe/stripe-js": "^7.3.0",
     "@vercel/blob": "^2.8.0",

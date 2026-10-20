@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export const short = (n: number) => (n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M` : Math.round(n).toLocaleString("en-US"));
+import { short } from "@/lib/short";
 
 /** Counts up from 0 when scrolled into view. Hover shows the full figure for rounded values. */
 export function Counter({ value, suffix = "", className = "" }: { value: number; suffix?: string; className?: string }) {
