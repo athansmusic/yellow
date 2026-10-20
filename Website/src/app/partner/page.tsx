@@ -454,7 +454,15 @@ export default async function PartnerPage() {
                 <ul className="mt-3 grid gap-1.5 text-sm">
                   {awards.map((a) => (
                     <li key={a.file} className="flex flex-col gap-0.5 border-b border-white/10 py-1.5 sm:flex-row sm:justify-between sm:gap-4">
-                      <span className="min-w-0 text-paper/85">{a.festival}</span>
+                      <span className="min-w-0 text-paper/85">
+                        {a.url ? (
+                          <a href={a.url} target="_blank" rel="noopener noreferrer" className="underline decoration-white/25 underline-offset-4 hover:text-yellow hover:decoration-yellow">
+                            {a.festival}
+                          </a>
+                        ) : (
+                          a.festival
+                        )}
+                      </span>
                       <span className="min-w-0 text-paper/55 sm:max-w-[55%] sm:text-right">
                         {[a.result, a.year].filter(Boolean).join(" · ")}
                       </span>
