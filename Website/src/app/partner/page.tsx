@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { EXTERNAL, SITE } from "@/lib/site";
 import { factsFor, LOGLINE, PRESS_ZIP, seasonState } from "@/data/press";
-import { getAudience, getDailyPlays, getRatings, getStats } from "@/lib/partnerStats";
+import { getAudience, getDailyPlays, getRatings, getStats, seasonMarks } from "@/lib/partnerStats";
+import { getEpisodes } from "@/lib/feed";
 import { getDoc } from "@/lib/content";
 import { PartnerForm } from "@/components/partner/PartnerForm";
 import writers from "@/data/writers.json";
@@ -89,9 +90,10 @@ function Title({ label, children, muted = false, className = "" }: { label: stri
 
 export default async function PartnerPage() {
   await assertVisible("/partner");
-  const [s, plays, audience, ratings, settings] = await Promise.all([getStats(), getDailyPlays(), getAudience(), getRatings(), getDoc("settings").catch(() => null)]);
+  const [s, plays, audience, ratings, settings, eps] = await Promise.all([getStats(), getDailyPlays(), getAudience(), getRatings(), getDoc("settings").catch(() => null), getEpisodes().catch(() => null)]);
   const state = seasonState(settings);
   const onBreak = settings?.seasonStatus === "break";
+  const marks = eps ? seasonMarks(eps.episodes, onBreak) : undefined;
   const FACTS = factsFor(settings);
   const PLATFORMS = audience?.platforms ?? PLATFORMS_FALLBACK;
   const REGIONS = audience?.regions ?? REGIONS_FALLBACK;
@@ -181,7 +183,7 @@ export default async function PartnerPage() {
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-yellow mb-4">Daily plays by platform</p>
-            {plays ? <PlaysChart data={plays} /> : <p className="text-sm text-muted">Chart unavailable right now.</p>}
+            {plays ? <PlaysChart data={plays} marks={marks} /> : <p className="text-sm text-muted">Chart unavailable right now.</p>}
           </div>
         </Container>
       </section>

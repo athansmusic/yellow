@@ -1,4 +1,5 @@
 import { EXTERNAL } from "@/lib/site";
+import type { Episode } from "@/lib/feed";
 
 export type Stats = { totalPlays?: number; dailyAverage?: number; hoursConsumed?: number; followers?: number; discordMembers?: number; avgViewers?: number; lastUpdated?: string };
 
@@ -167,4 +168,33 @@ export async function getRatings(): Promise<Ratings | null> {
   const pick = (k: string) => (f.ratings?.[k] && f.ratings[k].average > 0 ? { average: f.ratings[k].average, count: f.ratings[k].count } : undefined);
   const r = { spotify: pick("spotify"), apple: pick("apple") };
   return r.spotify || r.apple ? r : null;
+}
+
+export type SeasonMarks = {
+  /** First and last release date of each season's main episodes, as YYYY-MM-DD */
+  seasons: { label: string; start: string; end: string }[];
+  /** Every main-episode release, for tick marks and the hover note */
+  releases: { date: string; title: string }[];
+  /** When the current break began, if the show is between seasons right now */
+  gapFrom?: string;
+};
+
+// Releases go out Friday evening US time, which is already Saturday in UTC, so the day is read in Eastern.
+const etDay = (iso: string) => new Date(iso).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+
+/** When the show was airing, from the episodes' own release dates, so the chart never needs hand-kept dates. */
+export function seasonMarks(episodes: Episode[], onBreak: boolean): SeasonMarks {
+  const bySeason = new Map<number, string[]>();
+  const releases: SeasonMarks["releases"] = [];
+  for (const e of episodes) {
+    if (e.kind !== "episode" || !e.date) continue;
+    const day = etDay(e.date);
+    releases.push({ date: day, title: e.title });
+    const k = e.season ?? 1;
+    bySeason.set(k, [...(bySeason.get(k) ?? []), day]);
+  }
+  const seasons = [...bySeason.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([n, days]) => ({ label: `Season ${n}`, start: days.reduce((a, b) => (a < b ? a : b)), end: days.reduce((a, b) => (a > b ? a : b)) }));
+  return { seasons, releases, gapFrom: onBreak && seasons.length ? seasons[seasons.length - 1].end : undefined };
 }
