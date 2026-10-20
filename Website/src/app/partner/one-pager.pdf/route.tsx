@@ -34,9 +34,9 @@ const st = StyleSheet.create({
   h1: { fontFamily: "Montserrat", fontWeight: 800, fontSize: 25, lineHeight: 1.05, marginTop: 3, textTransform: "uppercase" },
   sub: { marginTop: 5, color: PAPER, fontSize: 9.5 },
   state: { marginTop: 2, color: MUTED, fontSize: 8.5 },
-  band: { marginTop: 16, backgroundColor: YELLOW, flexDirection: "row", alignItems: "flex-start", paddingVertical: 12 },
-  // flexBasis 0 gives every column the same width whatever its label says; a long label wraps instead of spilling past the page edge.
-  stat: { flexGrow: 1, flexBasis: 0, alignItems: "center", paddingHorizontal: 6 },
+  // space-evenly puts equal space before, between and after the stats, so the margins match whatever each label's width is.
+  band: { marginTop: 16, backgroundColor: YELLOW, flexDirection: "row", justifyContent: "space-evenly", alignItems: "flex-start", paddingVertical: 12 },
+  stat: { alignItems: "center" },
   statN: { fontFamily: "Montserrat", fontWeight: 800, fontSize: 19, lineHeight: 1.2, color: INK },
   statL: { marginTop: 4, textAlign: "center", lineHeight: 1.3, fontFamily: "Montserrat", fontWeight: 700, fontSize: 6.3, letterSpacing: 1, color: INK, textTransform: "uppercase" },
   asOf: { marginTop: 4, fontSize: 7, color: MUTED, textAlign: "right" },
