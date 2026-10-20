@@ -65,7 +65,7 @@ const nextConfig: NextConfig = {
       { source: "/join", destination: "https://patreon.com/theredactedunit", permanent: false },
       { source: "/discord", destination: "https://discord.gg/MKtCk4fBXt", permanent: false },
       { source: "/ks", destination: "https://www.kickstarter.com/projects/theredactedunit/redacted-a-procedural-horror-audio-drama", permanent: false },
-      { source: "/signal", destination: "https://vote.signalaward.com/PublicVoting#/2026/shows/genre/scripted-fiction", permanent: false },
+      { source: "/signal", destination: "https://www.signalaward.com/winners/details/hush-studios-redacted-700330/", permanent: false },
       { source: "/tipsy", destination: "https://tipsyaudio.com/?ref=REDACTED", permanent: false },
     ];
   },
