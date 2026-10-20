@@ -129,23 +129,23 @@ export default async function PartnerPage() {
         </Container>
       </section>
 
-      {/* STATS: a dark ledger strip, hairline-divided, instead of a full-width yellow bar */}
-      <section id="stats" className="border-y border-line bg-[#0b0b0b]">
-        <Container className="py-8 sm:py-10">
-          <dl className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
+      {/* STATS: the yellow band, laid on the same left edge as the hero above it, with hairline dividers */}
+      <section id="stats" className="bg-yellow text-ink">
+        <Container className="py-6 sm:py-8">
+          <dl className="grid grid-cols-2 lg:grid-cols-4">
             {[
               ["Total plays", s.totalPlays],
               ["Daily average", s.dailyAverage],
               ["Hours consumed", s.hoursConsumed],
               ["Apple/Spotify followers", s.followers],
-            ].map(([k, v]) => (
-              <div key={k as string} className="bg-[#0b0b0b] px-4 py-6 sm:px-7 sm:py-8 text-center lg:text-left">
-                <dd className="font-bold text-4xl sm:text-5xl leading-none text-yellow">{typeof v === "number" ? <Counter value={v} /> : "n/a"}</dd>
-                <dt className="mt-3 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.16em] text-paper/60">{k as string}</dt>
+            ].map(([k, v], i) => (
+              <div key={k as string} className={`px-4 py-5 sm:px-6 sm:py-6 ${i % 2 === 1 ? "border-l border-ink/20" : ""} ${i > 0 ? "lg:border-l lg:border-ink/20" : ""} ${i > 1 ? "border-t border-ink/20 lg:border-t-0" : ""} ${i === 0 ? "lg:pl-0" : ""}`}>
+                <dd className="font-bold text-4xl sm:text-5xl lg:text-[3.35rem] leading-none tabular">{typeof v === "number" ? <Counter value={v} /> : "n/a"}</dd>
+                <dt className="mt-2.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.14em] text-ink/75">{k as string}</dt>
               </div>
             ))}
           </dl>
-          {s.lastUpdated && <p className="mt-4 text-center lg:text-left text-[11px] font-semibold tracking-[0.12em] uppercase text-paper/40">As of {s.lastUpdated}</p>}
+          {s.lastUpdated && <p className="mt-1 px-4 sm:px-6 lg:pl-0 text-[10px] sm:text-[11px] font-semibold tracking-[0.12em] uppercase text-ink/55">As of {s.lastUpdated}</p>}
         </Container>
       </section>
 
