@@ -12,3 +12,6 @@ import raw from "@/data/awards.json";
 export type Award = { file: string; festival: string; result: string; year?: number; url?: string };
 
 export const awards: Award[] = raw;
+
+/** A first-place or audience-vote win, as opposed to a nomination, finalist spot or selection. */
+export const isWin = (a: Award) => /winner|listener's choice/i.test(a.result);

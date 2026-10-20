@@ -6,27 +6,24 @@ export const SECTIONS = [
   ["top", "Top"],
   ["stats", "Stats"],
   ["audience", "Audience"],
-  ["redacted", "Redacted"],
-  ["reviews", "Audience reviews"],
+  ["redacted", "The show"],
+  ["reviews", "Reviews"],
   ["guest-writers", "Guest writers"],
   ["partner-options", "Partner options"],
-  ["who", "Who"],
+  ["who", "Team"],
   ["press-kit", "Press kit"],
-  ["contact", "Get in touch"],
+  ["contact", "Contact"],
 ] as const;
 
-/** Fixed left-hand section index; appears once the stat band scrolls past, like the original page. */
+/** Fixed left-hand section index on wide screens. Always visible: hiding it until the stats band scrolled past meant nobody found it. */
 export function SectionNav() {
   const [active, setActive] = useState("top");
-  const [shown, setShown] = useState(false);
 
   useEffect(() => {
     const els = SECTIONS.map(([id]) => [id, document.getElementById(id)] as const);
-    const stats = document.getElementById("stats");
     let raf = 0;
     const update = () => {
       raf = 0;
-      setShown(!!stats && stats.getBoundingClientRect().top < 0);
       let cur: string = SECTIONS[0][0];
       const limit = window.innerHeight * 0.4;
       for (const [id, el] of els) if (el && el.getBoundingClientRect().top <= limit) cur = id;
@@ -45,7 +42,7 @@ export function SectionNav() {
   }, []);
 
   return (
-    <nav aria-label="Page sections" className={`hidden min-[1700px]:block fixed left-6 top-1/2 -translate-y-1/2 z-30 transition-opacity duration-300 ${shown ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+    <nav aria-label="Page sections" className="hidden min-[1700px]:block fixed left-6 top-1/2 -translate-y-1/2 z-30">
       <ul className="grid gap-1">
         {SECTIONS.map(([id, label]) => {
           const on = active === id;

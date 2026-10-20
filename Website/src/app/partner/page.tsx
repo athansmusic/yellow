@@ -13,7 +13,7 @@ import { Bar, Counter } from "@/components/partner/Counters";
 import { PlaysChart } from "@/components/partner/PlaysChart";
 import { SectionNav } from "@/components/partner/SectionNav";
 import { JsonLd, audienceJsonLd, breadcrumbJsonLd } from "@/lib/schema";
-import { awards } from "@/lib/awards";
+import { awards, isWin } from "@/lib/awards";
 import { assertVisible } from "@/lib/visibility";
 
 export const metadata: Metadata = {
@@ -103,47 +103,64 @@ export default async function PartnerPage() {
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", url: SITE.url }, { name: "Partner", url: `${SITE.url}/partner` }])} />
       <SectionNav />
 
-      {/* HERO */}
-      <section id="top" className="relative overflow-hidden border-b border-line">
+      {/* HERO: art beside the pitch on desktop so the stat band is on the first screen */}
+      <section id="top" className="relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none" aria-hidden>
           <div className="absolute -top-24 left-1/2 -translate-x-1/4 w-[34rem] h-[34rem] rounded-full blur-3xl opacity-60" style={{ background: "radial-gradient(closest-side, rgba(255,150,0,0.45), rgba(255,60,0,0.12) 60%, transparent)" }} />
         </div>
-        <Container className="relative pt-10 pb-12 sm:pt-14 sm:pb-16 text-center">
-          <h1 className="inline-block border border-yellow px-3 py-1 text-yellow font-light text-base sm:text-lg tracking-wide">ADVERTISE WITH US</h1>
-          <Image src="/home/redacteded.avif" alt="REDACTED show art" width={260} height={260} priority className="mx-auto mt-4 size-48 sm:size-64 shadow-[0_20px_60px_rgba(0,0,0,0.6)]" />
-          <p className="mt-5 text-sm sm:text-base tracking-[0.12em] uppercase">A procedural horror comedy</p>
-          <p className="mt-1 text-base sm:text-lg text-paper/90">
-            On the <a href={SITE.network.url} target="_blank" rel="noreferrer" className="font-bold hover:text-yellow">Rusty Quill Network</a> · {state}
-          </p>
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-            <a href="#contact" className="btn btn-yellow text-lg">
-              Partner with us
-            </a>
-            <a href="/partner/one-pager.pdf" className="btn btn-ghost text-lg">
-              One-page media kit (PDF)
-            </a>
+        <Container className="relative py-10 sm:py-12 lg:py-14 grid gap-8 lg:grid-cols-[auto_1fr] lg:gap-14 items-center text-center lg:text-left">
+          <Image src="/home/redacteded.avif" alt="REDACTED show art" width={300} height={300} priority className="mx-auto size-48 sm:size-60 lg:size-72 shadow-[0_20px_60px_rgba(0,0,0,0.6)]" />
+          <div>
+            <h1 className="inline-block border border-yellow px-3 py-1 text-yellow font-light text-base sm:text-lg tracking-wide">ADVERTISE WITH US</h1>
+            <p className="mt-5 text-sm sm:text-base tracking-[0.12em] uppercase">A procedural horror comedy</p>
+            <p className="mt-1 text-base sm:text-lg text-paper/90">
+              On the <a href={SITE.network.url} target="_blank" rel="noreferrer" className="font-bold hover:text-yellow">Rusty Quill Network</a> · {state}
+            </p>
+            <p className="mt-4 mx-auto lg:mx-0 max-w-[52ch] text-[15px] font-light leading-relaxed text-paper/70">{LOGLINE}</p>
+            <div className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-3">
+              <a href="#contact" className="btn btn-yellow text-lg">
+                Partner with us
+              </a>
+              <a href="/partner/one-pager.pdf" className="btn btn-ghost text-lg">
+                One-page media kit (PDF)
+              </a>
+            </div>
           </div>
-          <Laurels className="mt-10 max-w-5xl mx-auto" />
         </Container>
       </section>
 
-      {/* STATS BAND */}
-      <section id="stats" className="bg-yellow text-ink">
+      {/* STATS: a dark ledger strip, hairline-divided, instead of a full-width yellow bar */}
+      <section id="stats" className="border-y border-line bg-[#0b0b0b]">
         <Container className="py-8 sm:py-10">
-          <dl className="grid grid-cols-2 lg:grid-cols-4 gap-y-8 text-center">
+          <dl className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
             {[
               ["Total plays", s.totalPlays],
               ["Daily average", s.dailyAverage],
               ["Hours consumed", s.hoursConsumed],
               ["Apple/Spotify followers", s.followers],
             ].map(([k, v]) => (
-              <div key={k as string}>
-                <dd className="font-bold text-4xl sm:text-5xl lg:text-[3.35rem] leading-none">{typeof v === "number" ? <Counter value={v} /> : "n/a"}</dd>
-                <dt className="mt-2 text-[11px] font-bold uppercase tracking-[0.14em] text-ink/80">{k as string}</dt>
+              <div key={k as string} className="bg-[#0b0b0b] px-4 py-6 sm:px-7 sm:py-8 text-center lg:text-left">
+                <dd className="font-bold text-4xl sm:text-5xl leading-none text-yellow">{typeof v === "number" ? <Counter value={v} /> : "n/a"}</dd>
+                <dt className="mt-3 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.16em] text-paper/60">{k as string}</dt>
               </div>
             ))}
           </dl>
-          {s.lastUpdated && <p className="mt-6 text-center text-[11px] font-semibold tracking-[0.12em] uppercase text-ink/60">As of {s.lastUpdated}</p>}
+          {s.lastUpdated && <p className="mt-4 text-center lg:text-left text-[11px] font-semibold tracking-[0.12em] uppercase text-paper/40">As of {s.lastUpdated}</p>}
+        </Container>
+      </section>
+
+      {/* WINNERS: the headline row; everything else is one click away */}
+      <section id="awards-strip" className="border-b border-line">
+        <Container className="py-10 sm:py-12 text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-yellow">Winners</p>
+          <Laurels only="wins" className="mt-8 max-w-4xl mx-auto" />
+          <details className="mt-8 group">
+            <summary className="inline-block cursor-pointer list-none text-[11px] font-semibold uppercase tracking-[0.2em] text-paper/60 hover:text-yellow [&::-webkit-details-marker]:hidden">
+              <span className="group-open:hidden">+ {awards.length - awards.filter(isWin).length} more nominations and selections</span>
+              <span className="hidden group-open:inline">Hide</span>
+            </summary>
+            <Laurels only="rest" className="mt-8 max-w-5xl mx-auto" />
+          </details>
         </Container>
       </section>
 
