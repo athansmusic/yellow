@@ -88,7 +88,7 @@ export default async function PressPage() {
           <ul className="mt-10 border-t border-white/10">
             {coverage.map((c) => (
               <li key={c.url} className="border-b border-white/10">
-                <a href={c.url} target="_blank" rel="noopener noreferrer" className="group grid gap-1 py-5 sm:grid-cols-[11rem_1fr_auto] sm:items-baseline sm:gap-6 hover:bg-white/[0.03] sm:px-3 -mx-1 px-1 transition-colors">
+                <a href={c.url} {...(c.url.startsWith("/") ? {} : { target: "_blank", rel: "noopener noreferrer" })} className="group grid gap-1 py-5 sm:grid-cols-[11rem_1fr_auto] sm:items-baseline sm:gap-6 hover:bg-white/[0.03] sm:px-3 -mx-1 px-1 transition-colors">
                   <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-yellow">{c.outlet}</span>
                   <span className="text-[17px] text-paper/90 group-hover:text-yellow transition-colors">
                     {c.title}
@@ -162,6 +162,9 @@ export default async function PressPage() {
           <div className="mt-6 flex flex-wrap items-center gap-4">
             <a href={`/press/${PRESS_ZIP}`} download className="btn btn-yellow">
               Download everything ({sizeOf(PRESS_ZIP)})
+            </a>
+            <a href="/press/10212026_REDACTED_SignalAwards_PressRelease.pdf" download className="btn btn-ghost">
+              Signal Awards press release (PDF)
             </a>
             <Link href="/assets" className="text-sm text-paper/70 underline underline-offset-4 hover:text-yellow">
               More logos, colors and the fact sheet
