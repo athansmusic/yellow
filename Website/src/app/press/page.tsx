@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import fs from "node:fs";
+import path from "node:path";
+import Image from "next/image";
 import Link from "next/link";
 import { SITE } from "@/lib/site";
-import { QUOTES } from "@/data/press";
+import { PRESS_ZIP, QUOTES } from "@/data/press";
 import coverage from "@/data/coverage.json";
 import { Container } from "@/components/ui";
 import { Laurels } from "@/components/Laurels";
@@ -24,6 +27,23 @@ function Title({ label, children, className = "" }: { label: string; children: R
       <span className="block mt-4 h-0.5 w-8 bg-yellow" aria-hidden />
     </div>
   );
+}
+
+/** The images a journalist is most likely to want, in the order they will want them. Everything else is on /assets. */
+const IMAGES = [
+  { file: "10212026_REDACTED_SignalAwards_Landscape.png", name: "Signal Awards announcement", note: "PNG, 1920×1080", wide: true },
+  { file: "REDACTED-show-art.jpg", name: "Show art", note: "JPEG, 3000×3000 (art by 7cfc00)" },
+  { file: "REDACTED-laurels-strip.png", name: "All laurels", note: "PNG, transparent", wide: true },
+  { file: "REDACTED-wordmark-white.png", name: "Wordmark, white", note: "PNG, transparent" },
+];
+
+function sizeOf(file: string) {
+  try {
+    const b = fs.statSync(path.join(process.cwd(), "public/press", file)).size;
+    return b >= 1_000_000 ? `${(b / 1_000_000).toFixed(1)} MB` : `${Math.max(1, Math.round(b / 1000))} KB`;
+  } catch {
+    return "";
+  }
 }
 
 const fmt = (d: string) => {
@@ -54,9 +74,9 @@ export default async function PressPage() {
             <a href="#contact" className="btn btn-yellow">
               Contact us
             </a>
-            <Link href="/assets" className="btn btn-ghost">
-              Logos, art and fact sheet
-            </Link>
+            <a href="#images" className="btn btn-ghost">
+              Press images
+            </a>
           </div>
         </Container>
       </section>
@@ -110,6 +130,43 @@ export default async function PressPage() {
           <Title label="Recognition">Winners</Title>
           <p className="mt-6 max-w-[60ch] text-[15px] font-light leading-relaxed text-paper/55">Silver Winner and Listener&apos;s Choice in Scripted Fiction at the 2026 Signal Awards, plus wins at five film festivals. The full list, with every nomination and selection, is on the <Link href="/partner#awards-strip" className="underline underline-offset-4 hover:text-yellow">partner page</Link>.</p>
           <Laurels only="wins" className="mt-10" />
+        </Container>
+      </section>
+
+      {/* IMAGES */}
+      <section id="images" className="border-b border-line">
+        <Container className="py-14 sm:py-20">
+          <Title label="Downloads">Press images</Title>
+          <p className="mt-6 max-w-[60ch] text-[15px] font-light leading-relaxed text-paper/55">Free to use with coverage of REDACTED. Click an image to open it full size, or download it.</p>
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2">
+            {IMAGES.map((f) => (
+              <li key={f.file} className="border border-white/10 bg-white/[0.02]">
+                <a href={`/press/${f.file}`} target="_blank" rel="noopener noreferrer" className="block bg-[#050505]">
+                  <Image src={`/press/${f.file}`} alt={f.name} width={f.wide ? 960 : 600} height={f.wide ? 540 : 600} sizes="(min-width: 640px) 45vw, 100vw" className="mx-auto h-56 w-full object-contain" />
+                </a>
+                <div className="flex items-center justify-between gap-4 border-t border-white/10 p-4">
+                  <div className="min-w-0">
+                    <p className="font-semibold">{f.name}</p>
+                    <p className="text-xs text-paper/50">
+                      {f.note}
+                      {sizeOf(f.file) ? ` · ${sizeOf(f.file)}` : ""}
+                    </p>
+                  </div>
+                  <a href={`/press/${f.file}`} download className="btn btn-ghost !min-h-10 !text-base !px-3 shrink-0">
+                    Download
+                  </a>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <a href={`/press/${PRESS_ZIP}`} download className="btn btn-yellow">
+              Download everything ({sizeOf(PRESS_ZIP)})
+            </a>
+            <Link href="/assets" className="text-sm text-paper/70 underline underline-offset-4 hover:text-yellow">
+              More logos, colors and the fact sheet
+            </Link>
+          </div>
         </Container>
       </section>
 
