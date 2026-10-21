@@ -46,7 +46,7 @@ export default async function About() {
   makers.push({ slug: "landon-whisnant", name: "Landon Whisnant", image: "/team/landon-whisnant.avif", about: "Landon 'Lemon' Whisnant is a sound designer, actor and writer that has had a hand in a multitude of audio dramas stretching over just about every genre.", role: "Lead Sound Designer", href: "/cast?group=team" });
 
   const facts: [string, React.ReactNode][] = [
-    ["Title", "REDACTED (also written REDACTED)"],
+    ["Title", "REDACTED"],
     ["Format", "Scripted horror comedy audio drama in a procedural format: a case per episode, with a main through line"],
     ["Episode length", "About 30 minutes"],
     ["Schedule", "New episodes Fridays, 9 pm ET / 8 pm CT; Postmortem debriefs Tuesdays"],
@@ -59,7 +59,7 @@ export default async function About() {
     <Container className="py-10 sm:py-16 max-w-5xl">
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", url: SITE.url }, { name: "About", url: `${SITE.url}/about` }])} />
       <Heading as="h1" eyebrow="About the show" size="xl">
-        What is REDACTED (also written [REDACTED])?
+        What is REDACTED?
       </Heading>
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1.2fr_1fr]">
