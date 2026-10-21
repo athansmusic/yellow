@@ -91,3 +91,11 @@ export const PRESS_GROUPS: { title: string; blurb: string; files: PressFile[] }[
 ];
 
 export const PRESS_ZIP = "REDACTED-press-kit.zip";
+
+/** Reviews and blurbs, shared by the partner page and the press page. */
+export const QUOTES = [
+  { q: "REDACTED is the inheritor to all your favourite spooky procedurals. Fun and sinister in equal measure, with a central mystery that grabs you by the brain and won't let go.", who: "Jonathan Sims", role: "The Magnus Archives" },
+  { q: "If you've wanted to take your monster of the week with you on the go, look no further!", who: "John Squires", role: "Bloody Disgusting" },
+  { q: "REDACTED wastes no time building stakes, and laying the groundwork for a solid mystery.", who: "Elyse Willems", role: "Funhaus" },
+  { q: "Whatever you are expecting, REDACTED blows those expectations out the water. With incredible performances by the cast supported by high grade sound design and intelligent scripting, REDACTED perfectly represents the genre that is horror comedy.", who: "Tatiana Gefter", role: "Soul Operator" },
+];

@@ -65,6 +65,11 @@ const nextConfig: NextConfig = {
       { source: "/join", destination: "https://patreon.com/theredactedunit", permanent: false },
       { source: "/discord", destination: "https://discord.gg/MKtCk4fBXt", permanent: false },
       { source: "/ks", destination: "https://www.kickstarter.com/projects/theredactedunit/redacted-a-procedural-horror-audio-drama", permanent: false },
+      // URLs people guess; each lands where the thing actually lives
+      { source: "/contact", destination: "/press#contact", permanent: false },
+      { source: "/newsletter", destination: "/#alerts", permanent: false },
+      { source: "/rss", destination: "https://feeds.acast.com/public/shows/68dfd04b043c361f82e093c0", permanent: false },
+      { source: "/feed.xml", destination: "https://feeds.acast.com/public/shows/68dfd04b043c361f82e093c0", permanent: false },
       { source: "/signal", destination: "https://www.signalaward.com/winners/details/hush-studios-redacted-700330/", permanent: false },
       { source: "/tipsy", destination: "https://tipsyaudio.com/?ref=REDACTED", permanent: false },
     ];

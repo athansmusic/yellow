@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 const field = "w-full bg-white/[0.04] border border-white/15 px-4 py-3 text-[15px] text-paper placeholder:text-paper/35 focus:border-yellow focus:outline-none";
 const label = "block text-[10px] font-bold uppercase tracking-[0.18em] text-paper/60 mb-1.5";
 
-export function PartnerForm({ email }: { email: string }) {
+export function PartnerForm({ email, kind = "partner" }: { email: string; kind?: "partner" | "press" }) {
   const opened = useRef(Date.now());
   const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
   const [error, setError] = useState("");
@@ -49,6 +49,7 @@ export function PartnerForm({ email }: { email: string }) {
           <input type="text" name="website" tabIndex={-1} autoComplete="off" />
         </label>
       </div>
+      <input type="hidden" name="interest" value={kind === "press" ? "Press" : "Sponsorship"} />
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="pf-name" className={label}>
@@ -73,7 +74,7 @@ export function PartnerForm({ email }: { email: string }) {
         <label htmlFor="pf-message" className={label}>
           Description
         </label>
-        <textarea id="pf-message" name="message" required rows={5} maxLength={4000} placeholder="Tell us about your brand or project and what you have in mind." className={`${field} resize-y`} />
+        <textarea id="pf-message" name="message" required rows={5} maxLength={4000} placeholder={kind === "press" ? "Tell us about your outlet or project and what you need." : "Tell us about your brand or project and what you have in mind."} className={`${field} resize-y`} />
       </div>
       {error && (
         <p role="alert" className="text-sm text-red-300">

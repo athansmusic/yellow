@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { EXTERNAL, SITE } from "@/lib/site";
-import { factsFor, LOGLINE, PRESS_ZIP, seasonState } from "@/data/press";
+import { factsFor, LOGLINE, PRESS_ZIP, QUOTES, seasonState } from "@/data/press";
 import { getAudience, getDailyPlays, getRatings, getStats, seasonMarks } from "@/lib/partnerStats";
 import { getEpisodes } from "@/lib/feed";
 import { getDoc } from "@/lib/content";
@@ -45,12 +45,6 @@ const DEMOS_FALLBACK: [string, string, string][] = [
   ["Male", "50.7%", "Spotify listener data"],
   ["Female", "38.8%", "Spotify listener data"],
   ["Non-binary", "2.6%", "Spotify listener data"],
-];
-const QUOTES = [
-  { q: "REDACTED is the inheritor to all your favourite spooky procedurals. Fun and sinister in equal measure, with a central mystery that grabs you by the brain and won't let go.", who: "Jonathan Sims", role: "The Magnus Archives" },
-  { q: "If you've wanted to take your monster of the week with you on the go, look no further!", who: "John Squires", role: "Bloody Disgusting" },
-  { q: "REDACTED wastes no time building stakes, and laying the groundwork for a solid mystery.", who: "Elyse Willems", role: "Funhaus" },
-  { q: "Whatever you are expecting, REDACTED blows those expectations out the water. With incredible performances by the cast supported by high grade sound design and intelligent scripting, REDACTED perfectly represents the genre that is horror comedy.", who: "Tatiana Gefter", role: "Soul Operator" },
 ];
 // `when` is filled in from the season state so a card never promises a Friday episode that isn't coming.
 const OPTIONS = [
