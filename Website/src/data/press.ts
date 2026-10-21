@@ -77,10 +77,11 @@ export const PRESS_GROUPS: { title: string; blurb: string; files: PressFile[] }[
   },
   {
     title: "Art",
-    blurb: "Show art by 7cfc00 and the key art used across the site.",
+    blurb: "Show art by 7cfc00, the key art used across the site, and the Signal Awards announcement image.",
     files: [
       { file: "REDACTED-show-art.jpg", name: "Show art", note: "JPEG, 3000×3000", preview: true },
       { file: "REDACTED-key-art.jpg", name: "Key art", note: "JPEG, wide", preview: true, wide: true },
+      { file: "10212026_REDACTED_SignalAwards_Landscape.png", name: "Signal Awards announcement", note: "PNG, 1920×1080", preview: true, wide: true },
     ],
   },
   {
