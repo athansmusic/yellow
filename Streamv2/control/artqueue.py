@@ -49,6 +49,11 @@ class ArtQueue:
                            cfg.get("block_tags",
                                    ["keepredacted", "keep redacted"])}
         self.api_key = (cfg.get("api_key") or "").strip()
+        # Website mirror: every approve/undo pushes the approved pool to the
+        # public site (theredactedunit.com/fan-art). Both keys live in
+        # config.local.json under "tumblr"; empty = never publishes.
+        self.website_url = (cfg.get("website_url") or "").strip()
+        self.website_token = (cfg.get("website_token") or "").strip()
         self.poll_seconds = max(60, int(cfg.get("poll_seconds", 120)))
         self._lock = threading.Lock()
         self._undo: list[tuple[str, str]] = []   # (id, previous status)
@@ -276,6 +281,7 @@ class ArtQueue:
                     del self._undo[:-20]
                     i["status"] = "approved" if action == "approve" else "rejected"
                     self._save()
+                    self.publish_async()
                     return {"ok": True, "id": i["id"], "status": i["status"]}
         return {"error": "no such item"}
 
@@ -287,8 +293,34 @@ class ArtQueue:
                     if i["id"] == item_id:
                         i["status"] = prev
                         self._save()
+                        self.publish_async()
                         return {"ok": True, "id": item_id, "status": prev}
         return {"error": "nothing to undo"}
+
+    # ---- website mirror -------------------------------------------------
+    def publish(self) -> dict:
+        """POST the approved pool to the website. Quiet on failure: the
+        stream must never care whether the website is up."""
+        if not (self.website_url and self.website_token):
+            return {"error": "website_url / website_token not configured"}
+        items = self.approved(100000)
+        payload = json.dumps({"items": [
+            {k: i.get(k) for k in ("id", "image", "width", "height", "title",
+                                   "artist", "post_url", "ts")}
+            for i in items]}).encode()
+        req = urllib.request.Request(
+            self.website_url, data=payload, method="POST",
+            headers={"Content-Type": "application/json",
+                     "Authorization": f"Bearer {self.website_token}"})
+        try:
+            with urllib.request.urlopen(req, timeout=15) as r:
+                return {"ok": True, "sent": len(items), "status": r.status}
+        except (urllib.error.URLError, OSError, ValueError) as e:
+            return {"error": f"publish failed: {e}"[:200]}
+
+    def publish_async(self) -> None:
+        if self.website_url and self.website_token:
+            threading.Thread(target=self.publish, daemon=True).start()
 
     def submit(self, entry: dict) -> dict:
         """Manual entry - testing, or art that never touched Tumblr."""

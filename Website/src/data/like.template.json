@@ -1,0 +1,36 @@
+{
+  "_howto": "Copy this object into src/data/like.json (inside the [ ]), fill it in, delete the _ keys and this file stays as the template. The page appears at /like/{slug} and in the sitemap automatically. No em dashes. Keep 'same' and 'different' to 3 to 5 points each; each point starts with a short bolded-feeling lead sentence, then one or two sentences of detail.",
+
+  "slug": "show-name-in-lowercase-with-hyphens",
+  "name": "Show Name as it appears on screen",
+
+  "title": "Podcasts like Show Name",
+  "_title": "Page title for search. 'Podcasts like X' or 'Shows like X' is what people type.",
+
+  "description": "One or two sentences: who this page is for and what they'll get. Shows up under the heading and as the Google description.",
+
+  "about": "Two or three sentences on what the other show is, for someone who hasn't heard of it. Creator, network or platform, years, what an episode is like.",
+
+  "same": [
+    "Point 1. What REDACTED shares with it.",
+    "Point 2.",
+    "Point 3.",
+    "Point 4."
+  ],
+
+  "different": [
+    "Point 1. How REDACTED is not like it. Be honest; this is what makes the page believable.",
+    "Point 2.",
+    "Point 3."
+  ],
+
+  "quote": { "text": "Optional. A real quote about REDACTED from someone connected to the other show, or from press. Delete this whole key if you don't have one.", "who": "Name", "role": "creator of Show Name / outlet" },
+
+  "start": "Which episode to start with for someone coming from that show, and why. Usually S1E1 with a reason; sometimes a specific case episode if it's the closest match.",
+
+  "faq": [
+    { "q": "Is REDACTED as scary as Show Name?", "a": "Answer in your words." },
+    { "q": "Is REDACTED connected to Show Name?", "a": "Answer in your words." },
+    { "q": "Do I need to listen in order?", "a": "Answer in your words." }
+  ]
+}

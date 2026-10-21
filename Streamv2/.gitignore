@@ -26,3 +26,6 @@ control/access.log
 
 # Fan-art queue store - moderation decisions, not source
 control/art.json
+
+# Supervisor output - runtime log
+control/server-console.log
