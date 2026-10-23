@@ -242,7 +242,7 @@ async function fetchFeed(url: string, fresh = false): Promise<RawItem[]> {
   init.next = fresh ? { revalidate: 30 } : { revalidate: 3600, tags: ["episodes"] };
   // FEED_V busts the Vercel data cache (which survives deploys) whenever the feed's content is
   // rewritten at the source and the hour-long window is too slow. Bump it to force a refetch.
-  const FEED_V = "3";
+  const FEED_V = "4";
   const vUrl = `${url}${url.includes("?") ? "&" : "?"}v=${FEED_V}`;
   const res = await fetch(fresh ? `${vUrl}&fresh=1` : vUrl, init);
   if (!res.ok) throw new Error(`Feed ${url} → ${res.status}`);

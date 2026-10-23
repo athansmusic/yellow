@@ -152,17 +152,22 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
   const url = `${SITE.url}/episodes/${ep.slug}`;
   const art = ep.image || "/brand/showart.jpeg";
   const readerUrl = transcript ? `https://www.tru.show/transcripts/${ep.kind === "postmortem" ? "postmortem" : "redacted"}/s${transcript.episode.season}e${transcript.episode.number}` : undefined;
-  const boilerplate = new Set(["Co-created", "Executive producers", "Writing", "Music and Sound Design", "Dialogue Editing", "Show art", "Associated producers", "Concept"].map((x) => x.toLowerCase()));
-  const episodeCredits = ep.credits.filter((c) => !boilerplate.has(c.label.toLowerCase()));
-  // Curtain's per-episode writer joins the credits, right before the
-  // associate producers (owner-specified position). No writer set: no row.
-  if (cm?.writer) {
-    const at = episodeCredits.findIndex((c) => c.label.toLowerCase().startsWith("associate"));
-    const row = { label: "Written by", value: cm.writer };
-    if (at >= 0) episodeCredits.splice(at, 0, row);
-    else episodeCredits.push(row);
+  // Owner-specified: these five lead the always-visible list, in this exact
+  // order; every other credit folds into the collapsed Show credits drawer.
+  const allCredits = ep.credits.map((c) => {
+    const k = c.label.toLowerCase();
+    if (k === "created" || k === "co-created") return { ...c, label: "Created by" };
+    if (k === "associated producers") return { ...c, label: "Associate Producers" };
+    if (k === "written by") return { ...c, label: "Episode Written by" };
+    return c;
+  });
+  // Curtain's per-episode writer is the authoritative episode-writer row.
+  if (cm?.writer && !allCredits.some((c) => c.label.toLowerCase() === "episode written by")) {
+    allCredits.push({ label: "Episode Written by", value: cm.writer });
   }
-  const showCredits = ep.credits.filter((c) => boilerplate.has(c.label.toLowerCase()));
+  const topOrder = ["created by", "episode written by", "executive producers", "music and sound design", "associate producers"];
+  const episodeCredits = topOrder.flatMap((t) => allCredits.filter((c) => c.label.toLowerCase() === t));
+  const showCredits = allCredits.filter((c) => !topOrder.includes(c.label.toLowerCase()));
   const starring = ep.starring.map((s) => {
     const [actor, role] = s.split(/\s+as\s+/i);
     return { actor: actor.trim(), role: role?.trim(), member: castFor(actor.trim()), guestLink: guestLinkFor(actor.trim()) };
