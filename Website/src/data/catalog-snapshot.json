@@ -3476,7 +3476,7 @@
    "/products/gallery/spatter-bomber-jacket/05.webp",
    "/products/gallery/spatter-bomber-jacket/06.webp"
   ],
-  "description": "Add a little zing to your wardrobe with this vibrant All-Over Print Bomber Jacket. Wear it on a basic t-shirt, or layer it on top of a warm hoodie, it’ll look great either way. With a brushed fleece inside, and a relaxed unisex fit, this Bomber Jacket is just the stuff of the dreams, so be quick to grab yourself one!\n\n• 100% polyester\n• Fabric weight: 6.49 oz/yd² (220 g/m²), weight may vary by 5%\n• Brushed fleece fabric inside\n• Unisex fit\n• Overlock seams\n• Sturdy neck tape\n• Silver YKK zipper\n• 2 self-fabric pockets\n• Blank product components sourced from the US and China\n\nDisclaimer: In areas where the fabric is double-layered (like pockets), details from the inner fabric layer may subtly show through, especially with lighter designs.",
+  "description": "Add a little zing to your wardrobe with this vibrant All-Over Print Bomber Jacket. Wear it on a basic t-shirt, or layer it on top of a warm hoodie, it’ll look great either way. With a brushed fleece inside, and a relaxed unisex fit, this Bomber Jacket is just the stuff of the dreams, so be quick to grab yourself one!\n\n• 100% polyester\n• Fabric weight: 7.37 oz./yd.² (250 g/m²), weight may vary by 5%\n• Brushed fleece fabric inside\n• Unisex fit\n• Overlock seams\n• Sturdy neck tape\n• Silver YKK zipper\n• 2 self-fabric pockets\n• Blank product components sourced from the US and China\n\nDisclaimer: In areas where the fabric is double-layered (like pockets), details from the inner fabric layer may subtly show through, especially with lighter designs.",
   "variants": [
    {
     "id": 5241426389,
@@ -3576,7 +3576,7 @@
    "/products/gallery/spatter-tee/04.webp",
    "/products/gallery/spatter-tee/05.webp"
   ],
-  "description": "Get to know your new favorite tee, it's super smooth, super comfortable, and made from a cotton touch polyester jersey that won't fade after washing. \n\n- Fabric composition in the EU: 96% polyester, 4% spandex\n- Fabric composition in the US: 93% polyester, 7% spandex\n- Fabric weight in the EU: 6.34 oz./yd.² (215 g/m²)\n- Fabric weight in the US: 7.08 oz./yd.² (240 g/m²)\n- Premium knit mid-weight jersey\n- Smooth, comfortable 2-way stretch fabric that stretches and recovers on the cross and lengthwise grains\n- Regular fit\n- Blank product components in the EU sourced from Lithuania\n- Blank product components in the US sourced from the US",
+  "description": "Get to know your new favorite tee, it's super smooth, super comfortable, and made from a cotton touch polyester jersey that won't fade after washing. \n\n- Fabric composition: 93% polyester, 7% elastane\n- Fabric weight: 7.08 oz./yd.² (240 g/m²)\n- Premium knit mid-weight jersey\n- Smooth, comfortable 2-way stretch fabric that stretches and recovers on the cross and lengthwise grains\n- Regular fit\n- Blank product components in the EU sourced from Lithuania\n- Blank product components in the US sourced from the US",
   "variants": [
    {
     "id": 5241420079,
@@ -4767,6 +4767,446 @@
   "source": "printful"
  },
  {
+  "id": 464479533,
+  "slug": "the-redacted-unit",
+  "name": "The REDACTED Unit",
+  "category": "apparel",
+  "sub": "t-shirts",
+  "catalogProductId": 71,
+  "blank": "Bella + Canvas 3001",
+  "priceCents": 2500,
+  "priceMaxCents": 2800,
+  "image": "https://files.cdn.printful.com/files/bc4/bc4a0c85db3791a8b13669277dfd1c30_preview.png",
+  "images": [
+   "https://files.cdn.printful.com/files/bc4/bc4a0c85db3791a8b13669277dfd1c30_preview.png",
+   "https://files.cdn.printful.com/files/8ca/8cacbc6492c9496db2b9e8e346cc66fe_preview.png",
+   "https://files.cdn.printful.com/files/734/7341ddb9e01ce2dc0d99844e6a956bdc_preview.png",
+   "https://files.cdn.printful.com/files/7f2/7f26574b9dc9d0f92198f6a3fc9be5b4_preview.png",
+   "https://files.cdn.printful.com/files/bc6/bc6d9498daea0388387254925e9daae7_preview.png",
+   "https://files.cdn.printful.com/files/127/1279d4b2ee6f42af3ac59407fa18319f_preview.png",
+   "https://files.cdn.printful.com/files/52c/52c070d7ac49ef95fd163aee354b6141_preview.png"
+  ],
+  "description": "This t-shirt is everything you've dreamed of and more. It feels soft and lightweight, with the right amount of stretch. It's comfortable and flattering for all. \n\n• 100% combed and ring-spun cotton (Heather colors contain polyester)\n• Fabric weight: 4.2 oz./yd.² (142 g/m²)\n• Pre-shrunk fabric\n• Side-seamed construction\n• Shoulder-to-shoulder taping\n• Blank product sourced from Nicaragua, Mexico, Honduras, or the US\n\nDisclaimer: The fabric is slightly sheer and may appear see-through, especially in lighter colors or under certain lighting conditions.",
+  "variants": [
+   {
+    "id": 5477020963,
+    "name": "The REDACTED Unit / Team Purple / XS",
+    "size": "XS",
+    "color": "Team Purple",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/8ca/8cacbc6492c9496db2b9e8e346cc66fe_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020964,
+    "name": "The REDACTED Unit / Team Purple / S",
+    "size": "S",
+    "color": "Team Purple",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/8ca/8cacbc6492c9496db2b9e8e346cc66fe_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020965,
+    "name": "The REDACTED Unit / Team Purple / M",
+    "size": "M",
+    "color": "Team Purple",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/8ca/8cacbc6492c9496db2b9e8e346cc66fe_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020966,
+    "name": "The REDACTED Unit / Team Purple / L",
+    "size": "L",
+    "color": "Team Purple",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/8ca/8cacbc6492c9496db2b9e8e346cc66fe_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020967,
+    "name": "The REDACTED Unit / Team Purple / XL",
+    "size": "XL",
+    "color": "Team Purple",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/8ca/8cacbc6492c9496db2b9e8e346cc66fe_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020968,
+    "name": "The REDACTED Unit / Team Purple / 2XL",
+    "size": "2XL",
+    "color": "Team Purple",
+    "priceCents": 2600,
+    "image": "https://files.cdn.printful.com/files/8ca/8cacbc6492c9496db2b9e8e346cc66fe_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020969,
+    "name": "The REDACTED Unit / Team Purple / 3XL",
+    "size": "3XL",
+    "color": "Team Purple",
+    "priceCents": 2700,
+    "image": "https://files.cdn.printful.com/files/8ca/8cacbc6492c9496db2b9e8e346cc66fe_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020970,
+    "name": "The REDACTED Unit / Team Purple / 4XL",
+    "size": "4XL",
+    "color": "Team Purple",
+    "priceCents": 2800,
+    "image": "https://files.cdn.printful.com/files/8ca/8cacbc6492c9496db2b9e8e346cc66fe_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020971,
+    "name": "The REDACTED Unit / Cardinal / XS",
+    "size": "XS",
+    "color": "Cardinal",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/734/7341ddb9e01ce2dc0d99844e6a956bdc_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020972,
+    "name": "The REDACTED Unit / Cardinal / S",
+    "size": "S",
+    "color": "Cardinal",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/734/7341ddb9e01ce2dc0d99844e6a956bdc_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020973,
+    "name": "The REDACTED Unit / Cardinal / M",
+    "size": "M",
+    "color": "Cardinal",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/734/7341ddb9e01ce2dc0d99844e6a956bdc_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020974,
+    "name": "The REDACTED Unit / Cardinal / L",
+    "size": "L",
+    "color": "Cardinal",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/734/7341ddb9e01ce2dc0d99844e6a956bdc_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020975,
+    "name": "The REDACTED Unit / Cardinal / XL",
+    "size": "XL",
+    "color": "Cardinal",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/734/7341ddb9e01ce2dc0d99844e6a956bdc_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020976,
+    "name": "The REDACTED Unit / Cardinal / 2XL",
+    "size": "2XL",
+    "color": "Cardinal",
+    "priceCents": 2600,
+    "image": "https://files.cdn.printful.com/files/734/7341ddb9e01ce2dc0d99844e6a956bdc_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020977,
+    "name": "The REDACTED Unit / Red / XS",
+    "size": "XS",
+    "color": "Red",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/7f2/7f26574b9dc9d0f92198f6a3fc9be5b4_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020978,
+    "name": "The REDACTED Unit / Red / S",
+    "size": "S",
+    "color": "Red",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/7f2/7f26574b9dc9d0f92198f6a3fc9be5b4_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020979,
+    "name": "The REDACTED Unit / Red / M",
+    "size": "M",
+    "color": "Red",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/7f2/7f26574b9dc9d0f92198f6a3fc9be5b4_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020980,
+    "name": "The REDACTED Unit / Red / L",
+    "size": "L",
+    "color": "Red",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/7f2/7f26574b9dc9d0f92198f6a3fc9be5b4_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020981,
+    "name": "The REDACTED Unit / Red / XL",
+    "size": "XL",
+    "color": "Red",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/7f2/7f26574b9dc9d0f92198f6a3fc9be5b4_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020982,
+    "name": "The REDACTED Unit / Red / 2XL",
+    "size": "2XL",
+    "color": "Red",
+    "priceCents": 2600,
+    "image": "https://files.cdn.printful.com/files/7f2/7f26574b9dc9d0f92198f6a3fc9be5b4_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020984,
+    "name": "The REDACTED Unit / Red / 3XL",
+    "size": "3XL",
+    "color": "Red",
+    "priceCents": 2700,
+    "image": "https://files.cdn.printful.com/files/7f2/7f26574b9dc9d0f92198f6a3fc9be5b4_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020985,
+    "name": "The REDACTED Unit / Red / 4XL",
+    "size": "4XL",
+    "color": "Red",
+    "priceCents": 2800,
+    "image": "https://files.cdn.printful.com/files/7f2/7f26574b9dc9d0f92198f6a3fc9be5b4_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020986,
+    "name": "The REDACTED Unit / Heather Navy / XS",
+    "size": "XS",
+    "color": "Heather Navy",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/bc6/bc6d9498daea0388387254925e9daae7_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020987,
+    "name": "The REDACTED Unit / Heather Navy / S",
+    "size": "S",
+    "color": "Heather Navy",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/bc6/bc6d9498daea0388387254925e9daae7_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020988,
+    "name": "The REDACTED Unit / Heather Navy / M",
+    "size": "M",
+    "color": "Heather Navy",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/bc6/bc6d9498daea0388387254925e9daae7_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020989,
+    "name": "The REDACTED Unit / Heather Navy / L",
+    "size": "L",
+    "color": "Heather Navy",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/bc6/bc6d9498daea0388387254925e9daae7_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020990,
+    "name": "The REDACTED Unit / Heather Navy / XL",
+    "size": "XL",
+    "color": "Heather Navy",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/bc6/bc6d9498daea0388387254925e9daae7_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020991,
+    "name": "The REDACTED Unit / Heather Navy / 2XL",
+    "size": "2XL",
+    "color": "Heather Navy",
+    "priceCents": 2600,
+    "image": "https://files.cdn.printful.com/files/bc6/bc6d9498daea0388387254925e9daae7_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020992,
+    "name": "The REDACTED Unit / Heather Navy / 3XL",
+    "size": "3XL",
+    "color": "Heather Navy",
+    "priceCents": 2700,
+    "image": "https://files.cdn.printful.com/files/bc6/bc6d9498daea0388387254925e9daae7_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020993,
+    "name": "The REDACTED Unit / Heather Navy / 4XL",
+    "size": "4XL",
+    "color": "Heather Navy",
+    "priceCents": 2800,
+    "image": "https://files.cdn.printful.com/files/bc6/bc6d9498daea0388387254925e9daae7_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020994,
+    "name": "The REDACTED Unit / True Royal / S",
+    "size": "S",
+    "color": "True Royal",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/127/1279d4b2ee6f42af3ac59407fa18319f_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020995,
+    "name": "The REDACTED Unit / True Royal / M",
+    "size": "M",
+    "color": "True Royal",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/127/1279d4b2ee6f42af3ac59407fa18319f_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020996,
+    "name": "The REDACTED Unit / True Royal / L",
+    "size": "L",
+    "color": "True Royal",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/127/1279d4b2ee6f42af3ac59407fa18319f_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020997,
+    "name": "The REDACTED Unit / True Royal / XL",
+    "size": "XL",
+    "color": "True Royal",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/127/1279d4b2ee6f42af3ac59407fa18319f_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020998,
+    "name": "The REDACTED Unit / True Royal / 2XL",
+    "size": "2XL",
+    "color": "True Royal",
+    "priceCents": 2600,
+    "image": "https://files.cdn.printful.com/files/127/1279d4b2ee6f42af3ac59407fa18319f_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477020999,
+    "name": "The REDACTED Unit / True Royal / 3XL",
+    "size": "3XL",
+    "color": "True Royal",
+    "priceCents": 2700,
+    "image": "https://files.cdn.printful.com/files/127/1279d4b2ee6f42af3ac59407fa18319f_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477021000,
+    "name": "The REDACTED Unit / True Royal / 4XL",
+    "size": "4XL",
+    "color": "True Royal",
+    "priceCents": 2800,
+    "image": "https://files.cdn.printful.com/files/127/1279d4b2ee6f42af3ac59407fa18319f_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477021001,
+    "name": "The REDACTED Unit / Heather True Royal / S",
+    "size": "S",
+    "color": "Heather True Royal",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/52c/52c070d7ac49ef95fd163aee354b6141_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477021002,
+    "name": "The REDACTED Unit / Heather True Royal / M",
+    "size": "M",
+    "color": "Heather True Royal",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/52c/52c070d7ac49ef95fd163aee354b6141_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477021003,
+    "name": "The REDACTED Unit / Heather True Royal / L",
+    "size": "L",
+    "color": "Heather True Royal",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/52c/52c070d7ac49ef95fd163aee354b6141_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477021004,
+    "name": "The REDACTED Unit / Heather True Royal / XL",
+    "size": "XL",
+    "color": "Heather True Royal",
+    "priceCents": 2500,
+    "image": "https://files.cdn.printful.com/files/52c/52c070d7ac49ef95fd163aee354b6141_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477021005,
+    "name": "The REDACTED Unit / Heather True Royal / 2XL",
+    "size": "2XL",
+    "color": "Heather True Royal",
+    "priceCents": 2600,
+    "image": "https://files.cdn.printful.com/files/52c/52c070d7ac49ef95fd163aee354b6141_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477021006,
+    "name": "The REDACTED Unit / Heather True Royal / 3XL",
+    "size": "3XL",
+    "color": "Heather True Royal",
+    "priceCents": 2700,
+    "image": "https://files.cdn.printful.com/files/52c/52c070d7ac49ef95fd163aee354b6141_preview.png",
+    "available": true
+   },
+   {
+    "id": 5477021007,
+    "name": "The REDACTED Unit / Heather True Royal / 4XL",
+    "size": "4XL",
+    "color": "Heather True Royal",
+    "priceCents": 2800,
+    "image": "https://files.cdn.printful.com/files/52c/52c070d7ac49ef95fd163aee354b6141_preview.png",
+    "available": true
+   }
+  ],
+  "sizes": [
+   "XS",
+   "S",
+   "M",
+   "L",
+   "XL",
+   "2XL",
+   "3XL",
+   "4XL"
+  ],
+  "colors": [
+   "Team Purple",
+   "Cardinal",
+   "Red",
+   "Heather Navy",
+   "True Royal",
+   "Heather True Royal"
+  ],
+  "tags": [],
+  "source": "printful"
+ },
+ {
   "id": 425058852,
   "slug": "aromantic-flag",
   "name": "Aromantic Flag",
@@ -5137,7 +5577,7 @@
   "images": [
    "https://files.cdn.printful.com/files/a5d/a5d622bbe1df2e3402262025006e9570_preview.png"
   ],
-  "description": "Look fabulous in an all-over printed, body-hugging crop top.   \n\n• 75% recycled polyester, 25% elastane for production in the US/Mexico\n• 82% polyester, 18% elastane for production in Latvia\n• Fabric weight: 6.64 oz./yd.² (225 g/m²) in the US/Mexico\n• Fabric weight: 6.78 oz./yd.² (230 g/m²) in Latvia\n• Material has a four-way stretch, which means fabric stretches and recovers on the cross and lengthwise grains.\n• Made with a smooth, comfortable microfiber yarn\n• Body-hugging fit\n• Precision-cut and hand-sewn after printing\n• Blank product components sourced from Mexico and China",
+  "description": "Look fabulous in an all-over printed, body-hugging crop top.   \n\n• 78% polyester, 22% elastane for fulfillment in the US\n• 84% polyester, 16% elastane for fulfillment in EU\n• Fabric weight: 8.56 oz./yd.² (290 g/m²) in the US\n• Fabric weight: 6.78 oz./yd.² (230 g/m²) in EU\n• Material has a four-way stretch, which means fabric stretches and recovers on the cross and lengthwise grains.\n• Made with a smooth, comfortable microfiber yarn\n• Body-hugging fit\n• Precision-cut and hand-sewn after printing\n• Blank product components sourced from Mexico and China",
   "variants": [
    {
     "id": 5241469035,
@@ -6571,7 +7011,7 @@
   "images": [
    "https://files.cdn.printful.com/files/be3/be305ba814f43af22a6c3a7e3b80a5b4_preview.png"
   ],
-  "description": "Look fabulous in an all-over printed, body-hugging crop top.   \n\n• 75% recycled polyester, 25% elastane for production in the US/Mexico\n• 82% polyester, 18% elastane for production in Latvia\n• Fabric weight: 6.64 oz./yd.² (225 g/m²) in the US/Mexico\n• Fabric weight: 6.78 oz./yd.² (230 g/m²) in Latvia\n• Material has a four-way stretch, which means fabric stretches and recovers on the cross and lengthwise grains.\n• Made with a smooth, comfortable microfiber yarn\n• Body-hugging fit\n• Precision-cut and hand-sewn after printing\n• Blank product components sourced from Mexico and China",
+  "description": "Look fabulous in an all-over printed, body-hugging crop top.   \n\n• 78% polyester, 22% elastane for fulfillment in the US\n• 84% polyester, 16% elastane for fulfillment in EU\n• Fabric weight: 8.56 oz./yd.² (290 g/m²) in the US\n• Fabric weight: 6.78 oz./yd.² (230 g/m²) in EU\n• Material has a four-way stretch, which means fabric stretches and recovers on the cross and lengthwise grains.\n• Made with a smooth, comfortable microfiber yarn\n• Body-hugging fit\n• Precision-cut and hand-sewn after printing\n• Blank product components sourced from Mexico and China",
   "variants": [
    {
     "id": 5241410170,
@@ -6646,7 +7086,7 @@
   "images": [
    "https://files.cdn.printful.com/files/36c/36cb230ee7d3af374b0b93724a1c778d_preview.png"
   ],
-  "description": "This tank top has everything you could possibly need, vibrant colors, soft material, and a relaxed fit that will make you look fabulous!\n\n- Fabric composition in the EU: 96% polyester, 4% spandex\n- Fabric composition in the US: 93% polyester, 7% spandex\n- Fabric weight in the EU: 6.34 oz./yd.² (215 g/m²)\n- Fabric weight in the US: 7.08 oz./yd.² (240 g/m²)\n- Premium knit mid-weight jersey\n- Smooth, comfortable 2-way stretch material that stretches and recovers on the cross and lengthwise grains.\n- Precision-cut and hand-sewn after printing\n- Blank product components in the EU sourced from Lithuania\n- Blank product components in the US sourced from the US",
+  "description": "This tank top has everything you could possibly need, vibrant colors, soft material, and a relaxed fit that will make you look fabulous!\n\n- Fabric composition: 93% polyester, 7% elastane\n- Fabric weight: 7.08 oz./yd.² (240 g/m²)\n- Premium knit mid-weight jersey\n- Smooth, comfortable 2-way stretch material that stretches and recovers on the cross and lengthwise grains.\n- Precision-cut and hand-sewn after printing\n- Blank product components in the EU sourced from Lithuania\n- Blank product components in the US sourced from the US",
   "variants": [
    {
     "id": 5241408656,
