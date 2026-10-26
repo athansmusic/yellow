@@ -255,6 +255,9 @@
   "tumblr": {
     "_comment": "Fan-art queue. Get a free key at tumblr.com/oauth/apps (use the OAuth Consumer Key). Put the real key in config.local.json, not here.",
     "api_key": "",
+    "_website": "Mirror approved art to the public site. website_url is https://theredactedunit.com/api/fanart (http://localhost:3010/api/fanart while developing); website_token must equal the site's FANART_TOKEN env var. Put both in config.local.json.",
+    "website_url": "",
+    "website_token": "",
     "tag": "the redacted unit",
     "poll_seconds": 120,
     "block_tags": [

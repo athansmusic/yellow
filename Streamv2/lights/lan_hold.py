@@ -111,6 +111,13 @@ def main():
     stop_all()  # one holder at a time; launchers replace each other
     pidfile = PID_DIR / "holder.pid"
     pidfile.write_text(str(os.getpid()))
+    # Record the colour actually on the lamps. RED VS BLUE reads this to
+    # notice when a FLOOR-* button has replaced the holder behind its back;
+    # without it the border and the room drift apart and never re-sync.
+    try:
+        (PID_DIR / "color.txt").write_text(f"{r},{g},{b}")
+    except OSError:
+        pass
 
     set_once(once_ips, r, g, b)
 

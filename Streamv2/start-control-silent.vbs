@@ -1,15 +1,16 @@
-' Live Listen control server, no console window.
-' Uses pythonw.exe so nothing appears in the taskbar.
+' Live Listen control server - SUPERVISED, no console window.
 ' Put a shortcut to THIS file in shell:startup to have it run at login.
 '
-' To confirm it is running, open http://127.0.0.1:8722/ - the panel shows
-' "server offline - retrying" when it is not.
-' To stop it: Task Manager -> Details -> end pythonw.exe
+' Runs control\supervisor.ps1 hidden: it restarts the server whenever it
+' exits and appends everything to control\server-console.log, so a crash
+' always leaves a reason behind and never sticks.
+'
+' To stop it for real: Task Manager -> Details -> end powershell.exe AND
+' python.exe (the loop restarts python if you only kill python).
 
 Dim fso, shell, here
 Set fso = CreateObject("Scripting.FileSystemObject")
 Set shell = CreateObject("WScript.Shell")
 here = fso.GetParentFolderName(WScript.ScriptFullName)
 
-shell.CurrentDirectory = here
-shell.Run "pythonw.exe """ & here & "\control\server.py""", 0, False
+shell.Run "powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File """ & here & "\control\supervisor.ps1""", 0, False
