@@ -54,12 +54,12 @@ export const SOCIAL = [
 export const NAV = [
   { label: "Episodes", href: "/episodes" },
   { label: "Cast", href: "/cast" },
+  { label: "Listen", href: "/where" },
   { label: "Store", href: "/store" },
 ] as const;
 
 /** Secondary pages, under "More" in the header and listed in the mobile drawer. */
 export const MORE_NAV = [
-  { label: "Where to listen", href: "/where" },
   { label: "Aberrations", href: "/aberrations" },
   { label: "If you like…", href: "/like" },
   { label: "Contributors", href: "/contributors" },
