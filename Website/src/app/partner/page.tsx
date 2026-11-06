@@ -92,6 +92,7 @@ export default async function PartnerPage() {
   const PLATFORMS = audience?.platforms ?? PLATFORMS_FALLBACK;
   const REGIONS = audience?.regions ?? REGIONS_FALLBACK;
   const DEMOS = audience?.demos ?? DEMOS_FALLBACK;
+  const DEVICES = audience?.devices ?? [];
 
   return (
     <div className="[&_section]:scroll-mt-16">
@@ -212,6 +213,19 @@ export default async function PartnerPage() {
                   </li>
                 ))}
               </ul>
+              {DEVICES.length > 0 && (
+                <>
+                  <h3 className="mt-8 text-[11px] font-semibold uppercase tracking-[0.2em] text-paper/50 mb-4">Devices</h3>
+                  <ul>
+                    {DEVICES.map(([label, p]) => (
+                      <li key={label} className="flex justify-between items-center border-b border-white/10 py-3 text-sm">
+                        <span className="text-paper/85">{label}</span>
+                        <span className="font-bold text-yellow tabular">{p}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </div>
           </div>
 
