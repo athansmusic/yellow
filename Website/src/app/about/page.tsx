@@ -51,7 +51,7 @@ export default async function About() {
     ["Episode length", "About 30 minutes"],
     ["Schedule", "New episodes Fridays, 9 pm ET / 8 pm CT; Postmortem debriefs Tuesdays"],
     ["Setting", "Vaguely northeastern US, vaguely now"],
-    ["Seasons", seasonLine + (postmortems.length ? `, plus ${postmortems.length} Postmortem debriefs and ${minisodes.length} minisodes` : "")],
+    ["Seasons", seasonLine + (postmortems.some((e) => !e.interview) ? `, plus ${postmortems.filter((e) => !e.interview).length} Postmortem debriefs and ${minisodes.length} minisodes` : "")],
     ["Network", <a key="n" href={SITE.network.url} className="text-yellow underline underline-offset-4">Rusty Quill</a>],
   ];
 

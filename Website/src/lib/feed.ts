@@ -11,6 +11,7 @@ export type Episode = {
   code?: string; // "S1 E26"
   season?: number;
   number?: number;
+  interview?: boolean; // a cast interview: a Postmortem that debriefs no episode, listed under the Postmortem Bonus tab
   date: string; // ISO
   audioUrl: string;
   image: string;
@@ -242,7 +243,7 @@ async function fetchFeed(url: string, fresh = false): Promise<RawItem[]> {
   init.next = fresh ? { revalidate: 30 } : { revalidate: 3600, tags: ["episodes"] };
   // FEED_V busts the Vercel data cache (which survives deploys) whenever the feed's content is
   // rewritten at the source and the hour-long window is too slow. Bump it to force a refetch.
-  const FEED_V = "4";
+  const FEED_V = "5";
   const vUrl = `${url}${url.includes("?") ? "&" : "?"}v=${FEED_V}`;
   const res = await fetch(fresh ? `${vUrl}&fresh=1` : vUrl, init);
   if (!res.ok) throw new Error(`Feed ${url} → ${res.status}`);
@@ -259,6 +260,9 @@ const GUEST_DIRECTOR_OVERRIDES: Record<string, string> = {
   // The bloopers notes promo NEXT week's episode ("guest directed by Trevor Henderson"); not this one's credit
   "minisode-holiday-intermission-bloopers": "",
 };
+
+/** Postmortems that are cast interviews rather than episode debriefs. Keyed by slug; they sit under Bonus on the Postmortem side. */
+const CAST_INTERVIEWS = new Set(["postmortem-the-joe-cliff-thompson"]);
 
 /** Show-notes typos and stylings that break cast matching, fixed wherever they appear. */
 const NAME_FIXES: [RegExp, string][] = [
@@ -303,6 +307,7 @@ function toEpisode(it: RawItem): Episode | null {
     code: "code" in c ? c.code : undefined,
     season: "season" in c ? c.season : undefined,
     number: "number" in c ? c.number : undefined,
+    interview: CAST_INTERVIEWS.has(c.slug) || undefined,
     date: isNaN(pub.getTime()) ? new Date(0).toISOString() : pub.toISOString(),
     audioUrl,
     image,

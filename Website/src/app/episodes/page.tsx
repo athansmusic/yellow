@@ -52,19 +52,23 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
   // Seven Planes items as Episode-shaped rows that link to the show page
   const t7p: Episode[] = t7pFeed.episodes.filter((e) => !/trailer/i.test(e.title)).map((e) => ({ kind: "bonus", slug: `t7p#${e.slug}`, title: e.title, shortTitle: e.title, date: e.date, audioUrl: e.audioUrl, image: "/spinoffs/t7p-art.jpeg", duration: e.duration, summary: e.summary, bodyHtml: e.bodyHtml, starring: [], credits: [], notesHtml: "", guid: `t7p-${e.slug}` }));
 
+  // Cast interviews debrief no episode, so they get a Bonus tab instead of counting toward a season.
+  const bonusPM = postmortems.filter((e) => e.interview);
+  const seasonalPM = postmortems.filter((e) => !e.interview);
+
   const seasonsOf = (eps: Episode[]) => Array.from(new Set(eps.map((e) => e.season ?? 1))).sort((x, y) => x - y);
   const subTabs: { id: string; label: string }[] =
     show === "redacted"
       ? [...seasonsOf(episodes).map((n) => ({ id: String(n), label: `Season ${n}` })), { id: "minisodes", label: "Minisodes" }]
       : show === "postmortem"
-        ? seasonsOf(postmortems).map((n) => ({ id: String(n), label: `Season ${n}` }))
+        ? [...seasonsOf(seasonalPM).map((n) => ({ id: String(n), label: `Season ${n}` })), ...(bonusPM.length ? [{ id: "bonus", label: "Bonus" }] : [])]
         : [];
   const season = subTabs.find((t) => t.id === (sp.season ?? fromLegacy?.season))?.id ?? subTabs[0]?.id;
 
   const base: Episode[] =
     show === "t7p" ? t7p
     : show === "corrupted" ? []
-    : show === "postmortem" ? postmortems.filter((e) => String(e.season ?? 1) === season)
+    : show === "postmortem" ? (season === "bonus" ? bonusPM : seasonalPM.filter((e) => String(e.season ?? 1) === season))
     : season === "minisodes" ? minisodes
     : episodes.filter((e) => String(e.season ?? 1) === season);
 
@@ -74,7 +78,7 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
   // control, below, because there is no public file behind it.
   const latest = [...sectionAll].sort((x, y) => +new Date(y.date) - +new Date(x.date))[0];
 
-  const defaultOrder = season === "minisodes" ? "newest" : "oldest";
+  const defaultOrder = season === "minisodes" || season === "bonus" ? "newest" : "oldest";
   const order = sp.order === "oldest" || sp.order === "newest" ? sp.order : defaultOrder;
   const list = [...base].sort((x, y) => (order === "oldest" ? +new Date(x.date) - +new Date(y.date) : +new Date(y.date) - +new Date(x.date)));
   const season1 = episodes.filter((e) => (e.season ?? 1) === 1);
@@ -228,7 +232,7 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
             <nav aria-label="Seasons" className="flex gap-2 flex-wrap">
               {subTabs.map((t) => {
                 const active = t.id === season;
-                const n = t.id === "minisodes" ? minisodes.length : (show === "postmortem" ? postmortems : episodes).filter((e) => String(e.season ?? 1) === t.id).length;
+                const n = t.id === "minisodes" ? minisodes.length : t.id === "bonus" ? bonusPM.length : (show === "postmortem" ? seasonalPM : episodes).filter((e) => String(e.season ?? 1) === t.id).length;
                 return (
                   <Link key={t.id} href={href({ season: t.id })} scroll={false} aria-current={active ? "page" : undefined} className={`display text-lg px-3 py-1.5 border ${active ? "border-yellow text-yellow" : "border-line text-paper hover:border-paper"}`}>
                     {t.label} <span className="text-muted text-sm tabular">({n})</span>
@@ -283,7 +287,7 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
                       <PlayButton track={track(e)} size="sm" />
                     )}
                     <div className="min-w-0 flex-1">
-                      <p className="eyebrow text-yellow">{e.kind === "episode" ? e.code : e.kind === "postmortem" ? `Postmortem ${String(n).padStart(2, "0")}` : e.kind === "minisode" ? "Minisode" : "The Seven Planes"}</p>
+                      <p className="eyebrow text-yellow">{e.kind === "episode" ? e.code : e.kind === "postmortem" ? (e.interview ? "Cast interview" : `Postmortem ${String(n).padStart(2, "0")}`) : e.kind === "minisode" ? "Minisode" : "The Seven Planes"}</p>
                       <h2 className="display text-2xl sm:text-3xl leading-none mt-1">
                         <Link href={pageHref(e)} className="hover:text-yellow after:absolute after:inset-0">
                           {e.shortTitle}

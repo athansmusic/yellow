@@ -149,7 +149,9 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
   ];
 
   const title = ep.kind === "episode" ? `${ep.code}: ${ep.shortTitle}` : ep.title;
-  const url = `${SITE.url}/episodes/${ep.slug}`;
+  // Cast interviews live under the Postmortem Bonus tab, so that is where "back to the list" goes.
+  const listQuery = ep.interview ? "show=postmortem&season=bonus" : KIND_QUERY[ep.kind];
+  const url =`${SITE.url}/episodes/${ep.slug}`;
   const art = ep.image || "/brand/showart.jpeg";
   const readerUrl = transcript ? `https://www.tru.show/transcripts/${ep.kind === "postmortem" ? "postmortem" : "redacted"}/s${transcript.episode.season}e${transcript.episode.number}` : undefined;
   // Owner-specified: these five lead the always-visible list, in this exact
@@ -219,7 +221,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
         <div className="absolute inset-0 bg-gradient-to-t from-ink to-transparent" aria-hidden />
         <Container className="relative py-8 sm:py-12">
           <div className="flex items-center justify-between gap-4 flex-wrap">
-            <Crumbs items={[{ label: "Episodes", href: `/episodes?${KIND_QUERY[ep.kind]}` }, { label: ep.kind === "episode" ? ep.code ?? ep.title : KIND_LABEL[ep.kind] }]} />
+            <Crumbs items={[{ label: "Episodes", href: `/episodes?${listQuery}` }, { label: ep.kind === "episode" ? ep.code ?? ep.title : KIND_LABEL[ep.kind] }]} />
             <div className="flex gap-2">
               <ShareButton title={`${title} · REDACTED`} text={publicBlurb} path={`/episodes/${ep.slug}`} />
               <nav aria-label="Episode navigation" className="flex gap-2">
@@ -465,7 +467,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
               </dl>
             </details>
           )}
-          <Link href={`/episodes?${KIND_QUERY[ep.kind]}`} className="text-sm text-muted underline underline-offset-4 hover:text-yellow">
+          <Link href={`/episodes?${listQuery}`} className="text-sm text-muted underline underline-offset-4 hover:text-yellow">
             All episodes
           </Link>
         </aside>
