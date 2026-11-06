@@ -78,8 +78,9 @@ export async function getStats(): Promise<Stats> {
   if (feed.status === "fulfilled" && feed.value) {
     const f = feed.value;
     s.totalPlays = f.totals.all_platforms;
-    // Daily average over the last 60 days — current performance, not the lifetime mean
-    const recent = f.daily.slice(-60);
+    // Daily average over the last 14 days — current reach, not dragged down by
+    // the between-seasons dip or the lifetime ramp
+    const recent = f.daily.slice(-14);
     if (recent.length) s.dailyAverage = Math.round(recent.reduce((a, r) => a + (r.total ?? 0), 0) / recent.length);
     const fol = (f.followers?.spotify ?? 0) + (f.followers?.apple ?? 0);
     if (fol > 0) s.followers = fol;
