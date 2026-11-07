@@ -33,8 +33,9 @@ for (const f of laurels) fs.copyFileSync(path.join("public/laurels", f), path.jo
 // Each laurel is trimmed to its artwork, then fitted into an even cell so sizes and margins match.
 const size = 600;
 const inner = 500;
-const cols = 8;
-const rows = Math.ceil(laurels.length / cols);
+// Three rows however many laurels there are, so the strip stays wide and never ends on a lone laurel.
+const rows = 3;
+const cols = Math.ceil(laurels.length / rows);
 const tiles = [];
 for (const f of laurels) {
   const buf = await sharp(path.join("public/laurels", f)).trim().resize({ width: inner, height: inner, fit: "inside", withoutEnlargement: false }).png().toBuffer();
