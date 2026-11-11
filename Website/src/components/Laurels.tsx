@@ -22,9 +22,14 @@ function MaybeLink({ url, className, children }: { url?: string; className?: str
  */
 export function Laurels({ className = "", only }: { className?: string; only?: "wins" | "rest" }) {
   if (only === "wins") {
+    const wins = awards.filter(isWin);
+    // The hairlines are the grid's own background showing through the gaps, so an unfilled cell on the
+    // last row would read as a grey block. Blank cells pad each row to full width at both column counts.
+    const padLg = (4 - (wins.length % 4)) % 4;
+    const padSm = wins.length % 2;
     return (
       <ul aria-label="Festival and award wins" className={`grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10 ${className}`}>
-        {awards.filter(isWin).map((a) => (
+        {wins.map((a) => (
           <li key={a.file} className="bg-ink">
             <MaybeLink url={a.url} className="group flex h-full flex-col items-center px-4 py-7 text-center transition-colors hover:bg-white/[0.04]">
               <Image src={`/laurels/${a.file}.png`} alt={alt(a)} width={160} height={160} className="h-28 sm:h-36 w-auto transition-transform duration-300 group-hover:scale-105" />
@@ -33,6 +38,8 @@ export function Laurels({ className = "", only }: { className?: string; only?: "
             </MaybeLink>
           </li>
         ))}
+        {padSm > 0 && <li aria-hidden className="bg-ink lg:hidden" />}
+        {padLg > 0 && <li aria-hidden className="hidden bg-ink lg:block" style={{ gridColumn: `span ${padLg}` }} />}
       </ul>
     );
   }
