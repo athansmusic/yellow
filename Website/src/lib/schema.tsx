@@ -25,7 +25,7 @@ export function siteJsonLd() {
         url: SITE.url,
         image: `${SITE.url}/brand/showart.jpeg`,
         description:
-          "REDACTED is a horror comedy audio drama (fiction podcast) from Hush Studios on the Rusty Quill network. Failed actor Jacob Kane assumes his dead twin's identity and lands in The REDACTED Unit, an underfunded secret agency that handles paranormal cases called Aberrations. Monster-of-the-week, serialized, new episodes Fridays 9/8c.",
+          "REDACTED is a horror comedy audio drama (fiction podcast) from Hush Studios on the Rusty Quill network. Failed actor Jacob Kane assumes his dead twin's identity and lands in The REDACTED Unit, an underfunded secret agency that handles paranormal cases called Aberrations. Monster-of-the-week, serialized. Season 1 complete; Season 2 date TBD.",
         genre: ["Horror", "Comedy", "Audio Drama", "Fiction Podcast"],
         inLanguage: "en",
         webFeed: LISTEN.rss,
@@ -35,7 +35,8 @@ export function siteJsonLd() {
           { "@type": "Person", name: "Athan (Johnathan Magno)" },
           { "@type": "Person", name: "Jamie Petronis" },
         ],
-        sameAs: [LISTEN.spotify, LISTEN.apple, LISTEN.acast],
+        // Every verified page that is about this show, so search engines and AI answers resolve one entity.
+        sameAs: [LISTEN.spotify, LISTEN.apple, LISTEN.acast, "https://rustyquill.com/show/redacted/", "https://www.audible.in/podcast/REDACTED/B0FXTG7B19", "https://castbox.fm/channel/REDACTED-id6799136", "https://theredactedunit.miraheze.org/"],
         award: AWARD_STRINGS,
       },
       {

@@ -72,7 +72,7 @@ export default async function ListenPage({ searchParams }: { searchParams: Promi
         <div className="order-2 lg:order-1 min-w-0 lg:sticky lg:top-24 text-center lg:text-left">
           <Image src="/brand/showart.jpeg" alt="REDACTED show art" width={500} height={500} priority className="w-full max-w-[16rem] lg:max-w-full mx-auto lg:mx-0 border border-line" />
           <p className="mt-4 text-sm text-paper/85">
-            New episodes {SITE.schedule}. Free everywhere.
+            {SITE.scheduleNow}. Free everywhere.
           </p>
           <Link href="/episodes" className="mt-2 inline-block text-sm text-yellow underline underline-offset-4">
             All episodes

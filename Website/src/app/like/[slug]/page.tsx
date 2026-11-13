@@ -166,7 +166,7 @@ export default async function LikePage({ params }: { params: Promise<{ slug: str
 
         <aside className="lg:sticky lg:top-24 grid gap-4">
           <Image src="/brand/showart.jpeg" alt="REDACTED show art" width={500} height={500} className="w-full border border-line" />
-          <p className="text-sm text-paper/85">A horror comedy audio drama from Hush Studios on the Rusty Quill network. New episodes Fridays 9/8c.</p>
+          <p className="text-sm text-paper/85">A horror comedy audio drama from Hush Studios on the Rusty Quill network. {SITE.scheduleNow}.</p>
           <Link href="/about" className="text-sm text-yellow underline underline-offset-4">
             About the show
           </Link>

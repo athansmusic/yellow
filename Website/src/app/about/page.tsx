@@ -49,7 +49,7 @@ export default async function About() {
     ["Title", "REDACTED"],
     ["Format", "Scripted horror comedy audio drama in a procedural format: a case per episode, with a main through line"],
     ["Episode length", "About 30 minutes"],
-    ["Schedule", "New episodes Fridays, 9 pm ET / 8 pm CT; Postmortem debriefs Tuesdays"],
+    ["Schedule", SITE.scheduleNow],
     ["Setting", "Vaguely northeastern US, vaguely now"],
     ["Seasons", seasonLine + (postmortems.some((e) => !e.interview) ? `, plus ${postmortems.filter((e) => !e.interview).length} Postmortem debriefs and ${minisodes.length} minisodes` : "")],
     ["Network", <a key="n" href={SITE.network.url} className="text-yellow underline underline-offset-4">Rusty Quill</a>],
@@ -145,7 +145,7 @@ export default async function About() {
         <div>
           <h2 className="display text-3xl mb-2">How it started</h2>
           <p className="text-paper/85 max-w-prose">
-            REDACTED was funded on Kickstarter in May 2025, finishing at 313% with more than 400 backers. The first three episodes were released together on {firstDate ? firstDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "November 8, 2025"}, and new episodes have dropped every Friday since. Everyone who backed it is on the{" "}
+            REDACTED was funded on Kickstarter in May 2025, finishing at 313% with more than 400 backers. The first three episodes were released together on {firstDate ? firstDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "November 8, 2025"}, and new episodes dropped every Friday through Season 1. Everyone who backed it is on the{" "}
             <Link href="/supporter-wall" className="text-yellow underline underline-offset-4">
               supporter wall
             </Link>

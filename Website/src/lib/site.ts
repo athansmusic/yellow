@@ -4,6 +4,8 @@ export const SITE = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://theredactedunit.com",
   email: "crew@theredactedunit.com",
   schedule: "Fridays 9/8c",
+  // What every static surface says while the show is between seasons. Flip this (and back to SITE.schedule where used) when Season 2 has a date.
+  scheduleNow: "Season 1 complete, Season 2 date TBD",
   studio: { name: "Hush Studios", url: "https://hushstudios.co/" },
   network: { name: "Rusty Quill", url: "https://rustyquill.com/" },
   showArtist: { name: "7cfc00", url: "https://www.instagram.com/7cfc00art/" },

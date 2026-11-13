@@ -18,7 +18,7 @@ export const QA: { q: string; a: string; link?: { href: string; label: string };
   { q: "Is it appropriate for teens?", a: "REDACTED does not feature any sexually explicit content. However, with the gore and the sound design that accompanies it, we recommend REDACTED for adults. Every episode page has a content warnings section kept separate from the synopsis so it doesn't spoil anything." , group: "show" },
   { q: "How many episodes are there? Is there a Season 2?", a: "Season 1 contains 29 episodes, and Season 2 is confirmed with a date TBD." , group: "show" },
   { q: "Is the show finished or ongoing?", a: "We're ongoing! Season 1 has wrapped, but we're just getting started. Expect REDACTED for the foreseeable future." , group: "show" },
-  { q: "When do new episodes come out?", a: "Fridays at 9 pm Eastern / 8 pm Central. Patreon supporters get them early." , group: "listening", top: true },
+  { q: "When do new episodes come out?", a: "Season 2 date TBD. Patreon supporters get them early." , group: "listening", top: true },
   { q: "How long are episodes?", a: "About 30 minutes. Postmortem debriefs are 5 to 10 minutes; minisodes vary." , group: "listening" },
   { q: "Is there a video version, or is it audio only?", a: "There are no visuals. This is the benefit of an audio-only format: you can imagine each scene however you wish." , group: "listening" },
   { q: "Is REDACTED free?", a: "Listening to the show is FREE! There are ads pre- and post-roll, which is what allows us to pay the cast, site fees, and so on. When you pay, you only receive early access to ad-free episodes. We try not to lock any content behind a permanent paywall.", link: { href: "https://www.patreon.com/theredactedunit", label: "Patreon" } , group: "listening" },

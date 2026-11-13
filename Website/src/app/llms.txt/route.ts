@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
  */
 const TEMPLATE = `# REDACTED
 
-> REDACTED (also "REDACTED" or "The REDACTED Unit") is a horror comedy audio drama, a scripted fiction podcast, from Hush Studios on the Rusty Quill network, created by Athan (Johnathan Magno) and Jamie Petronis. Failed actor Jacob Kane assumes his dead twin Jordan's identity and job, and the job turns out to be The REDACTED Unit: an underfunded secret government agency that handles paranormal cases called Aberrations. Monster-of-the-week with a serialized mystery. New episodes Fridays 9 pm ET / 8 pm CT. About 30 minutes each. Kickstarter-funded (313%, 400+ backers). Show art by 7cfc00.
+> REDACTED (also "REDACTED" or "The REDACTED Unit") is a horror comedy audio drama, a scripted fiction podcast, from Hush Studios on the Rusty Quill network, created by Athan (Johnathan Magno) and Jamie Petronis. Failed actor Jacob Kane assumes his dead twin Jordan's identity and job, and the job turns out to be The REDACTED Unit: an underfunded secret government agency that handles paranormal cases called Aberrations. Monster-of-the-week with a serialized mystery. Season 1 is complete (29 episodes); Season 2 date TBD. About 30 minutes each. Kickstarter-funded (313%, 400+ backers). Show art by 7cfc00.
 
 Key pages:
 - About: https://theredactedunit.com/about

@@ -46,7 +46,7 @@ export default async function SupporterWall() {
         {/* Campaign strip */}
         <div className="grid gap-6 lg:grid-cols-[1fr_auto] items-center border border-line bg-ink-2/70 p-5 sm:p-6 mb-8">
           <p className="text-paper/85 max-w-prose">
-            REDACTED was funded on Kickstarter in May 2025, finishing at 313% with more than 400 backers. The first three episodes were released together on November 8, 2025, and new episodes have dropped every Friday since. Everyone named here made that happen.{" "}
+            REDACTED was funded on Kickstarter in May 2025, finishing at 313% with more than 400 backers. The first three episodes were released together on November 8, 2025, and new episodes dropped every Friday through Season 1. Everyone named here made that happen.{" "}
             <Link href={EXTERNAL.kickstarter} className="text-yellow underline underline-offset-4">
               The campaign page
             </Link>
