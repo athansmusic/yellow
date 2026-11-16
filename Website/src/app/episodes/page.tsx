@@ -11,6 +11,8 @@ import { Container, PlatformButtons } from "@/components/ui";
 import { getEarlyEpisodes } from "@/lib/early";
 import { Arrow } from "@/components/Icons";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
+import { getPlatformLinks } from "@/lib/episodeLinks";
+import { eventPlatforms, partLabel } from "@/lib/eventPlatforms";
 
 export const metadata: Metadata = {
   title: "Episodes",
@@ -23,6 +25,7 @@ const SHOWS = [
   { id: "redacted", label: "REDACTED" },
   { id: "postmortem", label: "Postmortem" },
   { id: "t7p", label: "The Seven Planes", short: "Seven Planes" },
+  { id: "events", label: "Special Events", short: "Events" },
   { id: "corrupted", label: "CORRUPTED", soon: true, href: "/corrupted" },
 ] as const;
 type Show = (typeof SHOWS)[number]["id"];
@@ -37,7 +40,7 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
   const legacy: Record<string, { show: Show; season?: string }> = { "season-1": { show: "redacted", season: "1" }, minisodes: { show: "redacted", season: "minisodes" }, postmortem: { show: "postmortem" }, };
   const fromLegacy = sp.tab ? legacy[sp.tab] : undefined;
   const show: Show = (SHOWS.find((t) => t.id === (sp.show ?? fromLegacy?.show))?.id ?? "redacted") as Show;
-  const [{ episodes, minisodes, postmortems }, t7pFeed, early] = await Promise.all([getEpisodes(), getSevenPlanes().catch(() => ({ episodes: [] })), getEarlyEpisodes().catch(() => [])]);
+  const [{ episodes, minisodes, postmortems, specials }, t7pFeed, early] = await Promise.all([getEpisodes(), getSevenPlanes().catch(() => ({ episodes: [] })), getEarlyEpisodes().catch(() => [])]);
 
   // Episodes members already have and the public feed has not reached. Listed so the join pitch
   // reaches people browsing, not only whoever was handed the direct link — parsed like any other
@@ -67,12 +70,13 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
 
   const base: Episode[] =
     show === "t7p" ? t7p
+    : show === "events" ? specials
     : show === "corrupted" ? []
     : show === "postmortem" ? (season === "bonus" ? bonusPM : seasonalPM.filter((e) => String(e.season ?? 1) === season))
     : season === "minisodes" ? minisodes
     : episodes.filter((e) => String(e.season ?? 1) === season);
 
-  const sectionAll: Episode[] = show === "t7p" ? t7p : show === "postmortem" ? postmortems : show === "corrupted" ? [] : [...episodes, ...minisodes];
+  const sectionAll: Episode[] = show === "t7p" ? t7p : show === "events" ? specials : show === "postmortem" ? postmortems : show === "corrupted" ? [] : [...episodes, ...minisodes];
   // The newest episode, early ones included — the point of an early episode is that it is
   // reachable and locked, so the featured row links to it like any other. It loses only its play
   // control, below, because there is no public file behind it.
@@ -81,6 +85,9 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
   const defaultOrder = season === "minisodes" || season === "bonus" ? "newest" : "oldest";
   const order = sp.order === "oldest" || sp.order === "newest" ? sp.order : defaultOrder;
   const list = [...base].sort((x, y) => (order === "oldest" ? +new Date(x.date) - +new Date(y.date) : +new Date(y.date) - +new Date(x.date)));
+  // Per-episode Spotify/Apple links for the Special Events cards, looked up only on that tab.
+  const eventLinks = new Map<string, Awaited<ReturnType<typeof getPlatformLinks>>>();
+  if (show === "events") await Promise.all(list.map(async (e) => eventLinks.set(e.guid, await getPlatformLinks(e.title).catch(() => ({})))));
   const season1 = episodes.filter((e) => (e.season ?? 1) === 1);
   const href = (q: { show?: Show; season?: string; order?: string }) => {
     const u = new URLSearchParams();
@@ -145,8 +152,9 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
         </Container>
       </div>
 
-      {/* Show hero: trailer (REDACTED) or show art, name + what it is, then a compact latest row */}
-      {(() => {
+      {/* Show hero: trailer (REDACTED) or show art, name + what it is, then a compact latest row.
+          Special Events have no trailer or blurb of their own; the videos below are the page. */}
+      {show === "events" ? null : (() => {
         const intro =
           show === "postmortem"
             ? { name: "REDACTED Postmortem", tag: "In-universe spin-off", text: "Postmortem is an in-universe spin-off series, detailing the aberrations featured in each episode as the team debriefs their findings to The Curtain. Starring Lyssa Jay, Derek Moreland, Natalie Light, and Athan.", trailer: EXTERNAL.postmortemTrailerYouTubeId, schedule: <>{onBreak ? "Postmortem schedule TBD" : "Postmortems Tuesdays 9/8c"}</>, countdown: onBreak ? null : <Countdown to="postmortem" prefix="Next in" /> }
@@ -262,6 +270,53 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
             <p className="display text-5xl text-muted/60">CORRUPTED</p>
             <p className="mt-2 text-muted">Coming soon.</p>
           </div>
+        ) : show === "events" ? (
+          <>
+            <h1 className="sr-only">Episodes: Special Events</h1>
+            {list.length === 0 ? (
+              <p className="py-12 text-muted">Nothing here yet.</p>
+            ) : (
+              Array.from(new Set(list.map((e) => e.special!.event))).map((event) => (
+                <section key={event} aria-labelledby={`ev-${event.replace(/\W+/g, "-")}`} className="mt-6">
+                  <p className="eyebrow text-yellow">Special Event</p>
+                  <h2 id={`ev-${event.replace(/\W+/g, "-")}`} className="display text-4xl sm:text-6xl leading-none mt-1">{event}</h2>
+                  <ol className="mt-6 grid gap-6 lg:grid-cols-2">
+                    {list.filter((e) => e.special!.event === event).map((e) => (
+                      <li key={e.guid} className="bg-ink-2/70 border border-line">
+                        <div className="aspect-video w-full bg-black">
+                          <iframe
+                            src={`https://www.youtube-nocookie.com/embed/${e.special!.video}?rel=0&modestbranding=1&color=white`}
+                            title={`${event}, ${partLabel(e)}`}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                            loading="lazy"
+                            className="w-full h-full"
+                          />
+                        </div>
+                        <div className="p-4 sm:p-5">
+                          <p className="eyebrow text-yellow">
+                            {partLabel(e)} · {formatDate(e.date)}
+                            {e.duration ? ` · ${formatDuration(e.duration)}` : ""}
+                          </p>
+                          <h3 className="display text-2xl sm:text-3xl leading-none mt-1">
+                            <Link href={pageHref(e)} className="hover:text-yellow">
+                              {e.title}
+                            </Link>
+                          </h3>
+                          <div className="mt-4 flex flex-wrap items-center gap-4">
+                            <PlatformButtons size="sm" links={eventPlatforms(e, eventLinks.get(e.guid) ?? {})} label="Watch or listen on" />
+                            <Link href={pageHref(e)} className="text-sm text-paper/80 hover:text-yellow underline underline-offset-4">
+                              Episode page
+                            </Link>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              ))
+            )}
+          </>
         ) : list.length === 0 ? (
           <p className="py-12 text-muted">Nothing here yet.</p>
         ) : (

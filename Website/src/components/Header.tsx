@@ -33,6 +33,7 @@ const MENUS: Record<string, MenuGroup[]> = {
         { label: "REDACTED", href: "/episodes?show=redacted" },
         { label: "Postmortem", href: "/episodes?show=postmortem" },
         { label: "The Seven Planes", href: "/episodes?show=t7p" },
+        { label: "Special Events", href: "/episodes?show=events" },
         { label: "CORRUPTED", href: "/corrupted", soon: true, teaser: true },
       ],
     },

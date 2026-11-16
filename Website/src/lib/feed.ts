@@ -12,6 +12,7 @@ export type Episode = {
   season?: number;
   number?: number;
   interview?: boolean; // a cast interview: a Postmortem that debriefs no episode, listed under the Postmortem Bonus tab
+  special?: { event: string; video: string }; // a Special Event part: the event it belongs to and its YouTube id
   date: string; // ISO
   audioUrl: string;
   image: string;
@@ -243,7 +244,7 @@ async function fetchFeed(url: string, fresh = false): Promise<RawItem[]> {
   init.next = fresh ? { revalidate: 30 } : { revalidate: 3600, tags: ["episodes"] };
   // FEED_V busts the Vercel data cache (which survives deploys) whenever the feed's content is
   // rewritten at the source and the hour-long window is too slow. Bump it to force a refetch.
-  const FEED_V = "5";
+  const FEED_V = "6";
   const vUrl = `${url}${url.includes("?") ? "&" : "?"}v=${FEED_V}`;
   const res = await fetch(fresh ? `${vUrl}&fresh=1` : vUrl, init);
   if (!res.ok) throw new Error(`Feed ${url} → ${res.status}`);
@@ -263,6 +264,18 @@ const GUEST_DIRECTOR_OVERRIDES: Record<string, string> = {
 
 /** Postmortems that are cast interviews rather than episode debriefs. Keyed by slug; they sit under Bonus on the Postmortem side. */
 const CAST_INTERVIEWS = new Set(["postmortem-the-joe-cliff-thompson"]);
+
+/**
+ * Special Events: episodes that are not REDACTED proper but are worth sharing. Keyed by slug, a
+ * hand-kept list because the feed cannot say which bonus drops are events and which are "We
+ * Recommend" feed drops. `event` groups the parts; `video` is the YouTube id the page leads with.
+ */
+const SPECIAL_EVENTS: Record<string, { event: string; video: string }> = {
+  "redacted-plays-the-house-edge-part-1": { event: "The House Edge", video: "lUf2QDSFviA" },
+  "redacted-plays-the-house-edge-part-2": { event: "The House Edge", video: "Tfy1HvU1B1E" },
+  "redacted-plays-the-house-edge-part-3": { event: "The House Edge", video: "Ywi75VLizEs" },
+  "redacted-plays-the-house-edge-part-4": { event: "The House Edge", video: "ZATNRA5dxL8" },
+};
 
 /** Show-notes typos and stylings that break cast matching, fixed wherever they appear. */
 const NAME_FIXES: [RegExp, string][] = [
@@ -308,6 +321,7 @@ function toEpisode(it: RawItem): Episode | null {
     season: "season" in c ? c.season : undefined,
     number: "number" in c ? c.number : undefined,
     interview: CAST_INTERVIEWS.has(c.slug) || undefined,
+    special: SPECIAL_EVENTS[c.slug],
     date: isNaN(pub.getTime()) ? new Date(0).toISOString() : pub.toISOString(),
     audioUrl,
     image,
@@ -369,6 +383,7 @@ export async function getEpisodes() {
     postmortems: all.filter((e) => e.kind === "postmortem"),
     minisodes: all.filter((e) => e.kind === "minisode"),
     bonus: all.filter((e) => e.kind === "bonus"),
+    specials: all.filter((e) => e.special),
     trailers: all.filter((e) => e.kind === "trailer"),
     all,
   };
@@ -400,7 +415,7 @@ export async function getItemBySlug(slug: string): Promise<Episode | undefined> 
 export async function getNeighbours(ep: Episode, extra: Episode[] = []) {
   const merged = [...(await getAllItems()), ...extra.filter((x) => !x.slug.startsWith("t7p"))];
   const all = merged
-    .filter((e) => e.kind === ep.kind)
+    .filter((e) => e.kind === ep.kind && !!e.special === !!ep.special)
     .sort((a, b) => +new Date(b.date) - +new Date(a.date));
   const i = all.findIndex((e) => e.slug === ep.slug);
   return { newer: i > 0 ? all[i - 1] : undefined, older: i >= 0 && i < all.length - 1 ? all[i + 1] : undefined };

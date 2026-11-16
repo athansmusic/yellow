@@ -19,6 +19,7 @@ import { Container, Crumbs, PlatformButtons } from "@/components/ui";
 import { Arrow } from "@/components/Icons";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
 import { ShareButton } from "@/components/ShareButton";
+import { eventPlatforms } from "@/lib/eventPlatforms";
 
 // An hour, not ten minutes: freshness comes from events now — Petra pings /api/revalidate on
 // publish, and Curtain has a button for edits made straight in Acast. The timer is only the
@@ -140,7 +141,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
         : undefined;
   const aberration = ep.code ? aberrations.find((a) => norm(a.episodeCode) === norm(ep.code)) : undefined;
 
-  const platforms = [
+  const platforms = ep.special ? eventPlatforms(ep, links) : [
     { name: "Spotify", href: links.spotify ?? LISTEN.spotify, icon: "spotify" as const },
     { name: "Apple Podcasts", href: links.apple ?? LISTEN.apple, icon: "apple" as const },
     { name: "Akouva", href: LISTEN.akouva, icon: "akouva" as const },
@@ -150,7 +151,8 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
 
   const title = ep.kind === "episode" ? `${ep.code}: ${ep.shortTitle}` : ep.title;
   // Cast interviews live under the Postmortem Bonus tab, so that is where "back to the list" goes.
-  const listQuery = ep.interview ? "show=postmortem&season=bonus" : KIND_QUERY[ep.kind];
+  const listQuery = ep.special ? "show=events" : ep.interview ? "show=postmortem&season=bonus" : KIND_QUERY[ep.kind];
+  const kindLabel = ep.special ? "Special Event" : KIND_LABEL[ep.kind];
   const url =`${SITE.url}/episodes/${ep.slug}`;
   const art = ep.image || "/brand/showart.jpeg";
   const readerUrl = transcript ? `https://www.tru.show/transcripts/${ep.kind === "postmortem" ? "postmortem" : "redacted"}/s${transcript.episode.season}e${transcript.episode.number}` : undefined;
@@ -185,6 +187,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
     description: publicBlurb,
     image: art.startsWith("http") ? art : `${SITE.url}${art}`,
     associatedMedia: { "@type": "MediaObject", contentUrl: ep.audioUrl, encodingFormat: "audio/mpeg" },
+    ...(ep.special ? { video: { "@type": "VideoObject", name: title, description: publicBlurb || title, thumbnailUrl: `https://i.ytimg.com/vi/${ep.special.video}/hqdefault.jpg`, uploadDate: ep.date, embedUrl: `https://www.youtube-nocookie.com/embed/${ep.special.video}`, contentUrl: `https://www.youtube.com/watch?v=${ep.special.video}` } } : {}),
     partOfSeries: { "@id": `${SITE.url}/#series` },
     ...(ep.number ? { episodeNumber: ep.number, partOfSeason: { "@type": "PodcastSeason", seasonNumber: ep.season ?? 1, name: `Season ${ep.season ?? 1}` } } : {}),
     ...(!locked && starring.length ? { actor: starring.map((s) => ({ "@type": "Person", name: s.actor })) } : {}),
@@ -221,7 +224,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
         <div className="absolute inset-0 bg-gradient-to-t from-ink to-transparent" aria-hidden />
         <Container className="relative py-8 sm:py-12">
           <div className="flex items-center justify-between gap-4 flex-wrap">
-            <Crumbs items={[{ label: "Episodes", href: `/episodes?${listQuery}` }, { label: ep.kind === "episode" ? ep.code ?? ep.title : KIND_LABEL[ep.kind] }]} />
+            <Crumbs items={[{ label: "Episodes", href: `/episodes?${listQuery}` }, { label: ep.kind === "episode" ? ep.code ?? ep.title : kindLabel }]} />
             <div className="flex gap-2">
               <ShareButton title={`${title} · REDACTED`} text={publicBlurb} path={`/episodes/${ep.slug}`} />
               <nav aria-label="Episode navigation" className="flex gap-2">
@@ -230,13 +233,26 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
               </nav>
             </div>
           </div>
-          <div className="mt-6 grid gap-8 md:grid-cols-[minmax(0,18rem)_1fr] items-center">
-            <div className="relative aspect-square overflow-hidden bg-ink max-w-xs shadow-[0_30px_60px_rgba(0,0,0,.6)]">
-              <Image src={art} alt="" fill sizes="(min-width:768px) 18rem, 100vw" priority className="object-cover" />
-            </div>
+          <div className={`mt-6 grid gap-8 items-center ${ep.special ? "md:grid-cols-[minmax(0,34rem)_1fr]" : "md:grid-cols-[minmax(0,18rem)_1fr]"}`}>
+            {ep.special ? (
+              /* A Special Event leads with its video; the audio and every platform sit below it. */
+              <div className="aspect-video w-full bg-black border border-line shadow-[0_30px_60px_rgba(0,0,0,.6)]">
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${ep.special.video}?rel=0&modestbranding=1&color=white`}
+                  title={title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              </div>
+            ) : (
+              <div className="relative aspect-square overflow-hidden bg-ink max-w-xs shadow-[0_30px_60px_rgba(0,0,0,.6)]">
+                <Image src={art} alt="" fill sizes="(min-width:768px) 18rem, 100vw" priority className="object-cover" />
+              </div>
+            )}
             <div>
               <p className="eyebrow text-yellow mb-2">
-                {KIND_LABEL[ep.kind]}
+                {kindLabel}
                 {ep.code ? ` · ${ep.code}` : ""}
                 {` · ${formatDate(ep.date)}`}
                 {ep.duration ? ` · ${formatDuration(ep.duration)}` : ""}
