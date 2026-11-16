@@ -19,7 +19,7 @@ import { Container, Crumbs, PlatformButtons } from "@/components/ui";
 import { Arrow } from "@/components/Icons";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
 import { ShareButton } from "@/components/ShareButton";
-import { eventPlatforms } from "@/lib/eventPlatforms";
+import { EVENT_CTA, eventPlatforms } from "@/lib/eventPlatforms";
 
 // An hour, not ten minutes: freshness comes from events now — Petra pings /api/revalidate on
 // publish, and Curtain has a button for edits made straight in Acast. The timer is only the
@@ -153,6 +153,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
   // Cast interviews live under the Postmortem Bonus tab, so that is where "back to the list" goes.
   const listQuery = ep.special ? "show=events" : ep.interview ? "show=postmortem&season=bonus" : KIND_QUERY[ep.kind];
   const kindLabel = ep.special ? "Special Event" : KIND_LABEL[ep.kind];
+  const cta = ep.special ? EVENT_CTA[ep.special.event] : undefined;
   const url =`${SITE.url}/episodes/${ep.slug}`;
   const art = ep.image || "/brand/showart.jpeg";
   const readerUrl = transcript ? `https://www.tru.show/transcripts/${ep.kind === "postmortem" ? "postmortem" : "redacted"}/s${transcript.episode.season}e${transcript.episode.number}` : undefined;
@@ -287,6 +288,11 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
                       Accessible reader
                     </a>
                   </>
+                )}
+                {cta && (
+                  <a href={cta.href} target="_blank" rel="noreferrer" className="btn btn-yellow basis-full sm:basis-auto !min-h-14 !px-8 !text-xl justify-center">
+                    {cta.label} <Arrow width={20} height={20} />
+                  </a>
                 )}
               </div>
               )}

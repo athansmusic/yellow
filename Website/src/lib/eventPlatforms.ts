@@ -21,3 +21,8 @@ export function eventPlatforms(e: Episode, links: Links) {
     { name: "Patreon", href: links.patreon ?? LISTEN.patreon, icon: "patreon" as const },
   ];
 }
+
+/** A big call-to-action per event, for the thing the event is raising money or attention for. Keyed by event name. */
+export const EVENT_CTA: Record<string, { label: string; href: string }> = {
+  "The House Edge": { label: "The House Edge Kickstarter", href: "https://www.kickstarter.com/projects/hauntedtable/the-house-edge-paranormal-jailbreak-ttrpg/" },
+};
