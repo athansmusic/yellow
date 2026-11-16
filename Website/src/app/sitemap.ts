@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getDoc } from "@/lib/content";
 import { getAllItems } from "@/lib/feed";
+import { eventSlug } from "@/lib/eventPlatforms";
 import { hiddenPages, isHiddenPath } from "@/lib/visibility";
 import { getProducts } from "@/lib/catalog";
 import { SITE } from "@/lib/site";
@@ -27,6 +28,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const all = [
     ...statics,
     ...items.map((e) => ({ url: `${base}/episodes/${e.slug}`, lastModified: e.date, changeFrequency: "yearly" as const, priority: 0.6 })),
+    // One page per Special Event, stamped with its newest part.
+    ...Array.from(new Set(items.filter((e) => e.special).map((e) => e.special!.event))).map((name) => ({ url: `${base}/events/${eventSlug(name)}`, lastModified: items.filter((e) => e.special?.event === name).map((e) => e.date).sort().pop(), changeFrequency: "monthly" as const, priority: 0.6 })),
     ...products.map((p) => ({ url: `${base}/store/${p.slug}`, lastModified: GENERATED, changeFrequency: "monthly" as const, priority: 0.5 })),
     ...cast.map((c) => ({ url: `${base}/cast/${c.slug}`, lastModified: GENERATED, changeFrequency: "monthly" as const, priority: 0.5 })),
   ];

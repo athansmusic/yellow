@@ -11,8 +11,7 @@ import { Container, PlatformButtons } from "@/components/ui";
 import { getEarlyEpisodes } from "@/lib/early";
 import { Arrow } from "@/components/Icons";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
-import { getPlatformLinks } from "@/lib/episodeLinks";
-import { eventPlatforms, partLabel } from "@/lib/eventPlatforms";
+import { eventSlug } from "@/lib/eventPlatforms";
 
 export const metadata: Metadata = {
   title: "Episodes",
@@ -85,9 +84,10 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
   const defaultOrder = season === "minisodes" || season === "bonus" ? "newest" : "oldest";
   const order = sp.order === "oldest" || sp.order === "newest" ? sp.order : defaultOrder;
   const list = [...base].sort((x, y) => (order === "oldest" ? +new Date(x.date) - +new Date(y.date) : +new Date(y.date) - +new Date(x.date)));
-  // Per-episode Spotify/Apple links for the Special Events cards, looked up only on that tab.
-  const eventLinks = new Map<string, Awaited<ReturnType<typeof getPlatformLinks>>>();
-  if (show === "events") await Promise.all(list.map(async (e) => eventLinks.set(e.guid, await getPlatformLinks(e.title).catch(() => ({})))));
+  // Special Events show as one card per event, newest event first; the parts live on the event's own page.
+  const eventsList = Array.from(new Set(specials.map((e) => e.special!.event)))
+    .map((name) => ({ name, parts: specials.filter((e) => e.special!.event === name).sort((x, y) => +new Date(x.date) - +new Date(y.date)) }))
+    .sort((x, y) => +new Date(y.parts[0].date) - +new Date(x.parts[0].date));
   const season1 = episodes.filter((e) => (e.season ?? 1) === 1);
   const href = (q: { show?: Show; season?: string; order?: string }) => {
     const u = new URLSearchParams();
@@ -251,7 +251,7 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
           ) : (
             <span />
           )}
-          {list.length > 1 && (
+          {list.length > 1 && show !== "events" && (
             <div className="flex gap-1 text-sm" role="group" aria-label="Order">
               {(["oldest", "newest"] as const).map((o) => (
                 <Link key={o} href={href({ order: o })} scroll={false} aria-current={order === o ? "true" : undefined} className={`px-3 py-1.5 border ${order === o ? "border-yellow text-yellow" : "border-line text-muted hover:text-paper"}`}>
@@ -273,48 +273,29 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
         ) : show === "events" ? (
           <>
             <h1 className="sr-only">Episodes: Special Events</h1>
-            {list.length === 0 ? (
+            {eventsList.length === 0 ? (
               <p className="py-12 text-muted">Nothing here yet.</p>
             ) : (
-              Array.from(new Set(list.map((e) => e.special!.event))).map((event) => (
-                <section key={event} aria-labelledby={`ev-${event.replace(/\W+/g, "-")}`} className="mt-6">
-                  <p className="eyebrow text-yellow">Special Event</p>
-                  <h2 id={`ev-${event.replace(/\W+/g, "-")}`} className="display text-4xl sm:text-6xl leading-none mt-1">{event}</h2>
-                  <ol className="mt-6 grid gap-6 lg:grid-cols-2">
-                    {list.filter((e) => e.special!.event === event).map((e) => (
-                      <li key={e.guid} className="bg-ink-2/70 border border-line">
-                        <div className="aspect-video w-full bg-black">
-                          <iframe
-                            src={`https://www.youtube-nocookie.com/embed/${e.special!.video}?rel=0&modestbranding=1&color=white`}
-                            title={`${event}, ${partLabel(e)}`}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowFullScreen
-                            loading="lazy"
-                            className="w-full h-full"
-                          />
-                        </div>
-                        <div className="p-4 sm:p-5">
-                          <p className="eyebrow text-yellow">
-                            {partLabel(e)} · {formatDate(e.date)}
-                            {e.duration ? ` · ${formatDuration(e.duration)}` : ""}
-                          </p>
-                          <h3 className="display text-2xl sm:text-3xl leading-none mt-1">
-                            <Link href={pageHref(e)} className="hover:text-yellow">
-                              {e.title}
-                            </Link>
-                          </h3>
-                          <div className="mt-4 flex flex-wrap items-center gap-4">
-                            <PlatformButtons size="sm" links={eventPlatforms(e, eventLinks.get(e.guid) ?? {})} label="Watch or listen on" />
-                            <Link href={pageHref(e)} className="text-sm text-paper/80 hover:text-yellow underline underline-offset-4">
-                              Episode page
-                            </Link>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
-                </section>
-              ))
+              <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {eventsList.map((ev) => (
+                  <li key={ev.name} className="group relative bg-ink-2/70 border border-line hover:border-yellow transition-colors">
+                    <div className="relative aspect-video w-full overflow-hidden bg-black">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={`https://i.ytimg.com/vi/${ev.parts[0].special!.video}/hqdefault.jpg`} alt="" loading="lazy" className="size-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                    </div>
+                    <div className="p-4 sm:p-5">
+                      <p className="eyebrow text-yellow">
+                        Special Event · {ev.parts.length} {ev.parts.length === 1 ? "part" : "parts"} · {formatDate(ev.parts[0].date)}
+                      </p>
+                      <h2 className="display text-3xl sm:text-4xl leading-none mt-1">
+                        <Link href={`/events/${eventSlug(ev.name)}`} className="hover:text-yellow after:absolute after:inset-0">
+                          {ev.name}
+                        </Link>
+                      </h2>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             )}
           </>
         ) : list.length === 0 ? (

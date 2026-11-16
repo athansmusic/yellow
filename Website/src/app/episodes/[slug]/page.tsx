@@ -19,7 +19,7 @@ import { Container, Crumbs, PlatformButtons } from "@/components/ui";
 import { Arrow } from "@/components/Icons";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/schema";
 import { ShareButton } from "@/components/ShareButton";
-import { EVENT_CTA, eventPlatforms } from "@/lib/eventPlatforms";
+import { EVENT_CTA, eventPlatforms, eventSlug, partLabel } from "@/lib/eventPlatforms";
 
 // An hour, not ten minutes: freshness comes from events now — Petra pings /api/revalidate on
 // publish, and Curtain has a button for edits made straight in Acast. The timer is only the
@@ -225,7 +225,7 @@ export default async function EpisodePage({ params }: { params: Promise<{ slug: 
         <div className="absolute inset-0 bg-gradient-to-t from-ink to-transparent" aria-hidden />
         <Container className="relative py-8 sm:py-12">
           <div className="flex items-center justify-between gap-4 flex-wrap">
-            <Crumbs items={[{ label: "Episodes", href: `/episodes?${listQuery}` }, { label: ep.kind === "episode" ? ep.code ?? ep.title : kindLabel }]} />
+            <Crumbs items={ep.special ? [{ label: "Episodes", href: "/episodes?show=events" }, { label: ep.special.event, href: `/events/${eventSlug(ep.special.event)}` }, { label: partLabel(ep) }] : [{ label: "Episodes", href: `/episodes?${listQuery}` }, { label: ep.kind === "episode" ? ep.code ?? ep.title : kindLabel }]} />
             <div className="flex gap-2">
               <ShareButton title={`${title} · REDACTED`} text={publicBlurb} path={`/episodes/${ep.slug}`} />
               <nav aria-label="Episode navigation" className="flex gap-2">

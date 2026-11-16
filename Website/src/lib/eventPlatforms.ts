@@ -26,3 +26,6 @@ export function eventPlatforms(e: Episode, links: Links) {
 export const EVENT_CTA: Record<string, { label: string; href: string }> = {
   "The House Edge": { label: "The House Edge Kickstarter", href: "https://www.kickstarter.com/projects/hauntedtable/the-house-edge-paranormal-jailbreak-ttrpg/" },
 };
+
+/** "The House Edge" becomes the-house-edge, the event's page address under /events. */
+export const eventSlug = (event: string) => event.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
