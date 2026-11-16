@@ -65,6 +65,8 @@ const nextConfig: NextConfig = {
       { source: "/join", destination: "https://patreon.com/theredactedunit", permanent: false },
       { source: "/discord", destination: "https://discord.gg/MKtCk4fBXt", permanent: false },
       { source: "/ks", destination: "https://www.kickstarter.com/projects/theredactedunit/redacted-a-procedural-horror-audio-drama", permanent: false },
+      // Transcripts are served from tru.show, so anything under /transcripts goes there with the same path
+      { source: "/transcripts/:path*", destination: "https://www.tru.show/transcripts/:path*", permanent: false },
       // URLs people guess; each lands where the thing actually lives
       { source: "/contact", destination: "/press#contact", permanent: false },
       { source: "/newsletter", destination: "/#alerts", permanent: false },
