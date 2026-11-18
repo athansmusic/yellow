@@ -128,7 +128,7 @@ export default async function PressPage() {
       <section id="awards" className="border-b border-line">
         <Container className="py-14 sm:py-20">
           <Title label="Recognition">Winners</Title>
-          <p className="mt-6 max-w-[60ch] text-[15px] font-light leading-relaxed text-paper/55">Silver Winner and Listener&apos;s Choice in Scripted Fiction at the 2026 Signal Awards, plus wins at five film festivals. The full list, with every nomination and selection, is on the <Link href="/partner#awards-strip" className="underline underline-offset-4 hover:text-yellow">partner page</Link>.</p>
+          <p className="mt-6 max-w-[60ch] text-[15px] font-light leading-relaxed text-paper/55">Silver Winner and Listener&apos;s Choice in Scripted Fiction at the 2026 Signal Awards, plus wins at eight film festivals. The full list, with every nomination and selection, is on the <Link href="/partner#awards-strip" className="underline underline-offset-4 hover:text-yellow">partner page</Link>.</p>
           <Laurels only="wins" className="mt-10" />
         </Container>
       </section>

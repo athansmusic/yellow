@@ -195,7 +195,7 @@ export default async function About() {
 
       <section className="mt-14 border-t border-line pt-6 text-sm text-paper/80">
         <p>
-          Signal Awards Silver winner and Listener’s Choice, and award winner at the Swedish International Film Festival, Film 25 ArtFF, AREA51, Darkland, YETI Filmfest, and Indiemania Prague, with selections at fifteen more festivals. Press, stats, and downloads are on the{" "}
+          Signal Awards Silver winner and Listener’s Choice, and award winner at the Swedish International Film Festival, Film 25 ArtFF, AREA51, Darkland, YETI Filmfest, Indiemania Prague, Film Revolution, and Caçador de Filmes México, with selections at thirteen more festivals. Press, stats, and downloads are on the{" "}
           <Link href="/partner" className="text-yellow underline underline-offset-4">
             press kit
           </Link>
