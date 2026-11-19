@@ -731,6 +731,12 @@ class Handler(BaseHTTPRequestHandler):
             exclude = (qs.get("not") or [""])[0]
             out = _art.pick_next(exclude, count=_live) if _art                 else {"piece": None, "poolSize": 0}
             self._send(json.dumps(out).encode(), "application/json")
+        elif route == "/art/publish":
+            # Manual push of the approved pool to the website (also fires on
+            # every approve/undo). Useful after changing the token or URL.
+            out = _art.publish() if _art else {"error": "art queue not up"}
+            self._send(json.dumps(out).encode(), "application/json",
+                       200 if out.get("ok") else 400)
         elif route == "/art/approved":
             # Owner call 2026-08-18: the whole approved pool rotates, not a
             # recency window - older art comes around again.
@@ -930,6 +936,29 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(b'{"error":"rvb disabled"}', "application/json", 503)
                 return
             self._send(json.dumps(_teams.reset_month()).encode(),
+                       "application/json")
+            return
+        if route == "/rvb/team":
+            # Hand-place one viewer. {"user":..,"team":"red"|"blue",
+            # "locked":true} - locked means draft night leaves them alone,
+            # which is the whole point of doing it by hand.
+            if _teams is None:
+                self._send(b'{"error":"rvb disabled"}', "application/json", 503)
+                return
+            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                body = json.loads(self.rfile.read(length) or b"{}")
+            except json.JSONDecodeError:
+                body = {}
+            row = _teams.set_team(str(body.get("user", "")),
+                                  str(body.get("team", "")),
+                                  bool(body.get("locked", True)),
+                                  str(body.get("name", "")))
+            if row is None:
+                self._send(b'{"error":"no such user, or excluded"}',
+                           "application/json", 400)
+                return
+            self._send(json.dumps({"ok": True, "member": row}).encode(),
                        "application/json")
             return
         if route == "/rvb/attendance/reset":
@@ -1238,10 +1267,18 @@ def _lamps_to_team(force: bool = False) -> None:
     hexval = (snap.get("color") or "").lstrip("#")
     if len(hexval) != 6:
         return
-    if hexval == _lamp_color and not force:
+    r, g, b = (int(hexval[i:i + 2], 16) for i in (0, 2, 4))
+    # Compare against what is ACTUALLY on the lamps, not just what we last
+    # sent: a FLOOR-* button replaces the holder without telling us, and
+    # trusting our own memory left the room blue while the border was red.
+    live = ""
+    try:
+        live = (ROOT / "lights" / "run" / "color.txt").read_text().strip()
+    except OSError:
+        pass
+    if not force and hexval == _lamp_color and live == f"{r},{g},{b}":
         return
     _lamp_color = hexval
-    r, g, b = (int(hexval[i:i + 2], 16) for i in (0, 2, 4))
     lamps = cfg.get("lamps", {})
     ips = lamps.get("stream_ips", "")
     once = lamps.get("once_ips", "")

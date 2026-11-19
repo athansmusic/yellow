@@ -121,15 +121,60 @@ class Teams:
         if self.cfg.get("draft_night", {}).get("manual", True):
             return                      # waiting for the button
         self._data["month"] = now
-        self._data["members"] = {}
+        self._data["members"] = self._keep_locked_locked()
         self._data["points"] = {RED: 0, BLUE: 0}
         self._data["chat_today"] = {}
         self._data["attendance"] = []
 
-    def reset_month(self) -> dict:
-        """Draft night. Explicit only - never automatic mid-month."""
+    def _keep_locked_locked(self) -> dict:
+        """The roster a reshuffle starts from: locked members only.
+
+        A lock is a standing decision about where somebody belongs, so the
+        draft must not be able to overrule it. Their team and name survive;
+        their points do not, because a new month is a new scoreboard for
+        everybody.
+        """
+        return {u: {"name": r.get("name", u), "team": r["team"],
+                    "ts": r.get("ts", time.time()), "pts": 0, "locked": True}
+                for u, r in self._data["members"].items() if r.get("locked")}
+
+    def set_team(self, user: str, team: str, locked: bool = True,
+                 name: str = "") -> dict | None:
+        """Move somebody by hand, and optionally pin them there.
+
+        Points travel with the member (they live on the row), so a move
+        carries their contribution across to the new side rather than
+        leaving it stranded on the old one.
+        """
+        user = (user or "").strip().lower().lstrip("@")
+        team = RED if str(team).strip().lower() == RED else BLUE
+        if not user or self.excluded(user):
+            return None
         with self._lock:
-            self._data["members"] = {}
+            row = self._data["members"].get(user)
+            if row is None:
+                row = {"name": name or user, "team": team,
+                       "ts": time.time(), "pts": 0}
+                self._data["members"][user] = row
+            row["team"] = team
+            if name:
+                row["name"] = name
+            if locked:
+                row["locked"] = True
+            else:
+                row.pop("locked", None)
+            self.save()
+            out = dict(row, user=user)
+        self.on_change()
+        return out
+
+    def reset_month(self) -> dict:
+        """Draft night. Explicit only - never automatic mid-month.
+
+        Locked members keep their side; everyone else is back in the hat.
+        """
+        with self._lock:
+            self._data["members"] = self._keep_locked_locked()
             self._data["points"] = {RED: 0, BLUE: 0}
             self._data["chat_today"] = {}
             self._data["attendance"] = []
