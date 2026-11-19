@@ -33,7 +33,7 @@ export function Laurels({ className = "", only }: { className?: string; only?: "
         {wins.map((a) => (
           <li key={a.file} className="bg-ink">
             <MaybeLink url={a.url} className="group flex h-full flex-col items-center px-2 py-4 text-center transition-colors hover:bg-white/[0.04]">
-              <Image src={`/laurels/${a.file}.png`} alt={alt(a)} title={`${a.festival}: ${a.result}`} width={160} height={160} className="h-20 sm:h-24 w-auto transition-transform duration-300 group-hover:scale-105" />
+              <Image src={`/laurels/${a.file}.png`} alt={alt(a)} title={`${a.festival}: ${a.result}`} width={160} height={160} className="h-24 lg:h-40 w-auto transition-transform duration-300 group-hover:scale-105" />
               <span className="mt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-paper/90">{shortName(a.festival)}</span>
             </MaybeLink>
           </li>
