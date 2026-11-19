@@ -25,21 +25,21 @@ export function Laurels({ className = "", only }: { className?: string; only?: "
     const wins = awards.filter(isWin);
     // The hairlines are the grid's own background showing through the gaps, so an unfilled cell on the
     // last row would read as a grey block. Blank cells pad each row to full width at both column counts.
-    const padLg = (4 - (wins.length % 4)) % 4;
-    const padSm = wins.length % 2;
+    // Three across on phones, six from tablet up; the laurel prints the result, so the caption is just the festival.
+    const padLg = (6 - (wins.length % 6)) % 6;
+    const padSm = (3 - (wins.length % 3)) % 3;
     return (
-      <ul aria-label="Festival and award wins" className={`grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10 ${className}`}>
+      <ul aria-label="Festival and award wins" className={`grid grid-cols-3 md:grid-cols-6 gap-px bg-white/10 border border-white/10 ${className}`}>
         {wins.map((a) => (
           <li key={a.file} className="bg-ink">
-            <MaybeLink url={a.url} className="group flex h-full flex-col items-center px-4 py-7 text-center transition-colors hover:bg-white/[0.04]">
-              <Image src={`/laurels/${a.file}.png`} alt={alt(a)} width={160} height={160} className="h-28 sm:h-36 w-auto transition-transform duration-300 group-hover:scale-105" />
-              <span className="mt-4 text-[11px] font-bold uppercase tracking-[0.14em] text-paper/90">{shortName(a.festival)}</span>
-              <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-yellow">{a.result}</span>
+            <MaybeLink url={a.url} className="group flex h-full flex-col items-center px-2 py-4 text-center transition-colors hover:bg-white/[0.04]">
+              <Image src={`/laurels/${a.file}.png`} alt={alt(a)} title={`${a.festival}: ${a.result}`} width={160} height={160} className="h-20 sm:h-24 w-auto transition-transform duration-300 group-hover:scale-105" />
+              <span className="mt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-paper/90">{shortName(a.festival)}</span>
             </MaybeLink>
           </li>
         ))}
-        {padSm > 0 && <li aria-hidden className="bg-ink lg:hidden" />}
-        {padLg > 0 && <li aria-hidden className="hidden bg-ink lg:block" style={{ gridColumn: `span ${padLg}` }} />}
+        {padSm > 0 && <li aria-hidden className="bg-ink md:hidden" style={{ gridColumn: `span ${padSm}` }} />}
+        {padLg > 0 && <li aria-hidden className="hidden bg-ink md:block" style={{ gridColumn: `span ${padLg}` }} />}
       </ul>
     );
   }
